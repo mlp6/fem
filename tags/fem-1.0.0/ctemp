@@ -1,0 +1,50 @@
+#!/usr/bin/perl -w
+#
+# ctemp - convert double precision dyna_convolve_FR.mat files to single
+# precision dyna_convolve_FR.mat files which are ~1/2 the size
+#
+# Usage: ctemp dyna_convolve_FR.mat
+#
+# Mark 04/23/05
+
+# what directory is this?
+open(PWD,"pwd|");
+$StartDir = <PWD>;
+close(PWD);
+chomp($StartDir);
+
+foreach $dirname (<ant*>)
+	{
+	
+	# swith into each lesion directory
+	$HomePath = $StartDir . "/" . $dirname;
+	chdir($HomePath);
+
+	foreach $subdir (<a*>)
+		{
+		$FullPath = $HomePath."/".$subdir;
+		chdir($FullPath);
+		print "Working in $FullPath\n";
+
+		# generate a temporary matlab file to execute
+		open(FILE,">czdisp.m");
+		print FILE "load dyna_convolve_FR.mat\n";
+		print FILE "temps = single(temps);\n";
+		print FILE "save dyna_convolve_FR.mat temps ax lat lata\n";
+		if(-e "dyna_convolve_FR_elev.mat")
+			{
+			print FILE "clear;\n";
+			print FILE "load dyna_convolve_FR_elev.mat\n";
+			print FILE "temps = single(temps);\n";
+			print FILE "save dyna_convolve_FR_elev.mat temps ax elev eleva\n";
+			}	
+		print FILE "quit\n";
+		close(FILE);
+
+		# run matlab to convert the file to single precision
+		system("matlab -nojvm -nosplash < czdisp.m > czdispjunk");
+
+		# clean things up
+		system("rm czdisp.m czdispjunk");
+		}
+	}

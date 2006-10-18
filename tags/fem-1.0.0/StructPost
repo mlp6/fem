@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+#
+# Summary:  Post-processing of structural # ls-dyna model results.
+#
+# Usage: StructPost NumTimeSteps
+#        NumTimeSteps - number of thermal times steps to
+#        process from the dyna run
+#
+# Assumptions:  
+# d3plot files have been generated (and working in that directory)  
+# dclean is available
+# createzdisp.m is in the user matlab path
+#
+# Mark 04/13/05
+#
+# HX OF CHANGES
+# Updated the output command for ls-prepost2 for the latest
+# version.
+# Commented out the remove commands.
+# Mark 07/18/06
+
+# make sure that the correct number of input arguments are
+# given (only 1)
+if(($#ARGV+1) != 1) { die "Wrong number of input arguments (!=1)" }
+
+$NumTimeSteps = $ARGV[0];
+
+# create temporary ls-prepost2 command file to save the thermal
+# results to ASCII files
+print "Generating the ls-prepost2 command file\n";
+open(SAVEFILE,'> savedisp.cfile');
+print SAVEFILE "open d3plot d3plot\n";
+for ($i = 1; $i <= $NumTimeSteps; $i++)
+	{
+	# latest version of ls-prepost2 uses an extra 0 on this
+	# command
+	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0\n";
+	print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0 0\n";
+	}
+close(SAVEFILE);
+
+# run ls-prepost2 to convert the d3plot files to ASCII files
+print "Running ls-prepost2 to convert the d3plot files\n";
+system("ls-prepost2 c=savedisp.cfile -nographics");
+
+# remove the command file
+system("rm savedisp.cfile");
+
+# strip the headers off the generated ASCII files and re-save
+# to t*.asc files
+print "Stripping the ASCII file headers\n";
+@disp = <node*.asc>;
+$no_files = @disp;
+
+foreach $disp (@disp) {
+	print $disp," converted to ";
+
+	# read in the next node*.asc file
+	@ARGV = ($disp);
+
+	@t = split('_',$disp);
+	
+	# spit the headerless data into a new file, t*.asc
+	open(T, ">@t[2]");
+
+	print @t[2],"\n";
+
+	while (<>) {
+		chomp;
+		@fields = split(' ',$_);
+		if ($#fields == 3) {
+			print T $_,"\n";
+		}
+	}
+
+	# delete the old node*.asc file
+	unlink ($disp);
+
+	close(T);
+}
+
+# generate zdisp.mat 
+print "Running createzdisp.m\n";
+open(MATFILE,'>runmatlab.m');
+# place the appropriate matlab command in here
+print MATFILE "addpath('/home/mlp6/matlab/fem');\n";
+print MATFILE "createzdisp($NumTimeSteps);\n";
+system("matlab -nojvm -nosplash < runmatlab.m");
+system("rm runmatlab.m");
+
+# if(-e "d3thdt01")
+# 	{
+# 	system("dclean");
+# 	}
+
+#if(-e "zdisp.mat")
+#	{
+	system("rm t*.asc");
+#	system("rm d3plot*");
+	system("rm lspost.*");
+#	}
+
+print "Post-processing of model results complete\n";

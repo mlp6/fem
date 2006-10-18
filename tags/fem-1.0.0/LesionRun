@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+# LesionRun - run, post-process, and clean-up lesions simulations
+# Mark 04/11/05
+
+# what directory is this?
+open(PWD,"pwd|");
+$StartDir = <PWD>;
+close(PWD);
+chomp($StartDir);
+
+# work on this directory first
+if(!-e "zdisp.mat")
+	{
+	system("ls-dyna-s i=cirs.dyn");
+	system("dclean");
+	system("matlab < /data/mlp6/postproccenter.m");
+	}
+else { print "zdisp.mat already exists" };
+if(-e "zdisp.mat")
+	{
+	system("rm d3plot* status.out");
+	}
+
+# now work on all of the other directories
+@NextDirs = <*mm>;
+
+foreach $NextDir (@NextDirs)
+	{
+	$FullPath = $StartDir . "/" . $NextDir;
+	chdir($FullPath);
+	if(!-e "zdisp.mat")
+		{
+		system("ls-dyna-s i=cirs.dyn");
+		system("dclean");
+		system("matlab < /data/mlp6/postproc.m");
+		}
+	else { print "zdisp.mat already exists" };
+	if(-e "zdisp.mat")
+		{
+		system("rm d3plot* status.out");
+		}
+	}
+
+# send an email to say that things are done
+chdir($StartDir);
+system("hostname > /tmp/email.txt");
+system("pwd >> /tmp/email.txt");
+system("mail -s \"job done\" mlp6\@philip.egr.duke.edu < /tmp/email.txt");
+system("rm /tmp/email.txt");
