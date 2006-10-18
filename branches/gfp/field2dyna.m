@@ -34,6 +34,7 @@ disp('GIANMARCO''S SIMULATIONS - IT SAVES DIFFERENT VARIABLES');
 disp('SPECIFICALLY PRESSURE WAVEFORMS AND START TIMES');
 
 % read in the nodes
+disp('Reading in node data...');
 measurementPointsandNodes=read_dyna_nodes(NodeName);
 
 % skip node number, use just coords
@@ -48,6 +49,8 @@ measurementPoints(:,1:2)=[tmp(:,2) tmp(:,1)];
 
 % convert from cm -> m 
 measurementPoints=measurementPoints/100; 
+
+disp('Node data scaled and reformated.');
 
 % create a variable structure to pass to fieldprms3d_arfi
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;

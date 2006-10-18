@@ -172,7 +172,7 @@ for i=1:size(FIELD_PARAMS.measurementPoints,1)
  	[press, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
  	isptaout(i)=sum(press.*press);
 	% save variables for Gianmarco's code comparison
-	pressure(i,:) = press;
+	pressure(i,1:size(press,1)) = press;
 	StartTimes(i) = startTime;
 	if(i==1),
 		tic,
