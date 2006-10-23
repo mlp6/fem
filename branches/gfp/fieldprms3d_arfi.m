@@ -52,7 +52,7 @@ field_init(-1)
 FIELD_PARAMS.soundSpeed=1540;
 set_field('c',FIELD_PARAMS.soundSpeed); 
 
-FIELD_PARAMS.samplingFrequency = 200e6;
+FIELD_PARAMS.samplingFrequency = 100e6;
 set_field('fs',FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
@@ -168,12 +168,23 @@ disp(sprintf('Start Time: %i:%i',StartTime(4),StartTime(5)));
 tic;
 EstCount = 1000;  % number of calculations to average over to
 									 % make calc time estimates
-for i=1:size(FIELD_PARAMS.measurementPoints,1)
- 	[press, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
- 	isptaout(i)=sum(press.*press);
-	% save variables for Gianmarco's code comparison
-	pressure(i,1:size(press,1)) = press;
-	StartTimes(i) = startTime;
+
+dataSaveCount = 1;
+for i=1:size(FIELD_PARAMS.measurementPoints,1),
+ 	[press, startTime(dataSaveCount)] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
+ 	isptaout(dataSaveCount)=sum(press.*press);
+	nodeID(dataSaveCount) = FIELD_PARAMS.measurementPointsandNodes(i,1);
+	pressure(dataSaveCount,1:length(press)) = press;	
+
+	% results need to be saved incrementally since it can't all
+	% fit in RAM - every 10000 nodes, a new file will be saved
+	if(mod(dataSaveCount,10000) == 0 || i == size(FIELD_PARAMS.measurementPoints,1)),
+		eval(sprintf('save nodes%i.mat isptaout FIELD_PARAMS pressure startTime nodeID',i));
+		dataSaveCount = 1;
+	else,
+		dataSaveCount = dataSaveCount + 1;
+	end;
+
 	if(i==1),
 		tic,
 	end;

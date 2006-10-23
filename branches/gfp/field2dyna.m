@@ -67,7 +67,7 @@ disp('Simulating the pressure field using Field II');
 [isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS);
 
 % save isptaout file, along with the pressures and start times
-eval(sprintf('save dyna_ispta_att%.1f.mat isptaout FIELD_PARAMS pressure StartTimes',alpha));
+%eval(sprintf('save dyna_ispta_att%.1f.mat isptaout FIELD_PARAMS pressure StartTimes',alpha));
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
