@@ -177,8 +177,8 @@ for i=1:size(FIELD_PARAMS.measurementPoints,1),
 	pressure(dataSaveCount,1:length(press)) = press;	
 
 	% results need to be saved incrementally since it can't all
-	% fit in RAM - every 10000 nodes, a new file will be saved
-	if(mod(dataSaveCount,10000) == 0 || i == size(FIELD_PARAMS.measurementPoints,1)),
+	% fit in RAM - every 500000 nodes, a new file will be saved
+	if(mod(dataSaveCount,500000) == 0 || i == size(FIELD_PARAMS.measurementPoints,1)),
 		eval(sprintf('save nodes%i.mat isptaout FIELD_PARAMS pressure startTime nodeID',i));
 		dataSaveCount = 1;
 	else,
