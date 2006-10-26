@@ -169,22 +169,23 @@ tic;
 EstCount = 1000;  % number of calculations to average over to
 									 % make calc time estimates
 
-dataSaveCount = 1;
+% open data to save binary data to
+fid = fopen('node_data.bin','wb');
+
+count = 0; % binary data count index
 for i=1:size(FIELD_PARAMS.measurementPoints,1),
- 	[press, startTime(dataSaveCount)] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
- 	isptaout(dataSaveCount)=sum(press.*press);
-	nodeID(dataSaveCount) = FIELD_PARAMS.measurementPointsandNodes(i,1);
-	pressure(dataSaveCount,1:length(press)) = press;	
+ 	[pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
+ 	isptaout=sum(pressure.*pressure);
+	nodeID = FIELD_PARAMS.measurementPointsandNodes(i,1);
 
-	% results need to be saved incrementally since it can't all
-	% fit in RAM - every 50000 nodes, a new file will be saved
-	if(mod(dataSaveCount,50000) == 0 || i == size(FIELD_PARAMS.measurementPoints,1)),
-		eval(sprintf('save nodes%i.mat isptaout FIELD_PARAMS pressure startTime nodeID',i));
-		dataSaveCount = 1;
-	else,
-		dataSaveCount = dataSaveCount + 1;
-	end;
-
+	% save data to a binary file
+	count = fwrite(fid,nodeID,'real*4') + count;
+	count = fwrite(fid,isptaout,'real*4') + count;
+	count = fwrite(fid,startTime,'real*4') + count;
+	count = fwrite(fid,pressure,'real*4') + count;
+	
+	nodeID_count(i,:) = [nodeID count];
+	
 	if(i==1),
 		tic,
 	end;
@@ -196,6 +197,12 @@ for i=1:size(FIELD_PARAMS.measurementPoints,1),
 		disp(sprintf('Estimate Run Time = %.1f m',EstRunTime*2));
 	end;	
 end
+
+fclose(fid); % close binary data file
+% save the nodeID_count variable
+save nodeID_count.mat nodeID_count;
+save parameters.mat FIELD_PARAMS;
+
 CalcTime = toc; % s
 ActualRunTime = CalcTime/60; % min
 disp(sprintf('Actual Run Time = %.1f m\n',ActualRunTime));
