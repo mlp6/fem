@@ -1,5 +1,5 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
-%function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,Apod)
+%function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,Apod)
 % -----------------------------------------------------------
 % INPUT:
 % NodeName (string) - file name to read nodes from (*.dyn or nodes.asc)
@@ -10,6 +10,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % Frequency - center frequency (MHz)
 % Transducer (string) - 'vf105','vf73'
 % Impulse (string) - 'gaussian','exp'
+% Apod (boolean) - 1 (yes), 0 (no)
 %
 % OUTPUT:
 % dyna_ispta*.mat and output*.asc files are saved
@@ -17,7 +18,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 %
 % Example:
 % field2dyna('/home/mlp6/thermal/therm74nodes.dyn',0.5,1.3,[0 0 0.02],
-% 7.2,'vf105','gaussian');
+% 7.2,'vf105','gaussian',1);
 %
 % ----------------------------------------------------------
 % Originally Written - Mark 07/31/03
@@ -26,6 +27,9 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % Added input variables Transducer and IMPULSE to pass to
 % fieldprms3d_arfi.
 % Mark 06/15/05
+% ----------------------------------------------------------
+% Added apodization
+% Mark 11/05/06
 % ----------------------------------------------------------
 
 % README!!

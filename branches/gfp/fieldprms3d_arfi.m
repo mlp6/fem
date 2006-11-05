@@ -161,6 +161,13 @@ set_field('Freq_att',Freq_att);
 set_field('att_f0',att_f0);
 set_field('use_att',1);
  
+% set apodization (FIELD_PARAMS.Apod == 1)
+if(FIELD_PARAMS.Apod == 1),
+	disp('Setting raised cosine apodization...');
+	apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
+	xdc_apodization(Th,0,apod);
+end;
+
 % compute Ispta at each location for a single tx pulse
 % optimizing by computing only relevant nodes... will assume others are zero
 StartTime = fix(clock);
