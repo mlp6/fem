@@ -65,6 +65,7 @@ FIELD_PARAMS.focus = focus;
 FIELD_PARAMS.Frequency = Frequency;
 FIELD_PARAMS.Transducer = Transducer;
 FIELD_PARAMS.Impulse = Impulse;
+FIELD_PARAMS.Apod = Apod;
 
 % perform the field calculation
 disp('Simulating the pressure field using Field II');
