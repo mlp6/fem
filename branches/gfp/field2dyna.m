@@ -1,5 +1,5 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,Apod)
-%function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,Apod)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,LatApod,ElevApod)
+%function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,LatApod,ElevApod)
 % -----------------------------------------------------------
 % INPUT:
 % NodeName (string) - file name to read nodes from (*.dyn or nodes.asc)
@@ -10,7 +10,8 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,Ap
 % Frequency - center frequency (MHz)
 % Transducer (string) - 'vf105','vf73'
 % Impulse (string) - 'gaussian','exp'
-% Apod (boolean) - 1 (yes), 0 (no)
+% LatApod (boolean) - 1 (yes), 0 (no)
+% ElevApod (boolean) - 1 (yes), 0 (no)
 %
 % OUTPUT:
 % dyna_ispta*.mat and output*.asc files are saved
@@ -18,7 +19,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,Ap
 %
 % Example:
 % field2dyna('/home/mlp6/thermal/therm74nodes.dyn',0.5,1.3,[0 0 0.02],
-% 7.2,'vf105','gaussian',1);
+% 7.2,'vf105','gaussian',1,1);
 %
 % ----------------------------------------------------------
 % Originally Written - Mark 07/31/03
@@ -30,6 +31,10 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,Ap
 % ----------------------------------------------------------
 % Added apodization
 % Mark 11/05/06
+% ----------------------------------------------------------
+% Added elevation apodization in addition to lateral
+% apodization.
+% Mark 11/07/06
 % ----------------------------------------------------------
 
 % README!!
@@ -65,7 +70,8 @@ FIELD_PARAMS.focus = focus;
 FIELD_PARAMS.Frequency = Frequency;
 FIELD_PARAMS.Transducer = Transducer;
 FIELD_PARAMS.Impulse = Impulse;
-FIELD_PARAMS.Apod = Apod;
+FIELD_PARAMS.LatApod = LatApod;
+FIELD_PARAMS.ElevApod = ElevApod;
 
 % perform the field calculation
 disp('Simulating the pressure field using Field II');

@@ -66,6 +66,7 @@ switch FIELD_PARAMS.Transducer
 		height=5e-3;
 		% define # of elements based on F/#
 		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+		no_elements = floor(no_elements);
 		% lens focus
 		Rfocus=19e-3;
 		% mathematically sub-dice elements to make them ~1 lambda dimensions
@@ -85,6 +86,7 @@ switch FIELD_PARAMS.Transducer
 		height=7.5e-3;
 		% define # of elements based on F/#
 		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+		no_elements = floor(no_elements);
 		% lens focus
 		Rfocus=37.5e-3;
 		% mathematically sub-dice elements to make them ~1 lambda dimensions
@@ -105,14 +107,25 @@ switch FIELD_PARAMS.Transducer
 		height=5e-3;
 		% define # of elements based on F/#
 		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+		no_elements = floor(no_elements);
 		% lens focus
 		Rfocus=20e-3;
 		% mathematically sub-dice elements to make them ~1 lambda dimensions
 		no_sub_y=height/width;
 		no_sub_x=1;
-		% define the transducer handle
-		Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
+		if(FIELD_PARAMS.ElevApod ~= 1),
+			% define the transducer handle
+			Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
 							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
+		else,
+			% artificially breakup the single element in elevation
+			% into multiple elements to apply an apodiztion profile
+			no_elements_y = no_sub_y;
+			no_sub_y = 1;
+			height = height / no_elements_y;
+			Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
+							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
+		end;
 		% define the fractional bandwidth
 		% Gianmarco's is very broadband, so I will artifcially put
 		% it at 2.0
@@ -161,11 +174,22 @@ set_field('Freq_att',Freq_att);
 set_field('att_f0',att_f0);
 set_field('use_att',1);
  
-% set apodization (FIELD_PARAMS.Apod == 1)
-if(FIELD_PARAMS.Apod == 1),
-	disp('Setting raised cosine apodization...');
-	apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
-	xdc_apodization(Th,0,apod);
+% apply apodization (lateral and elevation dimensions)
+if(FIELD_PARAMS.LatApod == 1 && FIELD_PARAMS.ElevApod ~= 1),
+	disp('Setting raised cosine apodization in lateral dimension...');
+	lat_apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
+	xdc_apodization(Th,0,lat_apod);
+end;
+elseif(FIELD_PARAMS.LatApod == 1 && FIELD_PARAMS.ElevApod == 1),
+	disp('Setting raised cosine apodization in lateral and elevation dimensions...');
+	lat_apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
+	elev_apod=(1-1*cos(2*pi*(0:no_elements_y-1)/(no_elements_y-1)))/2;
+	apod = repmat(lat_apod,no_elements_y,1).*repmat(elev_apod,69,1)';
+end;
+elseif(FIELD_PARAMS.LatApod ~= 1 && FIELD_PARAMS.ElevApod == 1),
+	elev_apod=(1-1*cos(2*pi*(0:no_elements_y-1)/(no_elements_y-1)))/2;
+	apod = ones(no_elements_y,no_elements);
+	apod = apod.*repmat(elev_apod,69,1)';
 end;
 
 % compute Ispta at each location for a single tx pulse
