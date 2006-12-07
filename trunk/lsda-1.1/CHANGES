@@ -1,0 +1,5 @@
+Version 1.0.1:
+   -- A couple of the variable names in the binout file have been
+      changed to make them more consistent.  Consequently, the l2a
+      program was changed to accept both versions of these variable names.
+   -- Probably some other bug fixes and changes that I don't recall....

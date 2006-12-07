@@ -1,0 +1,106 @@
+LSTC I/O Library file format
+
+The file consists of a header followed by a number of records.  The general
+format for a data record is:
+
+	length field
+	command field
+	command specific data
+
+The length field gives the total number of bytes in the record, including
+the length field itself.
+
+The command field is a tag which determines the contents and format
+of the rest of the data record.
+
+
+The header is a series of bytes having the following meanings:
+
+byte
+  0 = number of bytes in the header.  Currently this is 8.
+  1 = number of bytes used in record LENGTH fields
+  2 = number of bytes used in record OFFSET fields
+  3 = number of bytes used in record COMMAND fields
+  4 = number of bytes used in record TYPEID fields
+  5 = big-endian flag: 0 = big-endian, 1 = little-endian
+  6 = floating point format flag: 0 = IEEE
+  7 = currently unused
+
+Immediately after the header is a record of type SYMBOLTABLEOFFSET.
+Then any number of CD and DATA records follow.  After any
+record in the remainder of the file, there may be symbol table information.
+The symbol table information begins with a record of type BEGINSYMBOLTABLE,
+ends with a record of type ENDSYMBOLTABLE, with only records of type
+CD or VARIABLE between the two.
+
+The details of each record type are as follows:
+
+NULL: LENGTH field, COMMAND field, empty
+	LENGTH  = length of this record
+	COMMAND = LSDA_NULL
+	empty   = meaningless data.  This allows for some amount
+                  of data to be deleted from the file -- for example
+                  corrupt symbol table data.
+CD: LENGTH field, COMMAND field, Path.
+	LENGTH  = length of this record
+	COMMAND = LSDA_CD
+	Path    = non-terminated ascii string giving the new current
+	          directory path.  It may be absolute or relative.
+
+DATA: LENGTH field, COMMAND field, TYPEID field, Name length, Name, Data
+	LENGTH  = length of this record
+	COMMAND = LSDA_DATA
+	TYPEID  = integer representing the type of data (see TYPES below)
+	Name length = 1 byte giving the length of the variable name
+	Name    = non-terminated ascii string giving the variable name
+	Data    = data contained in the variable
+
+BEGINSYMBOLTABLE: LENGTH field, COMMAND field
+	LENGTH  = TOTAL length of the symbol table in bytes
+	COMMAND = LSDA_BEGINSYMBOLTABLE
+
+ENDSYMBOLTABLE: LENGTH field, COMMAND field, OFFSET field
+	LENGTH  = length of this record
+	COMMAND = LSDA_ENDSYMBOLTABLE
+        OFFSET  = byte offset in file of next part of symbol table, or 0
+
+VARIABLE: LENGTH field, COMMAND field, Name, TYPEID field,
+	  OFFSET field, LENGTH field
+	LENGTH  = length of this record
+	COMMAND = LSDA_VARIABLE
+	Name    = non-terminated ascii string giving the variable name
+	TYPEID  = integer representing the type of data (see TYPES below)
+        OFFSET  = byte offset in file of the DATA record for this variable.
+	LENGTH  = number of variables of type (TYPEID) written
+	          (NOT number of bytes!)
+
+Defined constants:
+
+	LSDA_NULL                 = 1
+	LSDA_CD                   = 2
+	LSDA_DATA                 = 3
+	LSDA_VARIABLE             = 4
+	LSDA_BEGINSYMBOLTABLE     = 5
+	LSDA_ENDSYMBOLTABLE       = 6
+	LSDA_SYMBOLTABLEOFFSET    = 7
+
+Data Types:
+
+There are 10 predefined data types that can exist in the file:
+
+I*1, I*2, I*4, I*8  =  length specific signed integers
+U*1, U*2, U*4, U*8  =  length specific unsigned integers
+R*4, R*8            =  length specific floating point numbers
+
+They have type ids as follows:
+
+	I*1 = 1
+	I*2 = 2
+	I*4 = 3
+	I*8 = 4
+	U*1 = 5
+	U*2 = 6
+	U*4 = 7
+	U*8 = 8
+	R*4 = 9
+	R*8 = 10

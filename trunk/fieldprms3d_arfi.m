@@ -40,6 +40,9 @@ function [isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS)
 % Fixed Transducer reference (FIELD_PARAMS.Transducer)
 % Mark 08/08/05
 % --------------------------------------------------------------------------
+% Make sure that no_elements is an integer (floor).
+% Mark 11/05/06
+% --------------------------------------------------------------------------
 
 field_init(-1)
 
@@ -64,6 +67,7 @@ switch FIELD_PARAMS.Transducer
 		height=5e-3;
 		% define # of elements based on F/#
 		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+		no_elements = floor(no_elements);
 		% lens focus
 		Rfocus=19e-3;
 		% mathematically sub-dice elements to make them ~1 lambda dimensions
@@ -83,6 +87,7 @@ switch FIELD_PARAMS.Transducer
 		height=7.5e-3;
 		% define # of elements based on F/#
 		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+		no_elements = floor(no_elements);
 		% lens focus
 		Rfocus=37.5e-3;
 		% mathematically sub-dice elements to make them ~1 lambda dimensions
@@ -103,6 +108,7 @@ switch FIELD_PARAMS.Transducer
 		height=5e-3;
 		% define # of elements based on F/#
 		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+		no_elements = floor(no_elements);
 		% lens focus
 		Rfocus=20e-3;
 		% mathematically sub-dice elements to make them ~1 lambda dimensions
@@ -124,6 +130,7 @@ switch FIELD_PARAMS.Transducer
 		height=14e-3;
 		% define # of elements based on F/#
 		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+		no_elements = floor(no_elements);
     if no_elements > 128
       no_elements=128
       disp('too many elements')
