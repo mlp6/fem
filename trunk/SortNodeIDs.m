@@ -24,7 +24,7 @@ nodes=load(nodes_file);
 % clean up the precision of the node locations since the
 % HyperMesh generation tolerance was so poor; this will help
 % with the sorting and the unique functions
-scale = 100;
+scale = 1000;
 nodes(:,2) = nodes(:,2) * scale;
 nodes(:,2) = round(nodes(:,2));
 nodes(:,2) = nodes(:,2) / scale;
@@ -50,7 +50,7 @@ NumZ = length(z)
 % check to make sure that the dimensions are okay, otherwise
 % the reshape operation will fail
 if(NumX * NumY * NumZ ~= size(nodes,1)),
-	error('ERROR: Dimension mismatch; make sure the sort tolerance is adequate');
+  error('ERROR: Dimension mismatch; make sure the sort tolerance is adequate');
 end;
 
 % sort the node IDs by x, y, and z coordinates, in that order

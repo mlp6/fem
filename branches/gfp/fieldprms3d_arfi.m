@@ -9,8 +9,8 @@ function [isptaout,FIELD_PARAMS,pressure,StartTimes]=fieldprms3d_arfi(FIELD_PARA
 % FIELD_PARAMS.Fnum (float) - F/#
 % FIELD_PARAMS.focus - [x y z] (m)
 % FIELD_PARAMS.Frequency (float) - push frequency (MHz)
-%								 6.67 (VF10-5)
-%								 4.21 (VF7-3)
+%                                  6.67 (VF10-5)
+%			       	   4.21 (VF7-3)
 % FIELD_PARAMS.Transducer (string) - 'vf105'; select the
 % transducer-dependent parameters to use for the simulation
 % FIELD_PARAMS.Impulse (string) - 'guassian','exp'; use a Guassian function
@@ -57,79 +57,79 @@ set_field('fs',FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
 switch FIELD_PARAMS.Transducer
-	case 'vf105'
-		disp('Transducer: VF10-5');
-		no_elements_y=1;
-		width=.2e-3;
-		kerf=0.02e-3;
-		pitch = width + kerf;
-		height=5e-3;
-		% define # of elements based on F/#
-		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
-		no_elements = floor(no_elements);
-		% lens focus
-		Rfocus=19e-3;
-		% mathematically sub-dice elements to make them ~1 lambda dimensions
-		no_sub_y=height/width;
-		no_sub_x=1;
-		% define the transducer handle
-		Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
-		% define the fractional bandwidth
-		fractionalBandwidth = 0.5;
-	case 'vf73'
-		disp('Transducer: VF7-3');
-		no_elements_y=1;
-		width=.2e-3;
-		kerf=0.02e-3;
-		pitch = width + kerf;
-		height=7.5e-3;
-		% define # of elements based on F/#
-		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
-		no_elements = floor(no_elements);
-		% lens focus
-		Rfocus=37.5e-3;
-		% mathematically sub-dice elements to make them ~1 lambda dimensions
-		no_sub_y=height/width;
-		no_sub_x=1;
-		% define the transducer handle
-		Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus);           
-		% define the fractional bandwidth
-		fractionalBandwidth = 0.5;
-	case 'vf105_gfp'  % "VF105" as setup by Gianmarco in his
-										% linear/nonlinear simulations
-		disp('Transducer: VF10-5 (GFP setup)');
-		no_elements_y=1;
-		width=.2e-3;
-		kerf=0.02e-3;
-		pitch = width + kerf;
-		height=5e-3;
-		% define # of elements based on F/#
-		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
-		no_elements = floor(no_elements);
-		% lens focus
-		Rfocus=20e-3;
-		% mathematically sub-dice elements to make them ~1 lambda dimensions
-		no_sub_y=height/width;
-		no_sub_x=1;
-		if(FIELD_PARAMS.ElevApod ~= 1),
-			% define the transducer handle
-			Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
-		else,
-			% artificially breakup the single element in elevation
-			% into multiple elements to apply an apodiztion profile
-			no_elements_y = no_sub_y;
-			no_sub_y = 1;
-			height = height / no_elements_y;
-			Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
-		end;
-		% define the fractional bandwidth
-		% Gianmarco's is very broadband, so I will artifcially put
-		% it at 2.0
-		fractionalBandwidth = 2.0;
+  case 'vf105'
+    disp('Transducer: VF10-5');
+    no_elements_y=1;
+    width=.2e-3;
+    kerf=0.02e-3;
+    pitch = width + kerf;
+    height=5e-3;
+    % define # of elements based on F/#
+    no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+    no_elements = floor(no_elements);
+    % lens focus
+    Rfocus=19e-3;
+    % mathematically sub-dice elements to make them ~1 lambda dimensions
+    no_sub_y=height/width;
+    no_sub_x=1;
+    % define the transducer handle
+    Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
+      kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
+    % define the fractional bandwidth
+    fractionalBandwidth = 0.5;
+  case 'vf73'
+    disp('Transducer: VF7-3');
+    no_elements_y=1;
+    width=.2e-3;
+    kerf=0.02e-3;
+    pitch = width + kerf;
+    height=7.5e-3;
+    % define # of elements based on F/#
+    no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+    no_elements = floor(no_elements);
+    % lens focus
+    Rfocus=37.5e-3;
+    % mathematically sub-dice elements to make them ~1 lambda dimensions
+    no_sub_y=height/width;
+    no_sub_x=1;
+    % define the transducer handle
+    Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
+      kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus);           
+    % define the fractional bandwidth
+    fractionalBandwidth = 0.5;
+  case 'vf105_gfp'  % "VF105" as setup by Gianmarco in his
+      		    % linear/nonlinear simulations
+    disp('Transducer: VF10-5 (GFP setup)');
+    no_elements_y=1;
+    width=.2e-3;
+    kerf=0.02e-3;
+    pitch = width + kerf;
+    height=5e-3;
+    % define # of elements based on F/#
+    no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
+    no_elements = floor(no_elements);
+    % lens focus
+    Rfocus=20e-3;
+    % mathematically sub-dice elements to make them ~1 lambda dimensions
+    no_sub_y=height/width;
+    no_sub_x=1;
+    if(FIELD_PARAMS.ElevApod ~= 1),
+      % define the transducer handle
+      Th = xdc_focused_multirow(no_elements,width,no_elements_y,height, ...  
+	kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
+    else,
+      % artificially breakup the single element in elevation
+      % into multiple elements to apply an apodiztion profile
+      no_elements_y = no_sub_y;
+      no_sub_y = 1;
+      heights = ones(no_elements_y,1).*(height/no_elements_y);
+      Th = xdc_focused_multirow(no_elements,width,no_elements_y,heights, ...  
+	kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
+    end;
+    % define the fractional bandwidth
+    % Gianmarco's is very broadband, so I will artifcially put
+    % it at 2.0
+    fractionalBandwidth = 2.0;
 end;
 
 % frequency is now an input variable
@@ -139,9 +139,9 @@ centerFrequency=FIELD_PARAMS.Frequency*1e6;  % Hz
 switch FIELD_PARAMS.Impulse
   case 'gaussian',
     % define the impulse response as a Gaussian pulse
-		% this assumes that the center frequency of the array is
-		% at the transmit frequency of the pulse - not necessarily
-		% true, but adequate for frequencies near the resonant freq
+    % this assumes that the center frequency of the array is
+    % at the transmit frequency of the pulse - not necessarily
+    % true, but adequate for frequencies near the resonant freq
     disp('Impulse Response: Gaussian');
     tc = gauspuls('cutoff', centerFrequency, fractionalBandwidth, -6, -40);
     t = -tc:1/FIELD_PARAMS.samplingFrequency:tc;
@@ -149,12 +149,12 @@ switch FIELD_PARAMS.Impulse
   case 'exp',
     % load in the experimental impulse response data
     disp('Impulse Response: Experimental');
-		switch FIELD_PARAMS.Transducer
-			case 'vf105'
-				load /moredata/mlp6/VF105_Bandwidth/FieldImpulseResponseVF105_200e6.mat
-			case 'vf73'
-				disp('An experimental impulse response for this transducer has not been defined!');
-		end;
+    switch FIELD_PARAMS.Transducer
+      case 'vf105'
+	load /moredata/mlp6/VF105_Bandwidth/FieldImpulseResponseVF105_200e6.mat
+      case 'vf73'
+	disp('An experimental impulse response for this transducer has not been defined!');
+    end;
 end;
 xdc_impulse(Th, impulseResponse);
 
@@ -176,20 +176,18 @@ set_field('use_att',1);
  
 % apply apodization (lateral and elevation dimensions)
 if(FIELD_PARAMS.LatApod == 1 && FIELD_PARAMS.ElevApod ~= 1),
-	disp('Setting raised cosine apodization in lateral dimension...');
-	lat_apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
-	xdc_apodization(Th,0,lat_apod);
-end;
+  disp('Setting raised cosine apodization in lateral dimension...');
+  lat_apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
+  xdc_apodization(Th,0,lat_apod);
 elseif(FIELD_PARAMS.LatApod == 1 && FIELD_PARAMS.ElevApod == 1),
-	disp('Setting raised cosine apodization in lateral and elevation dimensions...');
-	lat_apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
-	elev_apod=(1-1*cos(2*pi*(0:no_elements_y-1)/(no_elements_y-1)))/2;
-	apod = repmat(lat_apod,no_elements_y,1).*repmat(elev_apod,69,1)';
-end;
+  disp('Setting raised cosine apodization in lateral and elevation dimensions...');
+  lat_apod=(1-1*cos(2*pi*(0:no_elements-1)/(no_elements-1)))/2;
+  elev_apod=(1-1*cos(2*pi*(0:no_elements_y-1)/(no_elements_y-1)))/2;
+  apod = repmat(lat_apod,no_elements_y,1).*repmat(elev_apod,no_elements,1)';
 elseif(FIELD_PARAMS.LatApod ~= 1 && FIELD_PARAMS.ElevApod == 1),
-	elev_apod=(1-1*cos(2*pi*(0:no_elements_y-1)/(no_elements_y-1)))/2;
-	apod = ones(no_elements_y,no_elements);
-	apod = apod.*repmat(elev_apod,69,1)';
+  elev_apod=(1-1*cos(2*pi*(0:no_elements_y-1)/(no_elements_y-1)))/2;
+  apod = ones(no_elements_y,no_elements);
+  apod = apod.*repmat(elev_apod,no_elements,1)';
 end;
 
 % compute Ispta at each location for a single tx pulse
@@ -205,29 +203,29 @@ fid = fopen('node_data.bin','wb');
 
 count = 0; % binary data count index
 for i=1:size(FIELD_PARAMS.measurementPoints,1),
- 	[pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
- 	isptaout=sum(pressure.*pressure);
-	nodeID = FIELD_PARAMS.measurementPointsandNodes(i,1);
+  [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
+  isptaout=sum(pressure.*pressure);
+  nodeID = FIELD_PARAMS.measurementPointsandNodes(i,1);
 
-	% save data to a binary file
-	count = fwrite(fid,nodeID,'real*4') + count;
-	count = fwrite(fid,isptaout,'real*4') + count;
-	count = fwrite(fid,startTime,'real*4') + count;
-	count = fwrite(fid,pressure,'real*4') + count;
+  % save data to a binary file
+  count = fwrite(fid,nodeID,'real*4') + count;
+  count = fwrite(fid,isptaout,'real*4') + count;
+  count = fwrite(fid,startTime,'real*4') + count;
+  count = fwrite(fid,pressure,'real*4') + count;
 	
-	nodeID_count(i,:) = [nodeID count];
+  nodeID_count(i,:) = [nodeID count];
 	
-	if(i==1),
-		tic,
-	end;
-	if(i==EstCount),
-		EstCalcTime = toc; % s
-		EstRunTime = (EstCalcTime/EstCount)*(size(FIELD_PARAMS.measurementPoints,1)-1)/60; % min
-		% empirically, the run times tend to be 2x the calculated estimate, so I'm going to multiple
-		% EstRunTime x 2
-		disp(sprintf('Estimate Run Time = %.1f m',EstRunTime*2));
-	end;	
-end
+  if(i==1),
+    tic,
+  end;
+  if(i==EstCount),
+    EstCalcTime = toc; % s
+    EstRunTime = (EstCalcTime/EstCount)*(size(FIELD_PARAMS.measurementPoints,1)-1)/60; % min
+    % empirically, the run times tend to be 2x the calculated estimate, so I'm going to multiple
+    % EstRunTime x 2
+    disp(sprintf('Estimate Run Time = %.1f m',EstRunTime*2));
+  end;	
+end;
 
 fclose(fid); % close binary data file
 % save the nodeID_count variable

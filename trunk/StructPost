@@ -83,7 +83,7 @@ foreach $disp (@disp) {
 print "Running createzdisp.m\n";
 open(MATFILE,'>runmatlab.m');
 # place the appropriate matlab command in here
-print MATFILE "addpath('/home/mlp6/fem/trunk');\n";
+print MATFILE "addpath('/nefs/mlp6/fem/trunk');\n";
 print MATFILE "createzdisp($NumTimeSteps);\n";
 system("matlab -nojvm -nosplash < runmatlab.m");
 system("rm runmatlab.m");
