@@ -159,7 +159,8 @@ end;
 xdc_impulse(Th, impulseResponse);
 
 % define the excitation pulse
-ncyc=50;
+%ncyc=50;
+ncyc=1/0.6;
 texcite=0:1/FIELD_PARAMS.samplingFrequency:ncyc/centerFrequency;
 excitationPulse=sin(2*pi*centerFrequency*texcite);
 xdc_excitation(Th,excitationPulse);
