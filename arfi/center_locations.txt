@@ -1,0 +1,12 @@
+Node IDs and phantom data matrix indices for axial positions along center line
+
+Axial Position (cm)	Model Node ID	Phantom 'filt' Indices
+--------------------------------------------------------------
+0.25			205040		38,28	
+0.5			190627		75,28
+0.75			176214		113,28
+1.0			161801		150,28
+1.25			147388		188,28
+1.5			132975		225,28
+1.75			116503		262,28
+2.0			102090		300,28 <- 315 is at focus
