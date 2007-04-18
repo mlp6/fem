@@ -1,0 +1,5 @@
+openc d3plot d3plot
+ident node 223366
+ntime 7 223366 
+xyplot 1 savefile xypair node223366.asc 1 all
+exit
