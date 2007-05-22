@@ -28,7 +28,7 @@ if (-e 'd3plot' == 0) { die "d3plot files are not present in the CWD"; }
 if (-e 'zdispData') { die "zdispData directory already exists"; }
 else { system("mkdir zdispData"); }
 
-our %nodeCoords = fem::readNodesCoords($nodeFileName);
+our %nodeCoords = fem::readNodeCoords($nodeFileName);
 my @nodeIDs = keys %nodeCoords;
 
 # how many node IDs have to be processed
@@ -56,8 +56,16 @@ print CFILE "openc d3plot \"d3plot\"\n";
 print CFILE "ntime 7 @sortedOutNodes\n";
 for my $nodeCount ( 0 .. $#sortedOutNodes ) {
     my $nodeCount_p1 = $nodeCount + 1;
-    print LOOKUP "$nodeCount_p1,$sortedOutNodes[$nodeCount]\n";
-    print CFILE "xyplot 1 savefile xypair \"zdispData/n$nodeCount_p1.asc\" 1 $nodeCount_p1\n";
+    print LOOKUP "$sortedOutNodes[$nodeCount]\n";
+    print CFILE "xyplot 1 savefile xypair \"zdispData/n$sortedOutNodes[$nodeCount].asc\" 1 $nodeCount_p1\n";
 }
-close(CFILE);
 close(LOOKUP);
+close(CFILE);
+
+# run ls-prepost2
+system("ls-prepost2 -nographics c=zdispData.cfile");
+
+# strip the lone header line on each output ASCII file to be read into a post-processing program
+my $prefix = "zdispData/n";
+my $suffix = "asc";
+fem::stripHeaders($prefix,$suffix);
