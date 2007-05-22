@@ -13,5 +13,5 @@ open(MAILBODY,">mailbody");
 print MAILBODY "$node\n";
 print MAILBODY "$pwd\n";
 close(MAILBODY);
-system("mail -s \'$dyna_deck\' mlp6\@philip.egr.duke.edu < mailbody");
+system("mail -s \'$dyna_deck\' mark.palmeri\@duke.edu < mailbody");
 unlink('mailbody');
