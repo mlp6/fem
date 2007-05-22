@@ -56,7 +56,7 @@ print CFILE "openc d3plot \"d3plot\"\n";
 print CFILE "ntime 7 @sortedOutNodes\n";
 for my $nodeCount ( 0 .. $#sortedOutNodes ) {
     my $nodeCount_p1 = $nodeCount + 1;
-    print LOOKUP "$sortedOutNodes[$nodeCount]\n";
+    print LOOKUP "$sortedOutNodes[$nodeCount],$outputNodes{$sortedOutNodes[$nodeCount]}\n";
     print CFILE "xyplot 1 savefile xypair \"zdispData/n$sortedOutNodes[$nodeCount].asc\" 1 $nodeCount_p1\n";
 }
 close(LOOKUP);
