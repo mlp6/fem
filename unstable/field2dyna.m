@@ -29,7 +29,10 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % ------------------------------------------------------------------------------
 
 % read in the nodes
+disp('Reading in the data...');
 measurementPointsandNodes=read_dyna_nodes(NodeName);
+disp('Data read complete.');
+
 
 % skip node number, use just coords
 measurementPoints=measurementPointsandNodes(:,2:4);

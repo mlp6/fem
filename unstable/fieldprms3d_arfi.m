@@ -50,6 +50,7 @@ function [isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS)
 
 field_init(-1)
 
+disp('Starting the Field II simulation');
 %set_field('use_triangles',1);
 %set_field('use_lines',1);
 

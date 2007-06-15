@@ -35,6 +35,6 @@ while(c~=endofline);
 end;
 
 % Suck in data...  
-[node_loc,count]=fscanf(fid,'%d %f %f %f',[4,inf]);
+[node_loc,count]=fscanf(fid,'%d,%f,%f,%f',[4,inf]);
 node_loc=node_loc';
 fclose(fid);
