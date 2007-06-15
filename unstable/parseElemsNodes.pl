@@ -19,6 +19,7 @@ if(-e 'nodes.dyn') {die "nodes.dyn already exists" }
 # open file handles for the element and node files
 open(ELEMFILE,'> elems.dyn');
 open(NODEFILE,'> nodes.dyn');
+open(NODEASC,'> nodes.asc');
 
 # print the header for each file
 print ELEMFILE "*ELEMENT_SOLID\n";
@@ -41,6 +42,7 @@ while(<>)
 		{
 		#print NODEFILE "@fields\n"; 
 		print NODEFILE "$printout\n"; 
+		print NODEASC "$printout\n"; 
 		}
 	elsif( ($#fields + 1) == 10)
 		{
@@ -55,3 +57,4 @@ print NODEFILE "*END\n";
 # close the file handles
 close(ELEMFILE);
 close(NODEFILE);
+close(NODEASC);
