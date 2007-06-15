@@ -43,6 +43,10 @@ function [isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS)
 % Make sure that no_elements is an integer (floor).
 % Mark 11/05/06
 % --------------------------------------------------------------------------
+% Separated the center & excitation frequencies.
+% Broke out probe definitions into separate functions.
+% Mark 06/15/07
+% --------------------------------------------------------------------------
 
 field_init(-1)
 
@@ -58,97 +62,20 @@ set_field('fs',FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
 switch FIELD_PARAMS.Transducer
-	case 'vf105'
-		disp('Transducer: VF10-5');
-		no_elements_y=1;
-		width=.2e-3;
-		kerf=0.02e-3;
-		pitch = width + kerf;
-		height=5e-3;
-		% define # of elements based on F/#
-		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
-		no_elements = floor(no_elements);
-		% lens focus
-		Rfocus=19e-3;
-		% mathematically sub-dice elements to make them ~1 lambda dimensions
-		no_sub_y=height/width;
-		no_sub_x=1;
-		% define the transducer handle
-		Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
-		% define the fractional bandwidth
-		fractionalBandwidth = 0.5;
-	case 'vf73'
-		disp('Transducer: VF7-3');
-		no_elements_y=1;
-		width=.2e-3;
-		kerf=0.02e-3;
-		pitch = width + kerf;
-		height=7.5e-3;
-		% define # of elements based on F/#
-		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
-		no_elements = floor(no_elements);
-		% lens focus
-		Rfocus=37.5e-3;
-		% mathematically sub-dice elements to make them ~1 lambda dimensions
-		no_sub_y=height/width;
-		no_sub_x=1;
-		% define the transducer handle
-		Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus);           
-		% define the fractional bandwidth
-		fractionalBandwidth = 0.5;
-	case 'vf105_gfp'  % "VF105" as setup by Gianmarco in his
-										% linear/nonlinear simulations
-		disp('Transducer: VF10-5 (GFP setup)');
-		no_elements_y=1;
-		width=.2e-3;
-		kerf=0.02e-3;
-		pitch = width + kerf;
-		height=5e-3;
-		% define # of elements based on F/#
-		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
-		no_elements = floor(no_elements);
-		% lens focus
-		Rfocus=20e-3;
-		% mathematically sub-dice elements to make them ~1 lambda dimensions
-		no_sub_y=height/width;
-		no_sub_x=1;
-		% define the transducer handle
-		Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus); 
-		% define the fractional bandwidth
-		% Gianmarco's is very broadband, so I will artifcially put
-		% it at 2.0
-		fractionalBandwidth = 2.0;
-	case 'pl35elegra'
-		disp('Transducer: 3.5pl28 elegra');
-		no_elements_y=1;
-		width=.2e-3;
-		kerf=0.02e-3;
-		pitch = width + kerf;
-		height=14e-3;
-		% define # of elements based on F/#
-		no_elements=(FIELD_PARAMS.focus(3)/FIELD_PARAMS.Fnum)/pitch;
-		no_elements = floor(no_elements);
-    if no_elements > 128
-      no_elements=128
-      disp('too many elements')
-    end
-		% lens focus
-		Rfocus=60e-3;
-		% mathematically sub-dice elements to make them ~1 lambda dimensions
-		no_sub_y=height/width;
-		no_sub_x=1;
-		% define the transducer handle
-		Th = xdc_focused_multirow (no_elements,width,no_elements_y,height, ...  
-							kerf,kerf,Rfocus,no_sub_x,no_sub_y,FIELD_PARAMS.focus);           
-		% define the fractional bandwidth
-		fractionalBandwidth = 0.5;
+    case 'vf105'
+        [Th,fractionalBandwidth,centerFrequency]=vf105(FIELD_PARAMS);
+    case 'vf73'
+        [Th,fractionalBandwidth,centerFrequency]=vf73(FIELD_PARAMS);
+    case 'vf105_gfp'  % "VF105" as setup by Gianmarco in his linear/nonlinear simulations
+        [Th,fractionalBandwidth,centerFrequency]=vf105gfp(FIELD_PARAMS);
+    case 'pl35elegra'
+        [Th,fractionalBandwidth,centerFrequency]=pl35elegra(FIELD_PARAMS);
+    case 'ph41'
+        [Th,fractionalBandwidth,centerFrequency]=ph41(FIELD_PARAMS);
 end;
 
 % frequency is now an input variable
-centerFrequency=FIELD_PARAMS.Frequency*1e6;  % Hz
+exciteFreq=FIELD_PARAMS.Frequency*1e6;  % Hz
 
 % define the impulse response
 switch FIELD_PARAMS.Impulse
@@ -175,14 +102,14 @@ xdc_impulse(Th, impulseResponse);
 
 % define the excitation pulse
 ncyc=50;
-texcite=0:1/FIELD_PARAMS.samplingFrequency:ncyc/centerFrequency;
-excitationPulse=sin(2*pi*centerFrequency*texcite);
+texcite=0:1/FIELD_PARAMS.samplingFrequency:ncyc/exciteFreq;
+excitationPulse=sin(2*pi*exciteFreq*texcite);
 xdc_excitation(Th,excitationPulse);
 
 % set absoprtion
 %alpha=.5; - assumes you set alpha externally
 Freq_att=FIELD_PARAMS.alpha*100/1e6; % dB/cm/MHz
-att_f0=centerFrequency; 
+att_f0=exciteFreq; 
 att=Freq_att*att_f0; % set non freq. dep. to be cntered here
 set_field('att',att);
 set_field('Freq_att',Freq_att);

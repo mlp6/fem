@@ -1,13 +1,12 @@
 function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 %function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
-% -----------------------------------------------------------
+% ------------------------------------------------------------------------------
 % INPUT:
 % NodeName (string) - file name to read nodes from (*.dyn or nodes.asc)
 % alpha - 0.5, 1.0, etc.
 % Fnum - F/# (e.g. 1.3)
-% focus - [x y z] (m)
-% thr - 0.05 (throw out stuff below 5% of the peak value
-% Frequency - center frequency (MHz)
+% focus - [x y z] (m) "Field" coordinates
+% Frequency - excitation frequency (MHz)
 % Transducer (string) - 'vf105','vf73'
 % Impulse (string) - 'gaussian','exp'
 %
@@ -18,15 +17,16 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % Example:
 % field2dyna('/home/mlp6/thermal/therm74nodes.dyn',0.5,1.3,[0 0 0.02],
 % 7.2,'vf105','gaussian');
-%
-% ----------------------------------------------------------
+
+% ------------------------------------------------------------------------------
+% MODIFICATION HISTORY
+% ------------------------------------------------------------------------------
 % Originally Written - Mark 07/31/03
 % Added frequency as an input parameter - Mark 01/31/05
-% ----------------------------------------------------------
-% Added input variables Transducer and IMPULSE to pass to
-% fieldprms3d_arfi.
+% ------------------------------------------------------------------------------
+% Added input variables Transducer and IMPULSE to pass to fieldprms3d_arfi.
 % Mark 06/15/05
-% ----------------------------------------------------------
+% ------------------------------------------------------------------------------
 
 % read in the nodes
 measurementPointsandNodes=read_dyna_nodes(NodeName);
