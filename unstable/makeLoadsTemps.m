@@ -1,26 +1,24 @@
 function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
 %function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
 %
-% (Based on make_asc.m and make_asc_therm.m)
-%
 % INPUTS:
-%		InputName (string) - dyna*.mat file to process
-% 	NormName (string) - dyna*.mat file with known Isppa 
-%		IsppaNorm (float) - Isppa value for the normalization file (W/cm^2)
-%		PulseDuration (float) - pulse duration (us)
-%		cv (float) - specific heat (4.2 W s / cm^3 / C)
-%		ElementVolume (float) - element volume (cm^3)
+% InputName (string) - dyna*.mat file to process
+% NormName (string) - dyna*.mat file with known Isppa 
+% IsppaNorm (float) - Isppa value for the normalization file (W/cm^2)
+% PulseDuration (float) - pulse duration (us)
+% cv (float) - specific heat (4.2 W s / cm^3 / C)
+% ElementVolume (float) - element volume (cm^3)
 % 
 % OUTPUTS:
-%		InitTemps_a*_PD*_cv.dyn is written to the CWD
-%		PointLoads_a*.dyn is written to the CWD
+% InitTemps_a*_PD*_cv.dyn is written to the CWD
+% PointLoads_a*.dyn is written to the CWD
 %
 % Example:
 % makeLoadsTemps('dyna_ispta_att0.5.mat','/emfd/mlp6/field/VF10-5/
 % F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6);
 %
-% Mark 07/28/05
-%
+% Mark 06/15/07
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MODIFICATION HISTORY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -54,10 +52,10 @@ AxialSearch = 0.25; % percentage of the focal depth to search
 										%for the Isppa value
 load(NormName);
 NormIsptaout = isptaout;
-measurementPointsandNodes = FIELD_PARAMS.measurementPointsandNodes;
+mpn = FIELD_PARAMS.measurementPointsandNodes;
 NormFocalDepth = FIELD_PARAMS.focus(3)*100;  % convert m -> cm
 
-NormFZ=find(abs(measurementPointsandNodes(:,2)) < 5e-6 & abs(measurementPointsandNodes(:,3))<LatTol & abs(measurementPointsandNodes(:,4)) > (NormFocalDepth - NormFocalDepth*AxialSearch) & abs(measurementPointsandNodes(:,4)) < (NormFocalDepth + NormFocalDepth*AxialSearch)); 
+NormFZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (NormFocalDepth - NormFocalDepth*AxialSearch) & abs(mpn(:,4)) < (NormFocalDepth + NormFocalDepth*AxialSearch)); 
 
 % what is the Isppa value that field has solved
 NormFieldIsppa = max(NormIsptaout(NormFZ))
@@ -65,22 +63,22 @@ NormFieldIsppa = max(NormIsptaout(NormFZ))
 % make plot of the intensity profile to make sure that
 % everything makes sense
 figure;
-plot(abs(measurementPointsandNodes(NormFZ,4)),NormIsptaout(NormFZ),'-kx');
+plot(abs(mpn(NormFZ,4)),NormIsptaout(NormFZ),'-kx');
 hold on;
 
 % find normalization max in desired alpha
 load(InputName);
 InputIsptaout = isptaout;
-measurementPointsandNodes = FIELD_PARAMS.measurementPointsandNodes;
+mpn = FIELD_PARAMS.measurementPointsandNodes;
 FocalDepth = FIELD_PARAMS.focus(3)*100;  % convert m -> cm
 
-FZ=find(abs(measurementPointsandNodes(:,2)) < 5e-6 & abs(measurementPointsandNodes(:,3))<LatTol & abs(measurementPointsandNodes(:,4)) > (FocalDepth - FocalDepth*AxialSearch) & abs(measurementPointsandNodes(:,4)) < (FocalDepth + FocalDepth*AxialSearch)); 
+FZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (FocalDepth - FocalDepth*AxialSearch) & abs(mpn(:,4)) < (FocalDepth + FocalDepth*AxialSearch)); 
 
 % what is the Isppa value that field has solved
 FieldIsppa = max(InputIsptaout(FZ))
 
 % add this one to the plot
-plot(abs(measurementPointsandNodes(FZ,4)),InputIsptaout(FZ),'-rx');
+plot(abs(mpn(FZ,4)),InputIsptaout(FZ),'-rx');
 xlabel('Depth (cm)');
 ylabel('Field Intensity');
 title('Comparison of Field Intensity Profiles');
@@ -94,7 +92,7 @@ InputIsptaout=InputIsptaout.*(InputIsptaout>=0.05);
 
 % now zero out values near the transducer face b/c they
 % violated the farfield assumption in field
-z0=find(abs(measurementPointsandNodes(:,4)) < 0.001);
+z0=find(abs(mpn(:,4)) < 0.001);
 InputIsptaout(z0)=0;
 
 % the BIG step - scale the Field intensities relative to the
@@ -130,19 +128,22 @@ fprintf(foutload,'$ Element Volume = %d cm^3\n',ElementVolume);
 % now solve for initial temperatures and point loads
 MaxTemp = 0;
 MaxLoad = 0;
-for x=1:length(measurementPointsandNodes),
-	xcoord = measurementPointsandNodes(x,2);
-	ycoord = measurementPointsandNodes(x,3);
-	zcoord = measurementPointsandNodes(x,4);
+for x=1:length(mpn),
+	xcoord = mpn(x,2);
+	ycoord = mpn(x,3);
+	zcoord = mpn(x,4);
 	if (ScaledIsppa(x)~=0 & zcoord~=0 & xcoord<0.25 & abs(ycoord)<0.75) 
-		NodeID=measurementPointsandNodes(x,1);
+		NodeID=mpn(x,1);
 		% convert alpha -> Np/cm
 		AlphaNp = FIELD_PARAMS.alpha*FIELD_PARAMS.Frequency/8.616;
 		% units are W, cm, s -> deg C
 		InitTemp = 2*AlphaNp*ScaledIsppa(x)*PulseDuration*1e-6 / cv;
-		if(InitTemp > MaxTemp),
-			MaxTemp = InitTemp;
-			ScaledIsppaMax = ScaledIsppa(x);
+                if(x == 1),
+                    MaxTemp = InitTemp;
+                    ScaledIsppaMax = ScaledIsppa(x);
+		elseif(InitTemp > MaxTemp),
+                    MaxTemp = InitTemp;
+                    ScaledIsppaMax = ScaledIsppa(x);
 		end;
 		% 1 W = 10,000,000 g cm^2/s^2
 		ScaledIsppaLoad = ScaledIsppa(x) * 10000000;
