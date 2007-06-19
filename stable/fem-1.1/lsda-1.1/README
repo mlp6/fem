@@ -1,0 +1,34 @@
+             Release 1.0 of the Livermore Software Data Archival
+                     routines & documentation
+
+
+Here is a brief description of the contents:
+
+  license.pdf     - the legal stuff.  You should read this.
+  lsda.c          - primary source file
+  lsdaf2c.c       - some Fortran interface code
+  lsdaf.F         - more Fortran interfact code
+  lsdatable.c     - data table internals
+  lsdatypes.c     - data type internals
+  btree.c         - some generally useful balanced binary tree routines
+  trans.c         - data translation functions
+  lsda.h          - header file (you'll need this for your own building)
+  lsda_internal.h - another header file (LSDA internal use only)
+  btree.h         - btree interface header file
+  lsda.inc        - Fortran style include file (for your applications)
+
+  test/iotst1.c   - sample test program
+  test/iotst2.c   - sample test program
+  test/iotst3.F   - sample test program
+  test/ioq.c      - generally useful for interactive investigation of
+                    LSDA files.
+  test/l2a.c      - sample application that translates the LS-DYNA output
+                    database into the equivalent old style ASCII output
+  test/binascii.txt
+                  - a detailed description of the LS-DYNA database
+  doc/file_format - a description of the internals of an LSDA file
+  doc/lsda.html   - a spotty HTML man page for the routines themselves.
+
+There is a makefile in the "test" subdirectory, which can be used to build
+the sample programs and library on several systems.  run "make" without
+any options for more details.

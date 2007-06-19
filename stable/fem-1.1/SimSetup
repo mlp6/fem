@@ -1,0 +1,15 @@
+#!/usr/bin/perl
+# setup siulations directories for lesion simulations
+# Mark 04/12/05
+
+# make an array of the new directories that need to be made
+@NewDirs = qw(3p8mm 4p0mm);
+@NewDirsM1 = qw(3p6mm 3p8mm);
+
+# make the missing directories
+for ($i = 0; $i <= $#NewDirs; $i++)
+	{
+	system("mkdir $NewDirs[$i]"); 
+	system("scp $NewDirsM1[$i]/cirs.dyn $NewDirs[$i]");
+	system("perl -pi -e 's/$NewDirsM1[$i]/$NewDirs[$i]/' $NewDirs[$i]/cirs.dyn");
+	}

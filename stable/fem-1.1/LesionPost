@@ -1,0 +1,38 @@
+#!/usr/bin/perl
+# LesionPost - post-process lesions simulations
+# Mark 04/12/05
+
+# what directory is this?
+open(PWD,"pwd|");
+$StartDir = <PWD>;
+close(PWD);
+chomp($StartDir);
+
+# work on this directory first
+system("dclean");
+if(-e "d3plot")
+	{
+	system("matlab < /data/mlp6/postproccenter.m");
+	if(-e "zdisp.mat")
+		{
+		system("rm d3plot* status.out");
+		}
+	}
+
+# now work on all of the other directories
+@NextDirs = <*mm>;
+
+foreach $NextDir (@NextDirs)
+	{
+	$FullPath = $StartDir . "/" . $NextDir;
+	chdir($FullPath);
+	system("dclean");
+	if(-e "d3plot")
+		{
+		system("matlab < /data/mlp6/postproc.m");
+		if(-e "zdisp.mat")
+			{
+			system("rm d3plot* status.out");
+			}
+		}
+	}

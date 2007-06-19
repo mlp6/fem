@@ -1,0 +1,68 @@
+.SUFFIXES :
+.SUFFIXES : .o .c .F
+vpath
+vpath %.F $(BASEDIR)
+vpath %.c $(BASEDIR)
+vpath %.h $(BASEDIR):$(BASEDIR)/include.lstc
+INCDIRS = -I$(BASEDIR) -I$(BASEDIR)/include.lstc
+
+ifeq ($(FC),NONE)
+OBJ =	lsda.o \
+	lsdatable.o \
+	lsdatypes.o \
+	btree.o \
+	trans.o
+FCTYPE = 1
+else
+OBJ =	lsda.o \
+	lsdaf2c.o \
+ 	lsdaf.o \
+	lsdatable.o \
+	lsdatypes.o \
+	btree.o \
+	trans.o
+endif
+#
+liblsda.a: $(OBJ)
+	ar -rs liblsda.a $(OBJ)
+.c.o :
+	$(CC) -c $(CF) $< $(INCDIRS)
+ifeq ($(FCTYPE),1)
+.F.o :
+	$(FC) -c $(FF) $< $(INCDIRS)
+endif
+ifeq ($(FCTYPE),2)
+.F.o :
+	$(CPP) $< $(INCDIRS)
+	$(BASEDIR)/opt.x $*.i; rm $*.i
+	$(FC) -c $(FF) $*.f $(INCDIRS);
+endif
+ifeq ($(FCTYPE),3)
+.F.o :
+	cp $< $*_foo.c; \
+	$(CPP) $*_foo.c  $(INCDIRS)
+	mv $*_foo.i $*.f; \
+	$(FC) -c $(FF) $*.f $(INCDIRS); \
+	rm $*_foo.c; \
+	mv $*.f $*.f.bak
+endif
+ifeq ($(FCTYPE),4)
+.F.o :
+	cp $< $*_foo.c; \
+	$(CPP) $*_foo.c  $(INCDIRS) > $*.f; \
+	$(FC) -c $(FF) $*.f $(INCDIRS); \
+	rm $*_foo.c; \
+	mv $*.f $*.f.bak
+endif
+
+lsda.o: lsda.c lsda.h lsda_internal.h
+lsdaf2c.o: lsdaf2c.c lsda.h lsda_internal.h
+lsdatable.o: lsdatable.c lsda.h lsda_internal.h
+lsdatypes.o: lsdatypes.c lsda.h lsda_internal.h
+btree.o: btree.c
+trans.o: trans.c lsda.h lsda_internal.h
+lsdaf.o: lsdaf.F
+#
+
+clean:
+	rm -f *.o *.a

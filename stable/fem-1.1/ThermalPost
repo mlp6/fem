@@ -1,0 +1,100 @@
+#!/usr/bin/perl -w
+# ThermalPost2
+#
+# Summary:  "Automate" the post-processing of thermal model
+# results on the cluster nodes.
+#
+# Usage: ThermalPost NodePath NumTimeSteps NumAxNodes NumLatNodes NodeSpace
+#				 NodePath (string) - location of nodes read into *.dyn
+#        NumTimeSteps (int) - number of thermal times steps to process 
+#
+# ThermalPost2 /home/mlp6/thermal/therm74nodes.dyn 20
+#
+# Assumptions:  
+# d3plot files have been generated  
+# dyna_convolve_FR.m is in user matlab path
+# script is run with directory with d3plot files
+#
+# Mark 07/27/05
+##############################################################################
+# Modification Hx:
+# v2
+#		- changed the output syntax to reflect the latest version
+# 	of ls-prepost/ls-dyna that has been installed on the hogwarts
+# 	cluster
+#		- changed array references
+#
+# Mark 04/25/06
+##############################################################################
+
+$NodePath = $ARGV[0];
+$NumTimeSteps = $ARGV[1];
+
+# create temporary ls-prepost2 command file to save the thermal
+# results to ASCII files
+print "Generating the ls-prepost2 command file\n";
+open(SAVEFILE,'> savetherm.cfile');
+print SAVEFILE "open d3plot d3plot\n";
+print SAVEFILE "fringe 25\n";
+for ($i = 1; $i <= $NumTimeSteps; $i++)
+	{
+	#print SAVEFILE "output ./node_temp_t$i.asc $i 1 0 1 0 0 0 0 1 0 0 0\n";
+	print SAVEFILE "output ./node_temp_t$i.asc $i 1 0 1 0 0 0 0 0 1 0 0 0\n";
+	}
+close(SAVEFILE);
+
+# run ls-prepost2 to convert the d3plot files to ASCII files
+print "Running ls-prepost2 to convert the d3plot files\n";
+system("ls-prepost2 c=savetherm.cfile -nographics");
+
+# remove the command file
+system("rm savetherm.cfile");
+
+# strip the headers off the generated ASCII files and re-save
+# to t*.asc files
+print "Stripping the ASCII file headers\n";
+@therm = <node*.asc>;
+# $no_files = @therm;
+
+foreach $therm (@therm) {
+	print $therm," converted to ";
+
+	# read in the next node*.asc file
+	@ARGV = ($therm);
+
+	@t = split('_',$therm);
+	
+	# spit the headerless data into a new file, t*.asc
+	open(T, ">$t[2]");
+
+	print $t[2],"\n";
+
+	while (<>) {
+		chomp;
+		@fields = split(' ',$_);
+		if ($#fields == 1) {
+			print T $_,"\n";
+		}
+	}
+
+	# delete the old node*.asc file
+	unlink ($therm);
+
+	close(T);
+}
+
+# generate zdisp.mat 
+print "Running dyna_convolve_FR.m\n";
+open(MATFILE,'>runmatlab.m');
+# place the appropriate matlab command in here
+print MATFILE "addpath('/home/mlp6/matlab/thermal');\n";
+print MATFILE "dyna_convolve_FR('$NodePath',$NumTimeSteps);\n";
+system("matlab -nojvm -nosplash < runmatlab.m");
+system("rm runmatlab.m");
+
+if(-e "dyna_convolve_FR.mat")
+	{
+	system("rm t*.asc");
+	}
+
+print "Post-processing of thermal results complete\n";

@@ -1,0 +1,123 @@
+#
+# This file sets up the compile flags used on each system.
+#
+# Required flags are:
+#
+# HAVE_SYSTEM=yes (tells makefile that one of these systems is defined)
+# FC         =  Fortran compiler
+# FF         =  Flags to fortran compiler
+# CC         =  C compiler
+# CF         =  Flags to C compiler
+# FCTYPE     =  1: FC can take .F files
+#            =  2: HP only, uses strange opt.x program
+#            =  3: (IBM systems) CPP takes .c and creates .i
+#            =  4: (??? systems) CPP takes .c and writes to stdout
+#
+EXTRA= 
+HAVE_SYSTEM=no
+FCTYPE=1
+ifeq ($(SYSTEM),alpha)
+  HAVE_SYSTEM=yes
+  FC=f90
+  FF=-DALPHA -O4 -nopipeline
+  CC=/bin/cc
+  CF=-O -DALPHA -DULTRIX
+endif
+ifeq ($(SYSTEM),alphadp)
+  HAVE_SYSTEM=yes
+  FC=f90 -DAUTODOUBLE -r8 -i8
+  FF=-DALPHA -O4 -nopipeline
+  CC=/bin/cc
+  CF=-O -DALPHA -DULTRIX -DAUTODOUBLE
+endif
+ifeq ($(SYSTEM),fj)
+  HAVE_SYSTEM=yes
+  F0=-Wp,-DFJVPP -Sw -X7 -Ab
+  CF=-DUNSCORE
+  FC=frt
+  CC=/usr/ccs/bin/cc -DFJVPP
+  LD=frt -Wl,-dy -t
+endif
+ifeq ($(SYSTEM),cray)
+  HAVE_SYSTEM=yes
+  FCTYPE=4
+  CPP=/lib/pcpp -P -DCRAY
+  FC= f90
+  FF= -DCRAY -dp -O1
+  CC=cc
+  CF=-DCRAY
+endif
+ifeq ($(SYSTEM),hp8)
+  HAVE_SYSTEM=yes
+  FCTYPE=2
+  FC=/opt/fortran90/bin/f90
+  FF=+O2 +DA2.0 +DS2.0 -DHPUX11
+  CC=/opt/ansic/bin/cc
+  CF=-Ae -O -DHPUX11 +DA2.0 +DS2.0
+endif
+ifeq ($(SYSTEM),hp8dp)
+  HAVE_SYSTEM=yes
+  FCTYPE=2
+  FC=/opt/fortran90/bin/f90
+  FF=+02 +autodbl4 +DA2.0W +DS2.0W -DHPUX11 -DAUTODOUBLE
+  CC=/opt/ansic/bin/cc
+  CF=-Ae -O -DHPUX11 +DA2.0W +DS2.0W -DAUTODOUBLE -DUNSCORE
+endif
+ifeq ($(SYSTEM),ibmsp)
+  HAVE_SYSTEM=yes
+  FCTYPE=3
+  FC=/bin/xlf 
+  FF=-O3  -DIBMAIX
+  CC=/bin/cc
+  CF=-DIBMAIX 
+  CPP=cc -P -DIBMAIX 
+endif
+ifeq ($(SYSTEM),ibmdp)
+  HAVE_SYSTEM=yes
+  FCTYPE=3
+  FC=/bin/xlf
+  FF=-O3 -qautodbl=dbl4 -qintsize=8  -DIBMAIX -DAUTODOUBLE
+  CC=/bin/cc
+  CF=-DIBMAIX -DAUTODOUBLE
+endif
+ifeq ($(SYSTEM),linux)
+  HAVE_SYSTEM=yes
+# Intel compiler
+  FC=ifc
+# Portland compiler
+# FC=pgf77
+  FF=-O2 -DLINUX -DMPP
+  CC=gcc
+  CF=-O2 -DLINUX -DUNSCORE -DMPP
+endif
+ifeq ($(SYSTEM),sgi)
+  HAVE_SYSTEM=yes
+  FC= f77
+  FF= -mips4 -64 -mp -G 0 -col72 -O2 -TENV:X=1 -DSGI64
+  CC= cc
+  CF= -mips4 -64 -G 0 -O0 -DSGI64 -TENV:X=1
+endif
+ifeq ($(SYSTEM),sgidp)
+  HAVE_SYSTEM=yes
+  FC= f77
+  FF= -mips4 -64 -mp -G 0 -col72 -O2 -TENV:X=1 -DSGI64 -i8 -r8 -DAUTODOUBLE
+  CC= cc
+  CF= -mips4 -64 -G 0 -O0 -DSGI -DSGI64 -TENV:X=1 -DAUTODOUBLE
+endif
+ifeq ($(SYSTEM),sun)
+  HAVE_SYSTEM=yes
+  FC=/opt/SUNWspro/bin/f77 
+  FF= -DSUN
+  CC=/opt/SUNWspro/bin/cc
+  CF=-DSUN -DSPARC
+endif
+ifeq ($(SYSTEM),pcwin)
+  HAVE_SYSTEM=yes
+  FC = f77wrap
+  FF = -DWIN32 -DPCWIN
+  CC = gccwrap
+  CF = -DWIN32 -DPCWIN -g
+  FCTYPE = 1
+  AR = arwrap
+  EXESUFFIX = .exe
+endif
