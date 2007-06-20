@@ -1,7 +1,7 @@
-function [isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS)
-% function [isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS)
+function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
+% function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 % --------------------------------------------------------------------------
-% this function generates isptaout values at the nodal locations for 
+% Generate intensity values at the nodal locations for 
 % conversion to force and input into the dyna deck (performed by make_asc.m)
 % INPUTS:
 % FIELD_PARAMS.alpha (float) - absoprtion (dB/cm/MHz)
@@ -19,7 +19,7 @@ function [isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS)
 % response
 %
 % OUTPUT:
-% isptaout - Ispta values at all of the node locations
+% intensity - intensity values at all of the node locations
 % FIELD_PARAMS - field parameter structure
 %
 % Mark 07/31/03
@@ -55,63 +55,26 @@ disp('Starting the Field II simulation');
 %set_field('use_lines',1);
 
 % define transducer-independent parameters
-FIELD_PARAMS.soundSpeed=1540;
 set_field('c',FIELD_PARAMS.soundSpeed); 
-
-FIELD_PARAMS.samplingFrequency = 200e6;
 set_field('fs',FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
-switch FIELD_PARAMS.Transducer
-    case 'vf105'
-        [Th,fractionalBandwidth,centerFrequency]=vf105(FIELD_PARAMS);
-    case 'vf73'
-        [Th,fractionalBandwidth,centerFrequency]=vf73(FIELD_PARAMS);
-    case 'vf105_gfp'  % "VF105" as setup by Gianmarco in his linear/nonlinear simulations
-        [Th,fractionalBandwidth,centerFrequency]=vf105gfp(FIELD_PARAMS);
-    case 'pl35elegra'
-        [Th,fractionalBandwidth,centerFrequency]=pl35elegra(FIELD_PARAMS);
-    case 'ph41'
-        [Th,fractionalBandwidth,centerFrequency]=ph41(FIELD_PARAMS);
-end;
-
-% frequency is now an input variable
-exciteFreq=FIELD_PARAMS.Frequency*1e6;  % Hz
+eval(sprintf('[Th,impulseResponse]=%s(FIELD_PARAMS);',FIELD_PARAMS.Transducer));
 
 % define the impulse response
-switch FIELD_PARAMS.Impulse
-  case 'gaussian',
-    % define the impulse response as a Gaussian pulse
-		% this assumes that the center frequency of the array is
-		% at the transmit frequency of the pulse - not necessarily
-		% true, but adequate for frequencies near the resonant freq
-    disp('Impulse Response: Gaussian');
-    tc = gauspuls('cutoff', centerFrequency, fractionalBandwidth, -6, -40);
-    t = -tc:1/FIELD_PARAMS.samplingFrequency:tc;
-    impulseResponse =gauspuls(t, centerFrequency, fractionalBandwidth);
-  case 'exp',
-    % load in the experimental impulse response data
-    disp('Impulse Response: Experimental');
-		switch FIELD_PARAMS.Transducer
-			case 'vf105'
-				load /moredata/mlp6/VF105_Bandwidth/FieldImpulseResponseVF105_200e6.mat
-			case 'vf73'
-				disp('An experimental impulse response for this transducer has not been defined!');
-		end;
-end;
-xdc_impulse(Th, impulseResponse);
+xdc_impulse(Th,impulseResponse);
 
 % define the excitation pulse
+exciteFreq=FIELD_PARAMS.Frequency*1e6;  % Hz
 ncyc=50;
 texcite=0:1/FIELD_PARAMS.samplingFrequency:ncyc/exciteFreq;
 excitationPulse=sin(2*pi*exciteFreq*texcite);
 xdc_excitation(Th,excitationPulse);
 
-% set absoprtion
-%alpha=.5; - assumes you set alpha externally
-Freq_att=FIELD_PARAMS.alpha*100/1e6; % dB/cm/MHz
+% set attenuation
+Freq_att=FIELD_PARAMS.alpha*100/1e6; % FIELD_PARAMS in dB/cm/MHz
 att_f0=exciteFreq; 
-att=Freq_att*att_f0; % set non freq. dep. to be cntered here
+att=Freq_att*att_f0; % set non freq. dep. to be centered here
 set_field('att',att);
 set_field('Freq_att',Freq_att);
 set_field('att_f0',att_f0);
@@ -125,19 +88,19 @@ tic;
 EstCount = 1000;  % number of calculations to average over to
 									 % make calc time estimates
 for i=1:size(FIELD_PARAMS.measurementPoints,1)
- 	[pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
- 	isptaout(i)=sum(pressure.*pressure);
-	if(i==1),
-		tic,
-	end;
-	if(i==EstCount),
-		EstCalcTime = toc; % s
-		EstRunTime = (EstCalcTime/EstCount)*(size(FIELD_PARAMS.measurementPoints,1)-1)/60; % min
-		% empirically, the run times tend to be 2x the calculated estimate, so I'm going to multiple
-		% EstRunTime x 2
-		disp(sprintf('Estimate Run Time = %.1f m',EstRunTime*2));
-	end;	
+    [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
+    intensity(i)=sum(pressure.*pressure);
+    if(i==1),
+        tic,
+    end;
+    if(i==EstCount),
+        EstCalcTime = toc; % s
+        EstRunTime = (EstCalcTime/EstCount)*(size(FIELD_PARAMS.measurementPoints,1)-1)/60; % min
+        % empirically, the run times tend to be 2x the calculated estimate, so I'm going to multiple
+        disp(sprintf('Estimate Run Time = %.1f m',EstRunTime));
+    end;	
 end
+
 CalcTime = toc; % s
 ActualRunTime = CalcTime/60; % min
 disp(sprintf('Actual Run Time = %.1f m\n',ActualRunTime));

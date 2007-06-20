@@ -48,7 +48,7 @@ measurementPoints(:,1:2)=[tmp(:,2) tmp(:,1)];
 % convert from cm -> m 
 measurementPoints=measurementPoints/100; 
 
-% create a variable structure to pass to fieldprms3d_arfi
+% create a variable structure to pass to dynaField
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
 FIELD_PARAMS.measurementPoints = measurementPoints;
 FIELD_PARAMS.alpha = alpha;
@@ -58,12 +58,16 @@ FIELD_PARAMS.Frequency = Frequency;
 FIELD_PARAMS.Transducer = Transducer;
 FIELD_PARAMS.Impulse = Impulse;
 
+% below are hard-coded constants (transducer independent)
+FIELD_PARAMS.soundSpeed=1540;
+FIELD_PARAMS.samplingFrequency = 200e6;
+
 % perform the field calculation
 disp('Simulating the pressure field using Field II');
-[isptaout,FIELD_PARAMS]=fieldprms3d_arfi(FIELD_PARAMS);
+[isptaout,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
 
-% save isptaout file
-eval(sprintf('save dyna_ispta_att%.1f.mat isptaout FIELD_PARAMS',alpha));
+% save intenstiy file
+eval(sprintf('save dyna-I-a%.1f.mat isptaout FIELD_PARAMS',alpha));
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');

@@ -51,54 +51,54 @@ LatTol = 1e-3;  % cm
 AxialSearch = 0.25; % percentage of the focal depth to search
 										%for the Isppa value
 load(NormName);
-NormIsptaout = isptaout;
+NormIntensity = intensity;
 mpn = FIELD_PARAMS.measurementPointsandNodes;
 NormFocalDepth = FIELD_PARAMS.focus(3)*100;  % convert m -> cm
 
 NormFZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (NormFocalDepth - NormFocalDepth*AxialSearch) & abs(mpn(:,4)) < (NormFocalDepth + NormFocalDepth*AxialSearch)); 
 
 % what is the Isppa value that field has solved
-NormFieldIsppa = max(NormIsptaout(NormFZ))
+NormFieldIsppa = max(NormIntensity(NormFZ))
 
 % make plot of the intensity profile to make sure that
 % everything makes sense
 figure;
-plot(abs(mpn(NormFZ,4)),NormIsptaout(NormFZ),'-kx');
+plot(abs(mpn(NormFZ,4)),NormIntensity(NormFZ),'-kx');
 hold on;
 
 % find normalization max in desired alpha
 load(InputName);
-InputIsptaout = isptaout;
+InputIntensity = intensity;
 mpn = FIELD_PARAMS.measurementPointsandNodes;
 FocalDepth = FIELD_PARAMS.focus(3)*100;  % convert m -> cm
 
 FZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (FocalDepth - FocalDepth*AxialSearch) & abs(mpn(:,4)) < (FocalDepth + FocalDepth*AxialSearch)); 
 
 % what is the Isppa value that field has solved
-FieldIsppa = max(InputIsptaout(FZ))
+FieldIsppa = max(InputIntensity(FZ))
 
 % add this one to the plot
-plot(abs(mpn(FZ,4)),InputIsptaout(FZ),'-rx');
+plot(abs(mpn(FZ,4)),InputIntensity(FZ),'-rx');
 xlabel('Depth (cm)');
 ylabel('Field Intensity');
 title('Comparison of Field Intensity Profiles');
 legend('Normalization','Input','Location','Best');
 
-% normalize InputIsptaout
-InputIsptaout = InputIsptaout./FieldIsppa;
+% normalize InputIntensity
+InputIntensity = InputIntensity./FieldIsppa;
 
 % toss intensities below 5% of Isppa
-InputIsptaout=InputIsptaout.*(InputIsptaout>=0.05);
+InputIntensity=InputIntensity.*(InputIntensity>=0.05);
 
 % now zero out values near the transducer face b/c they
 % violated the farfield assumption in field
 z0=find(abs(mpn(:,4)) < 0.001);
-InputIsptaout(z0)=0;
+InputIntensity(z0)=0;
 
 % the BIG step - scale the Field intensities relative to the
 % known intensity value for the normalization data
 Field_I_Ratio = FieldIsppa/NormFieldIsppa
-ScaledIsppa=InputIsptaout*IsppaNorm*Field_I_Ratio;
+ScaledIntensity=InputIntensity*IsppaNorm*Field_I_Ratio;
 
 SoundSpeed = FIELD_PARAMS.soundSpeed*100;  % convert m/s -> cm/s
 
@@ -132,19 +132,19 @@ for x=1:length(mpn),
     xcoord = mpn(x,2);
     ycoord = mpn(x,3);
     zcoord = mpn(x,4);
-    if (ScaledIsppa(x)~=0 & zcoord~=0 & xcoord<0.25 & abs(ycoord)<0.75) 
+    if (ScaledIntensity(x)~=0 & zcoord~=0 & xcoord<0.25 & abs(ycoord)<0.75) 
 	NodeID=mpn(x,1);
 	% convert alpha -> Np/cm
 	AlphaNp = FIELD_PARAMS.alpha*FIELD_PARAMS.Frequency/8.616;
 	% units are W, cm, s -> deg C
-	InitTemp = 2*AlphaNp*ScaledIsppa(x)*PulseDuration*1e-6 / cv;
+	InitTemp = 2*AlphaNp*ScaledIntensity(x)*PulseDuration*1e-6 / cv;
 	if(InitTemp > MaxTemp),
             MaxTemp = InitTemp;
-            ScaledIsppaMax = ScaledIsppa(x);
+            ScaledIsppa = ScaledIntensity(x);
 	end;
 	% 1 W = 10,000,000 g cm^2/s^2
-	ScaledIsppaLoad = ScaledIsppa(x) * 10000000;
-	BodyForce = (2*AlphaNp*ScaledIsppaLoad)/SoundSpeed;
+	ScaledIntensityLoad = ScaledIntensity(x) * 10000000;
+	BodyForce = (2*AlphaNp*ScaledIntensityLoad)/SoundSpeed;
 	PointLoad = BodyForce * ElementVolume;
 	% if the load is on the symmetry face (x=0), then divide by 2
 	if(abs(xcoord) < 1e-4),
@@ -163,7 +163,7 @@ end;
 
 disp(sprintf('Point loads are being oriented in the -z direction.\n'));
 
-disp(sprintf('Isppa = %.1f W/cm^2\n',ScaledIsppaMax));
+disp(sprintf('Isppa = %.1f W/cm^2\n',ScaledIsppa));
 disp(sprintf('MaxTemp = %.4f deg C\n',MaxTemp));
 disp(sprintf('MaxLoad = %.4f g cm/s^2\n',MaxLoad));
 
