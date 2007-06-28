@@ -1,5 +1,5 @@
-function makeLoadsTempsHsym(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
-%function makeLoadsTempsHsym(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
+function makeLoadsTempsQsym(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
+%function makeLoadsTempsQsym(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
 %
 % INPUTS:
 % InputName (string) - dyna*.mat file to process
@@ -146,8 +146,12 @@ for x=1:length(mpn),
 	ScaledIntensityLoad = ScaledIntensity(x) * 10000000;
 	BodyForce = (2*AlphaNp*ScaledIntensityLoad)/SoundSpeed;
 	PointLoad = BodyForce * ElementVolume;
-	% if the load is on the symmetry face (x=0), then divide by 2
-	if(abs(xcoord) < 1e-4),
+        % if the load is on the symmetry axis (x = y = 0), then divide by 4; if
+        % not, check if it is on a symmetry face (x = 0 || y = 0), then divide
+        % by 2
+	if(abs(xcoord) < 1e-4 && abs(ycoord) < 1e-4),
+            PointLoad = PointLoad / 4;
+	elseif(abs(xcoord) < 1e-4 || abs(ycoord) < 1e-4),
             PointLoad = PointLoad / 2;
 	end;
 	% write the temps to the file to be read into dyna
