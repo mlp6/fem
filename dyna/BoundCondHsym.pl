@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
-# BoundCond - Assign boundary conditions to the structural dyna
+# BoundCondHsym - Assign boundary conditions to the structural dyna
 # models.  Fully contrained top (transducer) and bottom
-# surfances with symmetry contraints along the axial-lateral
+# surfaces with symmetry contraints along the axial-lateral
 # face centered in elevation (assumed at x = 0).  This script
 # was ported over from bc.m to be more efficient when working
 # with large meshes.  (matlab - 8 sec, perl - 4 sec)
