@@ -17,11 +17,10 @@ function [impulseResponse]=defineImpResp(fBW,Fc,FIELD_PARAMS);
 switch FIELD_PARAMS.Impulse
     case 'gaussian',
         disp('Impulse Response: Gaussian');
-        tc = gauspuls('cutoff',centerFreq,fracBW,-6,-40);
+        tc = gauspuls('cutoff',Fc,fBW,-6,-40);
         t = -tc:1/FIELD_PARAMS.samplingFrequency:tc;
-        impulseResponse =gauspuls(t,centerFreq,fracBW);
+        impulseResponse =gauspuls(t,Fc,fBW);
     case 'exp',
         disp('Impulse Response: Experimental');
         [impulseResponse]=formatExpImpResp(FIELD_PARAMS);
-    end;
 end;
