@@ -64,10 +64,10 @@ FIELD_PARAMS.samplingFrequency = 200e6;
 
 % perform the field calculation
 disp('Simulating the pressure field using Field II');
-[isptaout,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
+[intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
 
 % save intenstiy file
-eval(sprintf('save dyna-I-a%.1f.mat isptaout FIELD_PARAMS',alpha));
+eval(sprintf('save dyna-I-a%.1f.mat intensity FIELD_PARAMS',alpha));
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
