@@ -20,7 +20,8 @@ function [out,lat,ax]=centerplane(zdisp,t)
 % Mark 12/18/05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-load /moredata/mlp6/CIRS_FEM/centerplane.mat
+%load /moredata/mlp6/CIRS_FEM/centerplane.mat
+load /home/mlp6/fem/arfi/centerplane.mat
 
 % node spacing is 0.2 mm in the geometric shadow of the
 % transducer (cirs.dyn)

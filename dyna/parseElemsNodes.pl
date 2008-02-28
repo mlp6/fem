@@ -10,6 +10,11 @@
 #
 # Changed the field separation character from spaces -> commas
 # in the output files (Mark 08/08/05)
+# 
+# Mark Palmeri
+# Deparment of Biomedical Engineering
+# Pratt School of Engineering
+# Duke University
 
 # check to make sure that you aren't going to clobber a
 # pre-existing file

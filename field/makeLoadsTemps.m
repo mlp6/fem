@@ -1,5 +1,5 @@
-function makeLoadsTempsHsym(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
-%function makeLoadsTempsHsym(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume);
+function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym);
+%function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym);
 %
 % INPUTS:
 % InputName (string) - dyna*.mat file to process
@@ -8,6 +8,9 @@ function makeLoadsTempsHsym(InputName,NormName,IsppaNorm,PulseDuration,cv,Elemen
 % PulseDuration (float) - pulse duration (us)
 % cv (float) - specific heat (4.2 W s / cm^3 / C)
 % ElementVolume (float) - element volume (cm^3)
+% sym (string) - symmetry boundary conditions
+%                'q' -> quarter symmetry
+%                'h' -> half symmetry
 % 
 % OUTPUTS:
 % InitTemps_a*_PD*_cv.dyn is written to the CWD
@@ -15,7 +18,7 @@ function makeLoadsTempsHsym(InputName,NormName,IsppaNorm,PulseDuration,cv,Elemen
 %
 % Example:
 % makeLoadsTemps('dyna_ispta_att0.5.mat','/emfd/mlp6/field/VF10-5/
-% F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6);
+% F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6,'q');
 %
 % Mark 06/15/07
  
@@ -39,7 +42,11 @@ function makeLoadsTempsHsym(InputName,NormName,IsppaNorm,PulseDuration,cv,Elemen
 % requiring separate input variables.
 % Mark 07/28/05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% The quarter- (Qsym) and half-symmetry (Hsym) version of this code have been
+% consolidated into this single function with a input (sym) to flag what
+% symmetry conditions to consider.
+% Mark 02/18/08
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % node tolerance to search for center line in the lateral
 % dimension
@@ -83,6 +90,7 @@ xlabel('Depth (cm)');
 ylabel('Field Intensity');
 title('Comparison of Field Intensity Profiles');
 legend('Normalization','Input','Location','Best');
+legend boxoff;
 
 % normalize InputIntensity
 InputIntensity = InputIntensity./FieldIsppa;
@@ -133,31 +141,39 @@ for x=1:length(mpn),
     ycoord = mpn(x,3);
     zcoord = mpn(x,4);
     if (ScaledIntensity(x)~=0 & zcoord~=0) 
-	NodeID=mpn(x,1);
-	% convert alpha -> Np/cm
-	AlphaNp = FIELD_PARAMS.alpha*FIELD_PARAMS.Frequency/8.616;
-	% units are W, cm, s -> deg C
-	InitTemp = 2*AlphaNp*ScaledIntensity(x)*PulseDuration*1e-6 / cv;
-	if(InitTemp > MaxTemp),
-            MaxTemp = InitTemp;
-            ScaledIsppa = ScaledIntensity(x);
-	end;
-	% 1 W = 10,000,000 g cm^2/s^2
-	ScaledIntensityLoad = ScaledIntensity(x) * 10000000;
-	BodyForce = (2*AlphaNp*ScaledIntensityLoad)/SoundSpeed;
-	PointLoad = BodyForce * ElementVolume;
-	% if the load is on the symmetry face (x=0), then divide by 2
-	if(abs(xcoord) < 1e-4),
-            PointLoad = PointLoad / 2;
-	end;
-	% write the temps to the file to be read into dyna
-	fprintf(fout,'%i,%.4f\n',NodeID,InitTemp);
-	% write point load data (negative to point in 
-	% -z direction in the dyna model)
-	fprintf(foutload,'%d,3,1,%0.2e,0 \n',NodeID,-PointLoad);
-	if(abs(PointLoad) > MaxLoad),
-	    MaxLoad = abs(PointLoad);
-	end;
+        if(isnan(ScaledIntensity(x)) || (ScaledIntensity(x) > (10*IsppaNorm))),
+            warning('Excessive intensities are being computed; not writing to output file');
+        else,
+            NodeID=mpn(x,1);
+            % convert alpha -> Np/cm
+            AlphaNp = FIELD_PARAMS.alpha*FIELD_PARAMS.Frequency/8.616;
+            % units are W, cm, s -> deg C
+            InitTemp = 2*AlphaNp*ScaledIntensity(x)*PulseDuration*1e-6 / cv;
+            if(InitTemp > MaxTemp),
+                MaxTemp = InitTemp;
+                ScaledIsppa = ScaledIntensity(x);
+            end;
+            % 1 W = 10,000,000 g cm^2/s^2
+            ScaledIntensityLoad = ScaledIntensity(x) * 10000000;
+            BodyForce = (2*AlphaNp*ScaledIntensityLoad)/SoundSpeed;
+            PointLoad = BodyForce * ElementVolume;
+            % if the load is on the symmetry axis (x = y = 0), then divide by 4; if
+            % not, check if it is on a symmetry face (x = 0 || y = 0), then divide
+            % by 2
+            if(abs(xcoord) < 1e-4 && abs(ycoord) < 1e-4),
+                PointLoad = PointLoad / 4;
+            elseif(abs(xcoord) < 1e-4 || abs(ycoord) < 1e-4),
+                PointLoad = PointLoad / 2;
+            end;
+            % write the temps to the file to be read into dyna
+            fprintf(fout,'%i,%.4f\n',NodeID,InitTemp);
+            % write point load data (negative to point in 
+            % -z direction in the dyna model)
+            fprintf(foutload,'%d,3,1,%0.2e,0 \n',NodeID,-PointLoad);
+            if(abs(PointLoad) > MaxLoad),
+                MaxLoad = abs(PointLoad);
+            end;
+        end;
     end;
 end;
 
