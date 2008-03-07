@@ -19,6 +19,11 @@
 # Commented out the remove commands.
 # Mark 07/18/06
 
+# define the correct paths to matlab and ls-prepost2
+$MATLAB = "/usr/bin/matlab2007a";
+$LS_PREPOST2 = "/usr/local/bin/ls-prepost21";
+
+
 # make sure that the correct number of input arguments are
 # given (only 1)
 if(($#ARGV+1) != 1) { die "Wrong number of input arguments (!=1)" }
@@ -41,7 +46,7 @@ close(SAVEFILE);
 
 # run ls-prepost2 to convert the d3plot files to ASCII files
 print "Running ls-prepost2 to convert the d3plot files\n";
-system("ls-prepost2 c=savedisp.cfile -nographics");
+system("$LS_PREPOST2 c=savedisp.cfile -nographics");
 
 # remove the command file
 system("rm savedisp.cfile");
@@ -83,9 +88,9 @@ foreach $disp (@disp) {
 print "Running createzdisp.m\n";
 open(MATFILE,'>runmatlab.m');
 # place the appropriate matlab command in here
-print MATFILE "addpath('/home/mlp6/fem/trunk');\n";
+print MATFILE "addpath('/home/mlp6/fem/dyna');\n";
 print MATFILE "createzdisp($NumTimeSteps);\n";
-system("matlab -nojvm -nosplash < runmatlab.m");
+system("$MATLAB -nojvm -nosplash < runmatlab.m");
 system("rm runmatlab.m");
 
 # if(-e "d3thdt01")
