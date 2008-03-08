@@ -33,8 +33,10 @@ for t=1:size(zdisp,3),
     arfidata(:,:,t) = temp2;
 end;
 
-t=0:TimeStep:TerminationTime;
+t=0:TimeStep:TerminationTime; % s
 axial = -axial';
+axial = axial*10; % convert to mm
 lat = lat';
+lat = lat*10; % convert to mm
 
 save simres.mat arfidata lat axial t
