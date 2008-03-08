@@ -1,34 +1,72 @@
 #!/usr/bin/perl
+# StructPost.pl
+# Summary:  Post-processing of structural ls-dyna model results.
 #
-# Summary:  Post-processing of structural # ls-dyna model results.
+# Usage: StructPost DynaDeck NodeASC
+#        DynaDeck - absolute file path for the dyna deck to extract the
+#                   termination time and time step
+#        NodeASC - absolute file path to the node ID & coordinate ASCII file
+#                  (no dyna headers/footers)
 #
-# Usage: StructPost NumTimeSteps
-#        NumTimeSteps - number of thermal times steps to
-#        process from the dyna run
+# ASSUMPTIONS:  
+# (1) d3plot files have been generated and are in the working directory 
+# (2) The dyna deck uses comma delimiters without spaces or tabs
 #
-# Assumptions:  
-# d3plot files have been generated (and working in that directory)  
-# dclean is available
-# createzdisp.m is in the user matlab path
-#
-# Mark 04/13/05
-#
+###########################################################################
 # HX OF CHANGES
-# Updated the output command for ls-prepost2 for the latest
-# version.
+# First stab...
+# Mark 04/13/05
+###########################################################################
+# Updated the output command for ls-prepost2 for the latest version.
 # Commented out the remove commands.
 # Mark 07/18/06
+###########################################################################
+# BIG CHANGES!!
+# Added the ability to read the dyna deck to extract the termination time 
+# and the time step increment.
+#
+#
+# Mark 03/07/08
+###########################################################################
 
 # define the correct paths to matlab and ls-prepost2
 $MATLAB = "/usr/bin/matlab2007a";
 $LS_PREPOST2 = "/usr/local/bin/ls-prepost21";
+$SVN_DYNA_PATH = "/home/mlp6/fem/dyna";
 
+# make sure that the correct number of input arguments are given (2)
+if(($#ARGV+1) != 2) { die "Wrong number of input arguments (!=2)" }
 
-# make sure that the correct number of input arguments are
-# given (only 1)
-if(($#ARGV+1) != 1) { die "Wrong number of input arguments (!=1)" }
+$NodeASC = $ARGV[1];
 
-$NumTimeSteps = $ARGV[0];
+# open up the dyna deck to extract the termination time and the time step
+open(NODEFILE,"<$ARGV[0]") || die "The input file couldn't be opened!";
+$term_time = "*CONTROL_TERMINATION";
+$database_d3plot = "*DATABASE_BINARY_D3PLOT";
+$work_next_line = 0;
+while(<NODEFILE>) {
+    chomp;
+    if($work_next_line == 1) {
+        @fields = split(',',$_);
+        $TerminationTime = $fields[0];
+        $work_next_line = 0;
+    }
+    elsif($work_next_line == 2) {
+        @fields = split(',',$_);
+        $TimeStep = $fields[0];
+        $work_next_line = 0;
+    }
+    elsif($_ =~ m/^$term_time/) {
+        $work_next_line = 1;
+    }
+    elsif($_ =~ m/~$database_d3plot/) {
+        $work_next_line = 2;
+    }
+}
+close(NODEFILE);
+
+# compute how many time steps can be extracted
+$NumTimeSteps = int($TerminationTime / $TimeStep);
 
 # create temporary ls-prepost2 command file to save the thermal
 # results to ASCII files
@@ -54,7 +92,7 @@ system("rm savedisp.cfile");
 # strip the headers off the generated ASCII files and re-save
 # to t*.asc files
 print "Stripping the ASCII file headers\n";
-@disp = <node*.asc>;
+@disp = <node_disp*.asc>;
 $no_files = @disp;
 
 foreach $disp (@disp) {
@@ -84,25 +122,19 @@ foreach $disp (@disp) {
 	close(T);
 }
 
-# generate zdisp.mat 
+# generate zdisp.mat & create simsres.mat
+# preserving this step for legacy models
 print "Running createzdisp.m\n";
 open(MATFILE,'>runmatlab.m');
 # place the appropriate matlab command in here
-print MATFILE "addpath('/home/mlp6/fem/dyna');\n";
+print MATFILE "addpath('$SVN_DYNA_PATH');\n";
 print MATFILE "createzdisp($NumTimeSteps);\n";
+print MATFILE "createsimres('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 system("$MATLAB -nojvm -nosplash < runmatlab.m");
 system("rm runmatlab.m");
 
-# if(-e "d3thdt01")
-# 	{
-# 	system("dclean");
-# 	}
-
-#if(-e "zdisp.mat")
-#	{
-	system("rm t*.asc");
-#	system("rm d3plot*");
-	system("rm lspost.*");
-#	}
+# clean up temporary runtime files
+system("rm t*.asc");
+system("rm lspost.*");
 
 print "Post-processing of model results complete\n";

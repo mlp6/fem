@@ -1,18 +1,27 @@
-function [SortedNodeIDs,x,y,z]=SortNodeIDs(nodes_file);
-% function [SortedNodeIDs,x,y,z]=SortNodeIDs(nodes_file);
+function [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(nodes_file);
+% function [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(nodes_file);
 % SortNodeIDs - spatially sort the Node IDs
 %
 % INPUTS: nodes_file (string) - file containing the node IDs
 % and coordinates; comma delimited
 %
-% OUTPUTS: SortedNodeIDs (int) - 3D matrix of spatially sorted node IDs
+% OUTPUTS: 
+%   SortedNodeIDs (int) - 3D matrix of spatially sorted node IDs
+%   ele (floats) - unique elevation axis
+%   lat (floats) - unique lateral axis
+%   axial (floats) - unique axial axis
 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% First crack at this...
 % Mark 07/21/06
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Updated to round out the tolerance errors that HyperMesh can
 % introduce in the mesh generation that screws up the sorting
 % algorithm
 % Mark 09/17/06
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Updated the comments to reflect what is actually going on.
+% Mark 03/07/08
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 tic;
@@ -25,27 +34,23 @@ nodes=load(nodes_file);
 % HyperMesh generation tolerance was so poor; this will help
 % with the sorting and the unique functions
 scale = 1000;
-nodes(:,2) = nodes(:,2) * scale;
-nodes(:,2) = round(nodes(:,2));
-nodes(:,2) = nodes(:,2) / scale;
-nodes(:,3) = nodes(:,3) * scale;
-nodes(:,3) = round(nodes(:,3));
-nodes(:,3) = nodes(:,3) / scale;
-nodes(:,4) = nodes(:,4) * scale;
-nodes(:,4) = round(nodes(:,4));
-nodes(:,4) = nodes(:,4) / scale;
+for i=2:4,
+    nodes(:,i) = nodes(:,i) * scale;
+    nodes(:,i) = round(nodes(:,i));
+    nodes(:,i) = nodes(:,i) / scale;
+end;
 
 % what are the axes
-x = unique(nodes(:,2));
-x = x(end:-1:1);
-y = unique(nodes(:,3));
-z = unique(nodes(:,4));
-z = z(end:-1:1);
+ele = unique(nodes(:,2));
+ele = ele(end:-1:1);
+lat = unique(nodes(:,3));
+axial = unique(nodes(:,4));
+axial = axial(end:-1:1);
 
 % numbers of nodes in each dimension
-NumX = length(x)
-NumY = length(y)
-NumZ = length(z)
+NumX = length(ele)
+NumY = length(lat)
+NumZ = length(axial)
 
 % check to make sure that the dimensions are okay, otherwise
 % the reshape operation will fail
