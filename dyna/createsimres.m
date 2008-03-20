@@ -39,4 +39,15 @@ axial = axial*10; % convert to mm
 lat = lat';
 lat = lat*10; % convert to mm
 
-save simres.mat arfidata lat axial t
+% make sure that the correct number of time steps are in the 't' variable - if
+% not, truncate ones off the end b/c the number of dumped time steps can come
+% up one short from the calculated number of data dumps
+if(length(t) ~= size(arfidata,3),
+    if(length(t) < size(arfidata(,3)),
+        arfidata = arfidata(:,:,1:length(t));
+    else,
+        t = t(1:size(arfidata,3));
+    end;
+end;
+
+save res_sim.mat arfidata lat axial t
