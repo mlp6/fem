@@ -12,13 +12,14 @@ function []=createzdisp(NoFiles)
 disp('Reading in ASCII data files');
 for i=1:NoFiles,
 	disp(sprintf('Working on file %i of %i',i,NoFiles));
-	cmd = sprintf('[zdisp(:,:,%i)]=load(''t%i.asc'');',i,i);
-	eval(cmd);
+        fid = fopen(sprintf('node_disp_t%i.asc',i),'r');
+        tempscan = textscan(fid,'%f32%f32%f32%f32','HeaderLines',4,'CommentStyle','*');
+        tempmat = cell2mat(tempscan);
+        zdisp(:,:,i) = tempmat;
+        clear tempscan tempmat;
 end;
 
-% convert the single-precision data
-disp('Converting to single precision data (and back)');
-zdisp = single(zdisp);
+% convert to double precision to work w/ downstream functions
 zdisp = double(zdisp);
 
 disp('Saving zdisp.mat file')
