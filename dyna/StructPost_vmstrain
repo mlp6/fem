@@ -73,12 +73,18 @@ $NumTimeSteps = int($TerminationTime / $TimeStep);
 print "Generating the ls-prepost2 command file\n";
 open(SAVEFILE,'> savedisp.cfile');
 print SAVEFILE "open d3plot d3plot\n";
+print SAVEFILE "fringe 3\n";
+print SAVEFILE "pfringe\n";
+print SAVEFILE "state 12\n";
+print SAVEFILE "fringe 109\n";
+print SAVEFILE "pfringe\n";
 for ($i = 1; $i <= $NumTimeSteps; $i++)
 	{
 	# latest version of ls-prepost2 uses an extra 0 on this
 	# command
 	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0\n";
-	print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0 0\n";
+        print SAVEFILE "state $i\n";
+	print SAVEFILE "output ./node_vms_t$i.asc $i 1 0 1 0 0 0 0 0 1 0 0 0 0 0\n";
 	}
 close(SAVEFILE);
 
@@ -89,51 +95,19 @@ system("$LS_PREPOST2 c=savedisp.cfile -nographics");
 # remove the command file
 system("rm savedisp.cfile");
 
-# strip the headers off the generated ASCII files and re-save
-# to t*.asc files
-#print "Stripping the ASCII file headers\n";
-#@disp = <node_disp*.asc>;
-#
-#foreach $disp (@disp) {
-#	print $disp," converted to ";
-#
-#	# read in the next node*.asc file
-#	@ARGV = ($disp);
-#
-#	@t = split('_',$disp);
-#	
-#	# spit the headerless data into a new file, t*.asc
-#	open(T, ">@t[2]");
-#
-#	print @t[2],"\n";
-#
-#	while (<>) {
-#		chomp;
-#	 	@fields = split(' ',$_);
-#	 	if ($#fields == 3) {
-#	 		print T $_,"\n";
-#	 	}
-#	 }
-#
-#	# delete the old node*.asc file
-#	unlink ($disp);
-#
-#	close(T);
-#}
-
 # generate zdisp.mat & create simsres.mat
 # preserving this step for legacy models
 print "Running createzdisp.m\n";
 open(MATFILE,'>runmatlab.m');
 # place the appropriate matlab command in here
 print MATFILE "addpath('$SVN_DYNA_PATH');\n";
-print MATFILE "createzdisp($NumTimeSteps);\n";
-print MATFILE "createsimres('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+print MATFILE "createvms($NumTimeSteps);\n";
+print MATFILE "createvmsres('vms.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 system("$MATLAB -nojvm -nosplash < runmatlab.m");
 system("rm runmatlab.m");
 
 # clean up temporary runtime files
-system("rm node_disp_t*.asc");
+system("rm node_vms_t*.asc");
 system("rm lspost.*");
 #system("rm zdisp.mat");
 

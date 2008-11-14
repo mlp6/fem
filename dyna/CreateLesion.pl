@@ -77,7 +77,7 @@ while(<NODEFILE>) {
 
   # split the line into data fields with spaces as the
   # delimiting character  
-  @fields = split(' ',$_);
+  @fields = split(',',$_);
 
   # the actual node IDs and coordinates occupy 4 columns (the
   # header and footer are only a single column)
@@ -104,9 +104,9 @@ close(NODEFILE);
 print "Check the delimiting character (,) for the element data!\n";
 
 # see chop command in the while loop below
-print "\nWARNING - chopping off space from last node entry for each element!!
-If this space doesn't exist, then the node ID will be corrupted,
-but without any error!!\n\n";
+#print "\nWARNING - chopping off space from last node entry for each element!!
+#If this space doesn't exist, then the node ID will be corrupted,
+#but without any error!!\n\n";
 
 $elcount = 0;
 while(<ELEMFILE>) {
@@ -124,7 +124,7 @@ while(<ELEMFILE>) {
 
 		# the last field has an erroneous space added to it; so we
 		# have to chop it off!!
-		chop $fields[9];
+		#chop $fields[9];
 
 		# check to see if any of the nodes for this element match
 		# the nodes that are in the lesion 
