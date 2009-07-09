@@ -134,7 +134,7 @@ print MATFILE "addpath('$SVN_DYNA_PATH');\n";
 print MATFILE "createzdisp($NumTimeSteps);\n";
 #print MATFILE "create_velocity($NumTimeSteps);\n";
 
-print MATFILE "createsimres('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+print MATFILE "createsimres('zdisp.dat','$NodeASC',$TimeStep,$TerminationTime);\n";
 #print MATFILE "createsimreslat('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 #print MATFILE "createsimresvel('vel.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 
