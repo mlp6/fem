@@ -88,6 +88,7 @@ tic;
 EstCount = 1000;  % number of calculations to average over to
 									 % make calc time estimates
 for i=1:size(FIELD_PARAMS.measurementPoints,1)
+    disp(sprintf('Processing node %i of %i...',i,size(FIELD_PARAMS.measurementPoints,1)));
     [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
     intensity(i)=sum(pressure.*pressure);
     if(i==1),

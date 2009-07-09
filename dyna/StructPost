@@ -31,8 +31,10 @@
 
 # define the correct paths to matlab and ls-prepost2
 $MATLAB = "/usr/local/matlabR2007a/bin/matlab";
-$LS_PREPOST2 = "/usr/local/lstc/bin64/ls-prepost2";
-$SVN_DYNA_PATH = "/home/mlp6/fem/dyna";
+#$LS_PREPOST2 = "/usr/local/lstc/bin64/ls-prepost2";
+#$LS_PREPOST2 = "/usr/local/lstc/bin64/lsprepost2_4_linux64_centos4";
+$LS_PREPOST2 = "/usr/local/lstc/bin/lsprepost2_4_linux64_centos52";
+$SVN_DYNA_PATH = "/krnlab/mlp6/fem/dyna";
 
 # make sure that the correct number of input arguments are given (2)
 if(($#ARGV+1) != 2) { die "Wrong number of input arguments (!=2)" }
@@ -77,8 +79,10 @@ for ($i = 1; $i <= $NumTimeSteps; $i++)
 	{
 	# latest version of ls-prepost2 uses an extra 0 on this
 	# command
-	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0\n";
+        # BELOW IS THE LINE FOR DISPLACEMENTS
 	print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0 0\n";
+        # BELOW IS THE LINE FOR VELOCITIES
+	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 1 0 0 0 0 0 0 0\n";
 	}
 close(SAVEFILE);
 
@@ -128,7 +132,12 @@ open(MATFILE,'>runmatlab.m');
 # place the appropriate matlab command in here
 print MATFILE "addpath('$SVN_DYNA_PATH');\n";
 print MATFILE "createzdisp($NumTimeSteps);\n";
+#print MATFILE "create_velocity($NumTimeSteps);\n";
+
 print MATFILE "createsimres('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+#print MATFILE "createsimreslat('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+#print MATFILE "createsimresvel('vel.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+
 system("$MATLAB -nojvm -nosplash < runmatlab.m");
 system("rm runmatlab.m");
 
