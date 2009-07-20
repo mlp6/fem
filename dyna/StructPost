@@ -30,10 +30,9 @@
 ###########################################################################
 
 # define the correct paths to matlab and ls-prepost2
-$MATLAB = "/usr/local/matlabR2007a/bin/matlab";
-#$LS_PREPOST2 = "/usr/local/lstc/bin64/ls-prepost2";
-#$LS_PREPOST2 = "/usr/local/lstc/bin64/lsprepost2_4_linux64_centos4";
-$LS_PREPOST2 = "/usr/local/lstc/bin/lsprepost2_4_linux64_centos52";
+$MATLAB = "/usr/local/matlabR2007a/bin/matlab -nojvm -nosplash";
+#$LS_PREPOST2 = "/usr/local/lstc/bin/lsprepost2_4_linux64_centos52";
+$LS_PREPOST2 = "ls-prepost2";
 $SVN_DYNA_PATH = "/krnlab/mlp6/fem/dyna";
 
 # make sure that the correct number of input arguments are given (2)
@@ -93,38 +92,6 @@ system("$LS_PREPOST2 c=savedisp.cfile -nographics");
 # remove the command file
 system("rm savedisp.cfile");
 
-# strip the headers off the generated ASCII files and re-save
-# to t*.asc files
-#print "Stripping the ASCII file headers\n";
-#@disp = <node_disp*.asc>;
-#
-#foreach $disp (@disp) {
-#	print $disp," converted to ";
-#
-#	# read in the next node*.asc file
-#	@ARGV = ($disp);
-#
-#	@t = split('_',$disp);
-#	
-#	# spit the headerless data into a new file, t*.asc
-#	open(T, ">@t[2]");
-#
-#	print @t[2],"\n";
-#
-#	while (<>) {
-#		chomp;
-#	 	@fields = split(' ',$_);
-#	 	if ($#fields == 3) {
-#	 		print T $_,"\n";
-#	 	}
-#	 }
-#
-#	# delete the old node*.asc file
-#	unlink ($disp);
-#
-#	close(T);
-#}
-
 # generate zdisp.mat & create simsres.mat
 # preserving this step for legacy models
 print "Running createzdisp.m\n";
@@ -138,7 +105,7 @@ print MATFILE "createsimres('zdisp.dat','$NodeASC',$TimeStep,$TerminationTime);\
 #print MATFILE "createsimreslat('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 #print MATFILE "createsimresvel('vel.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 
-system("$MATLAB -nojvm -nosplash < runmatlab.m");
+system("$MATLAB < runmatlab.m");
 system("rm runmatlab.m");
 
 # clean up temporary runtime files
