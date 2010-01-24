@@ -1,5 +1,5 @@
-function []=createsimres(zdispfile,node_asc,TimeStep,TerminationTime);
-% function []=createsimres(zdispfile);
+function []=createsimres(zdispfile,node_asc,dyn_file);
+% function []=createsimres(zdispfile,node_asc,dyn_file);
 %
 % Create simres.mat that shares the same format as experimental res*.mat files.
 %
@@ -7,8 +7,7 @@ function []=createsimres(zdispfile,node_asc,TimeStep,TerminationTime);
 %   zdispfile (string) - path for zdisp.dat created by createzdisp.m
 %   node_asc (string) - path to the node ID & coordinate ASCII file (no dyna
 %                       headers/footers)
-%   TimeStep (float) - time step b/w d3plot data saves (s)
-%   TerminationTime (float) - final time simulated (s)
+%   dyn_file (string) - path to the input dyna deck that includes the d3plot time step
 %
 %   Requires the function SortNodeIDs.m - should be in the svn repository.
 % 
@@ -25,6 +24,12 @@ function []=createsimres(zdispfile,node_asc,TimeStep,TerminationTime);
 % 2009-07-08
 % Modified to read individual time steps from the zdisp.dat binary file so that
 % large chunks of RAM are needed.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 2010-01-24
+% Very annoying to have to enter the 'TimeStep' and 'TerminationTime' as inputs
+% when you are trying to batch a job; so, that has been "upgraded" to now read
+% those values from the dyna deck, which is now an input.  Assumptions about 
+% reading in that data automatically are detailed below.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % This will now be done in the timestep loop, streamed from the zdisp.dat file.
@@ -64,21 +69,62 @@ for t=1:NUM_TIMESTEPS,
 end;
 
 % setup the axis and time variables
-t=0:TimeStep:TerminationTime; % s
+%t=0:TimeStep:TerminationTime; % s  %GOT RID OF THIS W/ THE 2010-01-24 VERSION
+% I really only need the time step size since NUM_TIMESTEPS is being provided by zdisp.dat, so...
+TimeStep = extract_TimeStep(dyn_file);
+t = [0:(NUM_TIMESTEPS-1)].*TimeStep;
 axial = -axial';
 axial = axial*10; % convert to mm
 lat = lat';
 lat = lat*10; % convert to mm
 
+% 2010-01-24 -> shouldn't need this anymore since NUM_TIMESTEPS is being used to define 
+% the 't' variable
+%
 % make sure that the correct number of time steps are in the 't' variable - if
 % not, truncate ones off the end b/c the number of dumped time steps can come
 % up one short from the calculated number of data dumps
-if(length(t) ~= size(arfidata,3)),
-    if(length(t) < size(arfidata,3)),
-        arfidata = arfidata(:,:,1:length(t));
-    else,
-        t = t(1:size(arfidata,3));
-    end;
-end;
+%if(length(t) ~= size(arfidata,3)),
+%    if(length(t) < size(arfidata,3)),
+%        arfidata = arfidata(:,:,1:length(t));
+%    else,
+%        t = t(1:size(arfidata,3));
+%    end;
+%end;
+
+% convert variables to singles
+arfidata = single(arfidata);
+lat = single(lat);
+axial = single(axial);
+t = single(t);
 
 save res_sim.mat arfidata lat axial t
+
+function [TimeStep]=extract_TimeStep(dyn_file)
+if(exist(dyn_file) ~= 2), 
+    warning('%s does not exist; the time step cannot be determined',dyn_file);
+end;
+fid = fopen(dyn_file);
+hit = 0;
+while(hit ~= 2),
+    dyn_line = fgetl(fid);
+    if(strcmp(dyn_line,'*DATABASE_BINARY_D3PLOT')),
+        hit = 1;
+    end;
+    % once we found the correct control card, we're assuming the first entry on the next
+    % non-comment line is the time step that we want in seconds
+    while(hit==1), 
+        next_line = fgetl(fid);
+        split_next_line = regexp(next_line,',','split');
+        first_entry = split_next_line{1};
+        first_char = first_entry(1);
+        if(strcmp(first_char,'$')),
+            continue;
+        else,
+            TimeStep = first_entry;
+            TimeStep = str2num(TimeStep)
+            return
+        end;
+    end;
+end;
+fclose(fid);

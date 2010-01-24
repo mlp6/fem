@@ -1,10 +1,10 @@
 function []=createsimreslat(zdispfile,node_asc,TimeStep,TerminationTime);
 % function []=createsimreslat(zdispfile);
-% Summary: Create simres.mat that shares the same format as experimental
-% res*.mat files.
+%
+% Create simres.mat that shares the same format as experimental res*.mat files.
 %
 % INPUTS:
-%   zdispfile (string) - path for zdisp.mat created by createzdisp.m
+%   zdispfile (string) - path for zdisp.dat created by createzdisp.m
 %   node_asc (string) - path to the node ID & coordinate ASCII file (no dyna
 %                       headers/footers)
 %   TimeStep (float) - time step b/w d3plot data saves (s)
@@ -13,17 +13,23 @@ function []=createsimreslat(zdispfile,node_asc,TimeStep,TerminationTime);
 %   Requires the function SortNodeIDs.m - should be in the svn repository.
 % 
 % OUTPUTS:
-%   This saves the file sim_res_lat.mat to the CWD.
+%   Saves the file sim_res.mat to the CWD.
 %
-% Mark 03/07/08
-%
-% This version extracts lateral displacements.
-%
-% Mark Palmeri (mark.palmeri@duke.edu)
-% 2008-12-02 (10:40)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MODIFICATION HISTORY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Originally written
+% Mark 03/07/08
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 2009-07-08
+% Modified to read individual time steps from the zdisp.dat binary file so that
+% large chunks of RAM are needed.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This will now be done in the timestep loop, streamed from the zdisp.dat file.
 % load zdisp
-load(zdispfile);
+% load(zdispfile);
 
 [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(node_asc);
 
@@ -31,13 +37,35 @@ load(zdispfile);
 ele0 = min(find(ele >= 0));
 image_plane = squeeze(SortedNodeIDs(ele0,:,:));
 
-for t=1:size(zdisp,3),
-    temp(zdisp(:,1,1)) = zdisp(:,3,t);
+% load in some parameters from zdisp.dat
+if(exist(zdispfile,'file') == 0),
+    error(sprintf('%s does not exist.  Make sure that zdisp.mat files are converted to zdisp.dat .',zdispfile));
+end;
+zdisp_fid = fopen(zdispfile,'r');
+
+NUM_NODES = fread(zdisp_fid,1,'float32');
+NUM_DIMS = fread(zdisp_fid,1,'float32');
+NUM_TIMESTEPS = fread(zdisp_fid,1,'float32');
+
+%for t=1:size(zdisp,3),
+for t=1:NUM_TIMESTEPS,
+
+    % extract the zdisp values for the appropriate time step
+    fseek(zdisp_fid,3*4+NUM_NODES*NUM_DIMS*(t-1)*4,-1);
+    zdisp_slice = fread(zdisp_fid,NUM_NODES*NUM_DIMS,'float32');
+    zdisp_slice = double(reshape(zdisp_slice,NUM_NODES,NUM_DIMS));
+
+    %temp(zdisp(:,1,1)) = zdisp(:,4,t);
+    % changed to extract the lateral displacement (3), not the axial (4)
+    %temp(zdisp_slice(:,1)) = zdisp_slice(:,4);
+    temp(zdisp_slice(:,1)) = zdisp_slice(:,3);
     temp2 = -temp(image_plane)*1e4;
     temp2 = shiftdim(temp2,1);
     arfidata(:,:,t) = temp2;
+
 end;
 
+% setup the axis and time variables
 t=0:TimeStep:TerminationTime; % s
 axial = -axial';
 axial = axial*10; % convert to mm
@@ -55,6 +83,4 @@ if(length(t) ~= size(arfidata,3)),
     end;
 end;
 
-arfidata_lat = arfidata;
-
-save res_sim_lat.mat arfidata_lat lat axial t
+save res_sim_lat.mat arfidata lat axial t
