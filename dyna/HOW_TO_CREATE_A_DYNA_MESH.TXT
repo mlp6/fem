@@ -1,0 +1,19 @@
+(1) Copy and edit /krnlab/mlp6/fem/dyn/MeshGen.cfile.  You just need to edit
+the first line - the syntax specified the min x,y,z    coordinates in the model
+and the max coordinates (x,y,z) followed by the node density along each
+dimension.  The example one is     x:0 -> -1.5 cm, y:0 -> 1.5 cm, and z: -0.1
+-> -8.1 cm.  Make sure that you keep this relative convention the same (i.e., a
+"negative" right-hand rule), and don't start z right at 0.                                                                          
+                                                                                                                                    
+(2) Run this script through ls-prepost on the command line:                                                                         
+ls-prepost2 -nographics c=MeshGen.cfile.                                                                                            
+                                                                                                                                    
+(3) Run /krnlab/mlp6/fem/dyna/parseElemsNode.pl < mesh.dyn                                                                          
+                                                                                                                                    
+This will create node.dyn, nodes.asc, and elems.dyn, all of which are used
+either in include statements in the dyna deck or in the field code.                                                                                                                     
+                                                                                                                                    
+(4) Create the correct boundary conditions using:                                                                                   
+/krnlab/mlp6/fem/BoundCondQsym.pl (assuming you do quarter symmetry)                                                                
+                                                                                                                                    
+The bc.dyn file that is written needs to be included in the dyn file.                                                               
