@@ -47,6 +47,12 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % symmetry conditions to consider.
 % Mark 02/18/08
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% It appears that I never actually implemented the symmetry flag
+% in the code; that doesn't make it very useful.  That has now been
+% properly implemented in the force scaling done near the end of the
+% function.
+% Mark 2010-02-03
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % node tolerance to search for center line in the lateral
 % dimension
@@ -157,13 +163,21 @@ for x=1:length(mpn),
             ScaledIntensityLoad = ScaledIntensity(x) * 10000000;
             BodyForce = (2*AlphaNp*ScaledIntensityLoad)/SoundSpeed;
             PointLoad = BodyForce * ElementVolume;
-            % if the load is on the symmetry axis (x = y = 0), then divide by 4; if
-            % not, check if it is on a symmetry face (x = 0 || y = 0), then divide
-            % by 2
-            if(abs(xcoord) < 1e-4 && abs(ycoord) < 1e-4),
-                PointLoad = PointLoad / 4;
-            elseif(abs(xcoord) < 1e-4 || abs(ycoord) < 1e-4),
-                PointLoad = PointLoad / 2;
+            switch sym,
+                case 'q'
+                    % if the load is on the symmetry axis (x = y = 0), then divide by 4; if
+                    % not, check if it is on a symmetry face (x = 0 || y = 0), then divide
+                    % by 2
+                    if(abs(xcoord) < 1e-4 && abs(ycoord) < 1e-4),
+                        PointLoad = PointLoad / 4;
+                    elseif(abs(xcoord) < 1e-4 || abs(ycoord) < 1e-4),
+                        PointLoad = PointLoad / 2;
+                    end;
+                case 'h'
+                    % if the load is on the symmetry face (x=0), then divide by 2
+                    if(abs(xcoord) < 1e-4),
+                        PointLoad = PointLoad / 2;
+                    end;
             end;
             % write the temps to the file to be read into dyna
             fprintf(fout,'%i,%.4f\n',NodeID,InitTemp);
