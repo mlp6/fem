@@ -1,0 +1,3 @@
+meshing boxsolid create 0.000000 0.000000 -0.1 -1.5 1.5 -8.1 50 50 270
+meshing boxsolid accept 1 1 1 boxsolid
+save keyword mesh.dyn

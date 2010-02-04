@@ -37,7 +37,6 @@ ZDISPDAT = 'zdisp.dat';
 zdisp_fid=fopen(ZDISPDAT,'w');
 
 for i=1:NoFiles,
-	disp(sprintf('Working on file %i of %i',i,NoFiles));
         
         % read in data from the ASCII file
         fid = fopen(sprintf('node_disp_t%i.asc',i),'r');
@@ -54,6 +53,7 @@ for i=1:NoFiles,
             fwrite(zdisp_fid,numnodes,'float32');
             fwrite(zdisp_fid,numdims,'float32');
             fwrite(zdisp_fid,numtimesteps,'float32');
+            disp(sprintf('%s headers written',ZDISPDAT));
         end;
 
         % write data to ZDISPDAT; it will be automatically concatenated and can
@@ -61,6 +61,8 @@ for i=1:NoFiles,
         fwrite(zdisp_fid,tempmat,'float32');
             
         clear tempmat
+
+	disp(sprintf('Extracting data from file %i of %i',i,NoFiles));
 end;
 
 

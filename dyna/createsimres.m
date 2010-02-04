@@ -25,12 +25,28 @@ function []=createsimres(zdispfile,node_asc,dyn_file);
 % Modified to read individual time steps from the zdisp.dat binary file so that
 % large chunks of RAM are needed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 2010-01-24
-% Very annoying to have to enter the 'TimeStep' and 'TerminationTime' as inputs
+% 2010-01-24 (Mark)
+% (1) Very annoying to have to enter the 'TimeStep' and 'TerminationTime' as inputs
 % when you are trying to batch a job; so, that has been "upgraded" to now read
 % those values from the dyna deck, which is now an input.  Assumptions about 
 % reading in that data automatically are detailed below.
+%
+% (2) Added more graceful error-checking upfront (checking that input files exist)
+% to allow batch jobs to run completely even with some missing files along the way. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% check to make sure the specified files actually exist
+if(exist(node_asc) ~= 2 || exist(dyn_file) ~= 2),
+    disp(pwd);
+    if(exist(node_asc) ~= 2),
+        warning('%s does not exist',node_asc);
+    end;
+    if(exist(dyn_file) ~=2 ),
+        warning('%s does not exist',dyn_file);
+    end;
+    warning('ERROR: res_sim.mat not successfully created');
+    return;
+end;
 
 % This will now be done in the timestep loop, streamed from the zdisp.dat file.
 % load zdisp
@@ -101,9 +117,6 @@ t = single(t);
 save res_sim.mat arfidata lat axial t
 
 function [TimeStep]=extract_TimeStep(dyn_file)
-if(exist(dyn_file) ~= 2), 
-    warning('%s does not exist; the time step cannot be determined',dyn_file);
-end;
 fid = fopen(dyn_file);
 hit = 0;
 while(hit ~= 2),
