@@ -38,10 +38,11 @@ $SVN_DYNA_PATH = "/krnlab/mlp6/fem/dyna";
 # make sure that the correct number of input arguments are given (2)
 if(($#ARGV+1) != 2) { die "Wrong number of input arguments (!=2)" }
 
+$DynaDeck = $ARGV[0];
 $NodeASC = $ARGV[1];
 
 # open up the dyna deck to extract the termination time and the time step
-open(NODEFILE,"<$ARGV[0]") || die "The input file couldn't be opened!";
+open(NODEFILE,"<$DynaDeck") || die "The input file couldn't be opened!";
 $term_time = "*CONTROL_TERMINATION";
 $database_d3plot = "*DATABASE_BINARY_D3PLOT";
 $work_next_line = 0;
@@ -82,11 +83,11 @@ for ($i = 1; $i <= $NumTimeSteps; $i++)
 	# latest version of ls-prepost2 uses an extra 0 on this
 	# command
         # BELOW IS THE LINE FOR DISPLACEMENTS
-	# print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0 0\n";
+	print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0 0\n";
         # BELOW IS THE LINE FOR VELOCITIES
 	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 1 0 0 0 0 0 0 0\n";
         # BELOW IS THE LINE FOR max shear strain
-	print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 0 0 1 0 0 0 0 0\n";
+	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 0 0 1 0 0 0 0 0\n";
 	}
 close(SAVEFILE);
 
@@ -97,7 +98,7 @@ system("$LS_PREPOST2 c=savedisp.cfile -nographics");
 # remove the command file
 system("rm savedisp.cfile");
 
-$dont_run = 1;
+$dont_run = 0;
 if($dont_run != 1){
 # generate zdisp.mat & create simsres.mat
 # preserving this step for legacy models
@@ -108,7 +109,7 @@ print MATFILE "addpath('$SVN_DYNA_PATH');\n";
 print MATFILE "createzdisp($NumTimeSteps);\n";
 #print MATFILE "create_velocity($NumTimeSteps);\n";
 
-print MATFILE "createsimres('zdisp.dat','$NodeASC',$TimeStep,$TerminationTime);\n";
+print MATFILE "createsimres('zdisp.dat','$NodeASC','$DynaDeck');\n";
 #print MATFILE "createsimreslat('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 #print MATFILE "createsimresvel('vel.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 

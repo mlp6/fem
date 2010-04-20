@@ -82,8 +82,8 @@ while(<NODEFILE>) {
         }
 
         # if it isn't on the top/bottom, then check if it is on the symmetry
-        # axis (x & y = 0)
-        elsif (abs($fields[1]) < $nodespc/2 && abs($fields[2]) < $nodespc/2 && $sym == "q") {
+        # axis (x & y = 0); this is only done for quarter symmetry
+        elsif (abs($fields[1]) < $nodespc/2 && abs($fields[2]) < $nodespc/2 && $sym eq "q") {
             print BCFILE "$fields[0],0,1,1,0,1,1,1\n";
         }
         
@@ -93,8 +93,8 @@ while(<NODEFILE>) {
             print BCFILE "$fields[0],0,1,0,0,0,1,1\n";
         }
 
-        # or the y sym face (y == 0)
-        elsif (abs($fields[2]) < $nodespc/2 && $sym == "q") {
+        # or the y sym face (y == 0); this is only done for quarter symmetry
+        elsif (abs($fields[2]) < $nodespc/2 && $sym eq "q") {
             print BCFILE "$fields[0],0,0,1,0,1,0,1\n";
         }
     }
