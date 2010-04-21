@@ -1,9 +1,9 @@
-function []=createzdisp(NoFiles)
-% function []=createzdisp(NoFiles);
+function []=createdisp(NoFiles)
+% function []=createdisp(NoFiles);
 %
 % INPUTS:  NoFiles - number of t*.asc files to convert
 %
-% OUTPUT: zdisp.dat is written to CWD
+% OUTPUT: disp.dat is written to CWD
 %           All data is float32 with the format:
 %               NUM_NODES
 %               NUM_DIMS (Node ID, X, Y, Z displacements)
@@ -20,7 +20,7 @@ function []=createzdisp(NoFiles)
 % Originally written
 % Mark 05/17/04
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Modified to convert zdisp to single precision to save
+% Modified to convert disp to single precision to save
 % disk space when saved.
 % Mark 04/14/05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,12 +29,17 @@ function []=createzdisp(NoFiles)
 % written/read all at once (consuming lots of RAM);
 % now binary data is streamed to a binary *.dat file.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Formerly createzdisp.m - now just createdisp.m; changed
+% all references from 'zdisp' -> 'disp'
+% Mark Palmeri (mlp6)
+% 2010-04-20
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 disp('Reading in ASCII data files . . .');
 
 % open the DAT file for writing
-ZDISPDAT = 'zdisp.dat';
-zdisp_fid=fopen(ZDISPDAT,'w');
+DISPDAT = 'disp.dat';
+disp_fid=fopen(DISPDAT,'w');
 
 for i=1:NoFiles,
         
@@ -50,15 +55,15 @@ for i=1:NoFiles,
             numnodes = size(tempmat,1);
             numdims = size(tempmat,2);
             numtimesteps = NoFiles;
-            fwrite(zdisp_fid,numnodes,'float32');
-            fwrite(zdisp_fid,numdims,'float32');
-            fwrite(zdisp_fid,numtimesteps,'float32');
-            disp(sprintf('%s headers written',ZDISPDAT));
+            fwrite(disp_fid,numnodes,'float32');
+            fwrite(disp_fid,numdims,'float32');
+            fwrite(disp_fid,numtimesteps,'float32');
+            disp(sprintf('%s headers written',DISPDAT));
         end;
 
-        % write data to ZDISPDAT; it will be automatically concatenated and can
+        % write data to DISPDAT; it will be automatically concatenated and can
         % be reshaped on read using the header integers
-        fwrite(zdisp_fid,tempmat,'float32');
+        fwrite(disp_fid,tempmat,'float32');
             
         clear tempmat
 
@@ -66,12 +71,12 @@ for i=1:NoFiles,
 end;
 
 
-fclose(zdisp_fid);
+fclose(disp_fid);
 
 % THIS IS NO LONGER NEEDED SINCE 'float32' DATA IS WRITTEN DIRECTLY TO *.DAT
 % convert to double precision to work w/ downstream functions
-% zdisp = double(zdisp);
+% disp = double(disp);
 
-%disp('Saving zdisp.mat file')
-disp(sprintf('File Created: %s',ZDISPDAT))
-%save zdisp.mat zdisp
+%disp('Saving disp.mat file')
+disp(sprintf('File Created: %s',DISPDAT))
+%save disp.mat disp

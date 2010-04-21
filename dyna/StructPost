@@ -100,17 +100,17 @@ system("rm savedisp.cfile");
 
 $dont_run = 0;
 if($dont_run != 1){
-# generate zdisp.mat & create simsres.mat
+# generate disp.dat & create res_sim.mat
 # preserving this step for legacy models
-print "Running createzdisp.m\n";
+print "Running createdisp.m\n";
 open(MATFILE,'>runmatlab.m');
 # place the appropriate matlab command in here
 print MATFILE "addpath('$SVN_DYNA_PATH');\n";
-print MATFILE "createzdisp($NumTimeSteps);\n";
+print MATFILE "createdisp($NumTimeSteps);\n";
 #print MATFILE "create_velocity($NumTimeSteps);\n";
 
-print MATFILE "createsimres('zdisp.dat','$NodeASC','$DynaDeck');\n";
-#print MATFILE "createsimreslat('zdisp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+print MATFILE "createsimres('disp.dat','$NodeASC','$DynaDeck');\n";
+#print MATFILE "createsimreslat('disp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 #print MATFILE "createsimresvel('vel.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
 
 system("$MATLAB < runmatlab.m");
@@ -119,7 +119,6 @@ system("rm runmatlab.m");
 # clean up temporary runtime files
 system("rm node_disp_t*.asc");
 system("rm lspost.*");
-#system("rm zdisp.mat");
 
 print "Post-processing of model results complete\n";
 }

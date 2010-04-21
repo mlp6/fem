@@ -87,7 +87,7 @@ while(<NODEFILE>) {
       
 		$NodeCount = ++$NodeCount;
 
-		if(($fields[$column] > $Lmin) && ($fields[$column] > $Lmax)) {
+		if(($fields[$column] > $Lmin) && ($fields[$column] < $Lmax)) {
 			$hash{$fields[0]}++;
 			#$LN[$fields[0]] = 1;
 		}
