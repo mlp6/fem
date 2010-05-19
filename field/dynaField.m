@@ -47,6 +47,9 @@ function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 % Broke out probe definitions into separate functions.
 % Mark 06/15/07
 % --------------------------------------------------------------------------
+% Removed the estimated time; not accurate at all.
+% Mark 2010-04-20
+% --------------------------------------------------------------------------
 
 field_init(-1)
 
@@ -94,12 +97,6 @@ for i=1:size(FIELD_PARAMS.measurementPoints,1)
     if(i==1),
         tic,
     end;
-    if(i==EstCount),
-        EstCalcTime = toc; % s
-        EstRunTime = (EstCalcTime/EstCount)*(size(FIELD_PARAMS.measurementPoints,1)-1)/60; % min
-        % empirically, the run times tend to be 2x the calculated estimate, so I'm going to multiple
-        disp(sprintf('Estimate Run Time = %.1f m',EstRunTime));
-    end;	
 end
 
 CalcTime = toc; % s

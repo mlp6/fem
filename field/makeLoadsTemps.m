@@ -53,6 +53,11 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % function.
 % Mark 2010-02-03
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Added a check to make sure there is a "center" node line for the 
+% push at a lateral position of 0 (more useful error output when
+% developing a model)
+% Mark 2010-04-20
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % node tolerance to search for center line in the lateral
 % dimension
@@ -67,6 +72,11 @@ load(NormName);
 NormIntensity = intensity;
 mpn = FIELD_PARAMS.measurementPointsandNodes;
 NormFocalDepth = FIELD_PARAMS.focus(3)*100;  % convert m -> cm
+
+% check to make sure nodes exist at lat == 0 for the push
+if(isempty(find(abs(mpn(:,3)) < LatTol))),
+    error('lat = 0 nodes missing for rad force excitation');
+end;
 
 NormFZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (NormFocalDepth - NormFocalDepth*AxialSearch) & abs(mpn(:,4)) < (NormFocalDepth + NormFocalDepth*AxialSearch)); 
 
