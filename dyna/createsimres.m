@@ -81,6 +81,7 @@ for t=1:NUM_TIMESTEPS,
     temp2 = -temp(image_plane)*1e4;
     temp2 = shiftdim(temp2,1);
     arfidata(:,:,t) = temp2;
+    clear temp temp2
 
 end;
 

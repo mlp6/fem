@@ -28,6 +28,17 @@
 #
 # Mark 03/07/08
 ###########################################################################
+# ls-prepost ASCII data save change
+# ls-prepost2 will accumulate time steps in memory when dumping them to ASCII
+# files; this can occupy large amounts of RAM for large meshes / lots of time
+# steps; I've modified the code to now dump a single time step in a loop.  The
+# memory footprint is now trivial; the problem is that the overhead of
+# launching ls-prepost2 now has to occur for every time step.  In the future I
+# will make this a flag, but for now I'll bite the bullet and make this the
+# default behavior.
+# 
+# Mark 2010-08-14
+###########################################################################
 
 # define the correct paths to matlab and ls-prepost2
 $MATLAB = "/usr/local/matlabR2007a/bin/matlab -nojvm -nosplash";
@@ -70,33 +81,27 @@ close(NODEFILE);
 # compute how many time steps can be extracted
 $NumTimeSteps = int($TerminationTime / $TimeStep);
 
-# create temporary ls-prepost2 command file to save the thermal
-# results to ASCII files
-print "Generating the ls-prepost2 command file\n";
-open(SAVEFILE,'> savedisp.cfile');
-print SAVEFILE "open d3plot d3plot\n";
-# max shear strain specific entry
-print SAVEFILE "fringe 113\n";
-
+print "Extracting data from d3plots to ASCII with ls-prepost2 . . .\n";
 for ($i = 1; $i <= $NumTimeSteps; $i++)
 	{
-	# latest version of ls-prepost2 uses an extra 0 on this
-	# command
+        # create temporary ls-prepost2 command file to save the results to ASCII files
+        open(SAVEFILE,'> savedisp.cfile');
+        print SAVEFILE "open d3plot d3plot\n";
+        print SAVEFILE "fringe 113\n";
+
         # BELOW IS THE LINE FOR DISPLACEMENTS
 	print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0 0\n";
         # BELOW IS THE LINE FOR VELOCITIES
 	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 1 0 0 0 0 0 0 0\n";
         # BELOW IS THE LINE FOR max shear strain
 	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 0 0 1 0 0 0 0 0\n";
+        close(SAVEFILE);
+
+        system("$LS_PREPOST2 c=savedisp.cfile -nographics");
+
+        # remove the command file
+        system("rm savedisp.cfile");
 	}
-close(SAVEFILE);
-
-# run ls-prepost2 to convert the d3plot files to ASCII files
-print "Running ls-prepost2 to convert the d3plot files\n";
-system("$LS_PREPOST2 c=savedisp.cfile -nographics");
-
-# remove the command file
-system("rm savedisp.cfile");
 
 $dont_run = 0;
 if($dont_run != 1){
