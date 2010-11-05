@@ -78,6 +78,7 @@ for t=1:NUM_TIMESTEPS,
 
     %temp(disp(:,1,1)) = disp(:,4,t);
     temp(disp_slice(:,1)) = disp_slice(:,4);
+    %temp(disp_slice(:,1)) = disp_slice(:,3);
     temp2 = -temp(image_plane)*1e4;
     temp2 = shiftdim(temp2,1);
     arfidata(:,:,t) = temp2;

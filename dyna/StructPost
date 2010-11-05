@@ -41,7 +41,8 @@
 ###########################################################################
 
 # define the correct paths to matlab and ls-prepost2
-$MATLAB = "/usr/local/matlabR2007a/bin/matlab -nojvm -nosplash";
+#$MATLAB = "/usr/local/matlabR2007a/bin/matlab -nojvm -nosplash";
+$MATLAB = "/usr/local/matlab2008b/bin/matlab -nodesktop -nosplash";
 #$LS_PREPOST2 = "/usr/local/lstc/bin/lsprepost2_4_linux64_centos52";
 $LS_PREPOST2 = "ls-prepost2";
 $SVN_DYNA_PATH = "/krnlab/mlp6/fem/dyna";
