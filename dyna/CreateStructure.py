@@ -1,4 +1,4 @@
-# CreateStructure.py
+#!/usr/local/bin/python2.7
 '''
 CreateStructure.py - create "simple" structures in the FE meshes (e.g., spheres, layers)
 
@@ -16,8 +16,8 @@ def main():
     import sys
     import numpy as n
 
-    if sys.version < '2.6':
-        sys.exit("ERROR: Requires Python >= v2.6")
+    if sys.version < '2.7':
+        sys.exit("ERROR: Requires Python >= v2.7")
 
     import argparse
 

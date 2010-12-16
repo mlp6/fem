@@ -42,7 +42,7 @@
 
 # define the correct paths to matlab and ls-prepost2
 #$MATLAB = "/usr/local/matlabR2007a/bin/matlab -nojvm -nosplash";
-$MATLAB = "/usr/local/matlab2008b/bin/matlab -nodesktop -nosplash";
+$MATLAB = "/usr/local/matlab2010b/bin/matlab -nodesktop -nosplash";
 #$LS_PREPOST2 = "/usr/local/lstc/bin/lsprepost2_4_linux64_centos52";
 $LS_PREPOST2 = "ls-prepost2";
 $SVN_DYNA_PATH = "/krnlab/mlp6/fem/dyna";
@@ -83,26 +83,23 @@ close(NODEFILE);
 $NumTimeSteps = int($TerminationTime / $TimeStep);
 
 print "Extracting data from d3plots to ASCII with ls-prepost2 . . .\n";
+open(SAVEFILE,'> savedisp.cfile');
+print SAVEFILE "open d3plot d3plot\n";
+print SAVEFILE "fringe 113\n";
+
 for ($i = 1; $i <= $NumTimeSteps; $i++)
 	{
         # create temporary ls-prepost2 command file to save the results to ASCII files
-        open(SAVEFILE,'> savedisp.cfile');
-        print SAVEFILE "open d3plot d3plot\n";
-        print SAVEFILE "fringe 113\n";
-
         # BELOW IS THE LINE FOR DISPLACEMENTS
 	print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0 0\n";
         # BELOW IS THE LINE FOR VELOCITIES
 	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 1 0 0 0 0 0 0 0\n";
         # BELOW IS THE LINE FOR max shear strain
 	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 0 0 0 1 0 0 0 0 0\n";
-        close(SAVEFILE);
-
-        system("$LS_PREPOST2 c=savedisp.cfile -nographics");
-
-        # remove the command file
-        system("rm savedisp.cfile");
 	}
+
+close(SAVEFILE);
+system("$LS_PREPOST2 c=savedisp.cfile -nographics");
 
 $dont_run = 0;
 if($dont_run != 1){
@@ -124,7 +121,6 @@ system("rm runmatlab.m");
 
 # clean up temporary runtime files
 system("rm node_disp_t*.asc");
-system("rm lspost.*");
 
 print "Post-processing of model results complete\n";
 }

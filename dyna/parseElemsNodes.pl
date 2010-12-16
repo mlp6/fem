@@ -11,15 +11,13 @@
 # Changed the field separation character from spaces -> commas
 # in the output files (Mark 08/08/05)
 # 
+# Don't mind clobbering existing outputs files; removed that check.
+# (Mark 2010-12-12)
+#
 # Mark Palmeri
 # Deparment of Biomedical Engineering
 # Pratt School of Engineering
 # Duke University
-
-# check to make sure that you aren't going to clobber a
-# pre-existing file
-if(-e 'elems.dyn') {die "elems.dyn already exists" }
-if(-e 'nodes.dyn') {die "nodes.dyn already exists" }
 
 # open file handles for the element and node files
 open(ELEMFILE,'> elems.dyn');

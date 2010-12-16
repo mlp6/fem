@@ -1,4 +1,4 @@
-# bc.py
+#!/usr/local/bin/python2.7
 '''
 bc.py - apply boundary conditions to rectangular solid meshes (the majority of the FE sims); can handle quarter- and half-symmetry models.
 
