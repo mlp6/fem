@@ -31,19 +31,18 @@ print NODEFILE "*NODE\n";
 while(<>)
 	{
 	# remove the EOL characters from each line
-  chomp;
+        chomp;
 
 	# split up each line into columns delimited by spaces
-  @fields = split(' ',$_);
+        @fields = split(' ',$_);
 
 	# split the field entries using commas in the output file
 	$printout = join ",", @fields;
 
 	# node entries will have 4 entries per line, while element
 	# entries will have 10 entries per line
-  if( ($#fields + 1) == 4)
+        if( ($#fields + 1) == 4)
 		{
-		#print NODEFILE "@fields\n"; 
 		print NODEFILE "$printout\n"; 
 		print NODEASC "$printout\n"; 
 		}
