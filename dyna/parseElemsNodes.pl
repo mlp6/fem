@@ -19,6 +19,8 @@
 # Pratt School of Engineering
 # Duke University
 
+print('WARNING: THIS VERSION IS DEPRECIATED!  YOU SHOULD BE USING parseElemsNodes.py!')
+
 # open file handles for the element and node files
 open(ELEMFILE,'> elems.dyn');
 open(NODEFILE,'> nodes.dyn');

@@ -23,11 +23,11 @@ def main():
 
     # lets read in some command-line arguments
     parser = argparse.ArgumentParser(description="Generate new element structure file as specified on the command line.  \n\nPROG [OPTIONS]...",version="%s" % __version__)
-    parser.add_argument("--nefile",dest="nefile",help="new element definition output file [default = %default]",default="struct.dyn")
-    parser.add_argument("--nodefile",dest="nodefile",help="node definition input file [default = %default]",default="nodes.dyn")
-    parser.add_argument("--elefile",dest="elefile",help="element definition input file [default = %default]",default="elems.dyn")
-    parser.add_argument("--partid",dest="partid",help="part ID to assign to the new structure [default = %default]",default=2)
-    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer) [default = %default]",default="sphere")
+    parser.add_argument("--nefile",dest="nefile",help="new element definition output file [default = struct.dyn]",default="struct.dyn")
+    parser.add_argument("--nodefile",dest="nodefile",help="node definition input file [default = nodes.dyn]",default="nodes.dyn")
+    parser.add_argument("--elefile",dest="elefile",help="element definition input file [default = elems.dyn]",default="elems.dyn")
+    parser.add_argument("--partid",dest="partid",help="part ID to assign to the new structure [default = 2]",default=2)
+    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer) [default = sphere]",default="sphere")
     parser.add_argument("--sopts",dest="sopts",help="structure options (see in-code comments)",nargs='+',type=float)
 
     args = parser.parse_args()
