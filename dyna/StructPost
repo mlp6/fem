@@ -2,11 +2,10 @@
 # StructPost.pl
 # Summary:  Post-processing of structural ls-dyna model results.
 #
-# Usage: StructPost DynaDeck NodeASC
+# Usage: StructPost DynaDeck NodeDYN
 #        DynaDeck - absolute file path for the dyna deck to extract the
 #                   termination time and time step
-#        NodeASC - absolute file path to the node ID & coordinate ASCII file
-#                  (no dyna headers/footers)
+#        NodeDYN - absolute file path to the node ID & coordinate file (nodes.dyn)
 #
 # ASSUMPTIONS:  
 # (1) d3plot files have been generated and are in the working directory 
@@ -39,6 +38,9 @@
 # 
 # Mark 2010-08-14
 ###########################################################################
+# replaced the nodes.asc requirement in createsimres w/ nodes.dyn
+# # Mark 2011-04-21
+###########################################################################
 
 # define the correct paths to matlab and ls-prepost2
 #$MATLAB = "/usr/local/matlabR2007a/bin/matlab -nojvm -nosplash";
@@ -51,7 +53,7 @@ $SVN_DYNA_PATH = "/krnlab/mlp6/fem/dyna";
 if(($#ARGV+1) != 2) { die "Wrong number of input arguments (!=2)" }
 
 $DynaDeck = $ARGV[0];
-$NodeASC = $ARGV[1];
+$NodeDYN = $ARGV[1];
 
 # open up the dyna deck to extract the termination time and the time step
 open(NODEFILE,"<$DynaDeck") || die "The input file couldn't be opened!";
@@ -112,9 +114,9 @@ print MATFILE "addpath('$SVN_DYNA_PATH');\n";
 print MATFILE "createdisp($NumTimeSteps);\n";
 #print MATFILE "create_velocity($NumTimeSteps);\n";
 
-print MATFILE "createsimres('disp.dat','$NodeASC','$DynaDeck');\n";
-#print MATFILE "createsimreslat('disp.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
-#print MATFILE "createsimresvel('vel.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+print MATFILE "createsimres('disp.dat','$NodeDYN','$DynaDeck');\n";
+#print MATFILE "createsimreslat('disp.mat','$NodeDYN',$TimeStep,$TerminationTime);\n";
+#print MATFILE "createsimresvel('vel.mat','$NodeDYN',$TimeStep,$TerminationTime);\n";
 
 system("$MATLAB < runmatlab.m");
 system("rm runmatlab.m");

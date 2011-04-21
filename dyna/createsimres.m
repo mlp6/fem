@@ -1,12 +1,11 @@
-function []=createsimres(dispfile,node_asc,dyn_file);
-% function []=createsimres(dispfile,node_asc,dyn_file);
+function []=createsimres(dispfile,node_dyn,dyn_file);
+% function []=createsimres(dispfile,node_dyn,dyn_file);
 %
 % Create simres.mat that shares the same format as experimental res*.mat files.
 %
 % INPUTS:
 %   dispfile (string) - path for disp.dat created by createdisp.m
-%   node_asc (string) - path to the node ID & coordinate ASCII file (no dyna
-%                       headers/footers)
+%   node_dyn (string) - path to the node ID & coordinate file (nodes.dyn)
 %   dyn_file (string) - path to the input dyna deck that includes the d3plot time step
 %
 %   Requires the function SortNodeIDs.m - should be in the svn repository.
@@ -34,12 +33,15 @@ function []=createsimres(dispfile,node_asc,dyn_file);
 % (2) Added more graceful error-checking upfront (checking that input files exist)
 % to allow batch jobs to run completely even with some missing files along the way. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% changed nodes.asc -> nodes.dyn (i.e., handle header/footer starting with '*'
+% Mark 2011-04-21
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % check to make sure the specified files actually exist
-if(exist(node_asc) ~= 2 || exist(dyn_file) ~= 2),
+if(exist(node_dyn) ~= 2 || exist(dyn_file) ~= 2),
     disp(pwd);
-    if(exist(node_asc) ~= 2),
-        warning('%s does not exist',node_asc);
+    if(exist(node_dyn) ~= 2),
+        warning('%s does not exist',node_dyn);
     end;
     if(exist(dyn_file) ~=2 ),
         warning('%s does not exist',dyn_file);
@@ -52,7 +54,7 @@ end;
 % load disp
 % load(dispfile);
 
-[SortedNodeIDs,ele,lat,axial]=SortNodeIDs(node_asc);
+[SortedNodeIDs,ele,lat,axial]=SortNodeIDs(node_dyn);
 
 % find the imaging plane
 ele0 = min(find(ele >= 0));

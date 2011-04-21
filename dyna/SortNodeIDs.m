@@ -23,12 +23,17 @@ function [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(nodes_file);
 % Updated the comments to reflect what is actually going on.
 % Mark 03/07/08
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% changed nodes.asc -> nodes.dyn (i.e., handle header/footer starting with '*'
+% Mark 2011-04-21
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 tic;
 
 % load in the node IDs and corresponding coordinates
-% headers/footers must be stripped from this file
-nodes=load(nodes_file);
+fid = fopen(nodes_file,'r');
+nodes = textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
+fclose(fid);
+nodes = cell2mat(nodes);
 
 % clean up the precision of the node locations since the
 % HyperMesh generation tolerance was so poor; this will help
