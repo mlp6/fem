@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/bin/python2.7
 
 __author__ = "Mark Palmeri"
 __date__ = "2010-12-19"

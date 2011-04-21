@@ -7,11 +7,11 @@ __author__ = "Mark Palmeri"
 __date__ = "2010-12-16"
 __version__ = "0.1"
 
-parser = argparse.ArgumentParser(description="Find result files missing from all subdirectories in the specified root directory.  \n\nPROG [OPTIONS]...",version="%s" % __version__)
+parser = argparse.ArgumentParser(description="Find result files missing from all subdirectories in the specified root directory.")
 
-parser.add_argument("--root",dest="simroot",help="root path for sim subdirs [default = %default]",default=".")
-parser.add_argument("--sdir",dest="sdir",help="suffix to define relevant sim subdirectories [default = %default]",default="mm")
-parser.add_argument("--res",dest="res",help="res file name [default = %default]",default="res_sim.mat")
+parser.add_argument("--root",dest="simroot",help="root path for sim subdirs [default = .]",default=".")
+parser.add_argument("--sdir",dest="sdir",help="suffix to define relevant sim subdirectories [default = mm]",default="mm")
+parser.add_argument("--res",dest="res",help="res file name [default = res_sim.mat]",default="res_sim.mat")
 
 args = parser.parse_args()
 
