@@ -7,7 +7,8 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % IsppaNorm (float) - Isppa value for the normalization file (W/cm^2)
 % PulseDuration (float) - pulse duration (us)
 % cv (float) - specific heat (4.2 W s / cm^3 / C)
-% ElementVolume (float) - element volume (cm^3)
+% ElementVolume (float or char string) - element volume (cm^3) or path to
+%                                        NodeVolume file that Andy creates
 % sym (string) - symmetry boundary conditions
 %                'q' -> quarter symmetry
 %                'h' -> half symmetry
@@ -58,6 +59,10 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % developing a model)
 % Mark 2010-04-20
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Changed ElementVolume to now be an input that can be a float (as it was) or a
+% char string specifying a file path (for Andy's inputs).
+% Mark 2011-05-19
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % node tolerance to search for center line in the lateral
 % dimension
@@ -75,6 +80,7 @@ NormFocalDepth = FIELD_PARAMS.focus(3)*100;  % convert m -> cm
 
 % check to make sure nodes exist at lat == 0 for the push
 if(isempty(find(abs(mpn(:,3)) < LatTol))),
+    keyboard
     error('lat = 0 nodes missing for rad force excitation');
 end;
 
@@ -147,7 +153,13 @@ fprintf(foutload,'$ Normalization File:\n');
 fprintf(foutload,'$ %s\n',NormName);
 fprintf(foutload,'$ Normalization Isppa = %.1f W/cm^2\n',IsppaNorm);
 fprintf(foutload,'$ Frequency = %.1f MHz\n',FIELD_PARAMS.Frequency);
-fprintf(foutload,'$ Element Volume = %d cm^3\n',ElementVolume);
+if isa(ElementVolume,'float'),
+    fprintf(foutload,'$ Element Volume = %d cm^3\n',ElementVolume);
+elseif isa(ElementVolume,'char'),
+    fprintf(foutload,'$ Node Volume File: %s\n',ElementVolume);
+    NodeVolumes = load(ElementVolume); 
+end;
+
 
 % now solve for initial temperatures and point loads
 MaxTemp = 0;
@@ -172,7 +184,11 @@ for x=1:length(mpn),
             % 1 W = 10,000,000 g cm^2/s^2
             ScaledIntensityLoad = ScaledIntensity(x) * 10000000;
             BodyForce = (2*AlphaNp*ScaledIntensityLoad)/SoundSpeed;
-            PointLoad = BodyForce * ElementVolume;
+            if isa(ElementVolume,'float'),
+                PointLoad = BodyForce * ElementVolume;
+            elseif isa(ElementVolume,'char'),
+                PointLoad = BodyForce * NodeVolumes(find(NodeVolumes(:,1) = NodeID),2);
+            end;
             switch sym,
                 case 'q'
                     % if the load is on the symmetry axis (x = y = 0), then divide by 4; if

@@ -31,15 +31,13 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % Mark 2011-04-21
 % ------------------------------------------------------------------------------
 
-addpath('/home/mlp6/matlab/Field_II_7.8');
+addpath('/home/mlp6/matlab/Field_II_7.10');
 
 % read in the nodes
-disp('Reading in the data...');
 fid = fopen(NodeName,'r');
 measurementPointsandNodes=textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
 fclose(fid);
 measurementPointsandNodes = cell2mat(measurementPointsandNodes);
-disp('Data read complete.');
 
 % skip node number, use just coords
 measurementPoints=measurementPointsandNodes(:,2:4);
@@ -69,7 +67,6 @@ FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
 % perform the field calculation
-disp('Simulating the pressure field using Field II');
 [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
 
 % save intenstiy file
