@@ -40,7 +40,8 @@ for i in MESHFILE:
             if ELE == True:
                 ELEMFILE.write(','.join(line) + '\n')
             elif NODE == True:
-                NODEFILE.write(','.join(line) + '\n')
+                # limiting to first 4 entries since lspp appears to be adding some extra numbers in the node entries now
+                NODEFILE.write(','.join(line[0:4]) + '\n')
 
 # print to footer for each file
 NODEFILE.write('*END\n')
