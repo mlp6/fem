@@ -1,5 +1,5 @@
-function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym);
-%function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym);
+function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym,LCID);
+%function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym,LCID);
 %
 % INPUTS:
 % InputName (string) - dyna*.mat file to process
@@ -12,6 +12,7 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % sym (string) - symmetry boundary conditions
 %                'q' -> quarter symmetry
 %                'h' -> half symmetry
+% LCID - load curve ID for the point loads
 % 
 % OUTPUTS:
 % InitTemps_a*_PD*_cv.dyn is written to the CWD
@@ -62,6 +63,10 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % Changed ElementVolume to now be an input that can be a float (as it was) or a
 % char string specifying a file path (for Andy's inputs).
 % Mark 2011-05-19
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Added LCID (load curve ID) input for the load curves to be able to 
+% do SSI-like sims.
+% Mark 2011-08-05
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % node tolerance to search for center line in the lateral
@@ -187,7 +192,7 @@ for x=1:length(mpn),
             if isa(ElementVolume,'float'),
                 PointLoad = BodyForce * ElementVolume;
             elseif isa(ElementVolume,'char'),
-                PointLoad = BodyForce * NodeVolumes(find(NodeVolumes(:,1) = NodeID),2);
+                PointLoad = BodyForce * NodeVolumes(find(NodeVolumes(:,1) == NodeID),2);
             end;
             switch sym,
                 case 'q'
@@ -209,7 +214,7 @@ for x=1:length(mpn),
             fprintf(fout,'%i,%.4f\n',NodeID,InitTemp);
             % write point load data (negative to point in 
             % -z direction in the dyna model)
-            fprintf(foutload,'%d,3,1,%0.2e,0 \n',NodeID,-PointLoad);
+            fprintf(foutload,'%d,3,%d,%0.2e,0 \n',NodeID,LCID,-PointLoad);
             if(abs(PointLoad) > MaxLoad),
                 MaxLoad = abs(PointLoad);
             end;
