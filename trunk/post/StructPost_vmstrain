@@ -1,0 +1,114 @@
+#!/usr/bin/perl
+# StructPost.pl
+# Summary:  Post-processing of structural ls-dyna model results.
+#
+# Usage: StructPost DynaDeck NodeASC
+#        DynaDeck - absolute file path for the dyna deck to extract the
+#                   termination time and time step
+#        NodeASC - absolute file path to the node ID & coordinate ASCII file
+#                  (no dyna headers/footers)
+#
+# ASSUMPTIONS:  
+# (1) d3plot files have been generated and are in the working directory 
+# (2) The dyna deck uses comma delimiters without spaces or tabs
+#
+###########################################################################
+# HX OF CHANGES
+# First stab...
+# Mark 04/13/05
+###########################################################################
+# Updated the output command for ls-prepost2 for the latest version.
+# Commented out the remove commands.
+# Mark 07/18/06
+###########################################################################
+# BIG CHANGES!!
+# Added the ability to read the dyna deck to extract the termination time 
+# and the time step increment.
+#
+#
+# Mark 03/07/08
+###########################################################################
+
+# define the correct paths to matlab and ls-prepost2
+$MATLAB = "/usr/local/matlabR2007a/bin/matlab";
+$LS_PREPOST2 = "/usr/local/lstc/bin64/ls-prepost2";
+$SVN_DYNA_PATH = "/home/mlp6/fem/dyna";
+
+# make sure that the correct number of input arguments are given (2)
+if(($#ARGV+1) != 2) { die "Wrong number of input arguments (!=2)" }
+
+$NodeASC = $ARGV[1];
+
+# open up the dyna deck to extract the termination time and the time step
+open(NODEFILE,"<$ARGV[0]") || die "The input file couldn't be opened!";
+$term_time = "*CONTROL_TERMINATION";
+$database_d3plot = "*DATABASE_BINARY_D3PLOT";
+$work_next_line = 0;
+while(<NODEFILE>) {
+    chomp;
+    if($work_next_line == 1) {
+        @fields = split(',',$_);
+        $TerminationTime = $fields[0];
+        $work_next_line = 0;
+    }
+    elsif($work_next_line == 2) {
+        @fields = split(',',$_);
+        $TimeStep = $fields[0];
+        $work_next_line = 0;
+    }
+    elsif($_ =~ m/^$term_time/) {
+        $work_next_line = 1;
+    }
+    elsif($_ =~ m/~$database_d3plot/) {
+        $work_next_line = 2;
+    }
+}
+close(NODEFILE);
+
+# compute how many time steps can be extracted
+$NumTimeSteps = int($TerminationTime / $TimeStep);
+
+# create temporary ls-prepost2 command file to save the thermal
+# results to ASCII files
+print "Generating the ls-prepost2 command file\n";
+open(SAVEFILE,'> savedisp.cfile');
+print SAVEFILE "open d3plot d3plot\n";
+print SAVEFILE "fringe 3\n";
+print SAVEFILE "pfringe\n";
+print SAVEFILE "state 12\n";
+print SAVEFILE "fringe 109\n";
+print SAVEFILE "pfringe\n";
+for ($i = 1; $i <= $NumTimeSteps; $i++)
+	{
+	# latest version of ls-prepost2 uses an extra 0 on this
+	# command
+	#print SAVEFILE "output ./node_disp_t$i.asc $i 1 0 1 0 0 1 0 0 0 0 0\n";
+        print SAVEFILE "state $i\n";
+	print SAVEFILE "output ./node_vms_t$i.asc $i 1 0 1 0 0 0 0 0 1 0 0 0 0 0\n";
+	}
+close(SAVEFILE);
+
+# run ls-prepost2 to convert the d3plot files to ASCII files
+print "Running ls-prepost2 to convert the d3plot files\n";
+system("$LS_PREPOST2 c=savedisp.cfile -nographics");
+
+# remove the command file
+system("rm savedisp.cfile");
+
+# generate zdisp.mat & create simsres.mat
+# preserving this step for legacy models
+print "Running createzdisp.m\n";
+open(MATFILE,'>runmatlab.m');
+# place the appropriate matlab command in here
+print MATFILE "addpath('$SVN_DYNA_PATH');\n";
+print MATFILE "createvms($NumTimeSteps);\n";
+print MATFILE "createvmsres('vms.mat','$NodeASC',$TimeStep,$TerminationTime);\n";
+system("$MATLAB -nojvm -nosplash < runmatlab.m");
+system("rm runmatlab.m");
+
+# clean up temporary runtime files
+system("rm node_vms_t*.asc");
+system("rm lspost.*");
+#system("rm zdisp.mat");
+
+print "Post-processing of model results complete\n";
