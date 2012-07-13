@@ -1,7 +1,0 @@
-openc d3plot d3plot
-gtime 1
-xyplot 1 savefile xypair KineticEnergy.asc 1 all
-gtime 2
-xyplot 1 savefile xypair StrainEnergy.asc 1 all
-gtime 3
-xyplot 1 savefile xypair TotalEnergy.asc 1 all
