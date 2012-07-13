@@ -4,12 +4,14 @@ bc.py - apply boundary conditions to rectangular solid meshes (the majority of t
 
 This code was based on the older BoundCond.pl, but it should (1) be more flexbible, (2) utilizies more command-line options, and (3) allows for segment definition for the non-reflecting bc.
 
+MODIFIED v0.2 (2012-07-02)
+* able to accomodate no symmetry in the model (previously was 1/4 or 1/2 symmetry)
 
 '''
 
 __author__ = "Mark Palmeri (mlp6)"
-__date__ = "2010-11-17"
-__version__ = "0.1"
+__date__ = "2012-07-02"
+__version__ = "0.2"
 
 
 def main():
@@ -26,7 +28,7 @@ def main():
     parser = OptionParser(usage="Generate boundary condition data as specified on the command line.  \n\n%prog [OPTIONS]...",version="%s" % __version__)
     parser.add_option("--bcfile",dest="bcfile",help="boundary condition output file [default = %default]",default="bc.dyn")
     parser.add_option("--nodefile",dest="nodefile",help="node defintion input file [default = %default]",default="nodes.dyn")
-    parser.add_option("--sym",dest="sym",help="quarter (q) or half (h) symmetry [default = %default]",default="q")
+    parser.add_option("--sym",dest="sym",help="quarter (q), half (h) symmetry or none (none) [default = %default]",default="q")
 
     (opts,args) = parser.parse_args()
 
@@ -55,7 +57,12 @@ def main():
                 if m == 'bcmin': # back (non-reflecting)
                     segID = writeSeg(BCFILE,'BACK',segID,planeNodeIDs)
                 elif m == 'bcmax': # front (symmetry)
-                    writeNodeBC(BCFILE,planeNodeIDs[1:-1],'1,0,0,0,1,1') # no top / bottom rows (those will be defined in the top/bottom defs)
+                    if opts.sym == 'q' or 'h':
+                        writeNodeBC(BCFILE,planeNodeIDs[1:-1],'1,0,0,0,1,1') # no top / bottom rows (those will be defined in the top/bottom defs)
+                    else:
+                        if opts.sym != 'none':
+                            sys.exit("ERROR: invalid symmetry flag specified (front face)")
+                        segID = writeSeg(BCFILE,'FRONT',segID,planeNodeIDs)
             elif r == 1: # left/right (non-reflecting; left - symmetry)
                 if m == 'bcmin': # left (push side)
                     # if quarter-symmetry, then apply BCs, in addition to a modified edge; and don't deal w/ top/bottom
@@ -63,8 +70,8 @@ def main():
                         writeNodeBC(BCFILE,planeNodeIDs[1:-1],'0,1,0,1,0,1')
                     # else make it a non-reflecting boundary
                     else:
-                        if opts.sym != 'h':
-                            sys.exit("ERROR: invalid symmetry flag specified")
+                        if (opts.sym != 'h') and (opts.sym != 'none'):
+                            sys.exit("ERROR: invalid symmetry flag specified (left/push face)")
                         segID = writeSeg(BCFILE,'LEFT',segID,planeNodeIDs) 
                 if m == 'bcmax': # right
                     segID = writeSeg(BCFILE,'RIGHT',segID,planeNodeIDs)
