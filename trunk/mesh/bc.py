@@ -57,7 +57,7 @@ def main():
                 if m == 'bcmin': # back (non-reflecting)
                     segID = writeSeg(BCFILE,'BACK',segID,planeNodeIDs)
                 elif m == 'bcmax': # front (symmetry)
-                    if opts.sym == 'q' or 'h':
+                    if (opts.sym == 'q') or (opts.sym == 'h'):
                         writeNodeBC(BCFILE,planeNodeIDs[1:-1],'1,0,0,0,1,1') # no top / bottom rows (those will be defined in the top/bottom defs)
                     else:
                         if opts.sym != 'none':
