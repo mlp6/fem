@@ -85,7 +85,7 @@ close(NODEFILE);
 # compute how many time steps can be extracted
 $NumTimeSteps = int($TerminationTime / $TimeStep);
 
-print "Extracting data from d3plots to ASCII with ls-prepost2 . . .\n";
+print "Extracting data from d3plots to ASCII with lspp4 . . .\n";
 open(SAVEFILE,'> savedisp.cfile');
 print SAVEFILE "open d3plot d3plot\n";
 print SAVEFILE "fringe 113\n";
