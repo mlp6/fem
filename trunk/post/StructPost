@@ -44,9 +44,10 @@
 
 # define the correct paths to matlab and ls-prepost2
 #$MATLAB = "/usr/local/matlabR2007a/bin/matlab -nojvm -nosplash";
-$MATLAB = "/usr/local/matlab2010b/bin/matlab -nodesktop -nosplash";
+$MATLAB = "/usr/local/matlab2012a/bin/matlab -nodesktop -nosplash";
 #$LS_PREPOST2 = "/usr/local/lstc/bin/lsprepost2_4_linux64_centos52";
-$LS_PREPOST2 = "ls-prepost2";
+#$LS_PREPOST2 = "ls-prepost2";
+$LS_PREPOST2 = "lspp4";
 $SVN_DYNA_PATH = "/krnlab/mlp6/fem/dyna";
 
 # make sure that the correct number of input arguments are given (2)
@@ -122,7 +123,7 @@ system("$MATLAB < runmatlab.m");
 system("rm runmatlab.m");
 
 # clean up temporary runtime files
-system("rm node_disp_t*.asc");
+#system("rm node_disp_t*.asc");
 
 print "Post-processing of model results complete\n";
 }

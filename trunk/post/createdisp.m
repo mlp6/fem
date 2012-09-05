@@ -34,6 +34,11 @@ function []=createdisp(NoFiles)
 % Mark Palmeri (mlp6)
 % 2010-04-20
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Updaded the number of HeaderLines in the node*.asc
+% files outputed from lspp4 to be 6 from 5 (pre v4.x)
+% Mark Palmeri (mlp6@duke.edu)
+% 2012-09-05
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 disp('Reading in ASCII data files . . .');
 
@@ -45,7 +50,7 @@ for i=1:NoFiles,
         
         % read in data from the ASCII file
         fid = fopen(sprintf('node_disp_t%i.asc',i),'r');
-        tempscan = textscan(fid,'%f32%f32%f32%f32','HeaderLines',5,'CommentStyle','*');
+        tempscan = textscan(fid,'%f32%f32%f32%f32','HeaderLines',6,'CommentStyle','*');
         fclose(fid);
         tempmat = cell2mat(tempscan);
         clear tempscan

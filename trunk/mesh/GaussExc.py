@@ -3,7 +3,8 @@
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2010-05-19"
-__version__ = "20100520"
+__version__ = "20120827"
+#__version__ = "20100520"
 
 ###########################################################################################
 # 20100520
@@ -11,6 +12,10 @@ __version__ = "20100520"
 #   * corrected need for abs value on the symmetry searches
 #   * corrected the Guassian amplitude calculation to actually include the sigmas!
 #   * converted the 'fields' read from the nodefile to floats right off the bat
+###########################################################################################
+# 2012-08-27 (Palmeri)
+#   * Added 'none' symmetry option in case no symmetry is being used in the model
+#
 ###########################################################################################
  
 import os
@@ -70,20 +75,21 @@ def main():
                 
                 node_count += 1
                 # check for quarter symmetry force reduction (if needed)
-                if opts.sym is "qsym":
+                if opts.sym == 'qsym':
                     if math.fabs(fields[1]) < opts.search_tol and math.fabs(fields[2]) < opts.search_tol:
                         nodeGaussAmp = nodeGaussAmp/4
                         sym_node_count += 1
                     elif math.fabs(fields[1]) < opts.search_tol or math.fabs(fields[2]) < opts.search_tol:
                         nodeGaussAmp = nodeGaussAmp/2
                         sym_node_count += 1
-
                 # check for half symmetry force reduction (if needed)
-                if opts.sym is "hsym":
+                elif opts.sym == 'hsym':
                     if math.fabs(fields[1]) < opts.search_tol:
                         nodeGaussAmp = nodeGaussAmp/2
                         sym_node_count += 1
-                    
+                elif opts.sym != 'none':
+                    sys.exit('ERROR: Invalid symmetry option specified.')
+
                 LOADFILE.write("%i,3,1,-%.4f\n" % (int(fields[0]),nodeGaussAmp))
                 
     # wrap everything up

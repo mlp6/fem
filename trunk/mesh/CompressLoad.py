@@ -18,7 +18,7 @@ def main():
     import pdb 
     import os,sys,math
     import numpy as n
-    from bc import SortNodeIDs, extractPlanes
+    from bc import SortNodeIDs, extractPlane
 
     if sys.version < '2.6':
         sys.exit("ERROR: Requires Python >= v2.6")

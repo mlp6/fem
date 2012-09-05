@@ -29,6 +29,7 @@ def main():
     parser.add_option("--bcfile",dest="bcfile",help="boundary condition output file [default = %default]",default="bc.dyn")
     parser.add_option("--nodefile",dest="nodefile",help="node defintion input file [default = %default]",default="nodes.dyn")
     parser.add_option("--sym",dest="sym",help="quarter (q), half (h) symmetry or none (none) [default = %default]",default="q")
+    parser.add_option("--top",dest="top",help="fully constrain top boundary (transducer surface) [Boolean default True]",default=True)
 
     (opts,args) = parser.parse_args()
 
@@ -81,7 +82,8 @@ def main():
                     writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
                 if m == 'bcmax': # top
                     segID = writeSeg(BCFILE,'TOP',segID,planeNodeIDs)
-                    writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
+                    if opts.top == True:
+                        writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
 
     # write non-reflecting boundaries (set segment references)
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
