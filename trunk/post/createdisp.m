@@ -50,8 +50,8 @@ for i=1:NoFiles,
         
         % read in data from the ASCII file
         fid = fopen(sprintf('node_disp_t%i.asc',i),'r');
-        tempscan = textscan(fid,'%f32%f32%f32%f32','HeaderLines',5,'CommentStyle','*');
-        %tempscan = textscan(fid,'%f32%f32%f32%f32','HeaderLines',6,'CommentStyle','*');
+        %tempscan = textscan(fid,'%f32%f32%f32%f32','HeaderLines',5,'CommentStyle','*');
+        tempscan = textscan(fid,'%f32%f32%f32%f32','HeaderLines',6,'CommentStyle','*');
         fclose(fid);
         tempmat = cell2mat(tempscan);
         clear tempscan
