@@ -1,22 +1,18 @@
 How to create a rectangular solid mesh using ls-prepost
 
-Last Updated: 2010-12-30 (Mark)
+Last Updated: 2012-11-27 (Mark)
 
-(1) Copy and edit /krnlab/mlp6/fem/dyn/MeshGen.cfile.  You just need to edit
-the first line - the syntax specified the min x,y,z    coordinates in the model
-and the max coordinates (x,y,z) followed by the node density along each
-dimension.  The example one is     x:0 -> -1.5 cm, y:0 -> 1.5 cm, and z: -0.1
--> -8.1 cm.  Make sure that you keep this relative convention the same (i.e., a
-"negative" right-hand rule), and don't start z right at 0.                                                                          
+(1) Copy and edit mesh/MeshGen.cfile.  You just need to edit the first line -
+the syntax specified the min x,y,z    coordinates in the model and the max
+coordinates (x,y,z) followed by the node density along each dimension.  The
+example one is     x:0 -> -1.5 cm, y:0 -> 1.5 cm, and z: -0.1 -> -8.1 cm.  Make
+sure that you keep this relative convention the same (i.e., a "negative"
+right-hand rule), and don't start z right at 0.                                                                          
                                                                                                                                     
 (2) Run this script through ls-prepost on the command line:                                                                         
-ls-prepost2 -nographics c=MeshGen.cfile.                                                                                            
+lspp4 -nographics c=MeshGen.cfile.                                                                                            
 
-Note - you can also use lspp3 (the next generation of ls-prepost), but there
-have been some issues w/ the nographics commandline flag.  You can either run
-it with the GUI popping up, or see the wiki for a work-around for this bug.
-                                                                                                                                    
-(3) Run /krnlab/mlp6/fem/dyna/parseElemsNode.py 
+(3) Run mesh/parseElemsNode.py 
                                                                                                                                     
 This will create node.dyn and elems.dyn, all of which are used
 either in include statements in the dyna deck or in the field code.                                                                                                                     
@@ -26,7 +22,7 @@ parseElemsNode.py for detailed differences (or read comments in the header of
 the script).
                                                                                                                                     
 (4) Create the correct boundary conditions using:                                                                                   
-/krnlab/mlp6/fem/bc.py                                                               
+mesh/bc.py                                                               
                                                                                                                                     
 Note - this also replaces the depreciated BoundCond.pl.  This is much more
 flexible, being able to handle different types of symmetry conditions, etc.
