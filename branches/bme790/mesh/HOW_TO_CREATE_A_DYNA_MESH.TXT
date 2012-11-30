@@ -1,0 +1,29 @@
+How to create a rectangular solid mesh using ls-prepost
+
+Last Updated: 2012-11-27 (Mark)
+
+(1) Copy and edit mesh/MeshGen.cfile.  You just need to edit the first line -
+the syntax specified the min x,y,z    coordinates in the model and the max
+coordinates (x,y,z) followed by the node density along each dimension.  The
+example one is     x:0 -> -1.5 cm, y:0 -> 1.5 cm, and z: -0.1 -> -8.1 cm.  Make
+sure that you keep this relative convention the same (i.e., a "negative"
+right-hand rule), and don't start z right at 0.                                                                          
+                                                                                                                                    
+(2) Run this script through ls-prepost on the command line:                                                                         
+lspp4 -nographics c=MeshGen.cfile.                                                                                            
+
+(3) Run mesh/parseElemsNode.py 
+                                                                                                                                    
+This will create node.dyn and elems.dyn, all of which are used
+either in include statements in the dyna deck or in the field code.                                                                                                                     
+Note - this replaced the now depreciated parseElemsNodes.pl script that did
+things a bit differently and was less flexible.  See the commandline help for
+parseElemsNode.py for detailed differences (or read comments in the header of
+the script).
+                                                                                                                                    
+(4) Create the correct boundary conditions using:                                                                                   
+mesh/bc.py                                                               
+                                                                                                                                    
+Note - this also replaces the depreciated BoundCond.pl.  This is much more
+flexible, being able to handle different types of symmetry conditions, etc.
+See the commandline help and/or script header comments for more details.
