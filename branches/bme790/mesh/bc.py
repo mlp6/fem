@@ -7,11 +7,16 @@ This code was based on the older BoundCond.pl, but it should (1) be more flexbib
 MODIFIED v0.2 (2012-07-02)
 * able to accomodate no symmetry in the model (previously was 1/4 or 1/2 symmetry)
 
+MODIFIED v0.3 (2012-12-03)
+* updated optparse -> argparse (not python 2.7 required)
+* bottom boudary condition can be explicitely set on the commandline, and can be set for in-plane constraint in addition to fully-constrained
 '''
 
-__author__ = "Mark Palmeri (mlp6)"
+__author__ = "Mark Palmeri"
+__email__ = "mlp6@duke.edu"
 __date__ = "2012-07-02"
-__version__ = "0.2"
+__revised__ = "2012-12-03"
+__version__ = "0.3"
 
 
 def main():
@@ -19,19 +24,20 @@ def main():
     import os,sys,math
     import numpy as n
 
-    if sys.version < '2.6':
-        sys.exit("ERROR: Requires Python >= v2.6")
+    if sys.version < '2.7':
+        sys.exit("ERROR: Requires Python >= v2.7")
 
-    from optparse import OptionParser
+    import argparse
 
     # lets read in some command-line arguments
-    parser = OptionParser(usage="Generate boundary condition data as specified on the command line.  \n\n%prog [OPTIONS]...",version="%s" % __version__)
-    parser.add_option("--bcfile",dest="bcfile",help="boundary condition output file [default = %default]",default="bc.dyn")
-    parser.add_option("--nodefile",dest="nodefile",help="node defintion input file [default = %default]",default="nodes.dyn")
-    parser.add_option("--sym",dest="sym",help="quarter (q), half (h) symmetry or none (none) [default = %default]",default="q")
-    parser.add_option("--top",dest="top",help="fully constrain top boundary (transducer surface) [Boolean default True]",default=True)
+    parser = argparse.ArgumentParser(description="Generate boundary condition data as specified on the command line.  The center of the transducer is assumed to be at (0,0,0; mesh coordinates), with elevation in x, lateral in y, and depth in -z.  \n\n%prog [OPTIONS]...",version="%s" % __version__)
+    parser.add_argument("--bcfile",help="boundary condition output file [default = bc.dyn]",default="bc.dyn")
+    parser.add_argument("--nodefile",help="node defintion input file [default = nodes.dyn]",default="nodes.dyn")
+    parser.add_argument("--sym",help="quarter (q), half (h) symmetry or none (none) [default = q]",default="q")
+    parser.add_argument("--top",help="constrain top boundary (transducer surface) [full, inplane, none; default = full]",default="full")
+    parser.add_argument("--bottom",help="constrain bottom boundary (opposite transducer surface) [full, inplane, none; default = full]",default="full")
 
-    (opts,args) = parser.parse_args()
+    opts = parser.parse_args()
 
     # open the boundary condition file to write
     BCFILE = open(opts.bcfile,'w')
@@ -76,14 +82,20 @@ def main():
                         segID = writeSeg(BCFILE,'LEFT',segID,planeNodeIDs) 
                 if m == 'bcmax': # right
                     segID = writeSeg(BCFILE,'RIGHT',segID,planeNodeIDs)
-            elif r == 2: # top/bottom (fully-contrained & non-reflecting)
+            elif r == 2: # top/bottom (non-reflecting & user-defined)
+                # setup dictionary for top / bottom contraint options
                 if m == 'bcmin': # bottom
                     segID = writeSeg(BCFILE,'BOTTOM',segID,planeNodeIDs)
-                    writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
+                    if opts.bottom == 'full':
+                        writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
+                    elif opts.bottom == 'inplane':
+                        writeNodeBC(BCFILE,planeNodeIDs,'0,0,1,1,1,0')
                 if m == 'bcmax': # top
                     segID = writeSeg(BCFILE,'TOP',segID,planeNodeIDs)
-                    if opts.top == True:
+                    if opts.top == 'full':
                         writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
+                    elif opts.top == 'inplane':
+                        writeNodeBC(BCFILE,planeNodeIDs,'0,0,1,1,1,0')
 
     # write non-reflecting boundaries (set segment references)
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
