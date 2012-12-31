@@ -76,7 +76,9 @@ for t=1:NUM_TIMESTEPS,
     % extract the disp values for the appropriate time step
     fseek(disp_fid,3*4+NUM_NODES*NUM_DIMS*(t-1)*4,-1);
     disp_slice = fread(disp_fid,NUM_NODES*NUM_DIMS,'float32');
+    keyboard
     disp_slice = double(reshape(disp_slice,NUM_NODES,NUM_DIMS));
+    keyboard
 
     %temp(disp(:,1,1)) = disp(:,4,t);
     temp(disp_slice(:,1)) = disp_slice(:,4);
