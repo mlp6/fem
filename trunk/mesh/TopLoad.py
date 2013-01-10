@@ -15,12 +15,19 @@ v0.3 (Mark Palmeri, 2013-01-10)
 * converted from OptionParser to argparse
 * renamed to more general "TopLoad.py" from "CompressLoad.py"
 * added new inputs for direction, loadtype, amplitude and LCID
+
+
+LICENSE:
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
+http://creativecommons.org/licenses/by-nc-sa/3.0/
 '''
 
-__author__ = "Mark Palmeri (mlp6)"
-__date__ = "2011-11-09"
+__author__ = "Mark Palmeri "
+__email__ = "mark.palmeri@duke.edu"
+__created__ = "2011-11-09"
 __modified__ = "2013-01-10"
 __version__ = "0.3"
+__license__ = "CC BY-NC-SA 3.0"
 
 def main():
     import os,sys,math
@@ -72,6 +79,7 @@ def main():
     # write out nodes on the top z plane with corresponding load values 
     # (direction of motion, nodal displacement (accel, vel, etc), temporal load
     # curve ID, scale factor for load curve)
+    # TODO: would like to clean this up with a dictionary to associate the prescribed motions with their integer IDs with one statement instead of three conditional statements below
     if loadtype == 'disp':
         writeNodeLoads(LOADFILE,planeNodeIDs,'%i,2,%i,%i' % (direction,lcid,amplitude))
     elif loadtype == 'vel':
