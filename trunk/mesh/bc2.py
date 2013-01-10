@@ -1,17 +1,20 @@
 #!/usr/local/bin/python2.7
 '''
-bc.py - apply boundary conditions to rectangular solid meshes (the majority of the FE sims); can handle quarter- and half-symmetry models.
+bc2.py - apply boundary conditions to rectangular solid meshes (the majority of the FE sims); can handle quarter- and half-symmetry models.  more functional / generalized version of the original bc.py that is taking place.
 
 This code was based on the older BoundCond.pl, but it should (1) be more flexbible, (2) utilizies more command-line options, and (3) allows for segment definition for the non-reflecting bc.
 
 MODIFIED v0.2 (2012-07-02)
 * able to accomodate no symmetry in the model (previously was 1/4 or 1/2 symmetry)
 
+MODIFIED v0.3 (2013-01-10)
+* moving to argparse from OptionParser
+
 '''
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2012-07-02"
-__version__ = "0.2"
+__version__ = "0.3"
 
 
 def main():
@@ -19,19 +22,20 @@ def main():
     import os,sys,math
     import numpy as n
 
-    if sys.version < '2.6':
-        sys.exit("ERROR: Requires Python >= v2.6")
+    if sys.version < '2.7':
+        sys.exit("ERROR: Requires Python >= v2.7")
 
-    from optparse import OptionParser
+    import argparse
 
     # lets read in some command-line arguments
-    parser = OptionParser(usage="Generate boundary condition data as specified on the command line.  \n\n%prog [OPTIONS]...",version="%s" % __version__)
-    parser.add_option("--bcfile",dest="bcfile",help="boundary condition output file [default = %default]",default="bc.dyn")
-    parser.add_option("--nodefile",dest="nodefile",help="node defintion input file [default = %default]",default="nodes.dyn")
-    parser.add_option("--sym",dest="sym",help="quarter (q), half (h) symmetry or none (none) [default = %default]",default="q")
-    parser.add_option("--top",dest="top",help="fully constrain top boundary (transducer surface) [Boolean default True]",default=True)
+    parser = argparse.ArgumentParser(description="Generate boundary condition data as specified on the command line.")
+    parser.add_argument("--bcfile",help="boundary condition output file [default = bc.dyn]",default="bc.dyn")
+    parser.add_argument("--nodefile",help="node defintion input file [default = nodes.dyn]",default="nodes.dyn")
+    parser.add_argument("--sym",help="quarter (q), half (h) symmetry or none (none) [default = q]",default="q")
+    parser.add_argument("--top",help="fully constrain top boundary (transducer surface) [Boolean default True]",default=True)
+    parser.add_argument("--bottom",help="full / inplane constraint of bottom boundary (opposite transducer surface) [[full], inplane]",default="full")
 
-    (opts,args) = parser.parse_args()
+    opts = parser.parse_args()
 
     # open the boundary condition file to write
     BCFILE = open(opts.bcfile,'w')
@@ -79,7 +83,12 @@ def main():
             elif r == 2: # top/bottom (fully-contrained & non-reflecting)
                 if m == 'bcmin': # bottom
                     segID = writeSeg(BCFILE,'BOTTOM',segID,planeNodeIDs)
-                    writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
+                    if opts.bottom == 'full':
+                        writeNodeBC(BCFILE,planeNodeIDs,'1,1,1,1,1,1')
+                    elif opts.bottom == 'inplane':
+                        writeNodeBC(BCFILE,planeNodeIDs,'0,0,1,1,1,0')
+                    else:
+                        sys.exit('ERROR: specific bottom BC invalid (can only be full or inplane)')
                 if m == 'bcmax': # top
                     segID = writeSeg(BCFILE,'TOP',segID,planeNodeIDs)
                     if opts.top == True:
