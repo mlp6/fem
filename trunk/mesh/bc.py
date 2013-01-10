@@ -1,6 +1,6 @@
 #!/usr/local/bin/python2.7
 '''
-bc2.py - apply boundary conditions to rectangular solid meshes (the majority of the FE sims); can handle quarter- and half-symmetry models.  more functional / generalized version of the original bc.py that is taking place.
+bc.py - apply boundary conditions to rectangular solid meshes (the majority of the FE sims); can handle quarter- and half-symmetry models. 
 
 This code was based on the older BoundCond.pl, but it should (1) be more flexbible, (2) utilizies more command-line options, and (3) allows for segment definition for the non-reflecting bc.
 
@@ -9,6 +9,7 @@ MODIFIED v0.2 (2012-07-02)
 
 MODIFIED v0.3 (2013-01-10)
 * moving to argparse from OptionParser
+* added explicit bottom BC option, including a new "inplane" option for compression models
 
 '''
 
