@@ -23,7 +23,7 @@ def main():
 
     # lets read in some command-line arguments
     parser = argparse.ArgumentParser(description="Generate disp.dat and vel.dat data from an ls-dyna nodout file.")
-    parser.add_argument("--nodout",help="ASCII file containing nodout data [default = nodout]",default="nodout")
+    parser.add_argument("--nodout",help="ASCII file containing nodout data [default = nodout.gz]",default="nodout.gz")
     parser.add_argument("--disp",help="generate dispout file [Boolean (flag for true)]",action='store_true')
     parser.add_argument("--dispout",help="name of the binary displacement output file [default = disp.dat]",default="disp.dat")
     parser.add_argument("--vel",help="generate velout file [Boolean (flag for true)]",action='store_true')
@@ -54,8 +54,10 @@ def main():
             timestep_read = True
             timestep_count = timestep_count + 1
             if timestep_count == 1:
-                sys.stdout.write('  Time Step: ')
+                sys.stdout.write('Time Step: ')
+                sys.stdout.flush()
             sys.stdout.write('%i ' % timestep_count)
+            sys.stdout.flush()
             data = []
             continue
         if timestep_read is True:
@@ -82,7 +84,7 @@ def main():
     if disp:
         dispout.close()
     if vel:
-        vevlout.close()
+        velout.close()
     nodout.close()
 ##################################################################################################
 def generate_header(data,outfile):
@@ -93,8 +95,11 @@ def generate_header(data,outfile):
     header = {}
     header['numnodes'] = data.__len__()
     header['numdims'] = 4 # node ID, x-val, y-val, z-val
-    numTScmd = 'grep time %s | wc -l' % outfile.name
-    header['numtimesteps'] = int(subprocess.check_output(numTScmd, shell=True))
+    if outfile.name.endswith('gz'):
+        numTScmd = 'zgrep time %s | wc -l' % outfile.name
+    else:
+        numTScmd = 'grep time %s | wc -l' % outfile.name
+    header['numtimesteps'] = int(subprocess.check_output(numTScmd, shell=True))-1 # one extra line is detected, so subtract 1
     return header
 ##################################################################################################
 def write_headers(outfile,header):
@@ -108,11 +113,13 @@ def write_headers(outfile,header):
 def process_timestep_data(data,outtype,outfile):
     import struct
     if outtype == 'disp':
-        for i in range(0,data.__len__()):
-            outfile.write(struct.pack('ffff',data[i][0],data[i][1],data[i][2],data[i][3]))
+        for i in [0,1,2,3]: # write all node IDS, then x-val, then y-val, then z-val
+            for j in range(len(data)):  # loop over all nodes
+                outfile.write(struct.pack('f',data[j][i]))
     if outtype == 'vel': 
-        for i in range(0,data.__len__()):
-            outfile.write(struct.pack('ffff',data[i][0],data[i][4],data[i][5],data[i][6]))
+        for i in [0,4,5,6]: # write all node IDS, then x-val, then y-val, then z-val
+            for j in range(len(data)):  # loop over all nodes
+                outfile.write(struct.pack('f',data[j][i]))
 ##################################################################################################
 def correct_Enot(raw_data):
     '''
