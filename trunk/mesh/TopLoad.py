@@ -16,6 +16,9 @@ v0.3 (Mark Palmeri, 2013-01-10)
 * renamed to more general "TopLoad.py" from "CompressLoad.py"
 * added new inputs for direction, loadtype, amplitude and LCID
 
+v0.3.1 (Mark Palmeri, 2013-01-17)
+* fixed amplitude formatted print output from %i -> %f
+
 
 LICENSE:
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
@@ -26,7 +29,7 @@ __author__ = "Mark Palmeri "
 __email__ = "mark.palmeri@duke.edu"
 __created__ = "2011-11-09"
 __modified__ = "2013-01-10"
-__version__ = "0.3"
+__version__ = "0.3.1"
 __license__ = "CC BY-NC-SA 3.0"
 
 def main():
@@ -50,9 +53,9 @@ def main():
 
     opts = parser.parse_args()
     loadtype = opts.loadtype
-    direction = opts.direction
-    amplitude = opts.amplitude
-    lcid = opts.lcid
+    direction = int(opts.direction)
+    amplitude = float(opts.amplitude)
+    lcid = int(opts.lcid)
 
     # open the top load file to write
     LOADFILE = open(opts.loadfile,'w')
@@ -81,13 +84,13 @@ def main():
     # curve ID, scale factor for load curve)
     # TODO: would like to clean this up with a dictionary to associate the prescribed motions with their integer IDs with one statement instead of three conditional statements below
     if loadtype == 'disp':
-        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,2,%i,%i' % (direction,lcid,amplitude))
+        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,2,%i,%f' % (direction,lcid,amplitude))
     elif loadtype == 'vel':
-        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,0,%i,%i' % (direction,lcid,amplitude))
+        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,0,%i,%f' % (direction,lcid,amplitude))
     elif loadtype == 'accel':
-        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,1,%i,%i' % (direction,lcid,amplitude))
+        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,1,%i,%f' % (direction,lcid,amplitude))
     elif loadtype == 'force':
-        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,%i,%i' % (direction,lcid,amplitude))
+        writeNodeLoads(LOADFILE,planeNodeIDs,'%i,%i,%f' % (direction,lcid,amplitude))
     
     LOADFILE.write("*END\n")
 
