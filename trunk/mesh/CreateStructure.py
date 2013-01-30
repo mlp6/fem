@@ -4,13 +4,20 @@ CreateStructure.py - create "simple" structures in the FE meshes (e.g., spheres,
 
 This code was based on the older CreateLesion.pl and CreateLayer.pl scripts.
 
+v0.1.1 (2013-01-29) [mlp6]
+* using argparse to display default input values with --help
+* added license information
 
+LICENSE:
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
+http://creativecommons.org/licenses/by-nc-sa/3.0/
 '''
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2010-11-24"
-__version__ = "0.1"
-
+__modified__ = "2013-01-29"
+__version__ = "0.1.1"
+__license__ = "CC BY-NC-SA 3.0"
 
 def main():
     import sys
@@ -22,12 +29,12 @@ def main():
     import argparse
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate new element structure file as specified on the command line.  \n\nPROG [OPTIONS]...",version="%s" % __version__)
-    parser.add_argument("--nefile",dest="nefile",help="new element definition output file [default = struct.dyn]",default="struct.dyn")
-    parser.add_argument("--nodefile",dest="nodefile",help="node definition input file [default = nodes.dyn]",default="nodes.dyn")
-    parser.add_argument("--elefile",dest="elefile",help="element definition input file [default = elems.dyn]",default="elems.dyn")
-    parser.add_argument("--partid",dest="partid",help="part ID to assign to the new structure [default = 2]",default=2)
-    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer) [default = sphere]",default="sphere")
+    parser = argparse.ArgumentParser(description="Generate new element structure file as specified on the command line.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--nefile",dest="nefile",help="new element definition output file",default="struct.dyn")
+    parser.add_argument("--nodefile",dest="nodefile",help="node definition input file",default="nodes.dyn")
+    parser.add_argument("--elefile",dest="elefile",help="element definition input file",default="elems.dyn")
+    parser.add_argument("--partid",dest="partid",help="part ID to assign to the new structure",default=2)
+    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer)",default="sphere")
     parser.add_argument("--sopts",dest="sopts",help="structure options (see in-code comments)",nargs='+',type=float)
 
     args = parser.parse_args()
