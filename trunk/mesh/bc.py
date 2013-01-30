@@ -11,11 +11,15 @@ MODIFIED v0.3 (2013-01-10)
 * moving to argparse from OptionParser
 * added explicit bottom BC option, including a new "inplane" option for compression models
 
+MODIFIED v0.3.1 (2013-01-29) [mlp6]
+* added argparse default value display in --help
+
 '''
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2012-07-02"
-__version__ = "0.3"
+__modified__ = "2013-01-29"
+__version__ = "0.3.1"
 
 
 def main():
@@ -29,12 +33,12 @@ def main():
     import argparse
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate boundary condition data as specified on the command line.")
-    parser.add_argument("--bcfile",help="boundary condition output file [default = bc.dyn]",default="bc.dyn")
-    parser.add_argument("--nodefile",help="node defintion input file [default = nodes.dyn]",default="nodes.dyn")
-    parser.add_argument("--sym",help="quarter (q), half (h) symmetry or none (none) [default = q]",default="q")
-    parser.add_argument("--top",help="fully constrain top boundary (transducer surface) [Boolean default True]",default=True)
-    parser.add_argument("--bottom",help="full / inplane constraint of bottom boundary (opposite transducer surface) [[full], inplane]",default="full")
+    parser = argparse.ArgumentParser(description="Generate boundary condition data as specified on the command line.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--bcfile",help="boundary condition output file",default="bc.dyn")
+    parser.add_argument("--nodefile",help="node defintion input file",default="nodes.dyn")
+    parser.add_argument("--sym",help="quarter (q), half (h) symmetry or none (none)",default="q")
+    parser.add_argument("--top",help="fully constrain top boundary (transducer surface)",default=True)
+    parser.add_argument("--bottom",help="full / inplane constraint of bottom boundary (opposite transducer surface) [full, inplane]",default="full")
 
     opts = parser.parse_args()
 
