@@ -1,3 +1,4 @@
+#!/usr/local/bin/python2.7
 '''
 create_disp_vel_dat.py - create disp.dat and vel.dat files from a nodout file
 
@@ -5,12 +6,21 @@ This is replacing StuctPost, which relied on ls-prepost to extract data from
 d3plot files, but no longer works gracefully on the cluster w/o GTK/video
 support; now working with ASCII nodout files.  Also replaced the Matlab
 scritps, so this should run self-contained w/ less dependencies.
+
+2013-01-29 [mlp6]
+* add Creative Commons license
+* using argparse now for --help default value display
+
+LICENSE:
+This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
+http://creativecommons.org/licenses/by-nc-sa/3.0/
 '''
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2012-11-02"
-__modified__ = "2012-12-31"
+__modified__ = "2013-01-29"
 __email__ = "mark.palmeri@duke.edu"
+__license__ = "CC BY-NC-SA 3.0"
 
 def main():
     import os,sys,math
@@ -22,12 +32,12 @@ def main():
     import argparse
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate disp.dat and vel.dat data from an ls-dyna nodout file.")
-    parser.add_argument("--nodout",help="ASCII file containing nodout data [default = nodout.gz]",default="nodout.gz")
+    parser = argparse.ArgumentParser(description="Generate disp.dat and vel.dat data from an ls-dyna nodout file.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--nodout",help="ASCII file containing nodout data",default="nodout.gz")
     parser.add_argument("--disp",help="generate dispout file [Boolean (flag for true)]",action='store_true')
-    parser.add_argument("--dispout",help="name of the binary displacement output file [default = disp.dat]",default="disp.dat")
+    parser.add_argument("--dispout",help="name of the binary displacement output file",default="disp.dat")
     parser.add_argument("--vel",help="generate velout file [Boolean (flag for true)]",action='store_true')
-    parser.add_argument("--velout",help="name of the binary velocity output file [default = vel.dat]",default="vel.dat")
+    parser.add_argument("--velout",help="name of the binary velocity output file",default="vel.dat")
 
     args = parser.parse_args()
     disp = args.disp
