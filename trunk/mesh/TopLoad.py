@@ -19,6 +19,8 @@ v0.3 (Mark Palmeri, 2013-01-10)
 v0.3.1 (Mark Palmeri, 2013-01-17)
 * fixed amplitude formatted print output from %i -> %f
 
+v0.3.2 (Mark Palmeri, 2013-01-29)
+* using argparse to display default options on --help
 
 LICENSE:
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
@@ -28,8 +30,8 @@ http://creativecommons.org/licenses/by-nc-sa/3.0/
 __author__ = "Mark Palmeri "
 __email__ = "mark.palmeri@duke.edu"
 __created__ = "2011-11-09"
-__modified__ = "2013-01-10"
-__version__ = "0.3.1"
+__modified__ = "2013-01-29"
+__version__ = "0.3.2"
 __license__ = "CC BY-NC-SA 3.0"
 
 def main():
@@ -43,13 +45,13 @@ def main():
     import argparse
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate loading conditions for the top surface of the specified mesh.")
-    parser.add_argument("--loadfile",help="compression load defintion output file [default = topload.dyn]",default="topload.dyn")
-    parser.add_argument("--nodefile",help="node definition input file [default = nodes.dyn]",default="nodes.dyn")
-    parser.add_argument("--loadtype",help="apply nodal prescribed displacements (disp), point loads (force), velocity (vel) or acceleration (accel) [default = disp]",default="disp")
-    parser.add_argument("--direction",help="direction of load [1 - x, 2 - y, 3 - z] [default = 3]",default=3)
-    parser.add_argument("--amplitude",help="amplitude of load [default = 1.0]",default=1.0)
-    parser.add_argument("--lcid",help="Load Curve ID (as function of time) to apply to these loads [default = 1]",default=1)
+    parser = argparse.ArgumentParser(description="Generate loading conditions for the top surface of the specified mesh.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--loadfile",help="compression load defintion output file",default="topload.dyn")
+    parser.add_argument("--nodefile",help="node definition input file",default="nodes.dyn")
+    parser.add_argument("--loadtype",help="apply nodal prescribed displacements (disp), point loads (force), velocity (vel) or acceleration (accel)",default="disp")
+    parser.add_argument("--direction",help="direction of load [1 - x, 2 - y, 3 - z]",default=3)
+    parser.add_argument("--amplitude",help="amplitude of load",default=1.0)
+    parser.add_argument("--lcid",help="Load Curve ID (as function of time) to apply to these loads",default=1)
 
     opts = parser.parse_args()
     loadtype = opts.loadtype
