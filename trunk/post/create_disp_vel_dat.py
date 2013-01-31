@@ -11,6 +11,9 @@ scritps, so this should run self-contained w/ less dependencies.
 * add Creative Commons license
 * using argparse now for --help default value display
 
+2013-01-31 [mlp6]
+* made default nodout input to be 'nodout' instead of 'nodout.gz'
+
 LICENSE:
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
