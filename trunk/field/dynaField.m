@@ -98,7 +98,7 @@ numNodes = size(FIELD_PARAMS.measurementPoints,1);
 progressPoints = 0:10000:numNodes;
 for i=1:numNodes,
     if ~isempty(intersect(i,progressPoints)),
-        disp(sprintf('Processed %.1f%%',i/numNodes));
+        disp(sprintf('Processed %.1f%%',i*100/numNodes));
     end;
     [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
     intensity(i)=sum(pressure.*pressure);
