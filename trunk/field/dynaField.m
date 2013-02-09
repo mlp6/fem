@@ -50,6 +50,10 @@ function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 % Removed the estimated time; not accurate at all.
 % Mark 2010-04-20
 % --------------------------------------------------------------------------
+% Updated % processing displayed update to be more sparse and a percentage
+% to reduce file IO when running.
+% Mark 2013-02-09
+% --------------------------------------------------------------------------
 
 field_init(-1)
 
@@ -90,8 +94,12 @@ disp(sprintf('Start Time: %i:%i',StartTime(4),StartTime(5)));
 tic;
 EstCount = 1000;  % number of calculations to average over to
 									 % make calc time estimates
-for i=1:size(FIELD_PARAMS.measurementPoints,1)
-    disp(sprintf('Processing node %i of %i...',i,size(FIELD_PARAMS.measurementPoints,1)));
+numNodes = size(FIELD_PARAMS.measurementPoints,1);
+progressPoints = 0:10000:numNodes;
+for i=1:numNodes,
+    if ~isempty(intersect(i,progressPoints)),
+        disp(sprintf('Processed %.1f%%',i/numNodes));
+    end;
     [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
     intensity(i)=sum(pressure.*pressure);
     if(i==1),

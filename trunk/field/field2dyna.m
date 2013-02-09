@@ -2,8 +2,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 %function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % ------------------------------------------------------------------------------
 % INPUT:
-% NodeName (string) - file name to read nodes from (nodes.asc); this file
-% cannot have any headers/footers/comments
+% NodeName (string) - file name to read nodes from (nodes.dyn)
 % alpha - 0.5, 1.0, etc.
 % Fnum - F/# (e.g. 1.3)
 % focus - [x y z] (m) "Field" coordinates
