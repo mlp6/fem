@@ -71,6 +71,12 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % Added much more descriptive PointLoads*.dyn filenames
 % Mark 2012-12-11
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Added DEBUG variable to suppress plots unless needed during
+% code development
+% Mark 2013-02-09
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+DEBUG = 0;
 
 % node tolerance to search for center line in the lateral
 % dimension
@@ -99,9 +105,11 @@ NormFieldIsppa = max(NormIntensity(NormFZ))
 
 % make plot of the intensity profile to make sure that
 % everything makes sense
-figure;
-plot(abs(mpn(NormFZ,4)),NormIntensity(NormFZ),'-kx');
-hold on;
+if DEBUG,
+    figure;
+    plot(abs(mpn(NormFZ,4)),NormIntensity(NormFZ),'-kx');
+    hold on;
+end;
 
 % find normalization max in desired alpha
 load(InputName);
@@ -114,13 +122,15 @@ FZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (FocalDept
 % what is the Isppa value that field has solved
 FieldIsppa = max(InputIntensity(FZ))
 
-% add this one to the plot
-plot(abs(mpn(FZ,4)),InputIntensity(FZ),'-rx');
-xlabel('Depth (cm)');
-ylabel('Field Intensity');
-title('Comparison of Field Intensity Profiles');
-legend('Normalization','Input','Location','Best');
-legend boxoff;
+if DEBUG,
+    % add this one to the plot
+    plot(abs(mpn(FZ,4)),InputIntensity(FZ),'-rx');
+    xlabel('Depth (cm)');
+    ylabel('Field Intensity');
+    title('Comparison of Field Intensity Profiles');
+    legend('Normalization','Input','Location','Best');
+    legend boxoff;
+end;
 
 % normalize InputIntensity
 InputIntensity = InputIntensity./FieldIsppa;
