@@ -8,6 +8,9 @@ v0.1.1 (2013-01-29) [mlp6]
 * using argparse to display default input values with --help
 * added license information
 
+v0.1.2 (2013-03-05) [brb17]
+* added struct for ellipsoid of arbitrary size and orientation
+
 LICENSE:
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
@@ -34,7 +37,7 @@ def main():
     parser.add_argument("--nodefile",dest="nodefile",help="node definition input file",default="nodes.dyn")
     parser.add_argument("--elefile",dest="elefile",help="element definition input file",default="elems.dyn")
     parser.add_argument("--partid",dest="partid",help="part ID to assign to the new structure",default=2)
-    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer)",default="sphere")
+    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer, ellipsoid)",default="sphere")
     parser.add_argument("--sopts",dest="sopts",help="structure options (see in-code comments)",nargs='+',type=float)
 
     args = parser.parse_args()
@@ -63,7 +66,7 @@ def main():
 def findStructNodeIDs(nodefile,struct,sopts):
     import sys
     import numpy as n
-
+    import math as m
     nodeIDcoords = n.loadtxt(nodefile, delimiter=',', comments='*', dtype=[('id','i4'),('x','f4'),('y','f4'),('z','f4')])
 
     structNodeIDs = {}
@@ -89,6 +92,33 @@ def findStructNodeIDs(nodefile,struct,sopts):
             if i[sopts[0]] > sopts[1] and i[sopts[0]] < sopts[2]:
                 structNodeIDs[i[0]] = True 
 
+    elif struct == 'ellipsoid':
+        '''
+        sopts is assumed to be a 9 element tuple with the following items:
+            ellipsoid center coordinates (x,y,z)
+            ellipsoid half-axis lengths (a,b,c)
+            ellipsoid euler angles (phi,theta,psi) in DEGREES
+        '''
+        cph = m.cos(m.radians(sopts[6]))    #cos(phi)
+        sph = m.sin(m.radians(sopts[6]))    #sin(phi)
+        cth = m.cos(m.radians(sopts[7]))    #cos(theta)
+        sth = m.sin(m.radians(sopts[7]))    #sin(theta)
+        cps = m.cos(m.radians(sopts[8]))    #cos(psi)
+        sps = m.sin(m.radians(sopts[8]))    #sin(psi)
+                    
+		#rotation matrix			
+        R = n.matrix([[cth*cps,-cph*sps+sph*sth*cps,sph*sps+cph*sth*cps],[cth*sps,cph*cps+sph*sth*sps,-sph*cps+cph*sth*sps],[-sth,sph*cth,cph*cth]])
+		#diagonal maxtrix of squared ellipsoid half-axis lengths
+        A = n.matrix([[n.power(sopts[3],2),0,0],[0,n.power(sopts[4],2),0],[0,0,n.power(sopts[5],2)]])
+        # A matrix - eigenvalues are a^2,b^2,c^2 (square of half-axis lengths), eigenvectors are directions of the orthogonal principal axes
+        A = R.transpose().dot(A).dot(R)
+        
+		#locate nodes within ellipsoid
+        for i in nodeIDcoords:
+            radVec = n.matrix([[i[1]-sopts[0]],[i[2]-sopts[1]],[i[3]-sopts[2]]])
+            if radVec.transpose().dot(A.I).dot(radVec) <= 1:
+                structNodeIDs[i[0]] = True
+                
     else:
         sys.exit('ERROR: The specific structure (%s) is not defined' % struct)
     
