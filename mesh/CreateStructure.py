@@ -40,7 +40,7 @@ def main():
     parser.add_argument("--nodefile",dest="nodefile",help="node definition input file",default="nodes.dyn")
     parser.add_argument("--elefile",dest="elefile",help="element definition input file",default="elems.dyn")
     parser.add_argument("--partid",dest="partid",help="part ID to assign to the new structure",default=2)
-    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer, ellipsoid)",default="sphere")
+    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer, ellipsoid, cube)",default="sphere")
     parser.add_argument("--sopts",dest="sopts",help="structure options (see in-code comments)",nargs='+',type=float)
 
     args = parser.parse_args()
