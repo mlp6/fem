@@ -11,6 +11,9 @@ v0.1.1 (2013-01-29) [mlp6]
 v0.1.2 (2013-03-05) [brb17]
 * added struct for ellipsoid of arbitrary size and orientation
 
+v0.1.3 (2013-05-05) [nbb5]
+* added struct for cube
+
 LICENSE:
 This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
 http://creativecommons.org/licenses/by-nc-sa/3.0/
@@ -118,7 +121,17 @@ def findStructNodeIDs(nodefile,struct,sopts):
             radVec = n.matrix([[i[1]-sopts[0]],[i[2]-sopts[1]],[i[3]-sopts[2]]])
             if radVec.transpose().dot(A.I).dot(radVec) <= 1:
                 structNodeIDs[i[0]] = True
-                
+
+    elif struct == 'cube':
+        '''
+        sopts is assumed to be a 6 element tuple with the following items:
+            Location of most-negative corner (x,y,z)
+            Respective cube dimensions (w,l,h)
+        '''
+        for i in nodeIDcoords:
+            if i[1] >= sopts[0] and i[1] <= (sopts[0]+sopts[3]) and i[2] >= sopts[1] and i[2] <= (sopts[1]+sopts[4]) and i[3] >= sopts[2] and i[3] <= (sopts[2]+sopts[5]):
+                structNodeIDs[i[0]] = True 
+           
     else:
         sys.exit('ERROR: The specific structure (%s) is not defined' % struct)
     
