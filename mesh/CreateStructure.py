@@ -1,4 +1,4 @@
-#!/usr/local/bin/python2.7
+#!/bin/env python2.7
 '''
 CreateStructure.py - create "simple" structures in the FE meshes (e.g., spheres, layers)
 
