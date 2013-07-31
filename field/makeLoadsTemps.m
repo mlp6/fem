@@ -20,7 +20,7 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 %
 % Example:
 % makeLoadsTemps('dyna_ispta_att0.5.mat','/emfd/mlp6/field/VF10-5/
-% F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6,'q');
+% F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6,'q',1);
 %
 % Mark 06/15/07
  
