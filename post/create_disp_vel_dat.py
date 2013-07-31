@@ -1,13 +1,18 @@
-#!/usr/local/bin/python2.7
+#!/bin/env python
 """
 create_disp_vel_dat.py
 
 Create disp.dat and vel.dat files from a nodout file.
 
-This is replacing StuctPost, which relied on ls-prepost to extract data from
-d3plot files, but no longer works gracefully on the cluster w/o GTK/video
-support; now working with ASCII nodout files.  Also replaced the Matlab
-scritps, so this should run self-contained w/ less dependencies.
+This is replacing StuctPost, which relied on LS-PREPOST, to extract data from
+d3plot* files.  (LS-PREPOST no longer works gracefully on the cluster w/o
+GTK/video support.)  Instead of working with d3plot files, this approach now
+utilizes ASCII nodout files.  Also replaced the Matlab scritps, so this should
+run self-contained w/ less dependencies.
+
+EXAMPLE
+=======
+create_disp_vel_dat.py --disp
 
 LICENSE
 =======
@@ -32,7 +37,7 @@ __modified__ = "2013-07-29"
 __license__ = "GPLv3"
 
 def main():
-    import os,sys,math
+    import os, sys, math
     import numpy as n
     
     if sys.version < '2.7':
@@ -41,12 +46,20 @@ def main():
     import argparse
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate disp.dat and vel.dat data from an ls-dyna nodout file.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodout",help="ASCII file containing nodout data (default is gzip compressed)",default="nodout.gz")
-    parser.add_argument("--disp",help="generate dispout file [Boolean (flag for true)]",action='store_true')
-    parser.add_argument("--dispout",help="name of the binary displacement output file",default="disp.dat")
-    parser.add_argument("--vel",help="generate velout file [Boolean (flag for true)]",action='store_true')
-    parser.add_argument("--velout",help="name of the binary velocity output file",default="vel.dat")
+    parser = argparse.ArgumentParser(description = "Generate disp.dat and 
+                                     vel.dat data from an ls-dyna nodout 
+                                     file.", formatter_class = 
+                                     argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--nodout", help="ASCII file containing nodout data",
+                        default="nodout.gz")
+    parser.add_argument("--disp", help="generate dispout file [Boolean 
+                        (flag for true)]", action='store_true')
+    parser.add_argument("--dispout", help="name of the binary displacement 
+                        output file", default="disp.dat")
+    parser.add_argument("--vel", help="generate velout file [Boolean 
+                        (flag for true)]", action='store_true')
+    parser.add_argument("--velout", help="name of the binary velocity output 
+                        file", default="vel.dat")
 
     args = parser.parse_args()
     disp = args.disp
@@ -54,16 +67,16 @@ def main():
 
     # open dispout and velout for binary writing
     if disp:
-	dispout = open(args.dispout,'wb')
+	dispout = open(args.dispout, 'wb')
     if vel:
-        velout = open(args.velout,'wb')
+        velout = open(args.velout, 'wb')
 
     # open nodout file
     if args.nodout.endswith('gz'):
         import gzip
-        nodout = gzip.open(args.nodout,'r')
+        nodout = gzip.open(args.nodout, 'r')
     else:
-        nodout = open(args.nodout,'r')
+        nodout = open(args.nodout, 'r')
 
     header_written = False
     timestep_read = False
