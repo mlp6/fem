@@ -136,12 +136,12 @@ def process_timestep_data(data,outtype,outfile):
 ##################################################################################################
 def correct_Enot(raw_data):
     '''
-    ls-dyna seems to drop the 'E' when the negative exponent is 100, so check for those in the line
-    data and add the 'E' so that we can convert to floats
+    ls-dyna seems to drop the 'E' when the negative exponent is three digits, so check for those in the line
+    data and change those to 'E-100' so that we can convert to floats
     '''
     import re
     for i in range(len(raw_data)):
-        raw_data[i] = re.sub(r'(?<!E)\-1[0-9][0-9]','E-100',raw_data[i])
+        raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]','E-100',raw_data[i])
     return raw_data
 ##################################################################################################
 if __name__ == "__main__":
