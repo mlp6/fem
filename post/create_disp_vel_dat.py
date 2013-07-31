@@ -1,29 +1,35 @@
 #!/usr/local/bin/python2.7
-'''
-create_disp_vel_dat.py - create disp.dat and vel.dat files from a nodout file
+"""
+create_disp_vel_dat.py
+
+Create disp.dat and vel.dat files from a nodout file.
 
 This is replacing StuctPost, which relied on ls-prepost to extract data from
 d3plot files, but no longer works gracefully on the cluster w/o GTK/video
 support; now working with ASCII nodout files.  Also replaced the Matlab
 scritps, so this should run self-contained w/ less dependencies.
 
-2013-01-29 [mlp6]
-* add Creative Commons license
-* using argparse now for --help default value display
+LICENSE
+=======
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-2013-01-31 [mlp6]
-* made default nodout input to be 'nodout' instead of 'nodout.gz'
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-LICENSE:
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
-http://creativecommons.org/licenses/by-nc-sa/3.0/
-'''
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
 __author__ = "Mark Palmeri (mlp6)"
+__email__ = "mlp6@duke.edu"
 __date__ = "2012-11-02"
-__modified__ = "2013-01-29"
-__email__ = "mark.palmeri@duke.edu"
-__license__ = "CC BY-NC-SA 3.0"
+__modified__ = "2013-07-29"
+__license__ = "GPLv3"
 
 def main():
     import os,sys,math
