@@ -42,7 +42,7 @@ def main():
 
     # lets read in some command-line arguments
     parser = argparse.ArgumentParser(description="Generate disp.dat and vel.dat data from an ls-dyna nodout file.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodout",help="ASCII file containing nodout data",default="nodout")
+    parser.add_argument("--nodout",help="ASCII file containing nodout data (default is gzip compressed)",default="nodout.gz")
     parser.add_argument("--disp",help="generate dispout file [Boolean (flag for true)]",action='store_true')
     parser.add_argument("--dispout",help="name of the binary displacement output file",default="disp.dat")
     parser.add_argument("--vel",help="generate velout file [Boolean (flag for true)]",action='store_true')
