@@ -46,20 +46,12 @@ def main():
     import argparse
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description = "Generate disp.dat and 
-                                     vel.dat data from an ls-dyna nodout 
-                                     file.", formatter_class = 
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodout", help="ASCII file containing nodout data",
-                        default="nodout.gz")
-    parser.add_argument("--disp", help="generate dispout file [Boolean 
-                        (flag for true)]", action='store_true')
-    parser.add_argument("--dispout", help="name of the binary displacement 
-                        output file", default="disp.dat")
-    parser.add_argument("--vel", help="generate velout file [Boolean 
-                        (flag for true)]", action='store_true')
-    parser.add_argument("--velout", help="name of the binary velocity output 
-                        file", default="vel.dat")
+    parser = argparse.ArgumentParser(description = "Generate disp.dat and vel.dat data from an ls-dyna nodout file.", formatter_class = argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--nodout", help="ASCII file containing nodout data", default="nodout.gz")
+    parser.add_argument("--disp", help="generate dispout file [Boolean (flag for true)]", action='store_true')
+    parser.add_argument("--dispout", help="name of the binary displacement output file", default="disp.dat")
+    parser.add_argument("--vel", help="generate velout file [Boolean (flag for true)]", action='store_true')
+    parser.add_argument("--velout", help="name of the binary velocity output file", default="vel.dat")
 
     args = parser.parse_args()
     disp = args.disp
