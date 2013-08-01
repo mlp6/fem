@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate res_sim.mat from disp.dat",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--dispout",help="name of the binary displacement output file",default="disp.dat")
     parser.add_argument("--ressim",help="name of the matlab output file",default="res_sim.mat")
-    parser.add_argument("--fempath",help="path to the FEM post-processing scripts",default="/home/mlp6/fem/trunk/post")
+    parser.add_argument("--fempath",help="path to the FEM post-processing scripts",default="/radforce/mlp6/fem/post")
     parser.add_argument("--nodedyn",help="ls-dyna node definition file",default="nodes.dyn")
     parser.add_argument("--dynadeck",help="ls-dyna input deck",default="dynadeck.dyn")
 
