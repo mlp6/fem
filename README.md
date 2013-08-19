@@ -14,4 +14,4 @@ If you ware using these simulation tools in your work, please cite the
 following manuscript:
 
 *Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR.  "A
-Finite-Element Method Model of Soft Tissue Response to Impulsive Acoustic
+Finite-Element Method Model of Soft Tissue Response to Impulsive Acoustic Radiation Force," IEEE UFFC, 52(10): 1699-1712, 2005. [PMCID: 16382621]*
