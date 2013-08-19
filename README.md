@@ -10,7 +10,7 @@ until 2013-04-22; migrated to GitHub for active management.
 This repository is licensed under the GPLv3 license, as detailed in the LICENSE
 file.
 
-If you ware using these simulation tools in your work, please cite the
+If you are using these simulation tools in your work, please cite the
 following manuscript:
 
 *Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR.  "A
