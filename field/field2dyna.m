@@ -1,9 +1,11 @@
 function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 %function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
-% ------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUT:
-% NodeName (string) - file name to read nodes from (nodes.dyn)
-% alpha - 0.5, 1.0, etc.
+% NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
+%                     be a comma-delimited file with header/footer lines that
+%                     start with *
+% alpha - 0.5, 1.0, etc. (dB/cm/MHz)
 % Fnum - F/# (e.g. 1.3)
 % focus - [x y z] (m) "Field" coordinates
 % Frequency - excitation frequency (MHz)
@@ -11,24 +13,11 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % Impulse (string) - 'gaussian','exp'
 %
 % OUTPUT:
-% dyna_ispta*.mat and output*.asc files are saved
-% output*.asc files contain the nodal forces to input into the dyna deck
+% dyna_ispta*.mat file is saved to CWD
 %
 % Example:
 % field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian');
-% ------------------------------------------------------------------------------
-% MODIFICATION HISTORY
-% ------------------------------------------------------------------------------
-% Originally Written - Mark 07/31/03
-% Added frequency as an input parameter - Mark 01/31/05
-% ------------------------------------------------------------------------------
-% Added input variables Transducer and IMPULSE to pass to fieldprms3d_arfi.
-% Mark 06/15/05
-% ------------------------------------------------------------------------------
-% removed dependence on nodes.asc for the input nodes; can now work on nodes.dyn
-% assuming that all of the comments are delineated with '*'
-% Mark 2011-04-21
-% ------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath('/home/mlp6/matlab/Field_II_7.10');
 
