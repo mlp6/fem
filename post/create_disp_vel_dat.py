@@ -57,6 +57,10 @@ def main():
     disp = args.disp
     vel = args.vel
 
+    # check to make sure that at least one of disp or vel is output
+    if args.disp is False and args.vel is False:
+        sys.exit("ERROR: You are running this scipt without any output being created.  Specify --disp and/or --vel during execution.")
+
     # open dispout and velout for binary writing
     if disp:
 	dispout = open(args.dispout, 'wb')
