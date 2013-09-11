@@ -67,7 +67,6 @@ set_field('fs',FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
 eval(sprintf('[Th,impulseResponse]=%s(FIELD_PARAMS);',FIELD_PARAMS.Transducer));
-
 % define the impulse response
 xdc_impulse(Th,impulseResponse);
 
@@ -96,19 +95,31 @@ EstCount = 1000;  % number of calculations to average over to
 									 % make calc time estimates
 numNodes = size(FIELD_PARAMS.measurementPoints,1);
 progressPoints = 0:10000:numNodes;
-for i=1:numNodes,
+% for i=1:numNodes,
+%     if ~isempty(intersect(i,progressPoints)),
+%         disp(sprintf('Processed %.1f%%',i*100/numNodes));
+%     end;
+%     if i==1
+%        tic;
+%     end;
+%     [pressure, startTime] = calc_hp(0, FIELD_PARAMS.measurementPoints(i,:));
+%     intensity(i)=sum(pressure.*pressure);
+% end
+test = Th;   %not sure why, but putting Th directly inside parfor loop gives an error that Th is undefined, however, setting a different variable equal to Th and using that works.
+tic;
+parfor i=1:numNodes,
     if ~isempty(intersect(i,progressPoints)),
         disp(sprintf('Processed %.1f%%',i*100/numNodes));
     end;
-    [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
+%     if i==1
+%         tic;
+%     end;
+    [pressure, startTime] = calc_hp(test, FIELD_PARAMS.measurementPoints(i,:));
     intensity(i)=sum(pressure.*pressure);
-    if(i==1),
-        tic,
-    end;
 end
 
 CalcTime = toc; % s
 ActualRunTime = CalcTime/60; % min
-disp(sprintf('Actual Run Time = %.1f m\n',ActualRunTime));
+disp(sprintf('Actual Run Time = %.3f m\n',ActualRunTime));
 
 field_end;
