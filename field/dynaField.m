@@ -102,9 +102,10 @@ progressPoints = 0:10000:numNodes;
 %     if i==1
 %        tic;
 %     end;
-%     [pressure, startTime] = calc_hp(0, FIELD_PARAMS.measurementPoints(i,:));
+%     [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
 %     intensity(i)=sum(pressure.*pressure);
 % end
+
 test = Th;   %not sure why, but putting Th directly inside parfor loop gives an error that Th is undefined, however, setting a different variable equal to Th and using that works.
 tic;
 parfor i=1:numNodes,
