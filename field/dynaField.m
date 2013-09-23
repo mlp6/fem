@@ -56,7 +56,6 @@ function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 % --------------------------------------------------------------------------
 
 field_init(-1)
-
 disp('Starting the Field II simulation');
 %set_field('use_triangles',1);
 %set_field('use_lines',1);
@@ -91,11 +90,12 @@ set_field('use_att',1);
 StartTime = fix(clock);
 disp(sprintf('Start Time: %i:%i',StartTime(4),StartTime(5)));
 tic;
-EstCount = 1000;  % number of calculations to average over to
-									 % make calc time estimates
-numNodes = size(FIELD_PARAMS.measurementPoints,1);
-progressPoints = 0:10000:numNodes;
-% for i=1:numNodes,
+% EstCount = 1000;  % number of calculations to average over to make calc time estimates
+% numNodes = size(FIELD_PARAMS.measurementPoints,1);
+% progressPoints = 0:10000:numNodes;
+% 
+% for i=1:1000,
+%     field_init(-1)
 %     if ~isempty(intersect(i,progressPoints)),
 %         disp(sprintf('Processed %.1f%%',i*100/numNodes));
 %     end;
@@ -106,18 +106,22 @@ progressPoints = 0:10000:numNodes;
 %     intensity(i)=sum(pressure.*pressure);
 % end
 
-test = Th;   %not sure why, but putting Th directly inside parfor loop gives an error that Th is undefined, however, setting a different variable equal to Th and using that works.
 tic;
-parfor i=1:numNodes,
-    if ~isempty(intersect(i,progressPoints)),
-        disp(sprintf('Processed %.1f%%',i*100/numNodes));
-    end;
-%     if i==1
-%         tic;
-%     end;
-    [pressure, startTime] = calc_hp(test, FIELD_PARAMS.measurementPoints(i,:));
-    intensity(i)=sum(pressure.*pressure);
+test = Th; %not sure why, but putting Th directly inside parfor loop gives an error that Th is undefined, however, setting a different variable equal to Th and using that works.
+
+numWorkers = matlabpool('size');
+isPoolOpen = (numWorkers > 0);
+if(~isPoolOpen)
+    matlabpool open;
 end
+
+parfor i=1:2
+    field_init(-1)
+    [pressure, startTime] = calc_hp(test, FIELD_PARAMS.measurementPoints(i,:));
+    %intensity(i)=sum(pressure.*pressure);
+end
+
+matlabpool close;
 
 CalcTime = toc; % s
 ActualRunTime = CalcTime/60; % min
