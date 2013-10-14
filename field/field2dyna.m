@@ -62,7 +62,7 @@ FIELD_PARAMS.samplingFrequency = 200e6;
 [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
 
 % save intenstiy file
-eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.1f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
+eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
