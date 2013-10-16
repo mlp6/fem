@@ -72,7 +72,7 @@ FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
 
 % parallel version
 tic;
-intensity=dynaFieldPar(FIELD_PARAMS);
+intensity=dynaFieldPar(FIELD_PARAMS, 2);
 CalcTime = toc; % s
 ActualRunTime = CalcTime/60; % min
 disp(sprintf('Parallel Actual Run Time = %.3f m\n',ActualRunTime));
