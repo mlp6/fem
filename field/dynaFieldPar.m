@@ -1,19 +1,21 @@
 function [intensity,FIELD_PARAMS] = dynaFieldPar(FIELD_PARAMS, numWorkers)
-% open matlabpool
+% allocate number of workers
 currentWorkers = matlabpool('size');
 isPoolOpen = (currentWorkers > 0);
 if (isPoolOpen)
     matlabpool close;
 end
 
+maximumNumWorkers = feature('numCores'));
+
 if (nargin == 2)
-    if (numWorkers <= feature('numCores'))
+    if (numWorkers <= maximumNumWorkers)
         matlabpool('open', numWorkers);
     else
-        error('Invalid number of workers. Maximum is %i.', feature('numCores'))
+        error('Invalid number of workers. Maximum is %i.', maximumNumWorkers)
     end
 else
-    matlabpool('open');
+    matlabpool('open', maximumNumWorkers);
 end
 
 
@@ -24,7 +26,7 @@ spmd
     codistPoints = codistributed(FIELD_PARAMS.measurementPoints, codistributor('1d', 1));
     pointsSize = size(FIELD_PARAMS.measurementPoints);
     
-
+    
     FIELD_PARAMS.measurementPoints = getLocalPart(codistPoints);
     [intensityCodist,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
     
