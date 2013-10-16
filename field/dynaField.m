@@ -97,7 +97,9 @@ set_field('use_att',1);
 % compute Ispta at each location for a single tx pulse
 % optimizing by computing only relevant nodes... will assume others are zero
 StartTime = fix(clock);
-disp(sprintf('Start Time: %i:%i',StartTime(4),StartTime(5)));
+% disp(sprintf('Start Time: %i:%2.0i',StartTime(4),StartTime(5)));
+Time = datestr(StartTime, 'HH:MM:SS PM');
+disp(sprintf('Start Time: %s', Time))
 tic;
 
 % EstCount = 1000; % number of calculations to average over to make calc time estimates

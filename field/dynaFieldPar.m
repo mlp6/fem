@@ -1,5 +1,5 @@
 function [intensity,FIELD_PARAMS] = dynaFieldPar(FIELD_PARAMS)
-% tic;
+% open matlabpool
 numWorkers = matlabpool('size');
 isPoolOpen = (numWorkers > 0);
 if(~isPoolOpen)
@@ -7,8 +7,13 @@ if(~isPoolOpen)
 end
 
 spmd
+    % separate the matrices such that each core gets a roughly equal number
+    % of measurement points to perform calculations on.
+    % also, distributes matrices based on columns, rather than rows.
     codistPoints = codistributed(FIELD_PARAMS.measurementPoints, codistributor('1d', 1));
-    a = size(FIELD_PARAMS.measurementPoints);
+    pointsSize = size(FIELD_PARAMS.measurementPoints);
+    
+    % perform calculations on different workers
     switch labindex
         case 1
             FIELD_PARAMS.measurementPoints = getLocalPart(codistPoints);
@@ -17,12 +22,9 @@ spmd
             FIELD_PARAMS.measurementPoints = getLocalPart(codistPoints);
             [intensityCodist,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
     end 
-    intensityDist = codistributed.build(intensityCodist, codistributor1d(2, codistributor1d.unsetPartition, [1 a(1)]));
+    
+    % combine all the separate matrices again.
+    intensityDist = codistributed.build(intensityCodist, codistributor1d(2, codistributor1d.unsetPartition, [1 pointsSize(1)]));
 end
-intensityGather = gather(intensityDist);
-intensity = intensityGather(:);
+intensity = gather(intensityDist);
 matlabpool close
-
-% CalcTime = toc; % s
-% ActualRunTime = CalcTime/60; % min
-% disp(sprintf('Parallel Actual Run Time = %.3f m\n',ActualRunTime));

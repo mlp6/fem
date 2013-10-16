@@ -63,19 +63,21 @@ FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
 
 % perform the field calculation
 
-tic;
-[intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
-CalcTime = toc; % s
-ActualRunTime = CalcTime/60; % min
-disp(sprintf('Actual Run Time = %.3f m\n',ActualRunTime));
+% non-parallel version
+% tic;
+% [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
+% CalcTime = toc; % s
+% ActualRunTime = CalcTime/60; % min
+% disp(sprintf('Actual Run Time = %.3f m\n',ActualRunTime));
 
+% parallel version
 tic;
-[intensityParallel,FIELD_PARAMS]=test(FIELD_PARAMS);
+intensity=dynaFieldPar(FIELD_PARAMS);
 CalcTime = toc; % s
 ActualRunTime = CalcTime/60; % min
 disp(sprintf('Parallel Actual Run Time = %.3f m\n',ActualRunTime));
 
-min(intensity == intensityParallel)
+% min(intensity == intensityParallel)
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.1f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
