@@ -10,7 +10,7 @@ __version__ = "0.3.1"
 
 
 def main():
-    import pdb 
+    #import pdb 
     import os,sys,math
     import numpy as n
 
@@ -166,7 +166,7 @@ def writeSeg(BCFILE,title,segID,planeNodeIDs):
     return segID
 #############################################################################################################################
 def writeNodeBC(BCFILE,planeNodeIDs,dofs):
-    import pdb
+    #import pdb
     BCFILE.write('*BOUNDARY_SPC_NODE\n')
     for i in planeNodeIDs: # don't grab the top / bottom rows (those will be defined in the top/bottom defs)
         for j in i:
