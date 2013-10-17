@@ -1,20 +1,7 @@
-#!/usr/local/bin/python2.7
-'''
+#!/bin/env python
+"""
 bc.py - apply boundary conditions to rectangular solid meshes (the majority of the FE sims); can handle quarter- and half-symmetry models. 
-
-This code was based on the older BoundCond.pl, but it should (1) be more flexbible, (2) utilizies more command-line options, and (3) allows for segment definition for the non-reflecting bc.
-
-MODIFIED v0.2 (2012-07-02)
-* able to accomodate no symmetry in the model (previously was 1/4 or 1/2 symmetry)
-
-MODIFIED v0.3 (2013-01-10)
-* moving to argparse from OptionParser
-* added explicit bottom BC option, including a new "inplane" option for compression models
-
-MODIFIED v0.3.1 (2013-01-29) [mlp6]
-* added argparse default value display in --help
-
-'''
+"""
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2012-07-02"
