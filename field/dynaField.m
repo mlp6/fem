@@ -95,39 +95,14 @@ Time = datestr(StartTime, 'HH:MM:SS PM');
 disp(sprintf('Start Time: %s', Time))
 tic;
 
-% for i=1:1000,
-%   if ~isempty(intersect(i,progressPoints)),
-%       disp(sprintf('Processed %.1f%%',i*100/numNodes));
-%   end;
-%   if i==1
-%       tic;
-%   end;
-%   [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
-%   intensity(i)=sum(pressure.*pressure);
-% end  
-
-%tic;
-
-% allocate number of workers
-
-currentWorkers = matlabpool('size');
-isPoolOpen = (currentWorkers > 0);
-if (isPoolOpen)
-    matlabpool close;
-end
-
-maximumNumWorkers = feature('numCores');
+maxNumWorkers = feature('numCores');
 
 useForLoop = false;
-if (nargin == 1)
+if (nargin == 1 | numWorkers == 1)
     useForLoop = true;
 else
-    if (numWorkers == 1)
-        useForLoop = true;
-    elseif (numWorkers <= maximumNumWorkers)
-        matlabpool('open', numWorkers);
-    else
-        error('Invalid number of workers. Maximum is %i.', maximumNumWorkers)
+    if (numWorkers > maxNumWorkers)
+        error('Invalid number of workers. Maximum is %i.', maxNumWorkers)
     end
 end
 
@@ -154,3 +129,31 @@ ActualRunTime = CalcTime/60; % min
 disp(sprintf('Actual Run Time = %.3f m\n',ActualRunTime));
 
 field_end;
+
+function [intensity,FIELD_PARAMS] = dynaFieldPar(FIELD_PARAMS, numWorkers)
+
+% allocating number of workers
+currentWorkers = matlabpool('size');
+isPoolOpen = (currentWorkers > 0);
+if (isPoolOpen)
+    matlabpool close;
+end
+
+matlabpool('open', numWorkers);
+
+spmd
+    % separate the matrices such that each core gets a roughly equal number
+    % of measurement points to perform calculations on.
+    % also, distributes matrices based on columns, rather than rows.
+    codistPoints = codistributed(FIELD_PARAMS.measurementPoints, codistributor('1d', 1));
+    pointsSize = size(FIELD_PARAMS.measurementPoints);
+    
+       
+    FIELD_PARAMS.measurementPoints = getLocalPart(codistPoints);
+    [intensityCodist,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
+    
+    % combine all the separate matrices again.
+    intensityDist = codistributed.build(intensityCodist, codistributor1d(2, codistributor1d.unsetPartition, [1 pointsSize(1)]));
+end
+intensity = gather(intensityDist);
+matlabpool close

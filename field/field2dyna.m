@@ -59,7 +59,7 @@ FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
 % small sample of measurementPoints testing
-% FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
+FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
 
 % perform the field calculation
 
@@ -67,7 +67,7 @@ FIELD_PARAMS.samplingFrequency = 200e6;
 % [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
 
 % parallel version
-intensity=dynaField(FIELD_PARAMS, 2);
+intensity=dynaField(FIELD_PARAMS);
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.1f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
