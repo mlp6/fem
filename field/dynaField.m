@@ -1,5 +1,5 @@
 function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
-% function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
+% function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 % --------------------------------------------------------------------------
 % Generate intensity values at the nodal locations for
 % conversion to force and input into the dyna deck (performed by make_asc.m)
@@ -58,8 +58,6 @@ function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 field_init(-1)
 
 disp('Starting the Field II simulation');
-%set_field('use_triangles',1);
-%set_field('use_lines',1);
 
 % define transducer-independent parameters
 set_field('c',FIELD_PARAMS.soundSpeed);
