@@ -19,7 +19,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath('/home/nl91/lab/Field_II_7.10');
+addpath('/home/mlp6/matlab/Field_II_7.10');
 
 % read in the nodes
 fid = fopen(NodeName,'r');
@@ -40,7 +40,7 @@ measurementPoints(:,3)=-measurementPoints(:,3);
 % switch x and y so plane of symmetry is elevation, not lateral
 tmp=measurementPoints(:,1:2);
 measurementPoints(:,1:2)=[tmp(:,2) tmp(:,1)];
-
+  
 % convert from cm -> m
 measurementPoints=measurementPoints/100;
 
@@ -59,25 +59,15 @@ FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
 % small sample of measurementPoints testing
-FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
+% FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
 
 % perform the field calculation
 
 % non-parallel version
-% tic;
 % [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
-% CalcTime = toc; % s
-% ActualRunTime = CalcTime/60; % min
-% disp(sprintf('Actual Run Time = %.3f m\n',ActualRunTime));
 
 % parallel version
-tic;
-intensity=dynaFieldPar(FIELD_PARAMS, 2);
-CalcTime = toc; % s
-ActualRunTime = CalcTime/60; % min
-disp(sprintf('Parallel Actual Run Time = %.3f m\n',ActualRunTime));
-
-% min(intensity == intensityParallel)
+intensity=dynaField(FIELD_PARAMS, 2);
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.1f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));

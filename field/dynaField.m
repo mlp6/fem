@@ -1,4 +1,4 @@
-function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
+function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 % function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 % --------------------------------------------------------------------------
 % Generate intensity values at the nodal locations for
@@ -55,14 +55,7 @@ function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 % Mark 2013-02-09
 % --------------------------------------------------------------------------
 
-% numWorkers = matlabpool('size');
-% isPoolOpen = (numWorkers > 0);
-% if(~isPoolOpen)
-%     matlabpool open;
-% end
-
 field_init(-1)
-%field_debug(1);
 
 disp('Starting the Field II simulation');
 %set_field('use_triangles',1);
@@ -102,11 +95,6 @@ Time = datestr(StartTime, 'HH:MM:SS PM');
 disp(sprintf('Start Time: %s', Time))
 tic;
 
-% EstCount = 1000; % number of calculations to average over to make calc time estimates
-
-numNodes = size(FIELD_PARAMS.measurementPoints,1);
-% progressPoints = 0:10000:numNodes;
-%
 % for i=1:1000,
 %   if ~isempty(intersect(i,progressPoints)),
 %       disp(sprintf('Processed %.1f%%',i*100/numNodes));
@@ -116,22 +104,53 @@ numNodes = size(FIELD_PARAMS.measurementPoints,1);
 %   end;
 %   [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
 %   intensity(i)=sum(pressure.*pressure);
-% end
+% end  
 
 %tic;
-test = Th; %not sure why, but putting Th directly inside parfor loop gives an error that Th is undefined, however, setting a different variable equal to Th and using that works.
 
-for i=1:numNodes
-%parfor i=1:100
-    [pressure, startTime] = calc_hp(test, FIELD_PARAMS.measurementPoints(i,:));
-    intensity(i)=sum(pressure.*pressure);
+% allocate number of workers
+
+currentWorkers = matlabpool('size');
+isPoolOpen = (currentWorkers > 0);
+if (isPoolOpen)
+    matlabpool close;
 end
-%intensity
 
-% matlabpool close;
+maximumNumWorkers = feature('numCores');
 
-% CalcTime = toc; % s
-% ActualRunTime = CalcTime/60; % min
-% disp(sprintf('Actual Run Time = %.3f m\n',ActualRunTime));
+useForLoop = false;
+if (nargin == 1)
+    useForLoop = true;
+else
+    if (numWorkers == 1)
+        useForLoop = true;
+    elseif (numWorkers <= maximumNumWorkers)
+        matlabpool('open', numWorkers);
+    else
+        error('Invalid number of workers. Maximum is %i.', maximumNumWorkers)
+    end
+end
+
+if (useForLoop)
+    numNodes = size(FIELD_PARAMS.measurementPoints,1);
+    progressPoints = 0:10000:numNodes;
+    for i=1:numNodes,
+      if ~isempty(intersect(i,progressPoints)),
+          disp(sprintf('Processed %.1f%%',i*100/numNodes));
+      end;
+      if i==1
+          tic;
+      end;
+      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
+      intensity(i)=sum(pressure.*pressure);
+    end
+else
+    tic;
+    intensity = dynaFieldPar(FIELD_PARAMS, numWorkers);
+end
+
+CalcTime = toc; % s
+ActualRunTime = CalcTime/60; % min
+disp(sprintf('Actual Run Time = %.3f m\n',ActualRunTime));
 
 field_end;
