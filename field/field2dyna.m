@@ -22,7 +22,12 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 addpath('/home/mlp6/matlab/Field_II_7.10');
 
 % read in the nodes
-fid = fopen(NodeName,'r');
+try
+    fid = fopen(NodeName,'r');
+catch exception
+    error(sprintf('%s does not exist',NodeName));
+end
+
 measurementPointsandNodes=textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
 fclose(fid);
 measurementPointsandNodes = cell2mat(measurementPointsandNodes);
