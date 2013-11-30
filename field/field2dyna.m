@@ -64,9 +64,6 @@ FIELD_PARAMS.Impulse = Impulse;
 FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
-% small sample of measurementPoints testing
-FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
-
 % perform the field calculation
 intensity=dynaField(FIELD_PARAMS,numWorkers);
 
