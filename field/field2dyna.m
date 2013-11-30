@@ -1,5 +1,5 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
-%function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers)
+%function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUT:
 % NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
@@ -11,12 +11,13 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % Frequency - excitation frequency (MHz)
 % Transducer (string) - 'vf105','vf73'
 % Impulse (string) - 'gaussian','exp'
+% numWorkers (int) - number of parallel jobs to spawn in dynaField()
 %
 % OUTPUT:
 % dyna_ispta*.mat file is saved to CWD
 %
 % Example:
-% field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian');
+% field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian',12);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 addpath('/home/mlp6/matlab/Field_II_7.10');
@@ -67,7 +68,7 @@ FIELD_PARAMS.samplingFrequency = 200e6;
 FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
 
 % perform the field calculation
-intensity=dynaField(FIELD_PARAMS);
+intensity=dynaField(FIELD_PARAMS,numWorkers);
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
