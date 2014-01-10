@@ -22,19 +22,25 @@ function [x, y, z] = GenMeshMatlab(x1, y1, z1, x2, y2, z2, xEle, yEle, zEle)
     % (xEle + 1)(yEle + 1) + nid1 + (xEle + 1) (going right)
 
     
-    [y, z, x] = meshgrid(linspace(x1, x2, xEle + 1), ...
-                         linspace(y1, y2, yEle + 1), ...
-                         linspace(z1, z2, zEle + 1));
+%     [x, y, z] = meshgrid(linspace(x1, x2, xEle + 1), ...
+%                          linspace(y1, y2, yEle + 1), ...
+%                          linspace(z1, z2, zEle + 1));
+    x = linspace(x2, x1, xEle + 1)
+    y = linspace(y1, y2, yEle + 1)
+    z = linspace(z2, z1, zEle + 1)
+    
     counter = 1;
-    for zIter = 1:(zEle+1)
-        for yIter = 1:(yEle+1)
-            for xIter = 1:(xEle+1)
-                fprintf('%6.4f %6.4f %6.4f\n', x(xIter, yIter, zIter), y(xIter, yIter, zIter), z(xIter, yIter, zIter))
+    for zIter = 1:zEle+1
+        for yIter = 1:yEle+1
+            for xIter = 1:xEle+1
+                fprintf('%.0f,%6.4f,%6.4f,%6.4f\n', counter, x(xIter), y(yIter), z(zIter))
                 counter = counter + 1;
                 if (counter == 100)
                     return;
+                end
             end
         end
     end
+
 end
 
