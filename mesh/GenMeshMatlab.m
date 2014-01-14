@@ -1,4 +1,4 @@
-function [nodes, elems] = GenMeshMatlab(x1, y1, z1, x2, y2, z2, xEle, yEle, zEle)
+function [nodes, elems] = GenMeshMatlab(x1, y1, z1, x2, y2, z2, xEle, yEle, zEle, nodeName, elemName)
 %GENMESHMATLAB 
 %   Using (x1, y1, z1) and (x2, y2, z2) as opposite corners of a meshgrid,
 %   creates nodes.dyn and elems.dyn using xEle, yEle, and zEle as the
@@ -37,14 +37,17 @@ function [nodes, elems] = GenMeshMatlab(x1, y1, z1, x2, y2, z2, xEle, yEle, zEle
         end
     end
     
-    % generating nodes.dyn file
-    fid = fopen('nodes.dyn', 'w');
+    % generating nodes file
+    fprintf('Generating %s file with %d nodes\n', nodeName, length(nodes))
+    tstart = tic;
+    fid = fopen(nodeName, 'w');
     fprintf(fid, '*NODE\n');
     for i = 1:length(nodes)
         fprintf(fid,'%.0f,%.6f,%.6f,%.6f\n',nodes(i).nodeID,nodes(i).x,nodes(i).y,nodes(i).z);
     end
     fprintf(fid, '*END\n');
     fclose(fid);
+    fprintf('Finished making %s file in %.2f s\n', nodeName, toc(tstart))
     
     % elems preallocation
     elems = repmat(struct('elemID',1,'part',1,'n1',1,'n2',1,'n3',1,'n4',1,'n5',1,'n6',1,'n7',1,'n8',1), 1, xEle*yEle*zEle);
@@ -81,7 +84,6 @@ function [nodes, elems] = GenMeshMatlab(x1, y1, z1, x2, y2, z2, xEle, yEle, zEle
                 n7 = (xEle+1)*(yEle+1) + n1 + 1 + (xEle+1);
                 n8 = (xEle+1)*(yEle+1) + n1 + (xEle+1);
                 elems(counter) = struct('elemID',counter,'part',1,'n1',n1,'n2',n2,'n3',n3,'n4',n4,'n5',n5,'n6',n6,'n7',n7,'n8',n8);
-%               fprintf('%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f,%.0f\n',elemID,part,n1,n2,n3,n4,n5,n6,n7,n8);
                 counter = counter + 1;
             end
             yCount = yCount + 1;
@@ -89,8 +91,10 @@ function [nodes, elems] = GenMeshMatlab(x1, y1, z1, x2, y2, z2, xEle, yEle, zEle
         zCount = zCount + 1;
     end
     
-    % generating elems.dyn file
-    fid = fopen('elems.dyn', 'w');
+    % generating elems file
+    fprintf('Generating %s file with %d elements\n', elemName, length(elems))
+    tstart = tic;
+    fid = fopen(elemName, 'w');
     fprintf(fid, '*ELEMENT_SOLID\n');
     for i = 1:length(elems)
         fprintf(fid,'%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n',elems(i).elemID,elems(i).part,elems(i).n1,elems(i).n2,elems(i).n3,elems(i).n4...
@@ -98,4 +102,5 @@ function [nodes, elems] = GenMeshMatlab(x1, y1, z1, x2, y2, z2, xEle, yEle, zEle
     end
     fprintf(fid, '*END\n');
     fclose(fid);
+    fprintf('Finished making %s file in %.2f s\n', elemName, toc(tstart))
 end
