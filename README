@@ -6,7 +6,7 @@ Python Tools, Field II Intensity Field Solution, LS-DYNA Pre/Post Processing
 This repository was managed via svn at <https://hogwarts.egr.duke.edu/svn/fem/>
 until 2013-04-22; migrated to GitHub for active management.
 
-This repository is licensed under the GPLv3 license, as detailed in the LICENSE
+This repository is licensed under the MIT license, as detailed in the LICENSE
 file.
 
 If you are using these simulation tools in your work, please cite the
