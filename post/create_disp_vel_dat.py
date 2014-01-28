@@ -14,20 +14,27 @@ EXAMPLE
 =======
 create_disp_vel_dat.py --disp
 
-LICENSE
 =======
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+The MIT License (MIT)
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Copyright (c) 2014 Mark L. Palmeri
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
 __author__ = "Mark Palmeri (mlp6)"
@@ -39,7 +46,7 @@ __license__ = "GPLv3"
 def main():
     import os, sys, math
     import numpy as n
-    
+
     if sys.version < '2.7':
         sys.exit("ERROR: Requires Python >= v2.7")
 
@@ -144,7 +151,7 @@ def process_timestep_data(data,outtype,outfile):
         for i in [0,1,2,3]: # write all node IDS, then x-val, then y-val, then z-val
             for j in range(len(data)):  # loop over all nodes
                 outfile.write(struct.pack('f',data[j][i]))
-    if outtype == 'vel': 
+    if outtype == 'vel':
         for i in [0,4,5,6]: # write all node IDS, then x-val, then y-val, then z-val
             for j in range(len(data)):  # loop over all nodes
                 outfile.write(struct.pack('f',data[j][i]))
