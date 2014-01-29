@@ -47,8 +47,8 @@ def main():
     import os, sys, math
     import numpy as n
 
-    if sys.version < '2.7':
-        sys.exit("ERROR: Requires Python >= v2.7")
+    if sys.version_info[:2] < (2, 7):
+        sys.exit("ERROR: Requires Python >= 2.7")
 
     import argparse
 
