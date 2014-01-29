@@ -1,10 +1,13 @@
 #!/bin/env python2.7
-'''
+"""
 CreateStructure.py
 
 Create "simple" structures in the FE meshes (e.g., spheres, layers). This code
 was based on the older CreateLesion.pl and CreateLayer.pl scripts.
 
+===============================================================================
+MODIFICATION HISTORY
+===============================================================================
 v0.1.1 (2013-01-29) [mlp6]
 * using argparse to display default input values with --help
 * added license information
@@ -15,7 +18,19 @@ v0.1.2 (2013-03-05) [brb17]
 v0.1.3 (2013-05-05) [nbb5]
 * added struct for cube
 
-LICENSE:
+v20140129 [mlp6]
+* PEP8 compliant
+* removed depreciated dict.has_keys()
+* changed versions to date stamps
+* THIS VERSION WILL YIELD SLIGHTLY DIFFERENT OUTPUT THAN PREVIOUS VERSIONS
+  + Round-off error was affecting previous versions, causing a small difference
+    in the structural boundaries
+  + This version will round-up, making structures slightly larger if there were
+    ambiguous boundaries in previous meshes
+
+===============================================================================
+LICENSE
+===============================================================================
 The MIT License (MIT)
 
 Copyright (c) 2014 Mark L. Palmeri
@@ -37,7 +52,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-'''
+===============================================================================
+"""
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2010-11-24"
