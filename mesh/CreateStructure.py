@@ -55,14 +55,16 @@ def main():
     args = parse_cli()
 
     # find nodes in the structure and assign them to a dictionary
-    structNodeIDs = findStructNodeIDs(args.nodefile,args.struct,args.sopts)
+    structNodeIDs = findStructNodeIDs(args. nodefile, args.struct, args.sopts)
 
     # find elements that contain the structure nodes
-    (elems, structElemIDs) = findStructElemIDs(args.elefile,structNodeIDs)
+    (elems, structElemIDs) = findStructElemIDs(args.elefile, structNodeIDs)
 
-    # generate the new element file with the structure elements assigned the new part ID
-    NEFILE = open(args.nefile,'w')
-    NEFILE.write("$ Generated using %s (version %s) with the following options:\n" % (sys.argv[0],__version__))
+    # generate the new element file with the structure elements assigned the
+    # new part ID
+    NEFILE = open(args.nefile, 'w')
+    NEFILE.write("$ Generated using %s with the following options:\n" %
+                 sys.argv[0])
     NEFILE.write("$ %s\n" % args)
     NEFILE.write('$ # Structure Nodes = %i\n' % structNodeIDs.__len__())
     NEFILE.write('$ # Structure Elements = %i\n' % structElemIDs.__len__())
@@ -70,7 +72,10 @@ def main():
     for i in elems:
         if structElemIDs.has_key(i[0]):
             i[1] = args.partid
-        NEFILE.write('%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n' % (i[0],i[1],i[2],i[3],i[4],i[5],i[6],i[7],i[8],i[9]))
+        NEFILE.write('%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n' %
+                     # this is ugly syntax; clean up!!
+                     (i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7],
+                      i[8], i[9]))
     NEFILE.write('*END')
     NEFILE.close()
 
@@ -147,35 +152,49 @@ def findStructNodeIDs(nodefile,struct,sopts):
             ellipsoid half-axis lengths (a,b,c)
             ellipsoid euler angles (phi,theta,psi) in DEGREES
         '''
-        cph = m.cos(m.radians(sopts[6]))    #cos(phi)
-        sph = m.sin(m.radians(sopts[6]))    #sin(phi)
-        cth = m.cos(m.radians(sopts[7]))    #cos(theta)
-        sth = m.sin(m.radians(sopts[7]))    #sin(theta)
-        cps = m.cos(m.radians(sopts[8]))    #cos(psi)
-        sps = m.sin(m.radians(sopts[8]))    #sin(psi)
+        cph = m.cos(m.radians(sopts[6]))    # cos(phi)
+        sph = m.sin(m.radians(sopts[6]))    # sin(phi)
+        cth = m.cos(m.radians(sopts[7]))    # cos(theta)
+        sth = m.sin(m.radians(sopts[7]))    # sin(theta)
+        cps = m.cos(m.radians(sopts[8]))    # cos(psi)
+        sps = m.sin(m.radians(sopts[8]))    # sin(psi)
 
-		#rotation matrix
-        R = n.matrix([[cth*cps,-cph*sps+sph*sth*cps,sph*sps+cph*sth*cps],[cth*sps,cph*cps+sph*sth*sps,-sph*cps+cph*sth*sps],[-sth,sph*cth,cph*cth]])
-		#diagonal maxtrix of squared ellipsoid half-axis lengths
-        A = n.matrix([[n.power(sopts[3],2),0,0],[0,n.power(sopts[4],2),0],[0,0,n.power(sopts[5],2)]])
-        # A matrix - eigenvalues are a^2,b^2,c^2 (square of half-axis lengths), eigenvectors are directions of the orthogonal principal axes
+        # rotation matrix
+        R = n.matrix([[cth * cps, -cph * sps + sph * sth * cps, sph * sps +
+                       cph * sth * cps],
+                      [cth * sps, cph * cps + sph * sth * sps,
+                       -sph * cps + cph * sth * sps],
+                      [-sth, sph * cth, cph * cth]])
+        # diagonal maxtrix of squared ellipsoid half-axis lengths
+        A = n.matrix([[n.power(sopts[3], 2), 0, 0],
+                      [0, n.power(sopts[4], 2), 0],
+                      [0, 0, n.power(sopts[5], 2)]])
+        # A matrix - eigenvalues are a^2,b^2,c^2 (square of half-axis lengths),
+        # eigenvectors are directions of the orthogonal principal axes
         A = R.transpose().dot(A).dot(R)
 
-		#locate nodes within ellipsoid
+        # locate nodes within ellipsoid
         for i in nodeIDcoords:
-            radVec = n.matrix([[i[1]-sopts[0]],[i[2]-sopts[1]],[i[3]-sopts[2]]])
+            radVec = n.matrix([[i[1] - sopts[0]],
+                               [i[2] - sopts[1]],
+                               [i[3] - sopts[2]]])
             if radVec.transpose().dot(A.I).dot(radVec) <= 1:
                 structNodeIDs[i[0]] = True
 
     elif struct == 'cube':
         '''
         sopts is assumed to be a 6 element tuple with the following items:
-            Location of most-negative corner (x,y,z)
-            Respective cube dimensions (w,l,h)
+            Location of most-negative corner (x,y,z) Respective cube dimensions
+            (w,l,h)
         '''
         for i in nodeIDcoords:
-            if i[1] >= sopts[0] and i[1] <= (sopts[0]+sopts[3]) and i[2] >= sopts[1] and i[2] <= (sopts[1]+sopts[4]) and i[3] >= sopts[2] and i[3] <= (sopts[2]+sopts[5]):
-                structNodeIDs[i[0]] = True
+            if i[1] >= sopts[0] and \
+                i[1] <= (sopts[0] + sopts[3]) and \
+                i[2] >= sopts[1] and \
+                i[2] <= (sopts[1] + sopts[4]) and \
+                i[3] >= sopts[2] and \
+                    i[3] <= (sopts[2] + sopts[5]):
+                        structNodeIDs[i[0]] = True
 
     else:
         sys.exit('ERROR: The specific structure (%s) is not defined' % struct)
@@ -184,16 +203,22 @@ def findStructNodeIDs(nodefile,struct,sopts):
         sys.exit('ERROR: no structure nodes were found')
 
     return structNodeIDs
-#############################################################################################################################
-def findStructElemIDs(elefile,structNodeIDs):
+
+
+def findStructElemIDs(elefile, structNodeIDs):
     import sys
     import numpy as n
 
-    elems = n.loadtxt(elefile, delimiter=',', comments='*', dtype=[('id','i4'),('pid','i4'),('n1','i4'),('n2','i4'),('n3','i4'),('n4','i4'),('n5','i4'),('n6','i4'),('n7','i4'),('n8','i4')])
+    elems = n.loadtxt(elefile, delimiter=',', comments='*',
+                      dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
+                             ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
+                             ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
+                             ('n8', 'i4')])
 
     structElemIDs = {}
 
     for i in elems:
+        # I hate this hard-coded syntax, but this works (for now)
         if structNodeIDs.has_key(i[2] or i[3] or i[4] or i[5] or i[6] or i[7] or i[8] or i[9]):
             structElemIDs[i[0]] = True
 
@@ -201,7 +226,7 @@ def findStructElemIDs(elefile,structNodeIDs):
         sys.exit('ERROR: no structure elements were found')
 
     return (elems, structElemIDs)
-#############################################################################################################################
+
 
 if __name__ == "__main__":
     main()
