@@ -114,12 +114,15 @@ def parse_cli():
     return args
 
 
-def findStructNodeIDs(nodefile,struct,sopts):
+def findStructNodeIDs(nodefile, struct, sopts):
     import sys
     import numpy as n
     import math as m
-    nodeIDcoords = n.loadtxt(nodefile, delimiter=',', comments='*', dtype=[('id','i4'),('x','f4'),('y','f4'),('z','f4')])
-
+    nodeIDcoords = n.loadtxt(nodefile,
+                             delimiter=',',
+                             comments='*',
+                             dtype=[('id', 'i4'), ('x', 'f4'),
+                                    ('y', 'f4'), ('z', 'f4')])
     structNodeIDs = {}
 
     if struct == 'sphere':
@@ -129,7 +132,9 @@ def findStructNodeIDs(nodefile,struct,sopts):
             sphere radius
         '''
         for i in nodeIDcoords:
-            nodeRad = n.sqrt(n.power((i[1]-sopts[0]),2) + n.power((i[2]-sopts[1]),2) + n.power((i[3]-sopts[2]),2))
+            nodeRad = n.sqrt(n.power((i[1] - sopts[0]), 2) +
+                             n.power((i[2] - sopts[1]), 2) +
+                             n.power((i[3] - sopts[2]), 2))
             if nodeRad < sopts[3]:
                 structNodeIDs[i[0]] = True
 
