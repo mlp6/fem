@@ -51,28 +51,8 @@ def main():
     if sys.version_info[:2] < (2, 7):
         sys.exit("ERROR: Requires Python >= 2.7")
 
-    import argparse
-
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate disp.dat and "
-                                     "vel.dat data from an ls-dyna nodout"
-                                     " file.", formatter_class=
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodout",
-                        help="ASCII file containing nodout data",
-                        default="nodout.gz")
-    parser.add_argument("--disp", help="generate dispout file [Boolean (flag "
-                        "for true)]", action='store_true')
-    parser.add_argument("--dispout", help="name of the binary displacement "
-                        "output file", default="disp.dat")
-    parser.add_argument("--vel", help="generate velout file [Boolean (flag "
-                        "for true)]", action='store_true')
-    parser.add_argument("--velout", help="name of the binary velocity output "
-                        "file", default="vel.dat")
-
-    args = parser.parse_args()
-    disp = args.disp
-    vel = args.vel
+    args = parse_cli()
 
     # check to make sure that at least one of disp or vel is output
     if args.disp is False and args.vel is False:
@@ -81,9 +61,9 @@ def main():
                  "execution.")
 
     # open dispout and velout for binary writing
-    if disp:
+    if args.disp:
         dispout = open(args.dispout, 'wb')
-    if vel:
+    if args.vel:
         velout = open(args.velout, 'wb')
 
     # open nodout file
@@ -114,14 +94,14 @@ def main():
                 # get node count for header
                 if not header_written:
                     header = generate_header(data, nodout)
-                    if disp:
+                    if args.disp:
                         write_headers(dispout, header)
-                    if vel:
+                    if args.vel:
                         write_headers(velout, header)
                     header_written = True
-        if disp:
+        if args.disp:
             process_timestep_data(data, 'disp', dispout)
-        if vel:
+        if args.vel:
             process_timestep_data(data, 'vel', velout)
         else:
             raw_data = line.split()
@@ -129,11 +109,37 @@ def main():
             data.append(map(float, corrected_raw_data))
 
     # close all open files
-    if disp:
+    if args.disp:
         dispout.close()
-    if vel:
+    if args.vel:
         velout.close()
     nodout.close()
+
+
+def parse_cli():
+    '''
+    parse command-line interface arguments
+    '''
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Generate disp.dat and "
+                                     "vel.dat data from an ls-dyna nodout"
+                                     " file.", formatter_class=
+                                     argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--nodout",
+                        help="ASCII file containing nodout data",
+                        default="nodout.gz")
+    parser.add_argument("--disp", help="generate dispout file [Boolean (flag "
+                        "for true)]", action='store_true')
+    parser.add_argument("--dispout", help="name of the binary displacement "
+                        "output file", default="disp.dat")
+    parser.add_argument("--vel", help="generate velout file [Boolean (flag "
+                        "for true)]", action='store_true')
+    parser.add_argument("--velout", help="name of the binary velocity output "
+                        "file", default="vel.dat")
+    args = parser.parse_args()
+
+    return args
 
 
 def generate_header(data, outfile):
