@@ -47,8 +47,9 @@ __license__ = "MIT"
 def main():
     import sys
 
-    if sys.version < '2.7':
-        sys.exit("ERROR: Requires Python >= v2.7")
+    # check for python version compatibility
+    if sys.version_info[:2] < (2, 7):
+        sys.exit("ERROR: Requires Python >= 2.7")
 
     # lets read in some CLI arguments
     args = parse_cli()
