@@ -1,8 +1,9 @@
 #!/bin/env python2.7
 '''
-CreateStructure.py - create "simple" structures in the FE meshes (e.g., spheres, layers)
+CreateStructure.py
 
-This code was based on the older CreateLesion.pl and CreateLayer.pl scripts.
+Create "simple" structures in the FE meshes (e.g., spheres, layers). This code
+was based on the older CreateLesion.pl and CreateLayer.pl scripts.
 
 v0.1.1 (2013-01-29) [mlp6]
 * using argparse to display default input values with --help
@@ -15,35 +16,42 @@ v0.1.3 (2013-05-05) [nbb5]
 * added struct for cube
 
 LICENSE:
-This work is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License (CC BY-NC-SA 3.0)
-http://creativecommons.org/licenses/by-nc-sa/3.0/
+The MIT License (MIT)
+
+Copyright (c) 2014 Mark L. Palmeri
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 '''
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2010-11-24"
-__modified__ = "2013-01-29"
-__version__ = "0.1.1"
-__license__ = "CC BY-NC-SA 3.0"
+__modified__ = "2014-01-29"
+__license__ = "MIT"
 
 def main():
     import sys
-    import numpy as n
 
     if sys.version < '2.7':
         sys.exit("ERROR: Requires Python >= v2.7")
 
-    import argparse
-
-    # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate new element structure file as specified on the command line.",formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nefile",dest="nefile",help="new element definition output file",default="struct.dyn")
-    parser.add_argument("--nodefile",dest="nodefile",help="node definition input file",default="nodes.dyn")
-    parser.add_argument("--elefile",dest="elefile",help="element definition input file",default="elems.dyn")
-    parser.add_argument("--partid",dest="partid",help="part ID to assign to the new structure",default=2)
-    parser.add_argument("--struct",dest="struct",help="type of structure (e.g., sphere, layer, ellipsoid, cube)",default="sphere")
-    parser.add_argument("--sopts",dest="sopts",help="structure options (see in-code comments)",nargs='+',type=float)
-
-    args = parser.parse_args()
+    # lets read in some CLI arguments
+    args = parse_cli()
 
     # find nodes in the structure and assign them to a dictionary
     structNodeIDs = findStructNodeIDs(args.nodefile,args.struct,args.sopts)
@@ -65,7 +73,43 @@ def main():
     NEFILE.write('*END')
     NEFILE.close()
 
-#############################################################################################################################
+
+def parse_cli():
+    import argparse
+
+    par = argparse.ArgumentParser(
+        description="Generate new element structure file as specified on the"
+        "command line.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    par.add_argument("--nefile", dest="nefile", help="new element definition"
+                     "output file", default="struct.dyn")
+    par.add_argument("--nodefile",
+                     dest="nodefile",
+                     help="node definition input file",
+                     default="nodes.dyn")
+    par.add_argument("--elefile",
+                     dest="elefile",
+                     help="element definition input file",
+                     default="elems.dyn")
+    par.add_argument("--partid",
+                     dest="partid",
+                     help="part ID to assign to the new structure",
+                     default=2)
+    par.add_argument("--struct",
+                     dest="struct",
+                     help="type of structure (sphere, layer, ellipsoid, cube)",
+                     default="sphere")
+    par.add_argument("--sopts",
+                     dest="sopts",
+                     help="structure options (see in-code comments)",
+                     nargs='+',
+                     type=float)
+
+    args = par.parse_args()
+
+    return args
+
+
 def findStructNodeIDs(nodefile,struct,sopts):
     import sys
     import numpy as n
@@ -79,11 +123,11 @@ def findStructNodeIDs(nodefile,struct,sopts):
         sopts is assumed to be a 4 element tuple with the following items:
             sphere center coordinates (x,y,z)
             sphere radius
-        ''' 
+        '''
         for i in nodeIDcoords:
             nodeRad = n.sqrt(n.power((i[1]-sopts[0]),2) + n.power((i[2]-sopts[1]),2) + n.power((i[3]-sopts[2]),2))
             if nodeRad < sopts[3]:
-                structNodeIDs[i[0]] = True 
+                structNodeIDs[i[0]] = True
 
     elif struct == 'layer':
         '''
@@ -93,7 +137,7 @@ def findStructNodeIDs(nodefile,struct,sopts):
         '''
         for i in nodeIDcoords:
             if i[sopts[0]] > sopts[1] and i[sopts[0]] < sopts[2]:
-                structNodeIDs[i[0]] = True 
+                structNodeIDs[i[0]] = True
 
     elif struct == 'ellipsoid':
         '''
@@ -108,14 +152,14 @@ def findStructNodeIDs(nodefile,struct,sopts):
         sth = m.sin(m.radians(sopts[7]))    #sin(theta)
         cps = m.cos(m.radians(sopts[8]))    #cos(psi)
         sps = m.sin(m.radians(sopts[8]))    #sin(psi)
-                    
-		#rotation matrix			
+
+		#rotation matrix
         R = n.matrix([[cth*cps,-cph*sps+sph*sth*cps,sph*sps+cph*sth*cps],[cth*sps,cph*cps+sph*sth*sps,-sph*cps+cph*sth*sps],[-sth,sph*cth,cph*cth]])
 		#diagonal maxtrix of squared ellipsoid half-axis lengths
         A = n.matrix([[n.power(sopts[3],2),0,0],[0,n.power(sopts[4],2),0],[0,0,n.power(sopts[5],2)]])
         # A matrix - eigenvalues are a^2,b^2,c^2 (square of half-axis lengths), eigenvectors are directions of the orthogonal principal axes
         A = R.transpose().dot(A).dot(R)
-        
+
 		#locate nodes within ellipsoid
         for i in nodeIDcoords:
             radVec = n.matrix([[i[1]-sopts[0]],[i[2]-sopts[1]],[i[3]-sopts[2]]])
@@ -130,11 +174,11 @@ def findStructNodeIDs(nodefile,struct,sopts):
         '''
         for i in nodeIDcoords:
             if i[1] >= sopts[0] and i[1] <= (sopts[0]+sopts[3]) and i[2] >= sopts[1] and i[2] <= (sopts[1]+sopts[4]) and i[3] >= sopts[2] and i[3] <= (sopts[2]+sopts[5]):
-                structNodeIDs[i[0]] = True 
-           
+                structNodeIDs[i[0]] = True
+
     else:
         sys.exit('ERROR: The specific structure (%s) is not defined' % struct)
-    
+
     if structNodeIDs.__len__ == 0:
         sys.exit('ERROR: no structure nodes were found')
 
@@ -151,12 +195,12 @@ def findStructElemIDs(elefile,structNodeIDs):
     for i in elems:
         if structNodeIDs.has_key(i[2] or i[3] or i[4] or i[5] or i[6] or i[7] or i[8] or i[9]):
             structElemIDs[i[0]] = True
-    
+
     if structElemIDs.__len__ == 0:
         sys.exit('ERROR: no structure elements were found')
 
     return (elems, structElemIDs)
 #############################################################################################################################
-    
+
 if __name__ == "__main__":
     main()
