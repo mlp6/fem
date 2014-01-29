@@ -72,10 +72,7 @@ def main():
     for i in elems:
         if structElemIDs.has_key(i[0]):
             i[1] = args.partid
-        NEFILE.write('%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n' %
-                     # this is ugly syntax; clean up!!
-                     (i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7],
-                      i[8], i[9]))
+        NEFILE.write('[%s]' % ','.join('%i' % val for val in i[0:10]))
     NEFILE.write('*END')
     NEFILE.close()
 
