@@ -43,6 +43,7 @@ __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2010-11-24"
 __modified__ = "2014-01-29"
 __license__ = "MIT"
+__version__ = "20140129"
 
 def main():
     import sys
@@ -63,14 +64,15 @@ def main():
     # generate the new element file with the structure elements assigned the
     # new part ID
     NEFILE = open(args.nefile, 'w')
-    NEFILE.write("$ Generated using %s with the following options:\n" %
-                 sys.argv[0])
+    NEFILE.write("$ Generated using %s (version %s) with the following "
+                 "options:\n" % (sys.argv[0], __version__))
     NEFILE.write("$ %s\n" % args)
     NEFILE.write('$ # Structure Nodes = %i\n' % structNodeIDs.__len__())
     NEFILE.write('$ # Structure Elements = %i\n' % structElemIDs.__len__())
     NEFILE.write('*ELEMENT_SOLID\n')
     for i in elems:
-        if structElemIDs.has_key(i[0]):
+        if i[0] in structElemIDs:
+        #if structElemIDs.has_key(i[0]):
             i[1] = args.partid
         j = i.tolist()
         NEFILE.write('%s\n' % ','.join('%i' % val for val in j[0:10]))
@@ -222,7 +224,9 @@ def findStructElemIDs(elefile, structNodeIDs):
 
     for i in elems:
         # I hate this hard-coded syntax, but this works (for now)
-        if structNodeIDs.has_key(i[2] or i[3] or i[4] or i[5] or i[6] or i[7] or i[8] or i[9]):
+        j = i.tolist()
+        insideStruct = any(x in structNodeIDs for x in j[2:10])
+        if insideStruct:
             structElemIDs[i[0]] = True
 
     if structElemIDs.__len__ == 0:
