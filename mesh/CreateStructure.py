@@ -1,4 +1,3 @@
-#!/bin/env python2.7
 """
 CreateStructure.py
 
@@ -27,6 +26,7 @@ v20140129 [mlp6]
     in the structural boundaries
   + This version will round-up, making structures slightly larger if there were
     ambiguous boundaries in previous meshes
+* migrated to python3
 
 ===============================================================================
 LICENSE
@@ -61,12 +61,12 @@ __modified__ = "2014-01-29"
 __license__ = "MIT"
 __version__ = "20140129"
 
+
 def main():
     import sys
+    import fem_mesh
 
-    # check for python version compatibility
-    if sys.version_info[:2] < (2, 7):
-        sys.exit("ERROR: Requires Python >= 2.7")
+    fem_mesh.check_version()
 
     # lets read in some CLI arguments
     args = parse_cli()
