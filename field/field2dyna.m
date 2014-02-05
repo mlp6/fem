@@ -1,4 +1,4 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse, ElemName, ForceNonlinear)
 %function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUT:
@@ -58,25 +58,30 @@ FIELD_PARAMS.Impulse = Impulse;
 FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
-% small sample of measurementPoints testing
-% FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
-
 % perform the field calculation
-[intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
+[intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS, 4);
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.1f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
 
 % check if non-uniform force scaling must be done
-
-x = unique(measurementPoints(:, 1));
-y = unique(measurementPoints(:, 2));
-z = unique(measurementPoints(:, 3));
-isUniform = all(abs(diff(x)/(x(2)-x(1))-1 < 10^-9)) &&...
-            all(abs(diff(y)/(y(2)-y(1))-1 < 10^-9)) &&...
-            all(abs(diff(z)/(z(2)-z(1))-1 < 10^-9));
-if (~isUniform)
-    
+isUniform = checkUniform(measurementPoints);
+if (~isUniform || ForceNonlinear == 1)
+    % should run calcNodeVol.py
+    fprintf('This is a non-linear mesh. Generating node volume file.\n')
+    if (exist('ElemName') ~= 0)
+        eval(sprintf('nodeVolSuccess = system(''python calcNodeVol.py %s %s NodeVolume.txt'');', NodeName, ElemName));
+        if (nodeVolSuccess ~= 0)
+            fprintf('Node volume generation failed. Check to make sure node and element files exist in specified directory.\n')
+        else
+            fprintf('NodeVolume.txt has been created.\n')
+        end
+    else
+        error('Non-linear mesh detected. Need element file to calculate node volumes.');
+    end
+else
+    fprintf('This is a linear mesh.\n');
+end
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
@@ -95,5 +100,19 @@ ylocs = unique(measurementPoints(2,:));
 if((max(xlocs==0) + max(ylocs==0)) < 2),
     warning('There are not nodes in the lateral / elevation plane = 0 (imaging plane). This can lead to inaccurate representations of the intensity fields!!');
 end
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [isUniform] = checkUniform(measurementPoints)
+% function [isUniform] = checkUniform(measurementPoints)
+%
+% check to see if mesh is linear or nonlinear. if mesh is nonlinear, this means that
+% force scaling needs to be done
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+x = unique(measurementPoints(:, 1));
+y = unique(measurementPoints(:, 2));
+z = unique(measurementPoints(:, 3));
+isUniform = all(abs(diff(x)/(x(2)-x(1))-1 < 10^-9)) &&...
+            all(abs(diff(y)/(y(2)-y(1))-1 < 10^-9)) &&...
+            all(abs(diff(z)/(z(2)-z(1))-1 < 10^-9));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
