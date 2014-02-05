@@ -19,7 +19,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse)
 % field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath('/home/mlp6/matlab/Field_II_7.10');
+addpath('/home/nl91/matlab/Field_II_7.10');
 
 % read in the nodes
 fid = fopen(NodeName,'r');
@@ -59,18 +59,24 @@ FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
 % small sample of measurementPoints testing
-FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
+% FIELD_PARAMS.measurementPoints = measurementPoints(1:60000, :);
 
 % perform the field calculation
-
-% non-parallel version
-% [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
-
-% parallel version
-intensity=dynaField(FIELD_PARAMS);
+[intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS);
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.1f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
+
+% check if non-uniform force scaling must be done
+
+x = unique(measurementPoints(:, 1));
+y = unique(measurementPoints(:, 2));
+z = unique(measurementPoints(:, 3));
+isUniform = all(abs(diff(x)/(x(2)-x(1))-1 < 10^-9)) &&...
+            all(abs(diff(y)/(y(2)-y(1))-1 < 10^-9)) &&...
+            all(abs(diff(z)/(z(2)-z(1))-1 < 10^-9));
+if (~isUniform)
+    
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
@@ -88,5 +94,6 @@ ylocs = unique(measurementPoints(2,:));
 % test for x and y locations that are at 0 (imaging plane), and if both don't exist, then display a warning
 if((max(xlocs==0) + max(ylocs==0)) < 2),
     warning('There are not nodes in the lateral / elevation plane = 0 (imaging plane). This can lead to inaccurate representations of the intensity fields!!');
+end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
