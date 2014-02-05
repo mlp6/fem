@@ -2,14 +2,14 @@ import math
 import numpy as np
 import argparse
 
-parser = argparse.ArgumentParser(description='Creates node volume file from nodes.dyn and elems.dyn')
-parser.add_argument("nodes", help = "node definition input file (default: nodes.dyn)")
-parser.add_argument("elems", help = "element definition input file (default: elements.dyn)")
-parser.add_argument("nodeVolName", help = "name of output node volume file")
+parser = argparse.ArgumentParser(description='Creates node volume file from nodes.dyn and elems.dyn, specified on the command-line.')
+parser.add_argument("--nodefile", dest="nodefile", help = "node definition input file", default="nodes.dyn")
+parser.add_argument("--elefile", dest="elefile", help = "element definition input file", default="elems.dyn")
+parser.add_argument("--nodevolfile", dest="nodevolfile", help = "name of output node volume file", default="NodeVolume.txt")
 
 args = parser.parse_args()
-nodeFile = open(args.nodes, 'r')
-elemFile = open(args.elems, 'r');
+nodeFile = open(args.nodefile, 'r')
+elemFile = open(args.elefile, 'r');
 
 NCdict = {}
 
@@ -165,7 +165,7 @@ for node in nodeFile:
         	nodeelem = nodeelem + Nodedict[node[0]]
 	nodeElemDict[int(node[0])] = nodeelem
 
-NODEVOLUME = open(args.nodeVolName,'w') #creates a new file to post our node volumes to
+NODEVOLUME = open(args.nodevolfile,'w') #creates a new file to post our node volumes to
 
 for node in sorted(nodeElemDict.iterkeys()):
     nodeelem = nodeElemDict[node]
