@@ -152,8 +152,7 @@ for line in elemFile:
             		tempList.append(EN[0])
             		Nodedict[EN[i]] = tempList
 
-NODEELEM = open("NodeElemPython.txt",'w') #This is will be the node-element file
-
+nodeElemDict = {}
 for node in nodeFile:
     if not(node.startswith("*")):
     	nodeelem = []			#makes an empty list
@@ -164,16 +163,12 @@ for node in nodeFile:
 			#Adds the element to the list for that particular node
     	if node[0] in Nodedict:
         	nodeelem = nodeelem + Nodedict[node[0]]
-    	NODEELEM.write(' '.join(nodeelem)+' \n')    	#Writes a line to the node-element file for that node  with all the elements that contain it, trailing space is very important for later search
-NODEELEM.close()		#File written with node elem elem elem...
+	nodeElemDict[int(node[0])] = nodeelem
 
-NODEELEM = open("NodeElemPython.txt",'r')
 NODEVOLUME = open(args.nodeVolName,'w') #creates a new file to post our node volumes to
 
-for nodeelem in NODEELEM:
-    nodeelem = nodeelem.rstrip()
-    nodeelem = nodeelem.split(' ') #Makes a list of string Node,Elem,Elem,Elem...
-    #nodeelem.remove('\n')		#Removes the return character from the list
+for node in sorted(nodeElemDict.iterkeys()):
+    nodeelem = nodeElemDict[node]
     numberelements = len(nodeelem) - 1
     if numberelements > 0:
         NODEVOLUME.write('%s ' % nodeelem[0])  #Writes the node number to a new file
@@ -185,7 +180,6 @@ for nodeelem in NODEELEM:
         NODEVOLUME.write('%s \n' % average)		#writes the average volume to the node volume file and returns
     else:
         print "No Volume Data for Node: %s" % nodeelem[0]
-NODEELEM.close()
 NODEVOLUME.close()
 nodeFile.close()
 elemFile.close()
