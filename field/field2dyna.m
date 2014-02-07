@@ -69,15 +69,15 @@ isUniform = checkUniform(measurementPoints);
 if (~isUniform || ForceNonlinear == 1)
     % should run calcNodeVol.py
     fprintf('This is a non-linear mesh. Generating node volume file.\n')
-    if (exist('ElemName', 'file') ~= 0)
-        eval(sprintf('nodeVolSuccess = system(''python calcNodeVol.py --nodefile %s --elefile %s'');', NodeName, ElemName));
+    if (exist(ElemName, 'file') ~= 0)
+        eval(sprintf('nodeVolSuccess = system(''python calcNodeVol.py --nodefile %s --elefile %s --nodevolfile %s'');', NodeName, ElemName, ['NodeVolume_' NodeName '_' ElemName '.txt']));
         if (nodeVolSuccess ~= 0)
             fprintf('Node volume generation failed. Check to make sure node and element files exist in specified directory.\n')
         else
-            fprintf('NodeVolume.txt has been created.\n')
+            fprintf('%s has been created.\n', ['NodeVolume_' NodeName '_' ElemName '.txt'])
         end
     else
-        error('Non-linear mesh detected. Need element file to calculate node volumes.');
+        error('Non-linear mesh detected. Need element file to calculate node volumes, but it could not be found.');
     end
 else
     fprintf('This is a linear mesh.\n');
