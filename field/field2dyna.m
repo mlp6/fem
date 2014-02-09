@@ -1,5 +1,5 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers)
-%function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName, ForceNonlinear)
+% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName, ForceNonlinear)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUT:
 % NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
@@ -12,15 +12,18 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,nu
 % Transducer (string) - 'vf105','vf73'
 % Impulse (string) - 'gaussian','exp'
 % numWorkers (int) - number of parallel jobs to spawn in dynaField()
-%
+% ElemName (string)
+% ForceNonlinear (????)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % OUTPUT:
 % dyna_ispta*.mat file is saved to CWD
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Example:
 % field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian',12);
+% ^^^^  NEED TO UPDATE ^^^^
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath('/home/mlp6/matlab/Field_II_7.10');
+addpath('/home/nl91/matlab/Field_II_7.10');
 
 % read in the nodes
 try
@@ -65,10 +68,29 @@ FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
 % perform the field calculation
-intensity=dynaField(FIELD_PARAMS,numWorkers);
+[intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, numWorkers);
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
+
+% check if non-uniform force scaling must be done
+isUniform = checkUniform(measurementPoints);
+if (~isUniform || ForceNonlinear == 1)
+    % should run calcNodeVol.py
+    fprintf('This is a non-linear mesh. Generating node volume file.\n')
+    if (exist(ElemName, 'file') ~= 0)
+        eval(sprintf('nodeVolSuccess = system(''python calcNodeVol.py --nodefile %s --elefile %s --nodevolfile %s'');', NodeName, ElemName, ['NodeVolume_' NodeName '_' ElemName '.txt']));
+        if (nodeVolSuccess ~= 0)
+            fprintf('Node volume generation failed. Check to make sure node and element files exist in specified directory.\n')
+        else
+            fprintf('%s has been created.\n', ['NodeVolume_' NodeName '_' ElemName '.txt'])
+        end
+    else
+        error('Non-linear mesh detected. Need element file to calculate node volumes, but it could not be found.');
+    end
+else
+    fprintf('This is a linear mesh.\n');
+end
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
@@ -87,4 +109,17 @@ ylocs = unique(measurementPoints(2,:));
 if((max(xlocs==0) + max(ylocs==0)) < 2),
     warning('There are not nodes in the lateral / elevation plane = 0 (imaging plane). This can lead to inaccurate representations of the intensity fields!!');
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [isUniform] = checkUniform(measurementPoints)
+% function [isUniform] = checkUniform(measurementPoints)
+%
+% check to see if mesh is linear or nonlinear. if mesh is nonlinear, this means that
+% force scaling needs to be done
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+x = unique(measurementPoints(:, 1));
+y = unique(measurementPoints(:, 2));
+z = unique(measurementPoints(:, 3));
+isUniform = all(abs(diff(x)/(x(2)-x(1))-1 < 10^-9)) &&...
+            all(abs(diff(y)/(y(2)-y(1))-1 < 10^-9)) &&...
+            all(abs(diff(z)/(z(2)-z(1))-1 < 10^-9));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
