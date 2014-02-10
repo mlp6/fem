@@ -69,15 +69,17 @@ def main():
     # open nodout file
     if args.nodout.endswith('gz'):
         import gzip
+        print("Extracting gzip-compressed data . . .\n")
         nodout = gzip.open(args.nodout, 'r')
     else:
+        print("Extracting data . . .\n")
         nodout = open(args.nodout, 'r')
 
     header_written = False
     timestep_read = False
     timestep_count = 0
     for line in nodout:
-        if line.__contains__('nodal'):
+        if "nodal" in line:
             timestep_read = True
             timestep_count = timestep_count + 1
             if timestep_count == 1:
@@ -99,14 +101,14 @@ def main():
                     if args.vel:
                         write_headers(velout, header)
                     header_written = True
-        if args.disp:
-            process_timestep_data(data, 'disp', dispout)
-        if args.vel:
-            process_timestep_data(data, 'vel', velout)
-        else:
-            raw_data = line.split()
-            corrected_raw_data = correct_Enot(raw_data)
-            data.append(map(float, corrected_raw_data))
+                if args.disp:
+                    process_timestep_data(data, 'disp', dispout)
+                if args.vel:
+                    process_timestep_data(data, 'vel', velout)
+            else:
+                raw_data = line.split()
+                corrected_raw_data = correct_Enot(raw_data)
+                data.append(map(float, corrected_raw_data))
 
     # close all open files
     if args.disp:
