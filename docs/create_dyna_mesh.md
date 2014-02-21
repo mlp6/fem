@@ -1,5 +1,5 @@
-How to create rectilinear meshes for LS-DYNA
-============================================
+Creating rectilinear meshes for LS-DYNA
+========================================
 
 Most of the meshes used in first-pass FEM simulations of acoustic radiation force excitations are large rectangular solids with either uniform cubic 3D elements, or elements with a slight aspect ratio.  This document provides an overview of the process of generating a 3D mesh using tools in this repository (fem/mesh).
 
@@ -24,4 +24,14 @@ UNITS
 -----
 The typical unit system for the mesh is CGS, and this will be assumed in the
 code that passes data to/from Field II.
+
+NEXT STEPS
+----------
+1. Your mesh will be used as an input to Field II to simulate the acoustic
+radiation force at nodes.  This is done using field2dyna.
+
+2. You will need to generate boundary conditions for your mesh (mesh/bc.py)
+
+3. You may want to create structures in your mesh with different material
+properties (mesh/CreateStructure.py)
 
