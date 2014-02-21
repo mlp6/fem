@@ -45,27 +45,13 @@ def main():
     args = parse_cli()
 
     # generate node & element output files
-    out_file_header = "$ Generated using %s (v%s) with the following "
-    "options:\n" % (sys.argv[0], __version__)
+    out_file_header = ("$ Generated using %s (v%s):\n$ %s\n$" %
+                       (sys.argv[0], __version__, args))
 
-    writeNodes(args.nodefile, out_file_header)
-    writeElems(args.elefile, out_file_header)
+    pos = calc_node_pos(args.n1, args.n2, args.numElem)
 
-
-def writeNodes(nodefile, header_comment):
-    NODEFILE = open(nodefile, 'w')
-    NODEFILE.write("%s\n" % (header_comment))
-    NODEFILE.write('*NODE\n')
-    NODEFILE.write('*END')
-    NODEFILE.close()
-
-
-def writeElems(elefile, header_comment):
-    ELEMFILE = open(elefile, 'w')
-    ELEMFILE.write("%s\n" % (header_comment))
-    ELEMFILE.write('*ELEMENT_SOLID\n')
-    ELEMFILE.write('*END')
-    ELEMFILE.close()
+    writeNodes(pos, args.nodefile, out_file_header)
+    #writeElems(args.elefile, out_file_header)
 
 
 def parse_cli():
@@ -94,7 +80,7 @@ def parse_cli():
                      dest="n2",
                      help="second mesh vertex (x, y, z)",
                      default=(1, 1, 0))
-    par.add_argument("numElem",
+    par.add_argument("--numElem",
                      dest="numElem",
                      help="number of elements (ints) in each dimension "
                           "(x, y, z)",
@@ -103,6 +89,64 @@ def parse_cli():
     args = par.parse_args()
 
     return args
+
+
+def calc_node_pos(n1, n2, numElem):
+    """
+    Calculate nodal spatial positions based on CLI specs
+    INPUTS
+        n1 (x1, y1, z1) - tuple
+        n2 (x2, y2, z2) - tuple
+        numElem (xEle, yEle, zEle) - int tuple
+
+    OUTPUT
+        pos - list of lists containing x, y, and z positions
+    """
+    import numpy as n
+
+    pos = []
+    for i in range(0, 3):
+        pos_range = [n1[i], n2[i]]
+        a = min(pos_range)
+        b = max(pos_range)
+        ptemp = n.linspace(a, b, numElem[i] + 1)
+        pos.append(ptemp.tolist())
+
+    return pos
+
+
+def writeNodes(pos, nodefile, header_comment):
+    """
+    write node file using calculated position data
+
+    INPUTS
+        pos - list of lists of x, y, z positions
+        nodefile - nodes.dyn
+        header_comment - what version / syntax of calling command
+
+    OUTPUTS
+        nodes.dyn written (or specified filename)
+    """
+    NODEFILE = open(nodefile, 'w')
+    NODEFILE.write("%s\n" % (header_comment))
+    NODEFILE.write("*NODE\n")
+
+    NodeID = 1
+    for z in pos[2]:
+        for y in pos[1]:
+            for x in pos[0]:
+                NODEFILE.write("%i,%.6f,%.6f,%.6f\n" % (NodeID, x, y, z))
+                NodeID += 1
+    NODEFILE.write("*END\n")
+    NODEFILE.close()
+
+
+def writeElems(elefile, header_comment):
+    ELEMFILE = open(elefile, 'w')
+    ELEMFILE.write("%s\n" % (header_comment))
+    ELEMFILE.write('*ELEMENT_SOLID\n')
+    ELEMFILE.write('*END\n')
+    ELEMFILE.close()
 
 
 if __name__ == "__main__":
