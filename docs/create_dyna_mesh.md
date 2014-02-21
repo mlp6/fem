@@ -6,8 +6,8 @@ Most of the meshes used in first-pass FEM simulations of acoustic radiation forc
 SYNTAX
 ------
 ```mesh/GenMesh.py``` will generate a the rectilinear mesh with user-specified
-properties.  You can specify two opposing corner vertices of the mesh (--n1 and
---n2), the element density on each edge (x, y, z), and the names of the output
+properties.  You can specify two opposing corner vertices of the mesh ({--n1} and
+{--n2}), the element density on each edge (x, y, z), and the names of the output
 files for node and element definitions.  
 
 Run: python GenMesh.py --help for detailed input syntax.
