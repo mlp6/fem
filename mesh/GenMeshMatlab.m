@@ -27,6 +27,9 @@ function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
     x2 = n2(1);
     y2 = n2(2);
     z2 = n2(3);
+    xEle = numEle(1);
+    yEle = numEle(2);
+    zEle = numEle(3);
 
     if (x2 <= x1)
         x = linspace(x2, x1, xEle + 1);
@@ -47,11 +50,11 @@ function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
     end
         
     % nodes preallocation
-    nodes = repmat(struct('nodeID', 1, 
-                          'x', 1, 
-                          'y', 1, 
-                          'z', 1), 
-                          1, 
+    nodes = repmat(struct('nodeID', 1, ...
+                          'x', 1, ...
+                          'y', 1, ...
+                          'z', 1), ...
+                          1, ...
                           (xEle + 1) * (yEle + 1) * (zEle + 1));
         
     % constructing nodes
@@ -59,9 +62,9 @@ function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
     for zIter = 1:zEle+1
         for yIter = 1:yEle+1
             for xIter = 1:xEle+1
-                nodes(counter) = struct('nodeID', counter, 
-                                        'x', x(xIter), 
-                                        'y', y(yIter), 
+                nodes(counter) = struct('nodeID', counter, ...
+                                        'x', x(xIter), ...
+                                        'y', y(yIter), ...
                                         'z', z(zIter));
                 counter = counter + 1;
             end
@@ -74,10 +77,10 @@ function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
     fid = fopen(nodeName, 'w');
     fprintf(fid, '*NODE\n');
     for i = 1:length(nodes)
-        fprintf(fid,'%.0f,%.6f,%.6f,%.6f\n',
-                    nodes(i).nodeID,
-                    nodes(i).x,
-                    nodes(i).y,
+        fprintf(fid,'%.0f,%.6f,%.6f,%.6f\n', ...
+                    nodes(i).nodeID, ...
+                    nodes(i).x, ...
+                    nodes(i).y, ...
                     nodes(i).z);
     end
     fprintf(fid, '*END\n');
@@ -85,17 +88,17 @@ function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
     fprintf('Finished making %s file in %.2f s\n', nodeName, toc(tstart))
         
     % elems preallocation
-    elems = repmat(struct('elemID', 1,
-                          'part', 1,
-                          'n1', 1,
-                          'n2', 1,
-                          'n3', 1,
-                          'n4', 1,
-                          'n5', 1,
-                          'n6', 1,
-                          'n7', 1,
-                          'n8', 1), 
-                          1, 
+    elems = repmat(struct('elemID', 1, ...
+                          'part', 1, ...
+                          'n1', 1, ...
+                          'n2', 1, ...
+                          'n3', 1, ...
+                          'n4', 1, ...
+                          'n5', 1, ...
+                          'n6', 1, ...
+                          'n7', 1, ...
+                          'n8', 1),  ...
+                          1,  ...
                           xEle * yEle * zEle);
         
     % constructing elements
@@ -129,15 +132,15 @@ function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
                 n6 = (xEle + 1) * (yEle + 1) + n1 + 1;
                 n7 = (xEle + 1) * (yEle + 1) + n1 + 1 + (xEle + 1);
                 n8 = (xEle + 1) * (yEle + 1) + n1 + (xEle + 1);
-                elems(counter) = struct('elemID', counter, 
-                                        'part', 1, 
-                                        'n1', n1,
-                                        'n2', n2,
-                                        'n3', n3,
-                                        'n4', n4,
-                                        'n5', n5,
-                                        'n6', n6, 
-                                        'n7', n7,
+                elems(counter) = struct('elemID', counter, ...
+                                        'part', 1, ...
+                                        'n1', n1, ...
+                                        'n2', n2, ...
+                                        'n3', n3, ...
+                                        'n4', n4, ...
+                                        'n5', n5, ...
+                                        'n6', n6,  ...
+                                        'n7', n7, ...
                                         'n8', n8);
                 counter = counter + 1;
             end
