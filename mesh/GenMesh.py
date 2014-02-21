@@ -71,19 +71,26 @@ def parse_cli():
     par.add_argument("--partid",
                      dest="partid",
                      help="part ID to assign to the new structure",
+                     type=int,
                      default=1)
     par.add_argument("--n1",
                      dest="n1",
                      help="first mesh vertex (x, y, z)",
+                     type=float,
+                     nargs='+',
                      default=(-1, -1, 0))
     par.add_argument("--n2",
                      dest="n2",
                      help="second mesh vertex (x, y, z)",
+                     type=float,
+                     nargs='+',
                      default=(1, 1, 2))
     par.add_argument("--numElem",
                      dest="numElem",
                      help="number of elements (ints) in each dimension "
                           "(x, y, z)",
+                     type=int,
+                     nargs='+',
                      default=(20, 20, 20))
 
     args = par.parse_args()
@@ -111,6 +118,9 @@ def calc_node_pos(n1, n2, numElem):
         b = max(pos_range)
         ptemp = n.linspace(a, b, numElem[i] + 1)
         pos.append(ptemp.tolist())
+
+    # check to make sure nodes fall at (x, y) = (0, 0)
+    check_x0_y0(pos)
 
     return pos
 
@@ -143,12 +153,6 @@ def writeNodes(pos, nodefile, header_comment):
     NODEFILE.close()
     print("%i/%i nodes written to %s" % (NodeID, nodesTotal, nodefile))
 
-    # test to make sure the correct number of nodes were generated
-    try:
-        NodeID = nodesTotal
-    except ValueError:
-        print("An incorrect number of nodes were generated.")
-
 
 def writeElems(numElem, partid, elefile, header_comment):
     """
@@ -162,7 +166,6 @@ def writeElems(numElem, partid, elefile, header_comment):
     OUTPUTS
         elems.dyn written (or specified filename)
     """
-
     # calculate total number of expected elements
     elemTotal = numElem[0] * numElem[1] * numElem[2]
 
@@ -205,11 +208,17 @@ def writeElems(numElem, partid, elefile, header_comment):
     ELEMFILE.close()
     print("%i/%i elements written to %s" % (ElemID, elemTotal, elefile))
 
-    # test to make sure the correct number of elements were generated
-    try:
-        ElemID = elemTotal
-    except ValueError:
-        print("An incorrect number of elements were generated.")
+
+def check_x0_y0(pos):
+    """
+    check to make sure that nodes exist at (x, y) = (0, 0) so that the focus /
+    peak of an ARF excitation is captured by the mesh
+    """
+    import warnings as w
+    if not 0.0 in pos[0] and not 0.0 in pos[1]:
+        w.warn("Your mesh does not contain nodes at (x, y) = (0, 0)!  This "
+               "could lead to poor representation of your ARF focus.")
+
 
 if __name__ == "__main__":
     main()
