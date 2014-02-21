@@ -51,7 +51,7 @@ def main():
     pos = calc_node_pos(args.n1, args.n2, args.numElem)
 
     writeNodes(pos, args.nodefile, out_file_header)
-    #writeElems(args.elefile, out_file_header)
+    writeElems(args.numElem, args.partid, args.elefile, out_file_header)
 
 
 def parse_cli():
@@ -79,12 +79,12 @@ def parse_cli():
     par.add_argument("--n2",
                      dest="n2",
                      help="second mesh vertex (x, y, z)",
-                     default=(1, 1, 0))
+                     default=(1, 1, 2))
     par.add_argument("--numElem",
                      dest="numElem",
                      help="number of elements (ints) in each dimension "
                           "(x, y, z)",
-                     default=(10, 10, 10))
+                     default=(20, 20, 20))
 
     args = par.parse_args()
 
@@ -127,27 +127,89 @@ def writeNodes(pos, nodefile, header_comment):
     OUTPUTS
         nodes.dyn written (or specified filename)
     """
+    nodesTotal = pos[0].__len__() * pos[1].__len__() * pos[2].__len__()
+
     NODEFILE = open(nodefile, 'w')
     NODEFILE.write("%s\n" % (header_comment))
     NODEFILE.write("*NODE\n")
 
-    NodeID = 1
+    NodeID = 0
     for z in pos[2]:
         for y in pos[1]:
             for x in pos[0]:
-                NODEFILE.write("%i,%.6f,%.6f,%.6f\n" % (NodeID, x, y, z))
                 NodeID += 1
+                NODEFILE.write("%i,%.6f,%.6f,%.6f\n" % (NodeID, x, y, z))
     NODEFILE.write("*END\n")
     NODEFILE.close()
+    print("%i/%i nodes written to %s" % (NodeID, nodesTotal, nodefile))
+
+    # test to make sure the correct number of nodes were generated
+    try:
+        NodeID = nodesTotal
+    except ValueError:
+        print("An incorrect number of nodes were generated.")
 
 
-def writeElems(elefile, header_comment):
+def writeElems(numElem, partid, elefile, header_comment):
+    """
+    write element file using calculated position data
+
+    INPUTS
+        pos - list of lists of x, y, z positions
+        elefile - elems.dyn
+        header_comment - what version / syntax of calling command
+
+    OUTPUTS
+        elems.dyn written (or specified filename)
+    """
+
+    # calculate total number of expected elements
+    elemTotal = numElem[0] * numElem[1] * numElem[2]
+
     ELEMFILE = open(elefile, 'w')
     ELEMFILE.write("%s\n" % (header_comment))
     ELEMFILE.write('*ELEMENT_SOLID\n')
-    ELEMFILE.write('*END\n')
-    ELEMFILE.close()
 
+    # defining the elements with outward normals w/ right-hand convention
+    # assuming node ID ordering as was used to write the nodes.dyn file
+    # (saves lots of RAM instead of saving that massive array)
+    ElemID = 0
+    yplane = 0
+    zplane = 0
+    for z in range(1, (numElem[2] + 1)):
+        for y in range(1, (numElem[1] + 1)):
+            for x in range(1, (numElem[1] + 1)):
+                ElemID += 1
+                n1 = (yplane + zplane) * (numElem[0] + 1) + x
+                n2 = n1 + 1
+                n4 = n1 + (numElem[0] + 1)
+                n3 = n4 + 1
+                n5 = (numElem[0] + 1) * (numElem[1] + 1) + n1
+                n6 = n5 + 1
+                n7 = n6 + (numElem[0] + 1)
+                n8 = n7 - 1
+                ELEMFILE.write("%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n" %
+                               (ElemID,
+                                partid,
+                                n1,
+                                n2,
+                                n3,
+                                n4,
+                                n5,
+                                n6,
+                                n7,
+                                n8))
+            yplane += 1
+        zplane += 1
+    ELEMFILE.write("*END\n")
+    ELEMFILE.close()
+    print("%i/%i elements written to %s" % (ElemID, elemTotal, elefile))
+
+    # test to make sure the correct number of elements were generated
+    try:
+        ElemID = elemTotal
+    except ValueError:
+        print("An incorrect number of elements were generated.")
 
 if __name__ == "__main__":
     main()
