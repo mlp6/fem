@@ -1,81 +1,109 @@
-#!/bin/env python2.7
 '''
-GenMesh.py - generate a mesh (nodes and elements files) to be used by LS-DYNA
+GenMesh.py
+
+Generate a 3D rectilinear mesh as node and element input files for LS-DYNA3D.
 
 LICENSE:
-Copyright (C) 2013 Mark L. Palmeri
+The MIT License (MIT)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Copyright (c) 2014 Mark L. Palmeri
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 '''
 
-__author__ = "Mark Palmeri (mlp6)"
+__author__ = "Mark Palmeri"
+__email__ = "mlp6@duke.edu"
 __created = "2013-08-21"
-__modified__ = "2013-08-21"
-__license__ = "GPLv3"
+__modified__ = "2014-02-21"
+__version__ = __modified__
+__license__ = "MIT"
 
 
 def main():
     import sys
-    import numpy as n
+    import fem_mesh
 
-    if sys.version < '2.7':
-        sys.exit("ERROR: Requires Python >= v2.7")
+    fem_mesh.check_version()
 
-    import argparse
+    # read in CLI arguments
+    args = parse_cli()
 
-    # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate new element structure file as specified on the command line.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodefile", dest="nodefile", help="node definition input file", default="nodes.dyn")
-    parser.add_argument("--elefile", dest="elefile", help="element definition input file", default="elems.dyn")
-    parser.add_argument("--meshgen", dest="meshgen", help="mesh generation parameters file (lspp4 format)", default="MeshGen.cfile")
-    parser.add_argument("--partid", dest="partid", help="part ID to assign to the new structure", default=1)
+    # generate node & element output files
+    out_file_header = "$ Generated using %s (v%s) with the following "
+    "options:\n" % (sys.argv[0], __version__)
 
-    args = parser.parse_args()
+    writeNodes(args.nodefile, out_file_header)
+    writeElems(args.elefile, out_file_header)
 
-    # read the mesh generation parameter file
-    readMeshGen(args.meshgen)
 
-    # generate node output file
-    writeNodes(args.nodefile)
-
-    # generate element output file
-    writeElems(args.elefile)
-
-#############################################################################################################################
-def readMeshGen(meshgen):
-    MESHGENFILE = open(
-
-#############################################################################################################################
-def writeNodes(nodefile):
+def writeNodes(nodefile, header_comment):
     NODEFILE = open(nodefile, 'w')
-    NODEFILE.write("$ Generated using %s (modified %s) with the following options:\n" % (sys.argv[0], __modified__))
-    NODEFILE.write("$ %s\n" % args)
+    NODEFILE.write("%s\n" % (header_comment))
     NODEFILE.write('*NODE\n')
-    writeNodes(NODEFILE)
     NODEFILE.write('*END')
-    NODEEFILE.close()
+    NODEFILE.close()
 
-#############################################################################################################################
-def writeElems(elefile):
+
+def writeElems(elefile, header_comment):
     ELEMFILE = open(elefile, 'w')
-    ELEMFILE.write("$ Generated using %s (modified %s) with the following options:\n" % (sys.argv[0], __modified__))
-    ELEMFILE.write("$ %s\n" % args)
+    ELEMFILE.write("%s\n" % (header_comment))
     ELEMFILE.write('*ELEMENT_SOLID\n')
     ELEMFILE.write('*END')
     ELEMFILE.close()
 
-#############################################################################################################################
+
+def parse_cli():
+    import argparse as ap
+
+    par = ap.ArgumentParser(description="Generate rectilinear 3D mesh as "
+                            "specified on the command line.",
+                            formatter_class=ap.ArgumentDefaultsHelpFormatter)
+    par.add_argument("--nodefile",
+                     dest="nodefile",
+                     help="node definition input file",
+                     default="nodes.dyn")
+    par.add_argument("--elefile",
+                     dest="elefile",
+                     help="element definition input file",
+                     default="elems.dyn")
+    par.add_argument("--partid",
+                     dest="partid",
+                     help="part ID to assign to the new structure",
+                     default=1)
+    par.add_argument("--n1",
+                     dest="n1",
+                     help="first mesh vertex (x, y, z)",
+                     default=(-1, -1, 0))
+    par.add_argument("--n2",
+                     dest="n2",
+                     help="second mesh vertex (x, y, z)",
+                     default=(1, 1, 0))
+    par.add_argument("numElem",
+                     dest="numElem",
+                     help="number of elements (ints) in each dimension "
+                          "(x, y, z)",
+                     default=(10, 10, 10))
+
+    args = par.parse_args()
+
+    return args
+
 
 if __name__ == "__main__":
     main()
