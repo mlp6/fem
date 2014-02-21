@@ -29,9 +29,7 @@ SOFTWARE.
 
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
-__created = "2013-08-21"
-__modified__ = "2014-02-21"
-__version__ = __modified__
+__version__ = "v0.2a"
 __license__ = "MIT"
 
 

@@ -17,7 +17,7 @@ v0.1.2 (2013-03-05) [brb17]
 v0.1.3 (2013-05-05) [nbb5]
 * added struct for cube
 
-v20140129 [mlp6]
+v0.2a [mlp6]
 * PEP8 compliant
 * removed depreciated dict.has_keys()
 * changed versions to date stamps
@@ -55,11 +55,10 @@ SOFTWARE.
 ===============================================================================
 """
 
-__author__ = "Mark Palmeri (mlp6)"
-__date__ = "2010-11-24"
-__modified__ = "2014-01-29"
+__author__ = "Mark Palmeri"
+__email__ = "mlp6@duke.edu"
 __license__ = "MIT"
-__version__ = "20140129"
+__version__ = "v0.2a"
 
 
 def main():
