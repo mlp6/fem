@@ -37,7 +37,7 @@ code that passes data to/from Field II.
 NEXT STEPS
 ----------
 1. Your mesh will be used as an input to Field II to simulate the acoustic
-radiation force at nodes.  This is done using ```field2dyna```.
+radiation force at nodes.  This is done using ```field/field2dyna```.
 
 2. You will need to generate boundary conditions for your mesh (```mesh/bc.py```)
 
