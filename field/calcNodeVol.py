@@ -167,7 +167,8 @@ for node in nodeFile:
 
 NODEVOLUME = open(args.nodevolfile,'w') #creates a new file to post our node volumes to
 
-for node in sorted(nodeElemDict.iterkeys()):
+#for node in sorted(nodeElemDict.iterkeys()):
+for node in nodeElemDict:
     nodeelem = nodeElemDict[node]
     numberelements = len(nodeelem) - 1
     if numberelements > 0:

@@ -58,6 +58,8 @@ function [intensity,FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 field_init(-1)
 
 disp('Starting the Field II simulation');
+%set_field('use_triangles',1);
+%set_field('use_lines',1);
 
 % define transducer-independent parameters
 set_field('c',FIELD_PARAMS.soundSpeed);
@@ -96,13 +98,22 @@ tic;
 maxNumWorkers = feature('numCores');
 
 useForLoop = false;
-if (nargin == 1 | numWorkers == 1)
+
+% if numWorkers not specified, default to 1 and don't use parallel version
+if (nargin == 1)
+    numWorkers = 1;
+    useForLoop = true;
+% if numWorkers specified as 1, don't use parallel version
+elseif (numWorkers == 1)
     useForLoop = true;
 else
-    if (numWorkers > maxNumWorkers)
-        error('Invalid number of workers. Maximum is %i.', maxNumWorkers)
-    end
+    useForLoop = false;
 end
+
+if (numWorkers > maxNumWorkers)
+        error('Invalid number of workers. Maximum is %i.', maxNumWorkers)
+end
+
 
 if (useForLoop)
     numNodes = size(FIELD_PARAMS.measurementPoints,1);
