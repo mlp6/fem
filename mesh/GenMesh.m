@@ -1,5 +1,5 @@
-function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
-% function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
+function [nodes, elems] = GenMesh(n1, n2, numEle, nodeName, elemName)
+% function [nodes, elems] = GenMesh(n1, n2, numEle, nodeName, elemName)
 %
 % INPUTS
 %   n1 = [x1, y1, z1]
@@ -17,7 +17,7 @@ function [nodes, elems] = GenMeshMatlab(n1, n2, numEle, nodeName, elemName)
 %   elems - element matrix
 %
 % EXAMPLE
-% [nodes, elems] = GenMeshMatlab([0.0, 0.0, -0.1], [-1.0, 1.2, -5.2], [50, 60, 102], ...
+% [nodes, elems] = GenMesh([0.0, 0.0, -0.1], [-1.0, 1.2, -5.2], [50, 60, 102], ...
 %                                'nodes.dyn', 'elems.dyn');
 %
 
