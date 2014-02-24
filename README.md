@@ -10,9 +10,9 @@ license, as detailed in the LICENSE file.
 If you are using these simulation tools in work that you publish, then please
 consider citing the following manuscript:
 
-Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR.  "A
+*Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR.  "A
 Finite-Element Method Model of Soft Tissue Response to Impulsive Acoustic
-Radiation Force," IEEE UFFC, 52(10): 1699-1712, 2005. [PMCID: 16382621]
+Radiation Force," IEEE UFFC, 52(10): 1699-1712, 2005. [PMCID: 16382621]*
 
 
 RELEASE NOTES
