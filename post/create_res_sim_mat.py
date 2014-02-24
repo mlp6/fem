@@ -5,14 +5,14 @@ create_res_sim_mat.py - create res_sim.mat file from disp.dat
 This was originally called from StructPost, but now is a stand-along Python script
 '''
 
-__author__ = "Mark Palmeri (mlp6)"
-__date__ = "2013-01-01"
-__modified__ = "2013-01-01"
+__author__ = "Mark Palmeri"
+__version__ = "0.2a"
 __email__ = "mark.palmeri@duke.edu"
+__license__ = "MIT"
 
 def main():
     import os,sys
-    
+
     if sys.version < '2.7':
         sys.exit("ERROR: Requires Python >= v2.7")
 
@@ -41,7 +41,7 @@ def main():
     os.system('matlab -nodesktop -nosplash < runmatlab.m')
 
     if not os.path.exists(ressim):
-        sys.exit('ERROR: %s not successfully created' % ressim) 
+        sys.exit('ERROR: %s not successfully created' % ressim)
 
 if __name__ == "__main__":
     main()
