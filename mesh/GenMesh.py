@@ -179,7 +179,7 @@ def writeElems(numElem, partid, elefile, header_comment):
     zplane = 0
     for z in range(1, (numElem[2] + 1)):
         for y in range(1, (numElem[1] + 1)):
-            for x in range(1, (numElem[1] + 1)):
+            for x in range(1, (numElem[0] + 1)):
                 ElemID += 1
                 n1 = (yplane + zplane) * (numElem[0] + 1) + x
                 n2 = n1 + 1
