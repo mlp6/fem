@@ -20,11 +20,12 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,nu
 % OUTPUT:
 % dyna_ispta*.mat file is saved to CWD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Example:
-% field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian', 12, 'elems.dyn', 1);
+% EXAMPLE:
+% field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian', 12,...
+% 'elems.dyn', 1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath('/home/nl91/matlab/Field_II_7.10');
+addpath('/home/mlp6/matlab/Field_II');
 
 % read in the nodes
 try
@@ -33,7 +34,9 @@ catch exception
     error(sprintf('%s does not exist',NodeName));
 end
 
-measurementPointsandNodes=textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
+measurementPointsandNodes=textscan(fid, '%f%f%f%f',...
+                                   'CommentStyle', '*',...
+                                   'Delimiter', ',');
 fclose(fid);
 measurementPointsandNodes = cell2mat(measurementPointsandNodes);
 
