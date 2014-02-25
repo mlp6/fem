@@ -2,8 +2,9 @@ function [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(nodes_file);
 % function [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(nodes_file);
 % SortNodeIDs - spatially sort the Node IDs
 %
-% INPUTS: nodes_file (string) - file containing the node IDs
-% and coordinates; comma delimited
+% INPUTS: 
+%   nodes_file (string) - file containing the node IDs
+%                         and coordinates; comma delimited
 %
 % OUTPUTS: 
 %   SortedNodeIDs (int) - 3D matrix of spatially sorted node IDs
@@ -30,10 +31,7 @@ function [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(nodes_file);
 tic;
 
 % load in the node IDs and corresponding coordinates
-fid = fopen(nodes_file,'r');
-nodes = textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
-fclose(fid);
-nodes = cell2mat(nodes);
+nodes = read_mpn(nodes_file);
 
 % clean up the precision of the node locations since the
 % HyperMesh generation tolerance was so poor; this will help

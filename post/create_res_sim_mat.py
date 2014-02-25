@@ -55,9 +55,6 @@ def main():
     if not os.path.exists(args.ressim):
         sys.exit('ERROR: %s not successfully created' % args.ressim)
 
-if __name__ == "__main__":
-    main()
-
 
 def read_cli():
     """
@@ -87,3 +84,8 @@ def read_cli():
     args = par.parse_args()
 
     return args
+
+
+if __name__ == "__main__":
+    main()
+

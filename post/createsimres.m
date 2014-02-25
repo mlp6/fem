@@ -50,10 +50,6 @@ if(exist(node_dyn) ~= 2 || exist(dyn_file) ~= 2),
     return;
 end;
 
-% This will now be done in the timestep loop, streamed from the disp.dat file.
-% load disp
-% load(dispfile);
-
 [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(node_dyn);
 
 % find the imaging plane
