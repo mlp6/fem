@@ -23,58 +23,6 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 % F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6,'q',1);
 %
 % Mark 06/15/07
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% MODIFICATION HISTORY
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Changed output from a *.mat file to a *.asc file that can be
-% directly read into a *.dyn file; this *.asc file has nodes
-% and initial temperature values.
-% Mark 06/09/04
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Instead of scaling everything based on the old Elegra
-% measurements, this now allows for an arbitrary normalization
-% file with a known Isppa.
-%
-% The thershold value is now set to a default of 0.01.
-%
-% Mark 07/26/05
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Updated to use variables saved in dyna_ispta_*.mat instead of
-% requiring separate input variables.
-% Mark 07/28/05
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% The quarter- (Qsym) and half-symmetry (Hsym) version of this code have been
-% consolidated into this single function with a input (sym) to flag what
-% symmetry conditions to consider.
-% Mark 02/18/08
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% It appears that I never actually implemented the symmetry flag
-% in the code; that doesn't make it very useful.  That has now been
-% properly implemented in the force scaling done near the end of the
-% function.
-% Mark 2010-02-03
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Added a check to make sure there is a "center" node line for the 
-% push at a lateral position of 0 (more useful error output when
-% developing a model)
-% Mark 2010-04-20
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Changed ElementVolume to now be an input that can be a float (as it was) or a
-% char string specifying a file path (for Andy's inputs).
-% Mark 2011-05-19
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Added LCID (load curve ID) input for the load curves to be able to 
-% do SSI-like sims.
-% Mark 2011-08-05
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Added much more descriptive PointLoads*.dyn filenames
-% Mark 2012-12-11
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Added DEBUG variable to suppress plots unless needed during
-% code development
-% Mark 2013-02-09
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 DEBUG = 0;
 
@@ -224,6 +172,8 @@ for x=1:length(mpn),
                     if(abs(xcoord) < 1e-4),
                         PointLoad = PointLoad / 2;
                     end;
+                otherwise
+                    disp('No symmetry load scaling performed.')
             end;
             % write the temps to the file to be read into dyna
             %%%%%fprintf(fout,'%i,%.4f\n',NodeID,InitTemp);
