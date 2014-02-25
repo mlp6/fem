@@ -46,7 +46,7 @@ def main():
     out_file_header = ("$ Generated using %s (v%s):\n$ %s\n$" %
                        (sys.argv[0], __version__, args))
 
-    pos = calc_node_pos(args.n1, args.n2, args.numElem)
+    pos = calc_node_pos(args.xyz, args.numElem)
 
     writeNodes(pos, args.nodefile, out_file_header)
     writeElems(args.numElem, args.partid, args.elefile, out_file_header)
@@ -71,18 +71,12 @@ def parse_cli():
                      help="part ID to assign to the new structure",
                      type=int,
                      default=1)
-    par.add_argument("--n1",
-                     dest="n1",
-                     help="first mesh vertex (x, y, z)",
+    par.add_argument("--xyz",
+                     dest="xyz",
+                     help="x, y z ranges (xmin, xmax, ymin, ymax,...)",
                      type=float,
                      nargs='+',
-                     default=(-1, -1, 0))
-    par.add_argument("--n2",
-                     dest="n2",
-                     help="second mesh vertex (x, y, z)",
-                     type=float,
-                     nargs='+',
-                     default=(1, 1, 2))
+                     default=(-1.0, 0.0, -1.0, 1.0, -4.0, 0.0))
     par.add_argument("--numElem",
                      dest="numElem",
                      help="number of elements (ints) in each dimension "
@@ -96,25 +90,32 @@ def parse_cli():
     return args
 
 
-def calc_node_pos(n1, n2, numElem):
+def calc_node_pos(xyz, numElem):
     """
     Calculate nodal spatial positions based on CLI specs
     INPUTS
-        n1 (x1, y1, z1) - tuple
-        n2 (x2, y2, z2) - tuple
+        xyz (xmin, xmax, ymin, ymax, zmin, zmax) - tuple
         numElem (xEle, yEle, zEle) - int tuple
 
     OUTPUT
         pos - list of lists containing x, y, and z positions
     """
     import numpy as n
+    import warnings as w
+    import sys
+
+    if xyz.__len__() != 6:
+        sys.exit("ERROR: Wrong number of position range limits input.")
 
     pos = []
-    for i in range(0, 3):
-        pos_range = [n1[i], n2[i]]
-        a = min(pos_range)
-        b = max(pos_range)
-        ptemp = n.linspace(a, b, numElem[i] + 1)
+    for i, j in enumerate(range(0, 5, 2)):
+        minpos = xyz[j]
+        maxpos = xyz[j + 1]
+        if maxpos < minpos:
+            w.warn("Range values were swapped in order (max -> min) "
+                   "and reversed.")
+            minpos, maxpos = maxpos, minpos
+        ptemp = n.linspace(minpos, maxpos, numElem[i] + 1)
         pos.append(ptemp.tolist())
 
     # check to make sure nodes fall at (x, y) = (0, 0)
