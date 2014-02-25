@@ -27,18 +27,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,nu
 
 addpath('/home/mlp6/matlab/Field_II');
 
-% read in the nodes
-try
-    fid = fopen(NodeName,'r');
-catch exception
-    error(sprintf('%s does not exist',NodeName));
-end
-
-measurementPointsandNodes=textscan(fid, '%f%f%f%f',...
-                                   'CommentStyle', '*',...
-                                   'Delimiter', ',');
-fclose(fid);
-measurementPointsandNodes = cell2mat(measurementPointsandNodes);
+measurementPointsandNodes = read_mpn(NodeName);
 
 % skip node number, use just coords
 measurementPoints=measurementPointsandNodes(:,2:4);
@@ -110,14 +99,15 @@ end
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
+end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function check_on_axis(measurementPoints)
 % function check_on_axis(measurementPoints)
 %
 % check to see if nodes exist on the x = y = 0 plane to insure that the
 % intensity fields are properly represented
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
 xlocs = unique(measurementPoints(1,:));
 ylocs = unique(measurementPoints(2,:));
 
@@ -125,17 +115,65 @@ ylocs = unique(measurementPoints(2,:));
 if((max(xlocs==0) + max(ylocs==0)) < 2),
     warning('There are not nodes in the lateral / elevation plane = 0 (imaging plane). This can lead to inaccurate representations of the intensity fields!!');
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end
+
+
 function [isUniform] = checkUniform(measurementPoints)
 % function [isUniform] = checkUniform(measurementPoints)
 %
-% check to see if mesh is linear or nonlinear. if mesh is nonlinear, this means that
-% force scaling needs to be done
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% check to see if mesh is linear or nonlinear. if mesh is nonlinear, this means
+% that force scaling needs to be done
+%
 x = unique(measurementPoints(:, 1));
 y = unique(measurementPoints(:, 2));
 z = unique(measurementPoints(:, 3));
 isUniform = all(abs(diff(x)/(x(2)-x(1))-1 < 10^-9)) &&...
             all(abs(diff(y)/(y(2)-y(1))-1 < 10^-9)) &&...
             all(abs(diff(z)/(z(2)-z(1))-1 < 10^-9));
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end
+
+
+function [mpn] = read_mpn(NodeName)
+% 
+% read nodes.dyn and extract points & nodes
+%
+
+% read in the nodes
+try
+    fid = fopen(NodeName,'r');
+catch exception
+    error(sprintf('%s does not exist',NodeName));
+end
+
+mpn = [];
+nodecount = 0;
+templine = fgetl(fid);
+while ischar(templine)
+    % check for comment line delimiters at start of line, and only parse data
+    % if they do not exist
+    comment_test = logical(regexp(templine,'^(\*|\$)'));
+    if comment_test
+        disp('Skipping comment line . . . ')
+    else
+        nodecount = nodecount + 1;
+        val = regsplitcell(templine);
+        mpn = [mpn; val'];
+    end
+    templine = fgetl(fid);
+end
+
+fclose(fid);
+if (size(mpn,2) ~= 4 || size(mpn,1) ~= nodecount),
+    error('ERROR: mpn matrix has inconsistent dimensions (%i x %i vs %i x %i)', size(mpn, 1), ...
+                                                                                size(mpn, 2), ... 
+                                                                                nodecount, ...
+                                                                                4);
+end
+end
+
+
+function [nodeval] = regsplitcell(templine)
+val = regexp(templine, ',', 'split');
+valstr = str2mat(val);
+nodeval = str2num(valstr);
+end
