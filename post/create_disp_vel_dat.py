@@ -12,7 +12,7 @@ run self-contained w/ less dependencies.
 
 EXAMPLE
 =======
-create_disp_vel_dat.py --disp
+create_disp_vel_dat.py --disp --vel
 
 =======
 The MIT License (MIT)
@@ -38,10 +38,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-__author__ = "Mark Palmeri (mlp6)"
+__author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
-__date__ = "2012-11-02"
-__modified__ = "2014-01-28"
+__version__ = "0.2a"
 __license__ = "MIT"
 
 
