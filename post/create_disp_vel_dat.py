@@ -79,7 +79,7 @@ def main():
     timestep_read = False
     timestep_count = 0
     for line in nodout:
-        if "nodal" in line:
+        if 'nodal' in line:
             timestep_read = True
             timestep_count = timestep_count + 1
             if timestep_count == 1:
