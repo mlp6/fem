@@ -3,55 +3,47 @@ function [mpn] = read_mpn(NodeName)
 % read nodes.dyn and extract points & nodes
 %
 
+% the node file will contain comment lines starting with '*' and '$', which
+% creates a problem for lots of text parsers that are fast, but limited on
+% ignoring things; we will use grep to exclude comment lines and then read in
+% the data
+tmpNodeName = sprintf('%s.tmp', NodeName);
+if exist(tmpNodeName, 'file');
+    error(sprintf('Temp node file for parsing already exists (%s)', tmpNodeName));
+elseif ~exist(NodeName, 'file');
+    error(sprintf('ERROR: %s does not exist', NodeName));
+else
+    % exclude lines starting with * or $
+    disp('STATUS: removing comment / header lines with egrep');
+    grep_cmd = sprintf('egrep -v ''(^\\*|^\\$)'' %s > %s', NodeName, tmpNodeName);
+    disp(sprintf('STATUS: temp, comment-stripped, node def file created (%s)', tmpNodeName));
+    system(grep_cmd);
+end
+
 % read in the nodes
 try
-    fid = fopen(NodeName,'r');
+    fid = fopen(tmpNodeName,'r');
 catch exception
-    error(sprintf('%s does not exist',NodeName));
+    error(sprintf('ERROR: %s does not exist', tmpNodeName));
 end
 
-% preallocate the mpn matrix to avoid a massive memory frag problem with
-% dynamic allocation w/ each line read
-% read number of lines, including comments
-[e, numLines] = system(sprintf('wc -l %s | awk ''{print $1}''', NodeName));
-mpn = zeros(str2num(numLines),4);
+% all comments have been removed, so we can go crazy with using simple, but
+% fast, textscan
+disp('STATUS: reading in node definitions');
+tic
+    mpn = textscan(fid, '%f%f%f%f', 'Delimiter', ',');
+    disp('STATUS: done reading node definitions');
+toc
 
-nodecount = 0;
-templine = fgetl(fid);
-while ischar(templine)
-    % check for comment line delimiters at start of line, and only parse data
-    % if they do not exist
-    comment_test = logical(regexp(templine,'^(\*|\$)'));
-    if comment_test
-        disp('Skipping comment line... ')
-    else
-        nodecount = nodecount + 1;
-        val = regsplitcell(templine);
-        mpn(nodecount,:) = val';
-    end
-    templine = fgetl(fid);
-end
-
-disp('Done reading node definitions.')
 fclose(fid);
 
-% remove extra entries in mpn that were extracted comments
-mpn = mpn(1:nodecount,:);
-
-% test to see if the node definition matrix is the correct / expected size
-if (size(mpn,2) ~= 4 || size(mpn,1) ~= nodecount),
-    error('ERROR: mpn matrix has inconsistent dimensions (%i x %i vs %i x %i)', size(mpn, 1), ...
-                                                                                size(mpn, 2), ... 
-                                                                                nodecount, ...
-                                                                                4);
-else
-    disp('Node positions successfully extracted.')
-end
+try
+    system(sprintf('rm %s', tmpNodeName));
+    disp(sprintf('STATUS: temp node def file removed (%s)', tmpNodeName));
+catch
+    error(sprintf(sprintf('ERROR: Could not remove temp node def file (%s)', tmpNodeName)));
 end
 
-
-function [nodeval] = regsplitcell(templine)
-val = regexp(templine, ',', 'split');
-valstr = str2mat(val);
-nodeval = str2num(valstr);
-end
+% textscan creates a huge cell
+% convert this to array for use downstream
+mpn = cell2mat(mpn);
