@@ -10,7 +10,12 @@ catch exception
     error(sprintf('%s does not exist',NodeName));
 end
 
-mpn = [];
+% preallocate the mpn matrix to avoid a massive memory frag problem with
+% dynamic allocation w/ each line read
+% read number of lines, including comments
+[e, numLines] = system(sprintf('wc -l %s | awk ''{print $1}''', NodeName));
+mpn = zeros(str2num(numLines),4);
+
 nodecount = 0;
 templine = fgetl(fid);
 while ischar(templine)
@@ -20,15 +25,18 @@ while ischar(templine)
     if comment_test
         disp('Skipping comment line... ')
     else
-        nodecount = nodecount + 1
+        nodecount = nodecount + 1;
         val = regsplitcell(templine);
-        mpn = [mpn; val'];
+        mpn(nodecount,:) = val';
     end
     templine = fgetl(fid);
 end
 
 disp('Done reading node definitions.')
 fclose(fid);
+
+% remove extra entries in mpn that were extracted comments
+mpn = mpn(1:nodecount,:);
 
 % test to see if the node definition matrix is the correct / expected size
 if (size(mpn,2) ~= 4 || size(mpn,1) ~= nodecount),
