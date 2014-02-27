@@ -7,9 +7,10 @@ function [mpn] = read_mpn(NodeName)
 % creates a problem for lots of text parsers that are fast, but limited on
 % ignoring things; we will use grep to exclude comment lines and then read in
 % the data
-tmpNodeName = sprintf('%s.tmp', NodeName);
+pid = feature('getpid');
+tmpNodeName = sprintf('%s.%s', NodeName, pid);
 if exist(tmpNodeName, 'file');
-    error(sprintf('Temp node file for parsing already exists (%s)', tmpNodeName));
+    error(sprintf('ERROR: Temp node file for parsing already exists (%s)', tmpNodeName));
 elseif ~exist(NodeName, 'file');
     error(sprintf('ERROR: %s does not exist', NodeName));
 else
