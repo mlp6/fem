@@ -41,31 +41,13 @@ __license__ = "MIT"
 
 def main():
     import sys
+    import os
     import numpy as n
 
     if sys.version_info[:2] < (2, 7):
         sys.exit("ERROR: Requires Python >= 2.7")
 
-    import argparse
-
-    # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate boundary condition"
-                                     " data as specified on the command line.",
-                                     formatter_class=
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--bcfile", help="boundary condition output file",
-                        default="bc.dyn")
-    parser.add_argument("--nodefile", help="node defintion input file",
-                        default="nodes.dyn")
-    parser.add_argument("--sym", help="quarter (q), half (h) symmetry "
-                        "or none (none)", default="q")
-    parser.add_argument("--top", help="fully constrain top boundary "
-                        "(transducer surface)", default=True)
-    parser.add_argument("--bottom", help="full / inplane constraint "
-                        "of bottom boundary (opposite transducer surface) "
-                        "[full, inplane]", default="full")
-
-    opts = parser.parse_args()
+    opts = read_cli()
 
     # open the boundary condition file to write
     BCFILE = open(opts.bcfile, 'w')
@@ -74,9 +56,13 @@ def main():
     BCFILE.write("$ %s\n" % opts)
 
     # load in all of the node data, excluding '*' lines
-    nodeIDcoords = n.loadtxt(opts.nodefile, delimiter=',', comments='*',
+    nodefile_nocmt = strip_comments(opts.nodefile)
+    nodeIDcoords = n.loadtxt(nodefile_nocmt, delimiter=',',
                              dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
                                     ('z', 'f4')])
+
+    # remove temporary nodefile_nocmt that had comments stripped
+    os.system('rm %s' % nodefile_nocmt)
 
     # there are 6 faces in these models; we need to (1) find all of them and
     # (2) apply the appropriate BCs we'll loop through all of the nodes, see if
@@ -234,6 +220,37 @@ def writeNodeBC(BCFILE, planeNodeIDs, dofs):
     for i in planeNodeIDs:
         for j in i:
             BCFILE.write("%i,0,%s\n" % (j[0], dofs))
+
+def read_cli():
+    import argparse
+
+    # lets read in some command-line arguments
+    parser = argparse.ArgumentParser(description="Generate boundary condition"
+                                     " data as specified on the command line.",
+                                     formatter_class=
+                                     argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--bcfile", help="boundary condition output file",
+                        default="bc.dyn")
+    parser.add_argument("--nodefile", help="node defintion input file",
+                        default="nodes.dyn")
+    parser.add_argument("--sym", help="quarter (q), half (h) symmetry "
+                        "or none (none)", default="q")
+    parser.add_argument("--top", help="fully constrain top boundary "
+                        "(transducer surface)", default=True)
+    parser.add_argument("--bottom", help="full / inplane constraint "
+                        "of bottom boundary (opposite transducer surface) "
+                        "[full, inplane]", default="full")
+
+    opts = parser.parse_args()
+
+    return opts
+
+
+def strip_comments(nodefile):
+    import os
+    nodefile_nocmt = '%s.tmp' % nodefile
+    os.system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
+    return nodefile_nocmt
 
 
 if __name__ == "__main__":
