@@ -1,9 +1,8 @@
 '''
 create_res_sim_mat.py
 
-Create res_sim.mat file from disp.dat / vel.dat
-(This was originally called from StructPost, but now is a stand-along Python
-script.)
+Create res_sim.mat file from disp.dat (This was originally called
+from StructPost, but now is a stand-alone Python script.)
 
 The MIT License (MIT)
 
@@ -88,4 +87,3 @@ def read_cli():
 
 if __name__ == "__main__":
     main()
-

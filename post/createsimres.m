@@ -4,15 +4,15 @@ function []=createsimres(dispfile,node_dyn,dyn_file);
 % Create simres.mat that shares the same format as experimental res*.mat files.
 %
 % INPUTS:
-%   dispfile (string) - path for disp.dat created by createdisp.m
+%   dispfile (string) - path for disp.dat created by create_disp_vel_dat.py
 %   node_dyn (string) - path to the node ID & coordinate file (nodes.dyn)
 %   dyn_file (string) - path to the input dyna deck that includes the d3plot time step
 %
-%   Requires the function SortNodeIDs.m - should be in the svn repository.
 % 
 % OUTPUTS:
 %   Saves the file sim_res.mat to the CWD.
 %
+% Requires the function SortNodeIDs.m 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MODIFICATION HISTORY
@@ -57,37 +57,18 @@ ele0 = min(find(ele >= 0));
 image_plane = squeeze(SortedNodeIDs(ele0,:,:));
 
 % load in some parameters from disp.dat
-if(exist(dispfile,'file') == 0),
-    error(sprintf('%s does not exist.  Make sure that (z)disp.mat/dat files are converted to disp.dat .',dispfile));
-end;
-disp_fid = fopen(dispfile,'r');
+try
+    disp_fid = fopen(dispfile,'r');
+catch exception
+    error(sprintf('ERROR: %s does not exist (created by create_disp_vel_dat.py).',dispfile));
+end
 
 NUM_NODES = fread(disp_fid,1,'float32')
 NUM_DIMS = fread(disp_fid,1,'float32')
 NUM_TIMESTEPS = fread(disp_fid,1,'float32')
 
-%for t=1:size(disp,3),
-for t=1:NUM_TIMESTEPS,
+[arfidata] = extract_binary_data(disp_fid, NUM_NODES, NUM_DIMS, NUM_TIMESTEPS, image_plane);
 
-    disp(t)
-    % extract the disp values for the appropriate time step
-    fseek(disp_fid,3*4+NUM_NODES*NUM_DIMS*(t-1)*4,-1);
-    disp_slice = fread(disp_fid,NUM_NODES*NUM_DIMS,'float32');
-    disp_slice = double(reshape(disp_slice,NUM_NODES,NUM_DIMS));
-
-    %temp(disp(:,1,1)) = disp(:,4,t);
-    temp(disp_slice(:,1)) = disp_slice(:,4);
-    %temp(disp_slice(:,1)) = disp_slice(:,3);
-    temp2 = -temp(image_plane)*1e4;
-    temp2 = shiftdim(temp2,1);
-    arfidata(:,:,t) = temp2;
-    clear temp temp2
-
-end;
-
-% setup the axis and time variables
-%t=0:TimeStep:TerminationTime; % s  %GOT RID OF THIS W/ THE 2010-01-24 VERSION
-% I really only need the time step size since NUM_TIMESTEPS is being provided by disp.dat, so...
 TimeStep = extract_TimeStep(dyn_file);
 t = [0:(NUM_TIMESTEPS-1)].*TimeStep;
 axial = -axial';
@@ -95,27 +76,27 @@ axial = axial*10; % convert to mm
 lat = lat';
 lat = lat*10; % convert to mm
 
-% 2010-01-24 -> shouldn't need this anymore since NUM_TIMESTEPS is being used to define 
-% the 't' variable
-%
-% make sure that the correct number of time steps are in the 't' variable - if
-% not, truncate ones off the end b/c the number of dumped time steps can come
-% up one short from the calculated number of data dumps
-%if(length(t) ~= size(arfidata,3)),
-%    if(length(t) < size(arfidata,3)),
-%        arfidata = arfidata(:,:,1:length(t));
-%    else,
-%        t = t(1:size(arfidata,3));
-%    end;
-%end;
-
 % convert variables to singles
 arfidata = single(arfidata);
 lat = single(lat);
 axial = single(axial);
 t = single(t);
-
 save res_sim.mat arfidata lat axial t
+
+function [binary_data_out] = extract_binary_data(fid, NUM_NODES, NUM_DIMS, NUM_TIMESTEPS, image_plane)
+for t=1:NUM_TIMESTEPS,
+    disp(t)
+    % extract the disp values for the appropriate time step
+    fseek(fid,3*4+NUM_NODES*NUM_DIMS*(t-1)*4,-1);
+    disp_slice = fread(fid,NUM_NODES*NUM_DIMS,'float32');
+    disp_slice = double(reshape(disp_slice,NUM_NODES,NUM_DIMS));
+
+    temp(disp_slice(:,1)) = disp_slice(:,4);
+    temp2 = -temp(image_plane)*1e4;
+    temp2 = shiftdim(temp2,1);
+    binary_data_out(:,:,t) = temp2;
+    clear temp temp2
+end;
 
 function [TimeStep]=extract_TimeStep(dyn_file)
 fid = fopen(dyn_file);
