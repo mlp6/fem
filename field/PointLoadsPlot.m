@@ -26,8 +26,12 @@ quivPlot = measurementPointsandNodes(nodeLoads(:, 1), :);
 quivPlot = [quivPlot nodeLoads(:, 4)];
 
 if length(quivPlot) > 1000
-    quivSelect = randperm(length(quivPlot), 1000);
-    quivPlot = quivPlot(quivSelect, :);
+    % random load selection
+%     quivSelect = randperm(length(quivPlot), 1000);
+%     quivPlot = quivPlot(quivSelect, :);
+    % non-random mpn selection
+    quivSelect = round(length(quivPlot)/1000);
+    quivPlot = quivPlot(1:quivPlot:length(quivPlot), :);
 end
 
 figure(1);
@@ -35,8 +39,12 @@ quiver3(quivPlot(:, 2), quivPlot(:, 3), quivPlot(:, 4), zeros(size(quivPlot(:, 1
 hold on
 
 if length(measurementPointsandNodes) > 1000
-    mpnSelect = randperm(length(measurementPointsandNodes), 1000);
-    measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
+    % random mpn selection
+%     mpnSelect = randperm(length(measurementPointsandNodes), 1000);
+%     measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
+    % non-random mpn selection
+      mpnSelect = round(length(measurementPointsandNodes)/1000);
+      measurementPointsandNodes = measurementPointsandNodes(1:mpnSelect:length(measurementPointsandNodes), :); 
 end
 
 scatter3(measurementPointsandNodes(:,2), measurementPointsandNodes(:, 3), measurementPointsandNodes(:,4))
