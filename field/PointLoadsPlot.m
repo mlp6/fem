@@ -4,7 +4,6 @@ function []= PointLoadsPlot(NodeName, LoadName)
 % create a 3d vector plot (quiver plot) of the point loads.
 % NodeName - name of nodes file
 % LoadName - name of PointLoads file
-
 fid = fopen(NodeName, 'r');
 measurementPointsandNodes=textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
 fclose(fid);
@@ -21,24 +20,29 @@ while 1
 end
 nodeLoads = textscan(fid,'%f%f%f%f%f','CommentStyle','$','Delimiter',',');
 fclose(fid);
+
 nodeLoads = cell2mat(nodeLoads);
-quivPlot = zeros(length(nodeLoads), 4);
-for i = 1:length(nodeLoads)
-    [nodeID, y] = find(measurementPointsandNodes(:, 1) == nodeLoads(i, 1));
-    quivPlot(i, :) = [measurementPointsandNodes(nodeID, 2), measurementPointsandNodes(nodeID, 3), ...
-                measurementPointsandNodes(nodeID, 4), nodeLoads(i, 4)];
-    nodeLoads(i, 1)
+quivPlot = measurementPointsandNodes(nodeLoads(:, 1), :);
+quivPlot = [quivPlot nodeLoads(:, 4)];
+
+if length(quivPlot) > 1000
+    quivSelect = randperm(length(quivPlot), 1000);
+    quivPlot = quivPlot(quivSelect, :);
 end
-quiver3(quivPlot(:, 1), quivPlot(:, 2), quivPlot(:, 3), zeros(size(quivPlot(:, 1))), zeros(size(quivPlot(:, 1))), quivPlot(:, 4));
+
+figure(1);
+quiver3(quivPlot(:, 2), quivPlot(:, 3), quivPlot(:, 4), zeros(size(quivPlot(:, 1))), zeros(size(quivPlot(:, 1))), quivPlot(:, 5));
 hold on
-%scatter3(quivPlot(:, 1), quivPlot(:, 2), quivPlot(:, 3))
-scatter3(measurementPointsandNodes(1:100:length(measurementPointsandNodes(:,2)), 2),...
-         measurementPointsandNodes(1:100:length(measurementPointsandNodes(:,2)), 3),...
-         measurementPointsandNodes(1:100:length(measurementPointsandNodes(:,2)), 4))
+
+if length(measurementPointsandNodes) > 1000
+    mpnSelect = randperm(length(measurementPointsandNodes), 1000);
+    measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
+end
+
+scatter3(measurementPointsandNodes(:,2), measurementPointsandNodes(:, 3), measurementPointsandNodes(:,4))
+hold off
+
 xlabel('x (m)')
 ylabel('y (m)')
 zlabel('z (m)')
 title('Nodal Coordinates and Loads')
-hold off
-end
-
