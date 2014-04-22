@@ -36,13 +36,15 @@ SOFTWARE.
 __author__ = "Mark Palmeri (mlp6)"
 __email__ = "mlp6@duke.edu"
 __date__ = "2012-07-02"
-__modified__ = "2014-01-29"
+__modified__ = "2014-04-21"
 __license__ = "MIT"
+
 
 def main():
     import sys
     import os
     import numpy as n
+    import fem_mesh
 
     if sys.version_info[:2] < (2, 7):
         sys.exit("ERROR: Requires Python >= 2.7")
@@ -56,7 +58,7 @@ def main():
     BCFILE.write("$ %s\n" % opts)
 
     # load in all of the node data, excluding '*' lines
-    nodefile_nocmt = strip_comments(opts.nodefile)
+    nodefile_nocmt = fem_mesh.strip_comments(opts.nodefile)
     nodeIDcoords = n.loadtxt(nodefile_nocmt, delimiter=',',
                              dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
                                     ('z', 'f4')])
@@ -244,13 +246,6 @@ def read_cli():
     opts = parser.parse_args()
 
     return opts
-
-
-def strip_comments(nodefile):
-    import os
-    nodefile_nocmt = '%s.tmp' % nodefile
-    os.system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
-    return nodefile_nocmt
 
 
 if __name__ == "__main__":

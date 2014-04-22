@@ -21,3 +21,10 @@ def check_version():
 
     if sys.version_info[0] < 3:
         print("WARNING: It is recommended that you upgrade to python3!")
+
+
+def strip_comments(nodefile):
+    import os
+    nodefile_nocmt = '%s.tmp' % nodefile
+    os.system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
+    return nodefile_nocmt

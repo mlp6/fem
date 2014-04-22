@@ -135,7 +135,10 @@ def findStructNodeIDs(nodefile, struct, sopts):
     import sys
     import numpy as n
     import math as m
-    nodeIDcoords = n.loadtxt(nodefile,
+    import fem_mesh
+
+    nodefile_nocmt = fem_mesh.strip_comments(nodefile)
+    nodeIDcoords = n.loadtxt(nodefile_nocmt,
                              delimiter=',',
                              comments='*',
                              dtype=[('id', 'i4'), ('x', 'f4'),
@@ -228,8 +231,10 @@ def findStructNodeIDs(nodefile, struct, sopts):
 def findStructElemIDs(elefile, structNodeIDs):
     import sys
     import numpy as n
+    import fem_mesh
 
-    elems = n.loadtxt(elefile, delimiter=',', comments='*',
+    elefile_nocmt = fem_mesh.strip_comments(elefile)
+    elems = n.loadtxt(elefile_nocmt, delimiter=',', comments='*',
                       dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
                              ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
                              ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
