@@ -1,15 +1,13 @@
 function []= PointLoadsPlot(NodeName, LoadName)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
-
+%% PointLoadsPlot
+% This function uses a node file and its corresponding point loads file to
+% create a 3d vector plot (quiver plot) of the point loads.
+% NodeName - name of nodes file
+% LoadName - name of PointLoads file
 fid = fopen(NodeName, 'r');
 measurementPointsandNodes=textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
 fclose(fid);
 measurementPointsandNodes=cell2mat(measurementPointsandNodes);
-
-xCoord = measurementPointsandNodes(:, 2);
-yCoord = measurementPointsandNodes(:, 3);
-zCoord = measurementPointsandNodes(:, 4);
 
 fid = fopen(LoadName, 'r');
 % keep reading lines until we get to where the nodes and point loads begin
@@ -22,20 +20,37 @@ while 1
 end
 nodeLoads = textscan(fid,'%f%f%f%f%f','CommentStyle','$','Delimiter',',');
 fclose(fid);
+
 nodeLoads = cell2mat(nodeLoads);
-quivPlot = zeros(length(nodeLoads), 4);
-for i = 1:length(nodeLoads)
-    [nodeID, y] = find(measurementPointsandNodes(:, 1) == nodeLoads(i, 1));
-    quivPlot(i, :) = [measurementPointsandNodes(nodeID, 2), measurementPointsandNodes(nodeID, 3), ...
-                measurementPointsandNodes(nodeID, 4), nodeLoads(i, 4)];
+quivPlot = measurementPointsandNodes(nodeLoads(:, 1), :);
+quivPlot = [quivPlot nodeLoads(:, 4)];
+
+if length(quivPlot) > 1000
+    % random load selection
+%     quivSelect = randperm(length(quivPlot), 1000);
+%     quivPlot = quivPlot(quivSelect, :);
+    % non-random mpn selection
+    quivSelect = round(length(quivPlot)/1000);
+    quivPlot = quivPlot(1:quivPlot:length(quivPlot), :);
 end
-quiver3(quivPlot(:, 1), quivPlot(:, 2), quivPlot(:, 3), zeros(size(quivPlot(:, 1))), zeros(size(quivPlot(:, 1))), quivPlot(:, 4));
+
+figure(1);
+quiver3(quivPlot(:, 2), quivPlot(:, 3), quivPlot(:, 4), zeros(size(quivPlot(:, 1))), zeros(size(quivPlot(:, 1))), quivPlot(:, 5));
 hold on
-%scatter3(quivPlot(:, 1), quivPlot(:, 2), quivPlot(:, 3))
-scatter3(xCoord(1:100:length(xCoord)), yCoord(1:100:length(yCoord)), zCoord(1:100:length(zCoord)))
+
+if length(measurementPointsandNodes) > 1000
+    % random mpn selection
+%     mpnSelect = randperm(length(measurementPointsandNodes), 1000);
+%     measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
+    % non-random mpn selection
+      mpnSelect = round(length(measurementPointsandNodes)/1000);
+      measurementPointsandNodes = measurementPointsandNodes(1:mpnSelect:length(measurementPointsandNodes), :); 
+end
+
+scatter3(measurementPointsandNodes(:,2), measurementPointsandNodes(:, 3), measurementPointsandNodes(:,4))
+hold off
+
 xlabel('x (m)')
 ylabel('y (m)')
 zlabel('z (m)')
 title('Nodal Coordinates and Loads')
-end
-
