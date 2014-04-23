@@ -36,13 +36,15 @@ __license__ = "MIT"
 def main():
     import os
     import sys
+    import fem_mesh
 
     if sys.version < '2.7':
         sys.exit("ERROR: Requires Python >= v2.7")
 
     args = read_cli()
 
-    matfile = open('runmatlab.m', 'w')
+    mat_tmp_run = 'runmatlab.m'
+    matfile = open(mat_tmp_run, 'w')
     matfile.write('addpath(\'%s\');\n' % args.fempath)
     matfile.write('createsimres(\'%s\',\'%s\',\'%s\');\n' % (args.dispout,
                                                              args.nodedyn,
@@ -53,6 +55,8 @@ def main():
 
     if not os.path.exists(args.ressim):
         sys.exit('ERROR: %s not successfully created' % args.ressim)
+
+    fem_mesh.rm_tmp_file(mat_tmp_run)
 
 
 def read_cli():
