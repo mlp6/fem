@@ -28,3 +28,11 @@ def strip_comments(nodefile):
     nodefile_nocmt = '%s.tmp' % nodefile
     os.system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
     return nodefile_nocmt
+
+
+def rm_tmp_file(nodefile_nocmt):
+    import os
+    try:
+        os.remove(nodefile_nocmt)
+    except OSError, e:
+        print('ERROR: %s - %s.' % (e.argsfilename, e.argsstrerror))

@@ -143,6 +143,8 @@ def findStructNodeIDs(nodefile, struct, sopts):
                              comments='*',
                              dtype=[('id', 'i4'), ('x', 'f4'),
                                     ('y', 'f4'), ('z', 'f4')])
+    fem_mesh.rm_tmp_file(nodefile_nocmt)
+
     structNodeIDs = {}
 
     if struct == 'sphere':
@@ -239,6 +241,7 @@ def findStructElemIDs(elefile, structNodeIDs):
                              ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
                              ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
                              ('n8', 'i4')])
+    fem_mesh.rm_tmp_file(elefile_nocmt)
 
     structElemIDs = {}
 
