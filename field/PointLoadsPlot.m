@@ -1,9 +1,12 @@
 function []= PointLoadsPlot(NodeName, LoadName, randSelect)
 %% PointLoadsPlot
 % This function uses a node file and its corresponding point loads file to
-% create a 3d vector plot (quiver plot) of the point loads.
+% create a 3d vector plot (quiver plot) of the point loads. If there are
+% greater than 1000 nodes, only 1000 of those will be used to create the
+% quiver plot.
 % NodeName - name of nodes file
 % LoadName - name of PointLoads file
+% randSelect - random or non-random point selection for >1000 nodes
 
 if (nargin < 3)
     randSelect = 0;
