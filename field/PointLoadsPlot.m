@@ -10,8 +10,8 @@ fclose(fid);
 measurementPointsandNodes=cell2mat(measurementPointsandNodes);
 
 fid = fopen(LoadName, 'r');
-% keep reading lines until we get to where the nodes and point loads begin
-% which is after the line with the element/node volume info.
+% keep reading lines until we get to where the nodes and point loads begin.
+% this is after the line with the element/node volume info.
 while 1
     loadLine = fgetl(fid);
     if (~isempty(strfind(loadLine, 'Volume')))
@@ -31,7 +31,7 @@ if length(quivPlot) > 1000
 %     quivPlot = quivPlot(quivSelect, :);
     % non-random mpn selection
     quivSelect = round(length(quivPlot)/1000);
-    quivPlot = quivPlot(1:quivPlot:length(quivPlot), :);
+    quivPlot = quivPlot(1:quivSelect:length(quivPlot), :);
 end
 
 figure(1);
