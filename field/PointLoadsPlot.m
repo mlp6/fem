@@ -50,13 +50,16 @@ hold on
 
 if length(measurementPointsandNodes) > 1000
     % random mpn selection
-%     mpnSelect = randperm(length(measurementPointsandNodes), 1000);
-%     measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
+    if (randSelect)
+        mpnSelect = randperm(length(measurementPointsandNodes), 1000);
+        measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
     % non-random mpn selection
-      mpnSelect = round(length(measurementPointsandNodes)/1000);
-      measurementPointsandNodes = measurementPointsandNodes(1:mpnSelect:length(measurementPointsandNodes), :); 
-end
+    else
+        mpnSelect = round(length(measurementPointsandNodes)/1000);
+        measurementPointsandNodes = measurementPointsandNodes(1:mpnSelect:length(measurementPointsandNodes), :); 
 
+    end
+end
 scatter3(measurementPointsandNodes(:,2), measurementPointsandNodes(:, 3), measurementPointsandNodes(:,4))
 hold off
 
