@@ -1,9 +1,13 @@
-function []= PointLoadsPlot(NodeName, LoadName)
+function []= PointLoadsPlot(NodeName, LoadName, randSelect)
 %% PointLoadsPlot
 % This function uses a node file and its corresponding point loads file to
 % create a 3d vector plot (quiver plot) of the point loads.
 % NodeName - name of nodes file
 % LoadName - name of PointLoads file
+
+if (nargin < 3)
+    randSelect = 0;
+end
 fid = fopen(NodeName, 'r');
 measurementPointsandNodes=textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
 fclose(fid);
@@ -26,12 +30,15 @@ quivPlot = measurementPointsandNodes(nodeLoads(:, 1), :);
 quivPlot = [quivPlot nodeLoads(:, 4)];
 
 if length(quivPlot) > 1000
-    % random load selection
-%     quivSelect = randperm(length(quivPlot), 1000);
-%     quivPlot = quivPlot(quivSelect, :);
+    % random mpn selection
+    if (randSelect)
+        quivSelect = randperm(length(quivPlot), 1000);
+        quivPlot = quivPlot(quivSelect, :);
     % non-random mpn selection
-    quivSelect = round(length(quivPlot)/1000);
-    quivPlot = quivPlot(1:quivSelect:length(quivPlot), :);
+    else
+        quivSelect = round(length(quivPlot)/1000);
+        quivPlot = quivPlot(1:quivSelect:length(quivPlot), :);
+    end
 end
 
 figure(1);
