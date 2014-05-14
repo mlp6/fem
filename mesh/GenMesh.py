@@ -33,8 +33,8 @@ def main():
     args = parse_cli()
 
     # generate node & element output files
-    out_file_header = ("$ Generated using %s (v%s):\n$ %s\n$" %
-                       (sys.argv[0], __version__, args))
+    out_file_header = ("$ Generated using %s:\n$ %s\n$" %
+                       (sys.argv[0], args))
 
     pos = calc_node_pos(args.xyz, args.numElem)
 
