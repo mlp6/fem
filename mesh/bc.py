@@ -29,7 +29,7 @@ __author__ = "Mark Palmeri (mlp6)"
 __email__ = "mlp6@duke.edu"
 __date__ = "2012-07-02"
 __modified__ = "2014-04-21"
-__license__ = "MIT"
+__license__ = "Apache v2.0"
 
 
 def main():
