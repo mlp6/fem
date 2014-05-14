@@ -20,7 +20,6 @@ limitations under the License.
 
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
-__version__ = "v0.2a"
 __license__ = "Apache v2.0"
 
 
