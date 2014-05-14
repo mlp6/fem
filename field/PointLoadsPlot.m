@@ -1,17 +1,24 @@
-function []= PointLoadsPlot(NodeName, LoadName)
+function []= PointLoadsPlot(NodeName, LoadName, randSelect)
 %% PointLoadsPlot
 % This function uses a node file and its corresponding point loads file to
-% create a 3d vector plot (quiver plot) of the point loads.
+% create a 3d vector plot (quiver plot) of the point loads. If there are
+% greater than 1000 nodes, only 1000 of those will be used to create the
+% quiver plot.
 % NodeName - name of nodes file
 % LoadName - name of PointLoads file
+% randSelect - random or non-random point selection for >1000 nodes
+
+if (nargin < 3)
+    randSelect = 0;
+end
 fid = fopen(NodeName, 'r');
 measurementPointsandNodes=textscan(fid,'%f%f%f%f','CommentStyle','*','Delimiter',',');
 fclose(fid);
 measurementPointsandNodes=cell2mat(measurementPointsandNodes);
 
 fid = fopen(LoadName, 'r');
-% keep reading lines until we get to where the nodes and point loads begin
-% which is after the line with the element/node volume info.
+% keep reading lines until we get to where the nodes and point loads begin.
+% this is after the line with the element/node volume info.
 while 1
     loadLine = fgetl(fid);
     if (~isempty(strfind(loadLine, 'Volume')))
@@ -26,12 +33,15 @@ quivPlot = measurementPointsandNodes(nodeLoads(:, 1), :);
 quivPlot = [quivPlot nodeLoads(:, 4)];
 
 if length(quivPlot) > 1000
-    % random load selection
-%     quivSelect = randperm(length(quivPlot), 1000);
-%     quivPlot = quivPlot(quivSelect, :);
+    % random mpn selection
+    if (randSelect)
+        quivSelect = randperm(length(quivPlot), 1000);
+        quivPlot = quivPlot(quivSelect, :);
     % non-random mpn selection
-    quivSelect = round(length(quivPlot)/1000);
-    quivPlot = quivPlot(1:quivPlot:length(quivPlot), :);
+    else
+        quivSelect = round(length(quivPlot)/1000);
+        quivPlot = quivPlot(1:quivSelect:length(quivPlot), :);
+    end
 end
 
 figure(1);
@@ -40,13 +50,16 @@ hold on
 
 if length(measurementPointsandNodes) > 1000
     % random mpn selection
-%     mpnSelect = randperm(length(measurementPointsandNodes), 1000);
-%     measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
+    if (randSelect)
+        mpnSelect = randperm(length(measurementPointsandNodes), 1000);
+        measurementPointsandNodes = measurementPointsandNodes(mpnSelect, :);
     % non-random mpn selection
-      mpnSelect = round(length(measurementPointsandNodes)/1000);
-      measurementPointsandNodes = measurementPointsandNodes(1:mpnSelect:length(measurementPointsandNodes), :); 
-end
+    else
+        mpnSelect = round(length(measurementPointsandNodes)/1000);
+        measurementPointsandNodes = measurementPointsandNodes(1:mpnSelect:length(measurementPointsandNodes), :); 
 
+    end
+end
 scatter3(measurementPointsandNodes(:,2), measurementPointsandNodes(:, 3), measurementPointsandNodes(:,4))
 hold off
 
