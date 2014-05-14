@@ -1,23 +1,35 @@
 #!/usr/bin/python
-# GaussExc.py
+'''
+
+Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+20100520
+  * consolidated sigmas into one input tuple
+  * corrected need for abs value on the symmetry searches
+  * corrected the Guassian amplitude calculation to actually include the sigmas!
+  * converted the 'fields' read from the nodefile to floats right off the bat
+
+2012-08-27 (Palmeri)
+  * Added 'none' symmetry option in case no symmetry is being used in the model
+
+'''
 
 __author__ = "Mark Palmeri (mlp6)"
 __date__ = "2010-05-19"
 __version__ = "20120827"
-#__version__ = "20100520"
 
-###########################################################################################
-# 20100520
-#   * consolidated sigmas into one input tuple
-#   * corrected need for abs value on the symmetry searches
-#   * corrected the Guassian amplitude calculation to actually include the sigmas!
-#   * converted the 'fields' read from the nodefile to floats right off the bat
-###########################################################################################
-# 2012-08-27 (Palmeri)
-#   * Added 'none' symmetry option in case no symmetry is being used in the model
-#
-###########################################################################################
- 
 import os
 import sys
 import math
@@ -72,7 +84,7 @@ def main():
             # dyna input needs to be limited in precision
             #pdb.set_trace()
             if nodeGaussAmp > opts.amp*opts.amp_cut:
-                
+
                 node_count += 1
                 # check for quarter symmetry force reduction (if needed)
                 if opts.sym == 'qsym':
@@ -91,13 +103,13 @@ def main():
                     sys.exit('ERROR: Invalid symmetry option specified.')
 
                 LOADFILE.write("%i,3,1,-%.4f\n" % (int(fields[0]),nodeGaussAmp))
-                
+
     # wrap everything up
     NODEFILE.close()
     LOADFILE.write("*END\n")
     LOADFILE.write("$ %i loads generated\n" % node_count)
     LOADFILE.write("$ %i exist on a symmetry plane / edge\n" % sym_node_count)
     LOADFILE.close()
- 
+
 if __name__ == "__main__":
     main()
