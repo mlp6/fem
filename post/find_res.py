@@ -5,6 +5,7 @@ find_res.py
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
 __date__ = "2010-12-16"
+__modified__ = "2014-06-03"
 
 import os
 import sys
@@ -26,6 +27,11 @@ p.add_argument("--res",
                dest="res",
                help="res file name [default = res_sim.mat]",
                default="res_sim.mat")
+
+p.add_argument("--missing",
+               dest="missing",
+               help="find if the result files are missing instead of existing",
+               default=False)
 
 args = p.parse_args()
 
