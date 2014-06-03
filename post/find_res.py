@@ -1,10 +1,10 @@
 '''
-find_missing.py
+find_res.py
 '''
 
 __author__ = "Mark Palmeri"
+__email__ = "mlp6@duke.edu"
 __date__ = "2010-12-16"
-__version__ = "0.11"
 
 import os
 import sys
