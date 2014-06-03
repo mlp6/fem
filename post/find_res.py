@@ -10,24 +10,24 @@ import os
 import sys
 import argparse
 
-parser = argparse.ArgumentParser(description="Find result files missing from "
+p = argparse.ArgumentParser(description="Find result files missing from "
                                  "all specified subdirectories in the "
                                  "specified root directory.")
 
-parser.add_argument("--root",
-                    dest="simroot",
-                    help="root path for sim subdirs [default = .]",
-                    default=".")
-parser.add_argument("--sdir",
-                    dest="sdir",
-                    help="string  to define relevant sim subdirectories "
-                         "[default = mm]", default="mm")
-parser.add_argument("--res",
-                    dest="res",
-                    help="res file name [default = res_sim.mat]",
-                    default="res_sim.mat")
+p.add_argument("--root",
+               dest="simroot",
+               help="root path for sim subdirs [default = .]",
+               default=".")
+p.add_argument("--sdir",
+               dest="sdir",
+               help="string  to define relevant sim subdirectories "
+               "[default = mm]", default="mm")
+p.add_argument("--res",
+               dest="res",
+               help="res file name [default = res_sim.mat]",
+               default="res_sim.mat")
 
-args = parser.parse_args()
+args = p.parse_args()
 
 if not os.path.exists(args.simroot):
     sys.exit('ERROR: %s does not exist' % args.simroot)
