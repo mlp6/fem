@@ -15,33 +15,25 @@ EXAMPLE
 create_disp_vel_dat.py --disp --vel
 
 =======
-The MIT License (MIT)
+Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
 
-Copyright (c) 2014 Mark L. Palmeri
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, and to permit persons to whom the Software is furnished to do
-so, subject to the following conditions:
+http://www.apache.org/licenses/LICENSE-2.0
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
-__version__ = "0.2a"
-__license__ = "MIT"
+__version__ = "0.3a"
+__license__ = "Apache v2.0"
 
 
 def main():
@@ -178,10 +170,10 @@ def process_timestep_data(data, outtype, outfile):
     import struct
     if outtype == 'disp':
         # write all node IDs, then x-val, then y-val, then z-val
-        for i in [0, 1, 2, 3]:
-            # loop over all nodes
-            for j in range(len(data)):
-                outfile.write(struct.pack('f', data[j][i]))
+        [outfile.write(struct.pack('f', data[j][i]))
+         for i in [0, 1, 2, 3]
+         for j in range(len(data))]
+
     if outtype == 'vel':
         # write all node IDs, then x-val, then y-val, then z-val
         for i in [0, 4, 5, 6]:
