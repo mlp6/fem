@@ -48,5 +48,5 @@ def rm_tmp_file(nodefile_nocmt):
     import os
     try:
         os.remove(nodefile_nocmt)
-    except OSError, e:
+    except OSError as e:
         print('ERROR: %s - %s.' % (e.argsfilename, e.argsstrerror))
