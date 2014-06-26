@@ -24,8 +24,7 @@ __license__ = "Apache v2.0"
 
 def check_version():
     """
-    Check that at least python2.7 is being used, and recommend upgrading to
-    python3 if 2.bit_length(x is being used
+    Check that at least python2.7 is being used for argparse compatibility
     """
     import sys
 
