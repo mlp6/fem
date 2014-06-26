@@ -20,21 +20,16 @@ limitations under the License.
 
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
-__version__ = "20140129"
-
+__license__ = "Apache v2.0"
 
 def check_version():
     """
-    Check that at least python2.7 is being used, and recommend upgrading to
-    python3 if 2.bit_length(x is being used
+    Check that at least python2.7 is being used for argparse compatibility
     """
     import sys
 
     if sys.version_info[:2] < (2, 7):
         sys.exit("ERROR: Requires Python >= 2.7")
-
-    if sys.version_info[0] < 3:
-        print("WARNING: It is recommended that you upgrade to python3!")
 
 
 def strip_comments(nodefile):
@@ -43,6 +38,21 @@ def strip_comments(nodefile):
     os.system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
     return nodefile_nocmt
 
+
+def count_header_comment_skips(nodefile):
+    """
+    count the number of file head comments lines to skip before the first
+    keyword (line starting with *)
+    """
+    import re
+    node = re.compile('\*')
+    count = 1
+    with open(nodefile) as f:
+        for line in f:
+            if node.match(line):
+                return count
+            else:
+                count = count + 1
 
 def rm_tmp_file(nodefile_nocmt):
     import os

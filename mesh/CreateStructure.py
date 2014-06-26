@@ -127,13 +127,13 @@ def findStructNodeIDs(nodefile, struct, sopts):
     import math as m
     import fem_mesh
 
-    nodefile_nocmt = fem_mesh.strip_comments(nodefile)
-    nodeIDcoords = n.loadtxt(nodefile_nocmt,
+    header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
+    nodeIDcoords = n.loadtxt(nodefile,
                              delimiter=',',
+                             skiprows=header_comment_skips,
                              comments='*',
                              dtype=[('id', 'i4'), ('x', 'f4'),
                                     ('y', 'f4'), ('z', 'f4')])
-    fem_mesh.rm_tmp_file(nodefile_nocmt)
 
     structNodeIDs = {}
 
@@ -225,13 +225,15 @@ def findStructElemIDs(elefile, structNodeIDs):
     import numpy as n
     import fem_mesh
 
-    elefile_nocmt = fem_mesh.strip_comments(elefile)
-    elems = n.loadtxt(elefile_nocmt, delimiter=',', comments='*',
+    header_comment_skips = fem_mesh.count_header_comment_skips(elefile)
+    elems = n.loadtxt(elefile,
+                      delimiter=',',
+                      comments='*',
+                      skiprows=header_comment_skips,
                       dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
                              ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
                              ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
                              ('n8', 'i4')])
-    fem_mesh.rm_tmp_file(elefile_nocmt)
 
     structElemIDs = {}
 
