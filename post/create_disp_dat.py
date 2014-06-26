@@ -78,8 +78,7 @@ def main():
                 # get node count for header
                 if not header_written:
                     header = generate_header(data, nodout)
-                    if args.disp:
-                        write_headers(dispout, header)
+                    write_headers(dispout, header)
                     header_written = True
                 process_timestep_data(data, dispout)
             else:
