@@ -52,6 +52,7 @@ def main():
     header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
     nodeIDcoords = n.loadtxt(opts.nodefile,
                              delimiter=',',
+                             comments='*',
                              skiprows=header_comment_skips,
                              dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
                                     ('z', 'f4')])

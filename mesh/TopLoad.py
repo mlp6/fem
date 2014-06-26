@@ -79,6 +79,7 @@ def main():
     nodeIDcoords = n.loadtxt(opts.nodefile,
                              delimiter=',',
                              skiprows=header_comment_skips,
+                             comments='*',
                              dtype=[('id', 'i4'), ('x', 'f4'),
                                     ('y', 'f4'), ('z', 'f4')])
 

@@ -131,6 +131,7 @@ def findStructNodeIDs(nodefile, struct, sopts):
     nodeIDcoords = n.loadtxt(nodefile,
                              delimiter=',',
                              skiprows=header_comment_skips,
+                             comments='*',
                              dtype=[('id', 'i4'), ('x', 'f4'),
                                     ('y', 'f4'), ('z', 'f4')])
 
@@ -227,6 +228,7 @@ def findStructElemIDs(elefile, structNodeIDs):
     header_comment_skips = fem_mesh.count_header_comment_skips(elefile)
     elems = n.loadtxt(elefile,
                       delimiter=',',
+                      comments='*',
                       skiprows=header_comment_skips,
                       dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
                              ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
