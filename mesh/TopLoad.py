@@ -42,7 +42,6 @@ __author__ = "Mark Palmeri "
 __email__ = "mark.palmeri@duke.edu"
 __created__ = "2011-11-09"
 __modified__ = "2013-01-29"
-__version__ = "0.3.2"
 __license__ = "CC BY-NC-SA 3.0"
 
 
@@ -71,15 +70,15 @@ def main():
         sys.exit('ERROR: Invalid loadtype specified (can only be disp, '
                  'force, vel or accel)')
 
-    LOADFILE.write("$ Generated using %s (version %s) with the following "
-                   "options:\n" % (sys.argv[0], __version__))
+    LOADFILE.write("$ Generated using %s with the following "
+                   "options:\n" % sys.argv[0])
     LOADFILE.write("$ %s\n" % opts)
 
     # load in all of the node data, excluding '*' lines
-    nodefile_nocmt = fem_mesh.strip_comments(opts.nodefile)
-    nodeIDcoords = n.loadtxt(nodefile_nocmt,
+    header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
+    nodeIDcoords = n.loadtxt(opts.nodefile,
                              delimiter=',',
-                             comments='*',
+                             skiprows=header_comment_skips,
                              dtype=[('id', 'i4'), ('x', 'f4'),
                                     ('y', 'f4'), ('z', 'f4')])
 

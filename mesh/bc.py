@@ -34,7 +34,6 @@ __license__ = "Apache v2.0"
 
 def main():
     import sys
-    import os
     import numpy as n
     import fem_mesh
 
@@ -50,13 +49,12 @@ def main():
     BCFILE.write("$ %s\n" % opts)
 
     # load in all of the node data, excluding '*' lines
-    nodefile_nocmt = fem_mesh.strip_comments(opts.nodefile)
-    nodeIDcoords = n.loadtxt(nodefile_nocmt, delimiter=',',
+    header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
+    nodeIDcoords = n.loadtxt(opts.nodefile,
+                             delimiter=',',
+                             skiprows=header_comment_skips,
                              dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
                                     ('z', 'f4')])
-
-    # remove temporary nodefile_nocmt that had comments stripped
-    os.system('rm %s' % nodefile_nocmt)
 
     # there are 6 faces in these models; we need to (1) find all of them and
     # (2) apply the appropriate BCs we'll loop through all of the nodes, see if
@@ -215,7 +213,11 @@ def writeNodeBC(BCFILE, planeNodeIDs, dofs):
         for j in i:
             BCFILE.write("%i,0,%s\n" % (j[0], dofs))
 
+
 def read_cli():
+    """
+    read command line arguments
+    """
     import argparse
 
     # lets read in some command-line arguments

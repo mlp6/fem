@@ -39,6 +39,21 @@ def strip_comments(nodefile):
     return nodefile_nocmt
 
 
+def count_header_comment_skips(nodefile):
+    """
+    count the number of file head comments lines to skip before the first
+    keyword (line starting with *)
+    """
+    import re
+    node = re.compile('\*')
+    count = 1
+    with open(nodefile) as f:
+        for line in f:
+            if node.match(line):
+                return count
+            else:
+                count = count + 1
+
 def rm_tmp_file(nodefile_nocmt):
     import os
     try:
