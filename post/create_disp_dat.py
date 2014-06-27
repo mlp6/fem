@@ -114,17 +114,25 @@ def generate_header(data, outfile):
     '''
     generate headers from data matrix of first time step
     '''
-    import subprocess
+    import re
     header = {}
     header['numnodes'] = data.__len__()
     header['numdims'] = 4  # node ID, x-val, y-val, z-val
+    ts_count = 0
+    t = re.compile('time')
     if outfile.name.endswith('gz'):
-        numTScmd = 'zgrep time %s | wc -l' % outfile.name
+        import gzip
+        n = gzip.open(outfile.name)
     else:
-        numTScmd = 'grep time %s | wc -l' % outfile.name
-    # the following command detects 1 extra line, so subtract 1
-    header['numtimesteps'] = int(subprocess.check_output(numTScmd,
-                                                         shell=True)) - 1
+        n = open(outfile.name)
+
+    with n as f:
+        for line in f:
+            if t.search(line):
+                ts_count = ts_count + 1
+    # the re.search detects 1 extra line, so subtract 1
+    header['numtimesteps'] = ts_count - 1
+
     return header
 
 
