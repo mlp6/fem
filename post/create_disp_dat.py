@@ -41,8 +41,12 @@ def main():
     if sys.version_info[:2] < (2, 7):
         sys.exit("ERROR: Requires Python >= 2.7")
 
-    # lets read in some command-line arguments
+    # let's read in some command-line arguments
     args = parse_cli()
+
+    # default to make a binary file if output file type isn't indicated
+    if (not args.vtk and not args.dat):
+        args.dat = True
 
     # open dispout for binary writing
     dispout = open(args.dispout, 'wb')
@@ -105,6 +109,8 @@ def parse_cli():
                         default="nodout.gz")
     parser.add_argument("--dispout", help="name of the binary displacement "
                         "output file", default="disp.dat")
+    parser.add_argument("--dat", help="create a binary file", action='store_true')
+    parser.add_argument("--vtk", help="create a vtk file", action='store_true')
     args = parser.parse_args()
 
     return args
@@ -170,3 +176,7 @@ def correct_Enot(raw_data):
 
 if __name__ == "__main__":
     main()
+
+def create_dat():
+
+def create_vtk():
