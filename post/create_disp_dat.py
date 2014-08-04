@@ -48,18 +48,6 @@ def main():
     if (not args.vtk and not args.dat):
         args.dat = True
 
-    if (args.dat):
-        create_dat(args)
-
-    if (args.vtk):
-        create_vtk(args)
-
-def create_dat(args):
-    import sys
-
-    # open dispout for binary writing
-    dispout = open(args.dispout, 'wb')
-
     # open nodout file
     if args.nodout.endswith('gz'):
         import gzip
@@ -68,6 +56,19 @@ def create_dat(args):
     else:
         print("Extracting data . . .\n")
         nodout = open(args.nodout, 'r')
+
+    # create output file
+    if (args.dat):
+        create_dat(args, nodout)
+
+    if (args.vtk):
+        create_vtk(args, nodout)
+
+def create_dat(args, nodout):
+    import sys
+
+    # open dispout for binary writing
+    dispout = open(args.dispout, 'wb')
 
     header_written = False
     timestep_read = False
@@ -102,8 +103,27 @@ def create_dat(args):
     dispout.close()
     nodout.close()
 
-def create_vtk(args):
-    pass
+def create_vtk(args, nodout):
+
+    # quick check to make sure file extension is correct
+    if (args.dispout.endswith('.dat')):
+        args.dispout = args.dispout.replace('.dat', '.vtk')
+
+    # open dispout for VTK file writing
+    dispout = open(args.dispout, 'w')
+
+    # writing the header
+    dispout.write('# vtk DataFile Version 3.0\n')
+
+    description = 'nodout file: '+args.nodout
+    if len(description) > 255: # the description must be less than 256 bytes
+        description = description[:255]
+
+    dispout.write(description+'\n') # could probably write more information here
+    dispout.write('ASCII\n') # data type
+    
+    
+
 
 def parse_cli():
     '''
