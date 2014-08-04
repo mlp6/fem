@@ -48,6 +48,15 @@ def main():
     if (not args.vtk and not args.dat):
         args.dat = True
 
+    if (args.dat):
+        create_dat(args)
+
+    if (args.vtk):
+        create_vtk(args)
+
+def create_dat(args):
+    import sys
+
     # open dispout for binary writing
     dispout = open(args.dispout, 'wb')
 
@@ -93,6 +102,8 @@ def main():
     dispout.close()
     nodout.close()
 
+def create_vtk(args):
+    pass
 
 def parse_cli():
     '''
@@ -173,10 +184,6 @@ def correct_Enot(raw_data):
         raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]', 'E-100', raw_data[i])
     return raw_data
 
-
 if __name__ == "__main__":
     main()
 
-def create_dat():
-
-def create_vtk():
