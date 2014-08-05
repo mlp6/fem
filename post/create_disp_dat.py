@@ -112,7 +112,12 @@ def create_vtk(args, nodout):
     disp_position = open('pos_temp.txt', 'w')
     disp_displace = open('disp_temp.txt', 'w')
 
+    # firstStep flag is True only for the first timestep. This is useful
+    # because there are certain expension operations that need to be done only
+    # once. These operations include creating the temporary positions file and
+    # figuring out the number of values along each dimension. 
     firstStep = True
+
     firstLine = True
     timestep_read = False
     timestep_count = 0
@@ -131,6 +136,7 @@ def create_vtk(args, nodout):
     yStepFound = False
     zStepFound = False
 
+    disp_position = open('pos_temp.txt', 'w')
     for line in nodout:
         if 'n o d a l' in line:
             raw_data = line.split()
@@ -139,8 +145,7 @@ def create_vtk(args, nodout):
             timestep_values.append(str(float(raw_data[28])))
         if 'nodal' in line:
 
-            # open temporary files for writing position and displacements
-            disp_position = open('pos_temp.txt', 'w')
+            # open temporary files for writing displacements
             disp_displace = open('disp_temp.txt', 'w')
 
             timestep_read = True
@@ -151,7 +156,7 @@ def create_vtk(args, nodout):
             sys.stdout.write('%i ' % timestep_count)
             sys.stdout.flush()
             continue
-        if timestep_read is True:
+        if timestep_read:
             if line.startswith('\n'):  #done reading a time step
                 timestep_read = False
                 # get last read coordinates - now have range of x, y, z coordinates
@@ -162,15 +167,19 @@ def create_vtk(args, nodout):
                     x.append(float(lastReadCoords[0]))
                     y.append(float(lastReadCoords[1]))
                     z.append(float(lastReadCoords[2]))
-
-                disp_position.close()
-                disp_displace.close()
-                
-                # no longer reading the first step
+                                
+                # no longer reading the first step, so can close temporary
+                # point coordinate file.
                 if firstStep:
+                    disp_position.close()
                     firstStep = False
-                    
+                # done creating .vts file for this timestep, so we can close 
+                # temporary displacement file.
+                disp_displace.close()
+    
                 createVTKFile(args, x, y, z, numNodes, timestep_count)
+                
+
             else:
                 # reading position and displacement data inside a timestep
                 raw_data = line.split()
@@ -207,27 +216,34 @@ def create_vtk(args, nodout):
                     # save the position coordinates in case they are the last ones to be read.
                     # this is useful for getting the range of x, y, z coordinates
                     lastReadCoords = raw_data[10:13]
+                    # write positions to temporary file. since positions
+                    # are the same for all timesteps, this only needs to be done once.
+                    # same with number of nodes.
+                    disp_position.write(' '.join(raw_data[10:13])+'\n')
                     numNodes += 1
 
                 if firstLine:
                     firstLine = False
+
                 # write displacements to temporary file
                 disp_displace.write(' '.join(raw_data[1:4])+'\n')
-                # write positions to temporary file. since positions
-                # are the same for all timesteps, this only needs to be done once.
-                # same with number of nodes
-                # BUT APPARENTLY NOT, since positions are different between timesteps???
-                disp_position.write(' '.join(raw_data[10:13])+'\n')
+ 
 
     # writing last timestep file
-    disp_position.close()
     disp_displace.close()
     createVTKFile(args, x, y, z, numNodes, timestep_count)
     sys.stdout.write('\n')
     sys.stdout.flush()
     # time dependence! look at .pvd file stucture for instructions on how to create this.
-    #print timestep_values
+    # here is an example of the .pvd file format:
+    # http://public.kitware.com/pipermail/paraview/2008-August/009062.html
     createPVDFile(args, timestep_values)
+
+    # cleanup. comment the code following this if you would like to look at
+    # the temporary position and displacement files for debugging purposes.
+    import os
+    os.remove('disp_temp.txt')
+    os.remove('pos_temp.txt')
 def parse_cli():
     '''
     parse command-line interface arguments
