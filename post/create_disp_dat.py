@@ -104,21 +104,33 @@ def create_dat(args, nodout):
     nodout.close()
 
 def create_vtk(args, nodout):
+    # this uses the StructuredGrid VTK XML format outlined here:
+    # http://vtk.org/VTK/img/file-formats.pdf
+    # pages 11-15 
     import sys
 
     disp_position = open('pos_temp.txt', 'w')
     disp_displace = open('disp_temp.txt', 'w')
 
-    positions_written = False
-    timestep_read = False
+    firstStep = True
     firstLine = True
+    timestep_read = False
     timestep_count = 0
+    # time value for each timestep
     timestep_values = []
+    # number of total nodes, used to write node_ids into vtk
     numNodes = 0
-
+    # x, y, and z hold the range (min, max) of values in each dimension.
+    # they also hold the step values/differences between consecutive
+    # values in each dimension. This is used to calculate the number of elements
+    # going in each dimension.
+    x = []
+    y = []
+    z = []
     xStepFound = False
     yStepFound = False
     zStepFound = False
+
     for line in nodout:
         if 'n o d a l' in line:
             raw_data = line.split()
@@ -126,18 +138,7 @@ def create_vtk(args, nodout):
             # consider using regular expressions rather than hardcoding this value?
             timestep_values.append(str(float(raw_data[28])))
         if 'nodal' in line:
-            # reset all variables for new timestep
-            # x, y, z hold range of x, y, z coordinates ([min, max])
-            firstLine = True
-            x = []
-            y = []
-            z = []
 
-            numNodes = 0
-
-            xStepFound = False
-            yStepFound = False
-            zStepFound = False
             # open temporary files for writing position and displacements
             disp_position = open('pos_temp.txt', 'w')
             disp_displace = open('disp_temp.txt', 'w')
@@ -156,46 +157,60 @@ def create_vtk(args, nodout):
                 # get last read coordinates - now have range of x, y, z coordinates
                 # as well as x, y, z steps. this allows us to get number of steps in
                 # x, y, z directions, which is necessary to construct the VTK file.
-                x.append(float(lastReadCoords[0]))
-                y.append(float(lastReadCoords[1]))
-                z.append(float(lastReadCoords[2]))
-                
+  
+                if firstStep:
+                    x.append(float(lastReadCoords[0]))
+                    y.append(float(lastReadCoords[1]))
+                    z.append(float(lastReadCoords[2]))
+
                 disp_position.close()
                 disp_displace.close()
-
+                
+                # no longer reading the first step
+                if firstStep:
+                    firstStep = False
+                    
                 createVTKFile(args, x, y, z, numNodes, timestep_count)
-                # remove this break when ready to test full run
-                #break
             else:
                 # reading position and displacement data inside a timestep
                 raw_data = line.split()
+                # correcting for cases when the E is dropped from number formatting
+                raw_data = correct_Enot(raw_data)
                 raw_data = [str(float(i)) for i in raw_data]
                 # get minimum range of x, y, z coordinates
                 if firstLine is True:
                     x.append(float(raw_data[10]))
                     y.append(float(raw_data[11]))
                     z.append(float(raw_data[12]))
+                # everything inside the following if statement must only be
+                # done once for the first timestep values. This assumes that
+                # number of nodes and dimensions of mesh are immutable between
+                # timesteps.
+                if firstStep:
+                    if not firstLine:
+                    # check to see if we have x, y, z differences
+                        xStep = float(lastReadCoords[0])-float(raw_data[10])
+                        if xStep != 0.0 and not xStepFound:
+                            x.append(xStep)
+                            xStepFound = True
+
+                        yStep = float(lastReadCoords[1])-float(raw_data[11])
+                        if yStep != 0.0 and not yStepFound:
+                            y.append(yStep)
+                            yStepFound = True
+
+                        zStep = float(lastReadCoords[2])-float(raw_data[12])
+                        if zStep != 0.0 and not zStepFound:
+                            z.append(zStep)
+                            zStepFound = True
+
+                    # save the position coordinates in case they are the last ones to be read.
+                    # this is useful for getting the range of x, y, z coordinates
+                    lastReadCoords = raw_data[10:13]
+                    numNodes += 1
+
+                if firstLine:
                     firstLine = False
-                # check to see if we have x, y, z differences
-                else:
-                    xStep = float(lastReadCoords[0])-float(raw_data[10])
-                    if xStep != 0.0 and not xStepFound:
-                        x.append(xStep)
-                        xStepFound = True
-
-                    yStep = float(lastReadCoords[1])-float(raw_data[11])
-                    if yStep != 0.0 and not yStepFound:
-                        y.append(yStep)
-                        yStepFound = True
-
-                    zStep = float(lastReadCoords[2])-float(raw_data[12])
-                    if zStep != 0.0 and not zStepFound:
-                        z.append(zStep)
-                        zStepFound = True
-
-                # save the position coordinates in case they are the last ones to be read.
-                # this is useful for getting the range of x, y, z coordinates
-                lastReadCoords = raw_data[10:13]
                 # write displacements to temporary file
                 disp_displace.write(' '.join(raw_data[1:4])+'\n')
                 # write positions to temporary file. since positions
@@ -203,12 +218,8 @@ def create_vtk(args, nodout):
                 # same with number of nodes
                 # BUT APPARENTLY NOT, since positions are different between timesteps???
                 disp_position.write(' '.join(raw_data[10:13])+'\n')
-                numNodes += 1
 
     # writing last timestep file
-    x.append(float(lastReadCoords[0]))
-    y.append(float(lastReadCoords[1]))
-    z.append(float(lastReadCoords[2]))
     disp_position.close()
     disp_displace.close()
     createVTKFile(args, x, y, z, numNodes, timestep_count)
@@ -301,7 +312,8 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
     # quick check to make sure file extension is correct
     if ('.' in args.dispout):
         fileName = args.dispout[:args.dispout.find('.')]
-
+    else:
+        fileName = args.dispout
     # open .vts file for writing)
     if not os.path.exists(fileName):
         os.makedirs(fileName)
@@ -348,7 +360,8 @@ def createPVDFile(args, timestep_values):
     # quick check to make sure file extension is correct
     if ('.' in args.dispout):
         fileName = args.dispout[:args.dispout.find('.')]
-
+    else:
+        fileName = args.dispout
     # open .pvd file for writing)
     if not os.path.exists(fileName):
         os.makedirs(fileName)
