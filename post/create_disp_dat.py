@@ -324,6 +324,10 @@ def correct_Enot(raw_data):
     return raw_data
 
 def createVTKFile(args, x, y, z, numNodes, timestep):
+    '''
+    creates .vts file for visualizing the displacement data during a single timestep
+    in Paraview.
+    '''
     import os
     # quick check to make sure file extension is correct
     if ('.' in args.dispout):
@@ -371,7 +375,13 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
     dispout.write('</VTKFile>')
 
     dispout.close()
+
 def createPVDFile(args, timestep_values):
+    '''
+    creates .pvd file that encompasses displacement for all timesteps.
+    The .pvd file can be loaded into Paraview, and the timesteps can be scrolled through
+    using the time slider bar.
+    '''
     import os
     # quick check to make sure file extension is correct
     if ('.' in args.dispout):
@@ -392,12 +402,5 @@ def createPVDFile(args, timestep_values):
     dispout.write('\t</Collection>\n')
     dispout.write('</VTKFile>\n')
 
-                  
-
-    """
-    <DataSet timestep="1" file="a.2.vtu"/>
-  </Collection>
-</VTKFile>
-"""
 if __name__ == "__main__":
     main()
