@@ -113,20 +113,35 @@ def create_vtk(args, nodout):
     timestep_read = False
     firstLine = True
     timestep_count = 0
+    timestep_values = []
     numNodes = 0
 
+    xStepFound = False
+    yStepFound = False
+    zStepFound = False
     for line in nodout:
         if 'n o d a l' in line:
             raw_data = line.split()
             # get time value of timestep
             # consider using regular expressions rather than hardcoding this value?
-            timestep_value = str(float(raw_data[28])) 
+            timestep_values.append(str(float(raw_data[28])))
         if 'nodal' in line:
+            # reset all variables for new timestep
             # x, y, z hold range of x, y, z coordinates ([min, max])
             firstLine = True
             x = []
             y = []
             z = []
+
+            numNodes = 0
+
+            xStepFound = False
+            yStepFound = False
+            zStepFound = False
+            # open temporary files for writing position and displacements
+            disp_position = open('pos_temp.txt', 'w')
+            disp_displace = open('disp_temp.txt', 'w')
+
             timestep_read = True
             timestep_count = timestep_count + 1
             if timestep_count == 1:
@@ -138,23 +153,46 @@ def create_vtk(args, nodout):
         if timestep_read is True:
             if line.startswith('\n'):  #done reading a time step
                 timestep_read = False
-                positions_written = True
+                # get last read coordinates - now have range of x, y, z coordinates
+                # as well as x, y, z steps. this allows us to get number of steps in
+                # x, y, z directions, which is necessary to construct the VTK file.
                 x.append(float(lastReadCoords[0]))
                 y.append(float(lastReadCoords[1]))
                 z.append(float(lastReadCoords[2]))
-                print x
-                print y
-                print z
-                print numNodes
-                break
+                
+                disp_position.close()
+                disp_displace.close()
+
+                createVTKFile(args, x, y, z, numNodes, timestep_count)
+                # remove this break when ready to test full run
+                #break
             else:
+                # reading position and displacement data inside a timestep
                 raw_data = line.split()
+                raw_data = [str(float(i)) for i in raw_data]
                 # get minimum range of x, y, z coordinates
                 if firstLine is True:
                     x.append(float(raw_data[10]))
                     y.append(float(raw_data[11]))
                     z.append(float(raw_data[12]))
                     firstLine = False
+                # check to see if we have x, y, z differences
+                else:
+                    xStep = float(lastReadCoords[0])-float(raw_data[10])
+                    if xStep != 0.0 and not xStepFound:
+                        x.append(xStep)
+                        xStepFound = True
+
+                    yStep = float(lastReadCoords[1])-float(raw_data[11])
+                    if yStep != 0.0 and not yStepFound:
+                        y.append(yStep)
+                        yStepFound = True
+
+                    zStep = float(lastReadCoords[2])-float(raw_data[12])
+                    if zStep != 0.0 and not zStepFound:
+                        z.append(zStep)
+                        zStepFound = True
+
                 # save the position coordinates in case they are the last ones to be read.
                 # this is useful for getting the range of x, y, z coordinates
                 lastReadCoords = raw_data[10:13]
@@ -163,38 +201,22 @@ def create_vtk(args, nodout):
                 # write positions to temporary file. since positions
                 # are the same for all timesteps, this only needs to be done once.
                 # same with number of nodes
-                if not positions_written:
-                    disp_position.write(' '.join(raw_data[10:13])+'\n')
-                    numNodes += 1
+                # BUT APPARENTLY NOT, since positions are different between timesteps???
+                disp_position.write(' '.join(raw_data[10:13])+'\n')
+                numNodes += 1
 
-"""    # quick check to make sure file extension is correct
-    if (args.dispout.endswith('.dat')):
-        args.dispout = args.dispout.replace('.dat', '.vts')
-
-    # open dispout for VTK file writing
-    dispout = open(args.dispout, 'w')
-    
-    # writing the VTK file outline
-   dispout.write(
-<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">
-  <StructuredGrid WholeExtent="">
-  <Piece Extent="">
-    <PointData Scalars="node_id" Vectors="displacement">
-      <DataArray type="Float32" Name="node_id" format="ascii">
-      </DataArray>
-      <DataArray NumberOfComponents="3" type="Float32" Name="displacement" format="ascii">
-      </DataArray>
-    </PointData>
-    <Points>
-      <DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">
-      </DataArray>
-    </Points>
-  </Piece>
-  </StructuredGrid>
-</VTKFile>)"""
-
+    # writing last timestep file
+    x.append(float(lastReadCoords[0]))
+    y.append(float(lastReadCoords[1]))
+    z.append(float(lastReadCoords[2]))
+    disp_position.close()
+    disp_displace.close()
+    createVTKFile(args, x, y, z, numNodes, timestep_count)
+    sys.stdout.write('\n')
+    sys.stdout.flush()
     # time dependence! look at .pvd file stucture for instructions on how to create this.
-
+    #print timestep_values
+    createPVDFile(args, timestep_values)
 def parse_cli():
     '''
     parse command-line interface arguments
@@ -274,6 +296,79 @@ def correct_Enot(raw_data):
         raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]', 'E-100', raw_data[i])
     return raw_data
 
+def createVTKFile(args, x, y, z, numNodes, timestep):
+    import os
+    # quick check to make sure file extension is correct
+    if ('.' in args.dispout):
+        fileName = args.dispout[:args.dispout.find('.')]
+
+    # open .vts file for writing)
+    if not os.path.exists(fileName):
+        os.makedirs(fileName)
+    dispout = open(os.path.join(fileName,fileName+str(timestep)+'.vts'), 'w')
+
+    # writing the VTK file outline
+    dispout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
+    numXValues = abs(round((x[2]-x[0])/x[1]))
+    numYValues = abs(round((y[2]-y[0])/y[1]))
+    numZValues = abs(round((z[2]-z[0])/z[1]))
+
+    dispout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' % (numXValues, numYValues, numZValues))
+    dispout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' % (numXValues, numYValues, numZValues))
+    dispout.write('\t\t\t<PointData Scalars="node_id" Vectors="displacement">\n')
+    # writing node ids
+    dispout.write('\t\t\t\t<DataArray type="Float32" Name="node_id" format="ascii">\n')
+    for i in range(1, numNodes+1):
+        dispout.write('\t\t\t\t\t%.1f\n' % i)
+    dispout.write('\t\t\t\t</DataArray>\n')
+    # writing displacement values
+    dispout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" Name="displacement" format="ascii">\n')
+    displace_temp = open('disp_temp.txt', 'r')
+    for line in displace_temp:
+        dispout.write('\t\t\t\t\t'+line)
+    displace_temp.close()
+    dispout.write('\t\t\t\t</DataArray>\n')
+    dispout.write('\t\t\t</PointData>\n')
+    # writing point position values
+    dispout.write('\t\t\t<Points>\n')
+    dispout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
+    pos_temp = open('pos_temp.txt', 'r')
+    for line in pos_temp:
+        dispout.write('\t\t\t\t\t'+line)
+    pos_temp.close()
+    dispout.write('\t\t\t\t</DataArray>\n')
+    dispout.write('\t\t\t</Points>\n')
+    dispout.write('\t\t</Piece>\n')
+    dispout.write('\t</StructuredGrid>\n')
+    dispout.write('</VTKFile>')
+
+    dispout.close()
+def createPVDFile(args, timestep_values):
+    import os
+    # quick check to make sure file extension is correct
+    if ('.' in args.dispout):
+        fileName = args.dispout[:args.dispout.find('.')]
+
+    # open .pvd file for writing)
+    if not os.path.exists(fileName):
+        os.makedirs(fileName)
+    dispout = open(os.path.join(fileName,fileName+'.pvd'), 'w')
+    dispout.write('<VTKFile type="Collection" version="0.1">\n')
+    dispout.write('\t<Collection>\n')
+
+    timestep = 1
+    for i in timestep_values:
+        dispout.write('\t\t<DataSet timestep="{0}" file="{1}"/>\n'.format(i, fileName+str(timestep)+'.vts'))
+        timestep += 1
+    dispout.write('\t</Collection>\n')
+    dispout.write('</VTKFile>\n')
+
+                  
+
+    """
+    <DataSet timestep="1" file="a.2.vtu"/>
+  </Collection>
+</VTKFile>
+"""
 if __name__ == "__main__":
     main()
-
