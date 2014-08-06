@@ -25,7 +25,7 @@ def main():
     loads = open(args.loadfile, 'r')
 
     # create output file
-    # create_vtk(args, nodes, loads)
+    create_vtk(nodes, loads, args.loadout)
 
 def parse_cli():
     '''
@@ -48,5 +48,19 @@ def parse_cli():
 
     return args
 
+def create_vtk(nodes, loads, loadout):
+    '''
+    write .vts file from node and load files
+    '''
+    for line in nodes:
+        # getting number of elements in x, y, z dimensions
+        # as well as total number of nodes (for node ID)
+        if 'numElem=' in line:
+            dimensionsStart = line.find('[')
+            dimensionsEnd = line.find(']')
+            dimensions = line[dimensionsStart+1:dimensionsEnd].split(', ')
+            dimensions = [int(x) for x in dimensions]
+            numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
+            #print numNodes
 if __name__ == "__main__":
     main()
