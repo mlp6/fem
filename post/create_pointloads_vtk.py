@@ -63,6 +63,8 @@ def create_vtk(nodes, loads, loadout):
     loadout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
 
     # writing node position data to .vts file
+    print 'Writing node positions'
+
     for line in nodes:
         # getting number of elements in x, y, z dimensions
         # as well as total number of nodes (for node ID)
@@ -87,9 +89,6 @@ def create_vtk(nodes, loads, loadout):
             raw_data = line.split(',')
             loadout.write('\t\t\t\t\t%s %s %s\n' \
                               % (raw_data[1], raw_data[2], raw_data[3]))
-            # just write one set of values for testing
-            # REMOVE WHEN READY FOR FULL RUN
-            break
         
     # done writing node position data
     loadout.write('\t\t\t\t</DataArray>\n')
@@ -97,19 +96,41 @@ def create_vtk(nodes, loads, loadout):
     nodes.close()
 
     # writing node id data
-    loadout.write('\t\t\t<PointData Scalars="node_id" Vectors="displacement">\n')
+    print 'Writing node IDs'
+
+    loadout.write('\t\t\t<PointData Scalars="node_id" Vectors="loads">\n')
     loadout.write('\t\t\t\t<DataArray type="Float32" Name="node_id" format="ascii">\n')
-    for i in range(1, numNodes):
+    for i in range(1, numNodes+1):
         loadout.write('\t\t\t\t\t%.1f\n' % i)
-        # just write one set of values for testing
-        # REMOVE WHEN READY FOR FULL RUN
-        break
     loadout.write('\t\t\t\t</DataArray>\n')
 
-    
+    # writing load data
+    print 'Writing point loads'
 
-#    for line in loads:
-        
-            
+    loadout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" Name="loads" format="ascii">\n')
+
+    # note that PointLoads file only list nodes with nonzero loads.
+    currentNode = 1
+    for line in loads:
+        if not line.startswith('$') and not line.startswith('*'):
+            raw_data = line.split(',')
+            while currentNode < int(raw_data[0]):
+                    loadout.write('\t\t\t\t\t0.0 0.0 0.0\n')
+                    currentNode += 1
+
+            loadout.write('\t\t\t\t\t0.0 0.0 %f\n' % float(raw_data[3]))
+            currentNode += 1 
+
+    # finish writing zero load nodes into .vts file
+    while currentNode <= numNodes:
+        loadout.write('\t\t\t\t\t0.0 0.0 0.0\n')
+        currentNode += 1 
+
+    loadout.write('\t\t\t\t</DataArray>\n')
+    loadout.write('\t\t\t</PointData>\n')
+    loadout.write('\t\t</Piece>\n')
+    loadout.write('\t</StructuredGrid>\n')
+    loadout.write('</VTKFile>')
+    loadout.close()
 if __name__ == "__main__":
     main()
