@@ -27,18 +27,15 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 %   [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, numWorkers)
 %
 
-% check that Field II is in the Matlab search path
-check_Field_II;
-
 % figure out where this function exists to link probes submod
 functionDir = fileparts(which(mfilename));
-addpath(fullfile(functionDir, '../probes'));
+probesPath = fullfile(functionDir, '../probes/fem');
+check_add_probes(probesPath);
 
-field_init(-1)
-
+% check that Field II is in the Matlab search path
+check_Field_II;
 disp('Starting the Field II simulation');
-%set_field('use_triangles',1);
-%set_field('use_lines',1);
+field_init(-1)
 
 % define transducer-independent parameters
 set_field('c', FIELD_PARAMS.soundSpeed);
@@ -157,3 +154,10 @@ if ~exist(test_function_name),
     error('Please add Field II to your Matlab path');
 end
 
+
+function check_add_probes(probesPath)
+if exist(probesPath),
+    addpath(probesPath);
+else,
+    warning('Probe definitions do not exist; must create your own');
+end;
