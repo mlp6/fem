@@ -19,13 +19,19 @@ Installation
 ============
  * Add the fem subdirectories to your Matlab path.  One approach is to add the
    following to ```$HOME/matlab/startup.m```: 
-```
+ ```
  fem_root = 'PATH/TO/GIT/CLONED/fem';
  addpath(fullfile(fem_root, 'mesh'));
  addpath(fullfile(fem_root, 'field'));
  addpath(fullfile(fem_root, 'post'));
-```
+ ```
  where ```fem_root``` is the path of your git-cloned fem repository.
+
+ * There is a ```probes``` submodule available to restricted institutions.  If
+   you do not have access to that repository, then you can use
+   ```field/linear.m``` and ```field/curvilinear.m``` as starting points to
+   define transducers.
+
 
 Release Notes
 =============
