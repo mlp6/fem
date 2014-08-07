@@ -15,7 +15,19 @@ Finite-Element Method Model of Soft Tissue Response to Impulsive Acoustic
 Radiation Force," IEEE UFFC, 52(10): 1699-1712, 2005. [PMCID: 16382621]*
 
 
-RELEASE NOTES
+Installation
+============
+ * Add the fem subdirectories to your Matlab path.  One approach is to add the
+   following to ```$HOME/matlab/startup.m```: 
+```
+ fem_root = 'PATH/TO/GIT/CLONED/fem';
+ addpath(fullfile(fem_root, 'mesh'));
+ addpath(fullfile(fem_root, 'field'));
+ addpath(fullfile(fem_root, 'post'));
+```
+ where ```fem_root``` is the path of your git-cloned fem repository.
+
+Release Notes
 =============
 
 v0.1 (2012-11-02)
