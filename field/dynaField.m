@@ -31,7 +31,7 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 check_Field_II;
 
 % figure out where this function exists to link probes submod
-functionDir = inputname(1);
+functionDir = fileparts(which(mfilename));
 addpath(fullfile(functionDir, '../probes'));
 
 field_init(-1)
