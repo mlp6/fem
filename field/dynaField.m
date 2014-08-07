@@ -27,6 +27,9 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 %   [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, numWorkers)
 %
 
+% check that Field II is in the Matlab search path
+check_Field_II;
+
 % figure out where this function exists to link probes submod
 functionDir = inputname(1);
 addpath(fullfile(functionDir, '../probes'));
@@ -144,3 +147,13 @@ spmd
 end
 intensity = gather(intensityDist);
 matlabpool close
+
+
+function check_Field_II
+% function check_Field_II
+% check that Field II is in the Matlab search path
+test_function_name = 'field_init';
+if ~exist(test_function_name),
+    error('Please add Field II to your Matlab path');
+end
+
