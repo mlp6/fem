@@ -105,6 +105,7 @@ def create_vtu(nodes, elems, loads, loadout):
  
     # writing .vtu file header
     loadout = open(loadout, 'w')
+    
     loadout.write('<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian">\n')
     
     # writing node position data to .vtu file
@@ -118,7 +119,17 @@ def create_vtu(nodes, elems, loads, loadout):
     loadout.write('\t\t\t</PointData>\n')
     
     # writing cells using elefile
+    writeCells(loadout, elems)
+    
+    # writing celldata using elefile
+    loadout.write('\t\t\t<CellData>\n')
     writeCellData(loadout, elems)
+    loadout.write('\t\t\t</CellData>\n')
+    
+    # write closing tags
+    loadout.write('\t\t</Piece>\n')
+    loadout.write('\t</UnstructuredGrid>\n')
+    loadout.write('</VTKFile>')
     loadout.close()
 
 def writeNodePositions(loadout, nodes, filetype):
@@ -207,7 +218,7 @@ def writePointLoads(loadout, loads, numNodes):
 
     loadout.write('\t\t\t\t</DataArray>\n')
 
-def writeCellData(loadout, elefile):
+def writeCells(loadout, elefile):
     '''
     writes cell connectivity and types to loadout file
     '''
@@ -226,9 +237,10 @@ def writeCellData(loadout, elefile):
             raw_data = line.split(',')
             loadout.write('\t\t\t\t\t')
             for nodeID in raw_data[2:]:
-                loadout.write('%s ' % nodeID)
-            #loadout.write('\n')
-            #break
+                node = int(nodeID)
+                node -= 1
+                loadout.write('%d ' % node)
+            loadout.write('\n')
     elems.close()
     loadout.write('\t\t\t\t</DataArray>\n')
     
@@ -241,7 +253,6 @@ def writeCellData(loadout, elefile):
             raw_data = line.split(',')
             offset += len(raw_data[2:])
             loadout.write('\t\t\t\t\t %d\n' % offset)
-            #break
     elems.close()
     loadout.write('\t\t\t\t</DataArray>\n')
 
@@ -257,10 +268,25 @@ def writeCellData(loadout, elefile):
             if numVertices == 8:
                 cellType = 12
             loadout.write('\t\t\t\t\t %d\n' % cellType)
-            #break
     elems.close()
     loadout.write('\t\t\t\t</DataArray>\n')
+    loadout.write('\t\t\t</Cells>\n')
+
     
+def writeCellData(loadout, elefile):
+    '''
+    writes cell part IDs
+    '''
+    print 'Writing cell data'
+    
+    loadout.write('\t\t\t\t<DataArray type="Int32" Name="part id" Format="ascii">\n')
+    elems = open(elefile, 'r')
+    for line in elems:
+        if not line.startswith('$') and not line.startswith('*'):
+            raw_data = line.split(',')
+            loadout.write('\t\t\t\t\t%s\n' % raw_data[1])
+    elems.close()
+    loadout.write('\t\t\t\t</DataArray>\n')
 
 if __name__ == "__main__":
     main()
