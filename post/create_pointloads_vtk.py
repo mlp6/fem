@@ -36,9 +36,7 @@ def main():
     else:
         # if ele file is given, make an unstructured grid
         # containing part IDs.
-        elems = open(args.elefile, 'r')
-        
-        create_vtu(nodes, elems, loads, args.loadout)
+        create_vtu(nodes, args.elefile, loads, args.loadout)
 
 def parse_cli():
     '''
@@ -85,8 +83,7 @@ def create_vts(nodes, loads, loadout):
     loadout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
 
     # writing opening tags and node position data to .vts file
-    numNodesElems = writeNodePositions(loadout, nodes, 'vts')
-    numNodes = numNodesElems[0]
+    numNodes, numElems = writeNodePositions(loadout, nodes, 'vts')
 
     # writing point data(node IDs and loads)
     loadout.write('\t\t\t<PointData>\n')
@@ -109,12 +106,19 @@ def create_vtu(nodes, elems, loads, loadout):
     # writing .vtu file header
     loadout = open(loadout, 'w')
     loadout.write('<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian">\n')
-    loadout.write('\t<UnstructuredGrid>\n')
-
+    
     # writing node position data to .vtu file
-    writeNodePositions(loadout, nodes, 'vtu')
-    # writing node IDs
+    numNodes, numElems = writeNodePositions(loadout, nodes, 'vtu')
+
+    # writing point data(node IDs and loads (if given))
+    loadout.write('\t\t\t<PointData>\n')
     writeNodeIDs(loadout, numNodes)
+    if not loads is None:
+        writePointLoads(loadout, loads, numNodes)
+    loadout.write('\t\t\t</PointData>\n')
+    
+    # writing cells using elefile
+    writeCellData(loadout, elems)
     loadout.close()
 
 def writeNodePositions(loadout, nodes, filetype):
@@ -144,7 +148,6 @@ def writeNodePositions(loadout, nodes, filetype):
                 loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
                                   % (dimensions[0], dimensions[1], dimensions[2]))
             if filetype is 'vtu':
-                loadout.write('<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian">\n')
                 loadout.write('\t<UnstructuredGrid>\n')
                 loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
                                   % (numNodes, numElems))
@@ -155,7 +158,7 @@ def writeNodePositions(loadout, nodes, filetype):
         # reading node position data from nodefile
         if not line.startswith('$') and not line.startswith('*'):
             raw_data = line.split(',')
-            loadout.write('\t\t\t\t\t%s %s %s\n' \
+            loadout.write('\t\t\t\t\t%s %s %s' \
                               % (raw_data[1], raw_data[2], raw_data[3]))
         
     # done writing node position data
@@ -163,7 +166,7 @@ def writeNodePositions(loadout, nodes, filetype):
     loadout.write('\t\t\t</Points>\n')
     nodes.close()
 
-    return [numNodes, numElems]
+    return numNodes, numElems
 
 def writeNodeIDs(loadout, numNodes):
     ''' 
@@ -203,6 +206,61 @@ def writePointLoads(loadout, loads, numNodes):
         currentNode += 1 
 
     loadout.write('\t\t\t\t</DataArray>\n')
+
+def writeCellData(loadout, elefile):
+    '''
+    writes cell connectivity and types to loadout file
+    '''
+    print 'Writing cells'
+    loadout.write('\t\t\t<Cells>\n')
+
+    # unfortunately need to loop through entire elements file 3 separate times
+    # to get info necessary for cell data. definitely easier to construct VTK file using
+    # the legacy format, rather than the newer XML format in this case.
+
+    # write cell connectivity array
+    loadout.write('\t\t\t\t<DataArray type="Int32" Name="connectivity" Format="ascii">\n')
+    elems = open(elefile, 'r')
+    for line in elems:
+        if not line.startswith('$') and not line.startswith('*'):
+            raw_data = line.split(',')
+            loadout.write('\t\t\t\t\t')
+            for nodeID in raw_data[2:]:
+                loadout.write('%s ' % nodeID)
+            #loadout.write('\n')
+            #break
+    elems.close()
+    loadout.write('\t\t\t\t</DataArray>\n')
+    
+    # write cell offsets
+    loadout.write('\t\t\t\t<DataArray type="Int32" Name="offsets" Format="ascii">\n')
+    elems = open(elefile, 'r')
+    offset = 0
+    for line in elems:
+        if not line.startswith('$') and not line.startswith('*'):
+            raw_data = line.split(',')
+            offset += len(raw_data[2:])
+            loadout.write('\t\t\t\t\t %d\n' % offset)
+            #break
+    elems.close()
+    loadout.write('\t\t\t\t</DataArray>\n')
+
+    # write cell types
+    # reference figures 2+3 on pages 9-10 for more info on types:
+    # http://www.vtk.org/VTK/img/file-formats.pdf
+    loadout.write('\t\t\t\t<DataArray type="Int32" Name="types" Format="ascii">\n')
+    elems = open(elefile, 'r')
+    for line in elems:
+        if not line.startswith('$') and not line.startswith('*'):
+            raw_data = line.split(',')
+            numVertices = len(raw_data[2:])
+            if numVertices == 8:
+                cellType = 12
+            loadout.write('\t\t\t\t\t %d\n' % cellType)
+            #break
+    elems.close()
+    loadout.write('\t\t\t\t</DataArray>\n')
+    
 
 if __name__ == "__main__":
     main()
