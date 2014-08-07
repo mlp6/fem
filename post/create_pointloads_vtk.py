@@ -32,11 +32,11 @@ def main():
     if args.elefile is None:
         # if ele file not given, make a structured grid
         # using just nodes and loads files
-        create_vts(nodes, loads, args.loadout)
+        create_vts(args, nodes, loads, args.loadout)
     else:
         # if ele file is given, make an unstructured grid
         # containing part IDs.
-        create_vtu(nodes, args.elefile, loads, args.loadout)
+        create_vtu(args, nodes, args.elefile, loads, args.loadout)
 
 def parse_cli():
     '''
@@ -66,7 +66,7 @@ def parse_cli():
 
     return args
 
-def create_vts(nodes, loads, loadout):
+def create_vts(args, nodes, loads, loadout):
     '''
     Writes .vts file from node and load files. StructuredGrid format assumes
     a linear mesh, so if your mesh is actually nonlinear, this script should be run
@@ -83,11 +83,11 @@ def create_vts(nodes, loads, loadout):
     loadout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
 
     # writing opening tags and node position data to .vts file
-    numNodes, numElems = writeNodePositions(loadout, nodes, 'vts')
+    numNodes, numElems = writeNodePositions(loadout, args, 'vts')
 
     # writing point data(node IDs and loads)
     loadout.write('\t\t\t<PointData>\n')
-    writeNodeIDs(loadout, numNodes)
+    writeNodeIDs(loadout, args, numNodes)
     writePointLoads(loadout, loads, numNodes)
     loadout.write('\t\t\t</PointData>\n')
 
@@ -97,7 +97,7 @@ def create_vts(nodes, loads, loadout):
     loadout.write('</VTKFile>')
     loadout.close()
 
-def create_vtu(nodes, elems, loads, loadout):
+def create_vtu(args, nodes, elems, loads, loadout):
     # making sure file extension is correct
     if '.' in loadout and not loadout.endswith('.vtu'):
         loadout = loadout[:loadout.find('.')]
@@ -109,11 +109,11 @@ def create_vtu(nodes, elems, loads, loadout):
     loadout.write('<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian">\n')
     
     # writing node position data to .vtu file
-    numNodes, numElems = writeNodePositions(loadout, nodes, 'vtu')
+    numNodes, numElems = writeNodePositions(loadout, args, 'vtu')
 
     # writing point data(node IDs and loads (if given))
     loadout.write('\t\t\t<PointData>\n')
-    writeNodeIDs(loadout, numNodes)
+    writeNodeIDs(loadout, args, numNodes)
     if not loads is None:
         writePointLoads(loadout, loads, numNodes)
     loadout.write('\t\t\t</PointData>\n')
@@ -132,14 +132,16 @@ def create_vtu(nodes, elems, loads, loadout):
     loadout.write('</VTKFile>')
     loadout.close()
 
-def writeNodePositions(loadout, nodes, filetype):
+def writeNodePositions(loadout, args, filetype):
     '''
     writes opening tags as well as node positions to 
     loadout file. returns array containing number of
     nodes (index = 0) and number of elements (index = 1).
     '''
     print 'Writing node positions'
+    nodes = open(args.nodefile, 'r')
 
+    headerWritten = False
     for line in nodes:
         # getting number of elements in x, y, z dimensions
         # as well as total number of nodes (for node ID)
@@ -166,11 +168,50 @@ def writeNodePositions(loadout, nodes, filetype):
             loadout.write('\t\t\t<Points>\n')
             loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
 
+            headerWritten = True
+
+        if not headerWritten: # cannot get dimension data from nodefile header or nodes are nonlinear
+            # get max node ID and coordinates of padding node
+            numNodes = 0
+            nodeCount = open(args.nodefile, 'r')
+            for line in nodeCount:
+                if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
+                    raw_data = line.split(',')
+                    numNodes = int(raw_data[0])
+                    paddingNodePos = raw_data[1:]
+            nodeCount.close()
+
+            # count number of elements
+            numElems = 0
+            elemCount = open(args.elefile, 'r')
+            for line in elemCount:
+               if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
+                   numElems += 1
+            #pointCellHeaderPosition = loadout.tell()
+            #loadout.write(' '*256)
+            #loadout.write('\n')
+            # initialize currentNode variable, which will be 
+            # used for node position padding
+            currentNode = 1
+
+            loadout.write('\t<UnstructuredGrid>\n')
+            loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
+                              % (numNodes, numElems))
+            loadout.write('\t\t\t<Points>\n')
+            loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
+            headerWritten = True
+
+
         # reading node position data from nodefile
-        if not line.startswith('$') and not line.startswith('*'):
+        if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
+            while currentNode < int(raw_data[0]):
+                loadout.write('\t\t\t\t\t%s %s %s' \
+                              % (paddingNodePos[0], paddingNodePos[1], paddingNodePos[2]))
+                currentNode += 1
             loadout.write('\t\t\t\t\t%s %s %s' \
                               % (raw_data[1], raw_data[2], raw_data[3]))
+            currentNode += 1
         
     # done writing node position data
     loadout.write('\t\t\t\t</DataArray>\n')
@@ -179,7 +220,7 @@ def writeNodePositions(loadout, nodes, filetype):
 
     return numNodes, numElems
 
-def writeNodeIDs(loadout, numNodes):
+def writeNodeIDs(loadout, args, numNodes):
     ''' 
     writes node IDs to loadout file
     '''
@@ -202,7 +243,7 @@ def writePointLoads(loadout, loads, numNodes):
     # of zero.
     currentNode = 1
     for line in loads:
-        if not line.startswith('$') and not line.startswith('*'):
+        if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
             while currentNode < int(raw_data[0]):
                     loadout.write('\t\t\t\t\t0.0 0.0 0.0\n')
@@ -233,10 +274,11 @@ def writeCells(loadout, elefile):
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="connectivity" Format="ascii">\n')
     elems = open(elefile, 'r')
     for line in elems:
-        if not line.startswith('$') and not line.startswith('*'):
+        if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
             loadout.write('\t\t\t\t\t')
             for nodeID in raw_data[2:]:
+                # need to subtract one to convert to 0-based indices
                 node = int(nodeID)
                 node -= 1
                 loadout.write('%d ' % node)
@@ -249,7 +291,7 @@ def writeCells(loadout, elefile):
     elems = open(elefile, 'r')
     offset = 0
     for line in elems:
-        if not line.startswith('$') and not line.startswith('*'):
+        if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
             offset += len(raw_data[2:])
             loadout.write('\t\t\t\t\t %d\n' % offset)
@@ -262,7 +304,7 @@ def writeCells(loadout, elefile):
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="types" Format="ascii">\n')
     elems = open(elefile, 'r')
     for line in elems:
-        if not line.startswith('$') and not line.startswith('*'):
+        if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
             numVertices = len(raw_data[2:])
             if numVertices == 8:
@@ -282,7 +324,7 @@ def writeCellData(loadout, elefile):
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="part id" Format="ascii">\n')
     elems = open(elefile, 'r')
     for line in elems:
-        if not line.startswith('$') and not line.startswith('*'):
+        if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
             loadout.write('\t\t\t\t\t%s\n' % raw_data[1])
     elems.close()
