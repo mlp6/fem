@@ -27,26 +27,21 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,nu
 
 measurementPointsandNodes = read_mpn(NodeName, 4);
 
-% skip node number, use just coords
-measurementPoints=measurementPointsandNodes(:,2:4);
-
 % check to see if there are nodes in the x = y = 0 plane to make sure that
 % "on axis" intensities are properly captured
-check_on_axis(measurementPoints);
+check_on_axis(measurementPointsandNodes(:,2:4));
 
 % invert the z axis
-measurementPoints(:,3)=-measurementPoints(:,3);
+measurementPointsandNodes(:,4)=-measurementPointsandNodes(:,4);
 
 % switch x and y so plane of symmetry is elevation, not lateral
-tmp=measurementPoints(:,1:2);
-measurementPoints(:,1:2)=[tmp(:,2) tmp(:,1)];
+measurementPointsandNodes(:,2:3)=[measurementPointsandNodes(:,3) measurementPointsandNodes(:,2)];
   
 % convert from cm -> m
-measurementPoints=measurementPoints/100;
+measurementPointsandNodes(:,2:4)=measurementPointsandNodes(:,2:4)/100;
 
 % create a variable structure to pass to dynaField
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
-FIELD_PARAMS.measurementPoints = measurementPoints;
 FIELD_PARAMS.alpha = alpha;
 FIELD_PARAMS.Fnum = Fnum;
 FIELD_PARAMS.focus = focus;
@@ -70,7 +65,7 @@ end
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
 
 % check if non-uniform force scaling must be done
-isUniform = checkUniform(measurementPoints);
+isUniform = checkUniform(measurementPointsandNodes(:,2:4));
 if (nargin < 10)
     ForceNonlinear = 0;
 end

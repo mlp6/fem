@@ -6,7 +6,8 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 %
 % INPUTS:
 %   FIELD_PARAMS.alpha (float) - absoprtion (dB/cm/MHz)
-%   FIELD_PARAMS.measurementPoints - nodal locations from field2dyna.m
+%   FIELD_PARAMS.measurementPointsandNodes - nodal IDs and spatial locations
+%                                            from field2dyna.m
 %   FIELD_PARAMS.Fnum (float) - F/#
 %   FIELD_PARAMS.focus - [x y z] (m)
 %   FIELD_PARAMS.Frequency (float) - push frequency (MHz)
@@ -91,7 +92,7 @@ else
 end
 
 if (useForLoop)
-    numNodes = size(FIELD_PARAMS.measurementPoints,1);
+    numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
     progressPoints = 0:10000:numNodes;
     for i=1:numNodes,
       if ~isempty(intersect(i, progressPoints)),
@@ -100,7 +101,7 @@ if (useForLoop)
       if i == 1
           tic;
       end;
-      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPoints(i,:));
+      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4));
       intensity(i) = sum(pressure.*pressure);
     end
 else
@@ -131,12 +132,12 @@ spmd
     % separate the matrices such that each core gets a roughly equal number of
     % measurement points to perform calculations on.  also, distributes
     % matrices based on columns, rather than rows.
-    codistPoints = codistributed(FIELD_PARAMS.measurementPoints, ...
+    codistPoints = codistributed(FIELD_PARAMS.measurementPointsandNodes(:,2:4), ...
         codistributor('1d', 1));
-    pointsSize = size(FIELD_PARAMS.measurementPoints);
+    pointsSize = size(FIELD_PARAMS.measurementPointsandNodes(:,2:4));
     
-    FIELD_PARAMS.measurementPoints = getLocalPart(codistPoints);
-    [intensityCodist,FIELD_PARAMS] = dynaField(FIELD_PARAMS);
+    FIELD_PARAMS.measurementPointsandNodes(:,2:4) = getLocalPart(codistPoints);
+    [intensityCodist, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
     
     % combine all the separate matrices again.
     intensityDist = codistributed.build(intensityCodist, ...
