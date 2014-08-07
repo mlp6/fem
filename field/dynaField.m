@@ -27,6 +27,10 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 %   [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, numWorkers)
 %
 
+% figure out where this function exists to link probes submod
+functionDir = inputname(1);
+addpath(fullfile(functionDir, '../probes'));
+
 field_init(-1)
 
 disp('Starting the Field II simulation');
@@ -38,7 +42,7 @@ set_field('c', FIELD_PARAMS.soundSpeed);
 set_field('fs', FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
-eval(sprintf('[Th,impulseResponse]=%s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
+eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
 
 % define the impulse response
 xdc_impulse(Th, impulseResponse);
