@@ -20,12 +20,25 @@ def main():
     args = parse_cli()
 
     # open nodes.dyn file
-    print("Extracting data . . .\n")
+    print("Extracting data . . .")
     nodes = open(args.nodefile, 'r')
-    loads = open(args.loadfile, 'r')
+
+    if args.loadfile is None:
+        loads = None
+    else:
+        loads = open(args.loadfile, 'r')
 
     # create output file
-    create_vtk(nodes, loads, args.loadout)
+    if args.elefile is None:
+        # if ele file not given, make a structured grid
+        # using just nodes and loads files
+        create_vts(nodes, loads, args.loadout)
+    else:
+        # if ele file is given, make an unstructured grid
+        # containing part IDs.
+        elems = open(args.elefile, 'r')
+        
+        create_vtu(nodes, elems, loads, args.loadout)
 
 def parse_cli():
     '''
@@ -40,17 +53,25 @@ def parse_cli():
     parser.add_argument("--nodefile",
                         help="name of ASCII file containing node IDs and positions",
                         default="nodes.dyn")
+    parser.add_argument("--elefile",
+                        help="name of ASCII file containing element IDs, part IDs, " 
+                        "and node components. If this argument is given, then "
+                        " an unstructured grid VTK file (.vtu) will be created "
+                        " instead of a structured grid VTK file (.vts)", 
+                        default=None)
     parser.add_argument("--loadfile", help="name of PointLoads file ",
-                        default="disp.dat")
+                        default=None)
     parser.add_argument("--loadout", help="name of output .vts file",
                         default="nodeLoads.vts")
     args = parser.parse_args()
 
     return args
 
-def create_vtk(nodes, loads, loadout):
+def create_vts(nodes, loads, loadout):
     '''
-    write .vts file from node and load files
+    Writes .vts file from node and load files. StructuredGrid format assumes
+    a linear mesh, so if your mesh is actually nonlinear, this script should be run
+    using with an elements file.
     '''
         
     # writing .vts file header
@@ -98,16 +119,17 @@ def create_vtk(nodes, loads, loadout):
     # writing node id data
     print 'Writing node IDs'
 
-    loadout.write('\t\t\t<PointData Scalars="node_id" Vectors="loads">\n')
+    loadout.write('\t\t\t<PointData>\n')
     loadout.write('\t\t\t\t<DataArray type="Float32" Name="node_id" format="ascii">\n')
     for i in range(1, numNodes+1):
         loadout.write('\t\t\t\t\t%.1f\n' % i)
     loadout.write('\t\t\t\t</DataArray>\n')
 
     # writing load data
+    
     print 'Writing point loads'
-
     loadout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" Name="loads" format="ascii">\n')
+    
 
     # note that PointLoads file only list nodes with nonzero loads.
     currentNode = 1
@@ -127,10 +149,32 @@ def create_vtk(nodes, loads, loadout):
         currentNode += 1 
 
     loadout.write('\t\t\t\t</DataArray>\n')
+
     loadout.write('\t\t\t</PointData>\n')
     loadout.write('\t\t</Piece>\n')
     loadout.write('\t</StructuredGrid>\n')
     loadout.write('</VTKFile>')
     loadout.close()
+
+def create_vtu(nodes, elems, loads, loadout):
+    # making sure file extension is correct
+    if '.' in loadout and not loadout.endswith('.vtu'):
+        loadout = loadout[:loadout.find('.')]
+        loadout = loadout + '.vtu'
+ 
+    # writing .vtu file header
+    loadout = open(loadout, 'w')
+    loadout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
+
+    # writing node position data to .vts file
+    print 'Writing node positions'
+
+    '''
+    print nodes
+    print elems
+    print loads
+    print loadout
+    '''
+
 if __name__ == "__main__":
     main()
