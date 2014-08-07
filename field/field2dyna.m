@@ -25,8 +25,6 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,nu
 % 'elems.dyn', 1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addpath('/home/mlp6/matlab/Field_II');
-
 measurementPointsandNodes = read_mpn(NodeName, 4);
 
 % skip node number, use just coords
