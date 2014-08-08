@@ -21,16 +21,6 @@ def main():
 
     # open nodes.dyn file
     print("Extracting data . . .")
-    '''
-    nodes = open(args.nodefile, 'r')
-    '''
-
-    '''
-    if args.loadfile is None:
-        loads = None
-    else:
-        loads = open(args.loadfile, 'r')
-    '''
 
     # create output file
     if args.elefile is None:
@@ -64,6 +54,8 @@ def parse_cli():
     parser.add_argument("--loadfile", help="name of PointLoads file. Loads will "
                         "not be written to VTK file if load file is not given.",
                         default=None)
+    parser.add_argument("--nonlinear", help="use this flag if mesh is nonlinear ",
+                        default=None, action='store_true')
     parser.add_argument("--loadout", help="name of output .vts file.",
                         default="nodeLoads.vts")
     args = parser.parse_args()
@@ -146,79 +138,94 @@ def writeNodePositions(loadout, args, filetype):
     nodes = open(args.nodefile, 'r')
 
     headerWritten = False
+
     for line in nodes:
+        # if nonlinear flag not given, then check nodes header for
+        # nonlinearity
+        if args.nonlinear == None:
+            if line.startswith('\n'):
+                args.nonlinear = True
+            else:
+                args.nonlinear = False
         # getting number of elements in x, y, z dimensions
         # as well as total number of nodes (for node ID)
         # when number of elements are defined in node file header.
-        if 'numElem=' in line and not headerWritten:
-            # parse dimensions from node file header
-            dimensionsStart = line.find('[')
-            dimensionsEnd = line.find(']')
-            dimensions = line[dimensionsStart+1:dimensionsEnd].split(', ')
-            dimensions = [int(x) for x in dimensions]
-            numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
-            numElems = dimensions[0]*dimensions[1]*dimensions[2]
+        
+        # cannot get dimension data from nodefile header or nodes are nonlinear
 
-            # writing volume dimensions to .vts file, and finishing up header
-            if filetype is 'vts':
-                loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' \
-                                  % (dimensions[0], dimensions[1], dimensions[2]))
-                loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
-                                  % (dimensions[0], dimensions[1], dimensions[2]))
-            if filetype is 'vtu':
+        if not headerWritten:
+            if args.nonlinear: 
+                # get max node ID and coordinates of padding node
+                numNodes = 0
+                nodeCount = open(args.nodefile, 'r')
+                for line in nodeCount:
+                    if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
+                        raw_data = line.split(',')
+                        numNodes = int(raw_data[0])
+                        # padding node is just coordinates of the last read node. it will be used
+                        # to pad unlisted nodes so that no new nodes will be introduced while the 
+                        # node indices of the VTK file still match up with the indices necessary
+                        # for the cell definitions.
+                        paddingNodePos = raw_data[1:]
+
+                nodeCount.close()
+
+                # count number of elements
+                numElems = 0
+                elemCount = open(args.elefile, 'r')
+                for line in elemCount:
+                    if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
+                        numElems += 1
+
+                # initialize currentNode variable, which will be 
+                # used for node position padding
+                currentNode = 1
+
                 loadout.write('\t<UnstructuredGrid>\n')
                 loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
                                   % (numNodes, numElems))
+                loadout.write('\t\t\t<Points>\n')
+                loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
+                headerWritten = True
 
-            loadout.write('\t\t\t<Points>\n')
-            loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
-            headerWritten = True
+            else:
+                if 'numElem=' in line:
+                    # parse dimensions from node file header
+                    dimensionsStart = line.find('[')
+                    dimensionsEnd = line.find(']')
+                    dimensions = line[dimensionsStart+1:dimensionsEnd].split(', ')
+                    dimensions = [int(x) for x in dimensions]
+                    numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
+                    numElems = dimensions[0]*dimensions[1]*dimensions[2]
 
-        # cannot get dimension data from nodefile header or nodes are nonlinear
-        if not headerWritten: 
-            # get max node ID and coordinates of padding node
-            numNodes = 0
-            nodeCount = open(args.nodefile, 'r')
-            for line in nodeCount:
-                if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
-                    raw_data = line.split(',')
-                    numNodes = int(raw_data[0])
-                    # padding node is just coordinates of the last read node. it's used to pad
-                    # unlisted nodes so that no new nodes will be introduced while the 
-                    # node indices of the VTK file still match up with the indices necessary
-                    # for the cell definitions.
-                    paddingNodePos = raw_data[1:]
-            nodeCount.close()
+                    # writing volume dimensions to .vts file, and finishing up header
+                    if filetype is 'vts':
+                        loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' \
+                                          % (dimensions[0], dimensions[1], dimensions[2]))
+                        loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
+                                          % (dimensions[0], dimensions[1], dimensions[2]))
+                    if filetype is 'vtu':
+                            loadout.write('\t<UnstructuredGrid>\n')
+                            loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
+                                              % (numNodes, numElems))
 
-            # count number of elements
-            numElems = 0
-            elemCount = open(args.elefile, 'r')
-            for line in elemCount:
-               if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
-                   numElems += 1
-
-            # initialize currentNode variable, which will be 
-            # used for node position padding
-            currentNode = 1
-
-            loadout.write('\t<UnstructuredGrid>\n')
-            loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
-                              % (numNodes, numElems))
-            loadout.write('\t\t\t<Points>\n')
-            loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
-            headerWritten = True
-
+                    loadout.write('\t\t\t<Points>\n')
+                    loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
+                    headerWritten = True
 
         # reading node position data from nodefile
         if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
-            while currentNode < int(raw_data[0]):
-                loadout.write('\t\t\t\t\t%s %s %s' \
-                              % (paddingNodePos[0], paddingNodePos[1], paddingNodePos[2]))
-                currentNode += 1
+            if args.nonlinear:
+                while currentNode < int(raw_data[0]):
+                    loadout.write('\t\t\t\t\t%s %s %s' \
+                                      % (paddingNodePos[0], paddingNodePos[1], paddingNodePos[2]))
+                    currentNode += 1
+
             loadout.write('\t\t\t\t\t%s %s %s' \
                               % (raw_data[1], raw_data[2], raw_data[3]))
-            currentNode += 1
+            if args.nonlinear:
+                currentNode += 1
         
     # done writing node position data
     loadout.write('\t\t\t\t</DataArray>\n')
