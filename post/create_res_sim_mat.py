@@ -67,7 +67,7 @@ def read_cli():
                      default="res_sim.mat")
     par.add_argument("--fempath",
                      help="path to the FEM post-processing scripts",
-                     default="/radforce/mlp6/fem/post")
+                     default="/home/mlp6/git/fem/post")
     par.add_argument("--nodedyn",
                      help="ls-dyna node definition file",
                      default="nodes.dyn")
