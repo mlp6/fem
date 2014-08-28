@@ -1,0 +1,6 @@
+$# LS-PrePost command file created by LS-PrePost 4.2 (Beta) - 12Jul2014(07:00) -64bit-Linux
+$# Created on Aug-28-2014 (13:41:54)
+openc keyword "TestCard.dyn"
+Message 1
+save keywordoutversion 6
+Message 0
