@@ -11,6 +11,8 @@ function makePMLhelper(nx,ny,nz,PMLthickness,PID,symmetry,nodein,elemin,elemout)
 % nodein - input node file name string
 % elemin - input elem file name string
 % elemout - output elem file name string
-
+%
+% Author - Chris Moore 8/27/2014
+% Update - CJM - Removed hardcode symmetry
 pmlNodeConstraints(nodein,symmetry);
-addPML(nx,ny,nz,PMLthickness,PID,'q',elemin,elemout)
+addPML(nx,ny,nz,PMLthickness,PID,symmetry,elemin,elemout)
