@@ -24,6 +24,6 @@ elemout='elemStr.dyn';
 
 Contributers
 ============
-Mallory Selzo (UNC-CH)
-Chris Moore (UNC-CH)
-Modified: Mark Palmeri (mlp6@duke.edu)
+ * Mallory Selzo (UNC-CH)
+ * Chris Moore (UNC-CH)
+ * Modified: Mark Palmeri (mlp6@duke.edu)
