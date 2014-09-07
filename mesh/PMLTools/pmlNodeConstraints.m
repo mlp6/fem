@@ -26,6 +26,11 @@ function pmlNodeConstraints(nodeFile,sym)
 %
 % Author: MRS - 04/10/2014
 % Edit: CJM - Added notes, comments and cleanup code - 08/27/2014 
+% Edit: CJM - Added a flag for rotational constraint of PML outer nodes for
+% advanced users interested in investigating this behavior. The rot flag is
+% hard coded so not to change the functional inputs for most users. -
+% 8/30/2014
+%
 
 nodes=readNodeFile(nodeFile);
 nodes(:,5)=0;
@@ -50,6 +55,7 @@ switch sym
         xmaxPlaneNodes=7;
         yminPlaneNodes=7;
 end
+rot=false;
  
 %same in all cases
 xminPlaneNodes=7;
@@ -64,6 +70,9 @@ for i=1:length(axes)
     for j=1:length(vals)
         thisPlane = sprintf('%s%s',axes(i),vals{j});
         eval(sprintf('nodes(%sPlane,5)=%sPlaneNodes;',thisPlane,thisPlane))
+        if eval(sprintf('%sPlaneNodes;',thisPlane))==7 && rot
+            eval(sprintf('nodes(%sPlane,6)=%sPlaneNodes;',thisPlane,thisPlane))
+        end
     end
 end
 
@@ -77,6 +86,9 @@ for i=1:length(axes)
     for j=1:length(vals)
         thisPlane = sprintf('%s%s',axes(i),vals{j});
         eval(sprintf('nodes(%sPlane,5)=%sPlaneNodes;',thisPlane,thisPlane))
+        if eval(sprintf('%sPlaneNodes;',thisPlane))==7 && rot
+            eval(sprintf('nodes(%sPlane,6)=%sPlaneNodes;',thisPlane,thisPlane))
+        end
     end
 end
 

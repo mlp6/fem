@@ -12,6 +12,9 @@ function [nx ny nz]=meshdims(xdim,ydim,zdim,size)
 %nx - number of divisions for x
 %ny - number of divisions for y
 %nz - number of divisions for z
+%
+% Author CJM - 8/27/2014
+%
 clc;
 
 size=size/1E4;
