@@ -26,4 +26,9 @@ Contributers
 ============
  * Mallory Selzo (UNC-CH)
  * Chris Moore (UNC-CH)
+    christopher_j_moore@med.unc.edu
+    chrisjmoore@unc.edu
+    cjm69@duke.edu
+    cjmoore3@ncsu.edu
  * Modified: Mark Palmeri (mlp6@duke.edu)
+
