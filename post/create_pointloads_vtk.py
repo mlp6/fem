@@ -2,11 +2,43 @@
 """
 create_pointloads_vtk.py
 
-Creates .vts file, which can be viewed in Paraview, from node and point loads files.
+Creates .vts file, which can be viewed in Paraview, from node and point loads
+files.
+
+Here is one solution I found for viewing the loads on the inside of the mesh:
+1. Load the mesh into Paraview.
+
+2. Press the "Calculator" button on the top left side of Paraview. The
+calculator filter should open up in the sidebar on the left. Next, in the text
+box between "Result Array Name" and above all of the calculator buttons, type
+"mag(loads)" without the quotation marks. Next, change the "Result Array Name"
+from "Result" to something like "load magnitude". Now, hit the Apply button.
+This part needs to be done because when the .vts file was created, the loads
+data were represented as vectors with non-zero values for the z-components only.
+Taking the magnitude of the loads vectors converts them all into scalar values.
+
+3. Now that we have the loads data in scalar form, we can apply a Threshold
+filter to visualize only the nodes with non-zero load values. The Threshold
+filter can be found on the top left, several buttons to the left of the
+"Calculator" button. Before applying the Threshold filter, make sure that you
+are filtering by "load magnitude" and that the lower threshold is a small
+non-zero value, like 0.000001. You should now only see the nodes with non-zero
+load values.
+
+4. In order to visualize these nodes within the context of the mesh, you should
+hit the eye-shaped button next to the .vts file in the side bar to allow the
+entire mesh to appear in the scene. Next, select the .vts file, scroll down to
+Opacity in the Properties tab of the sidebar, and change the opacity to around
+0.5. You should now be able to see the loads that were previously hidden inside
+the mesh.
+
+
 
 EXAMPLE
 =======
-python create_disp_dat.py --nodefile nodes.dyn --loadfile PointLoads.dyn --loadout loadout.vts
+python create_disp_dat.py --nodefile nodes.dyn
+                          --loadfile PointLoads.dyn
+                          --loadout loadout.vts
 =======
 """
 
@@ -46,10 +78,10 @@ def parse_cli():
                         help="name of ASCII file containing node IDs and positions.",
                         default="nodes.dyn")
     parser.add_argument("--elefile",
-                        help="name of ASCII file containing element IDs, part IDs, " 
+                        help="name of ASCII file containing element IDs, part IDs, "
                         "and node components. If this argument is given, then "
                         "an unstructured grid VTK file (.vtu) will be created "
-                        "instead of a structured grid VTK file (.vts).", 
+                        "instead of a structured grid VTK file (.vts).",
                         default=None)
     parser.add_argument("--loadfile", help="name of PointLoads file. Loads will "
                         "not be written to VTK file if load file is not given.",
@@ -68,13 +100,13 @@ def create_vts(args):
     a linear mesh, so if your mesh is actually nonlinear, this script should be run
     using with an elements file.
     '''
-        
+
     # writing .vts file header
     # making sure file extension is correct
     if '.' in args.loadout and not args.loadout.endswith('.vts'):
         args.loadout = args.loadout[:args.loadout.find('.')]
         args.loadout = args.loadout + '.vts'
- 
+
     loadout = open(args.loadout, 'w')
     loadout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
 
@@ -98,12 +130,12 @@ def create_vtu(args):
     if '.' in args.loadout and not args.loadout.endswith('.vtu'):
         args.loadout = args.loadout[:args.loadout.find('.')]
         args.loadout = args.loadout + '.vtu'
- 
+
     # writing .vtu file header
     loadout = open(args.loadout, 'w')
-    
+
     loadout.write('<VTKFile type="UnstructuredGrid" version="0.1" byte_order="LittleEndian">\n')
-    
+
     # writing node position data to .vtu file
     numNodes, numElems = writeNodePositions(loadout, args, 'vtu')
 
@@ -113,15 +145,15 @@ def create_vtu(args):
     if not args.loadfile is None:
         writePointLoads(loadout, args, numNodes)
     loadout.write('\t\t\t</PointData>\n')
-    
+
     # writing cells using elefile
     writeCells(loadout, args)
-    
+
     # writing celldata using elefile
     loadout.write('\t\t\t<CellData>\n')
     writeCellData(loadout, args)
     loadout.write('\t\t\t</CellData>\n')
-    
+
     # write closing tags
     loadout.write('\t\t</Piece>\n')
     loadout.write('\t</UnstructuredGrid>\n')
@@ -130,7 +162,7 @@ def create_vtu(args):
 
 def writeNodePositions(loadout, args, filetype):
     '''
-    writes opening tags as well as node positions to 
+    writes opening tags as well as node positions to
     loadout file. returns array containing number of
     nodes (index = 0) and number of elements (index = 1).
     '''
@@ -150,11 +182,11 @@ def writeNodePositions(loadout, args, filetype):
         # getting number of elements in x, y, z dimensions
         # as well as total number of nodes (for node ID)
         # when number of elements are defined in node file header.
-        
+
         # cannot get dimension data from nodefile header or nodes are nonlinear
 
         if not headerWritten:
-            if args.nonlinear: 
+            if args.nonlinear:
                 # get max node ID and coordinates of padding node
                 numNodes = 0
                 nodeCount = open(args.nodefile, 'r')
@@ -163,7 +195,7 @@ def writeNodePositions(loadout, args, filetype):
                         raw_data = line.split(',')
                         numNodes = int(raw_data[0])
                         # padding node is just coordinates of the last read node. it will be used
-                        # to pad unlisted nodes so that no new nodes will be introduced while the 
+                        # to pad unlisted nodes so that no new nodes will be introduced while the
                         # node indices of the VTK file still match up with the indices necessary
                         # for the cell definitions.
                         paddingNodePos = raw_data[1:]
@@ -177,7 +209,7 @@ def writeNodePositions(loadout, args, filetype):
                     if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
                         numElems += 1
 
-                # initialize currentNode variable, which will be 
+                # initialize currentNode variable, which will be
                 # used for node position padding
                 currentNode = 1
 
@@ -226,7 +258,7 @@ def writeNodePositions(loadout, args, filetype):
                               % (raw_data[1], raw_data[2], raw_data[3]))
             if args.nonlinear:
                 currentNode += 1
-        
+
     # done writing node position data
     loadout.write('\t\t\t\t</DataArray>\n')
     loadout.write('\t\t\t</Points>\n')
@@ -235,7 +267,7 @@ def writeNodePositions(loadout, args, filetype):
     return numNodes, numElems
 
 def writeNodeIDs(loadout, args, numNodes):
-    ''' 
+    '''
     writes node IDs to loadout file
     '''
 
@@ -265,12 +297,12 @@ def writePointLoads(loadout, args, numNodes):
                     currentNode += 1
 
             loadout.write('\t\t\t\t\t0.0 0.0 %f\n' % float(raw_data[3]))
-            currentNode += 1 
+            currentNode += 1
 
     # finish writing zero load nodes into .vts file
     while currentNode <= numNodes:
         loadout.write('\t\t\t\t\t0.0 0.0 0.0\n')
-        currentNode += 1 
+        currentNode += 1
 
     loadout.write('\t\t\t\t</DataArray>\n')
 
@@ -300,7 +332,7 @@ def writeCells(loadout, args):
             loadout.write('\n')
     elems.close()
     loadout.write('\t\t\t\t</DataArray>\n')
-    
+
     # write cell offsets
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="offsets" Format="ascii">\n')
     elems = open(args.elefile, 'r')
@@ -329,13 +361,13 @@ def writeCells(loadout, args):
     loadout.write('\t\t\t\t</DataArray>\n')
     loadout.write('\t\t\t</Cells>\n')
 
-    
+
 def writeCellData(loadout, args):
     '''
     writes cell part IDs
     '''
     print 'Writing cell data'
-    
+
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="part id" Format="ascii">\n')
     elems = open(args.elefile, 'r')
     for line in elems:
