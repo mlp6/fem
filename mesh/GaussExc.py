@@ -29,30 +29,18 @@ limitations under the License.
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
 
-import os
 import sys
 import math
-#import pdb
-from optparse import OptionParser
 
 def main():
-    parser = OptionParser(usage="Generate *LOAD_NODE_POINT data with Gaussian weighting about dim1 = 0, dim2 = 0, extending through dim3.  All spatial units are in the unit system for the node definitions.\n\n%prog [OPTIONS]...",version="%s" % __version__)
-#    parser = OptionParser(usage="Generate *LOAD_NODE_POINT data with Gaussian weighting about dim1 = 0, dim2 = 0, extending through dim3.  All spatial units are in the unit system for the node definitions.\n\n%prog [OPTIONS]...", version="%prog %s" % __version__)
-    parser.add_option("--nodefile",dest="nodefile",help="Node definition file (*.dyn) [default = %default]",default="nodes.dyn")
-    parser.add_option("--sigma",dest="sigma",type="float",help="Standard devisions in 3 dims [default = %default]",nargs=3,default=(1.0,1.0,1.0))
-    parser.add_option("--amp",dest="amp",type="float",help="Peak Gaussian amplitude [default = %default]",default=1.0)
-    parser.add_option("--amp_cut",dest="amp_cut",type="float",help="Cutoff from peak amplitude to discard (so a lot of the nodes don't have neglible loads on them) [default = %default]",default=0.05)
-    parser.add_option("--center",dest="center",type="float",help="Gaussian center [default = %default]",nargs=3,default=(0.0,0.0,-2.0))
-    parser.add_option("--search_tol",dest="search_tol",type="float",help="Node search tolerance [default = %default]",default=0.0001)
-    parser.add_option("--sym",dest="sym",type="string",help="Mesh symmetry (qsym or hsym) [default = %default]",default="qsym")
 
-    (opts,args) = parser.parse_args()
+    opts = read_cli()
 
     #pdb.set_trace()
     # setup the new output file with a very long, but unique, filename
     loadfilename = "gauss_exc_sigma_%.3f_%.3f_%.3f_center_%.3f_%.3f_%.3f_amp_%.3f_amp_cut_%.3f_%s.dyn" % (opts.sigma[0],opts.sigma[1],opts.sigma[2],opts.center[0],opts.center[1],opts.center[2],opts.amp,opts.amp_cut,opts.sym)
-    LOADFILE = open(loadfilename,'w')
-    LOADFILE.write("$ Generated using %s (version %s) with the following options:\n" % (sys.argv[0],__version__))
+    LOADFILE = open(loadfilename, 'w')
+    LOADFILE.write("$ Generated using %s:\n" % sys.argv[0])
     LOADFILE.write("$ %s\n" % opts)
 
     LOADFILE.write("*LOAD_NODE_POINT\n")
@@ -110,5 +98,53 @@ def main():
     LOADFILE.write("$ %i exist on a symmetry plane / edge\n" % sym_node_count)
     LOADFILE.close()
 
+def read_cli():
+    """
+    read CLI arguments
+    """
+    import argparse as ap
+
+    p = ap.ArgumentParser(description="Generate *LOAD_NODE_POINT data "
+                          "with Gaussian weighting about dim1 = 0, "
+                          "dim2 = 0, extending through dim3.  All "
+                          "spatial units are in the unit system for the "
+                          "node definitions.",
+                          formatter_class= ap.ArgumentDefaultsHelpFormatter)
+    p.add_argument("--nodefile",
+                   help="Node definition file (*.dyn)",
+                   default="nodes.dyn")
+    p.add_argument("--sigma",
+                   type="float",
+                   help="Standard devisions in 3 dims",
+                   nargs=3,
+                   default=(1.0,1.0,1.0))
+    p.add_argument("--amp",
+                   type="float",
+                   help="Peak Gaussian amplitude",
+                   default=1.0)
+    p.add_argument("--amp_cut",
+                   type="float",
+                   help="Cutoff from peak amplitude to discard (so a lot "
+                   "of the nodes don't have neglible loads on them)",
+                   default=0.05)
+    p.add_argument("--center",
+                   type="float",
+                   help="Gaussian center",
+                   nargs=3,
+                   default=(0.0,0.0,-2.0))
+    p.add_argument("--search_tol",
+                   type="float",
+                   help="Node search tolerance",
+                   default=0.0001)
+    p.add_argument("--sym",
+                   type="string",
+                   help="Mesh symmetry (qsym or hsym)",
+                   default="qsym")
+
+    opts = p.parse_args()
+
+    return opts
+
 if __name__ == "__main__":
     main()
+
