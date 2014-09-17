@@ -26,9 +26,8 @@ limitations under the License.
 
 '''
 
-__author__ = "Mark Palmeri (mlp6)"
-__date__ = "2010-05-19"
-__version__ = "20120827"
+__author__ = "Mark Palmeri"
+__email__ = "mlp6@duke.edu"
 
 import os
 import sys
