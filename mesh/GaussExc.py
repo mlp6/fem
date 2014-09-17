@@ -31,8 +31,13 @@ __email__ = "mlp6@duke.edu"
 
 import sys
 import math
+import fem_mesh
 
 def main():
+    """
+    Generate Guassian-weighted point load distribution
+    """
+    fem_mesh.check_version()
 
     opts = read_cli()
 
