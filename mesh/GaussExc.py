@@ -121,35 +121,34 @@ def read_cli():
                           "dim2 = 0, extending through dim3.  All "
                           "spatial units are in the unit system for the "
                           "node definitions.",
-                          formatter_class= ap.ArgumentDefaultsHelpFormatter)
+                          formatter_class=ap.ArgumentDefaultsHelpFormatter)
     p.add_argument("--nodefile",
                    help="Node definition file (*.dyn)",
                    default="nodes.dyn")
     p.add_argument("--sigma",
-                   type="float",
+                   type=float,
                    help="Standard devisions in 3 dims",
                    nargs=3,
-                   default=(1.0,1.0,1.0))
+                   default=(1.0, 1.0, 1.0))
     p.add_argument("--amp",
-                   type="float",
+                   type=float,
                    help="Peak Gaussian amplitude",
                    default=1.0)
     p.add_argument("--amp_cut",
-                   type="float",
+                   type=float,
                    help="Cutoff from peak amplitude to discard (so a lot "
                    "of the nodes don't have neglible loads on them)",
                    default=0.05)
     p.add_argument("--center",
-                   type="float",
+                   type=float,
                    help="Gaussian center",
                    nargs=3,
-                   default=(0.0,0.0,-2.0))
+                   default=(0.0, 0.0, -2.0))
     p.add_argument("--search_tol",
-                   type="float",
+                   type=float,
                    help="Node search tolerance",
                    default=0.0001)
     p.add_argument("--sym",
-                   type="string",
                    help="Mesh symmetry (qsym or hsym)",
                    default="qsym")
 
