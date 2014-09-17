@@ -60,11 +60,11 @@ def main():
     for i in NODEFILE:
         # make sure not to process comment and command syntax lines
         if i[0] != "$" and i[0] != "*":
-            i=i.rstrip('\n')
+            i = i.rstrip('\n')
             # dyna scripts should be kicking out comma-delimited data; if not,
             # then the user needs to deal with it
-            fields=i.split(',')
-            fields = [float(i) for i in fields]
+            fields = i.split(',')
+            fields = [float(j) for j in fields]
             # check for unexpected inputs and exit if needed (have user figure
             # out what's wrong)
             if len(fields) != 4:
