@@ -232,8 +232,15 @@ def read_cli():
                         default="nodes.dyn")
     parser.add_argument("--sym", help="quarter (q), half (h) symmetry "
                         "or none (none)", default="q")
-    parser.add_argument("--top", help="fully constrain top boundary "
-                        "(transducer surface)", default=True)
+    parser.add_argument("--top",
+                        help="fully constrain top (xdcr surface)",
+                        dest='top',
+                        action='store_true')
+    parser.add_argument("--notop",
+                        help="top (xdcr surface) unconstrained",
+                        dest='top',
+                        action='store_false')
+    parser.set_defaults(top=True)
     parser.add_argument("--bottom", help="full / inplane constraint "
                         "of bottom boundary (opposite transducer surface) "
                         "[full, inplane]", default="full")
