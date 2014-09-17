@@ -36,9 +36,8 @@ Installation
 Release Notes
 =============
 
-v0.1 (2012-11-02)
+v0.1
  * Old version of FEM code that relied on d3plot* files for result extraction.
 
-v0.2a
- * FEM results are extracted from ASCII nodout files
- * New GenMesh.py script to make reclinear mesh generation independent of lspp4
+v0.1.1
+ * Fixed --top designation in mesh/bc.py
