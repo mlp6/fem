@@ -31,7 +31,7 @@ Installation
    you do not have access to that repository, then you can use
    ```field/linear.m``` and ```field/curvilinear.m``` as starting points to
    define transducers.  If you do have access, then you can initialize the
-   submodule using ``git submodule init``` followed by ```git submodule
+   submodule using ```git submodule init``` followed by ```git submodule
    update```.
 
 
