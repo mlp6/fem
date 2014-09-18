@@ -44,8 +44,7 @@ set_field('fs', FIELD_PARAMS.samplingFrequency);
 eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
 
 % check specs of the defined transducer
-Th_data = xdc_get(Th, 'rect');
-disp(Th_data)
+FIELD_PARAMS.Th_data = xdc_get(Th, 'rect');
 
 % define the impulse response
 xdc_impulse(Th, impulseResponse);
