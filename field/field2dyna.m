@@ -1,5 +1,5 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName, ForceNonlinear)
-% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName, ForceNonlinear)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName,ForceNonlinear)
+% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName,ForceNonlinear)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUT:
 % NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
