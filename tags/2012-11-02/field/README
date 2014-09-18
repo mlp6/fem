@@ -1,8 +1,0 @@
-svn://fem/field
-
-These files are for running Field II simulations associated with FEM meshes.
-
-The transducer impulse reponse files are from Kristin's measurements:
-/moredata/kdf2/ThermalFEM/ducerBWs
-
-Mark 06/21/07
