@@ -145,20 +145,3 @@ spmd
 end
 intensity = gather(intensityDist);
 matlabpool close
-
-
-function check_Field_II
-% function check_Field_II
-% check that Field II is in the Matlab search path
-test_function_name = 'field_init';
-if ~exist(test_function_name),
-    error('Please add Field II to your Matlab path');
-end
-
-
-function check_add_probes(probesPath)
-if exist(probesPath),
-    addpath(probesPath);
-else,
-    warning('Probe definitions do not exist; must create your own');
-end;
