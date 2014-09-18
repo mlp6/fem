@@ -33,10 +33,9 @@ functionDir = fileparts(which(mfilename));
 probesPath = fullfile(functionDir, '../probes/fem');
 check_add_probes(probesPath);
 
+% initialize Field II
 % check that Field II is in the Matlab search path
-check_Field_II;
-disp('Starting the Field II simulation');
-field_init(-1)
+check_start_Field_II;
 
 % define transducer-independent parameters
 set_field('c', FIELD_PARAMS.soundSpeed);
