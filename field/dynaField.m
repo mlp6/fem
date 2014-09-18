@@ -33,8 +33,7 @@ functionDir = fileparts(which(mfilename));
 probesPath = fullfile(functionDir, '../probes/fem');
 check_add_probes(probesPath);
 
-% initialize Field II
-% check that Field II is in the Matlab search path
+% check that Field II is in the Matlab search path, and initialize
 check_start_Field_II;
 
 % define transducer-independent parameters
@@ -43,6 +42,10 @@ set_field('fs', FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
 eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
+
+% check specs of the defined transducer
+Th_data = xdc_get(Th, 'rect');
+disp(Th_data)
 
 % define the impulse response
 xdc_impulse(Th, impulseResponse);
