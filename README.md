@@ -33,13 +33,3 @@ Installation
    define transducers.  If you do have access, then you can initialize the
    submodule using ```git submodule init``` followed by ```git submodule
    update```.
-
-
-Release Notes
-=============
-
-v0.1
- * Old version of FEM code that relied on d3plot* files for result extraction.
-
-v0.1.1
- * Fixed --top designation in mesh/bc.py
