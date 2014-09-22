@@ -65,7 +65,7 @@ Code Layout
 This repository contains 3 subdirectories of code:
 
  1. ```mesh```: scripts to generate meshes, apply boundary conditions and
-    simple loads
+    simple loads [mesh/README.md](README.md)
  2. ```field```: Field II scripts to simulate acoustic radiation force
     excitations to impose as point loads on your model.  The ```probes```
     submodule can be utilized with these scripts.
