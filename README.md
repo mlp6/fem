@@ -58,3 +58,19 @@ Coordinate & Unit Conventions
 
  * LS-DYNA is run unitless, but scripts assume and scale quantitites assumine a
    CGS unit system.
+
+Code Layout
+===========
+
+This repository contains 3 subdirectories of code:
+
+ 1. ```mesh```: scripts to generate meshes, apply boundary conditions and
+    simple loads
+ 2. ```field```: Field II scripts to simulate acoustic radiation force
+    excitations to impose as point loads on your model.  The ```probes```
+    submodule can be utilized with these scripts.
+ 3. ```post```: scripts to post-process LS-DYNA output for processing /
+    visualization in ls-prepost, Matlab, and Paraview
+
+Please see the ```README.md``` files in each respective subdirectory for more
+detailed descriptions of the available scripts.
