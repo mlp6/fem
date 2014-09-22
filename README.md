@@ -58,15 +58,3 @@ Coordinate & Unit Conventions
 
  * LS-DYNA is run unitless, but scripts assume and scale quantitites assumine a
    CGS unit system.
-
-Release Notes
-=============
-
-v0.1
- * Old version of FEM code that relied on d3plot* files for result extraction.
-
-v0.1.1
- * Fixed --top designation in mesh/bc.py
-
-bme790s13
- * Code used for BME790 in the Spring 2013 semester
