@@ -76,3 +76,9 @@ This repository contains 3 subdirectories of code:
 
 Please see the ```README.md``` files in each respective subdirectory for more
 detailed descriptions of the available scripts.
+
+Testing
+=======
+There are test scripts / models available for code validation and future
+development ([test/README.md](test/README.md)).  Please use existing tests if
+fixing bug / editing existing features, or create new tests for new features.
