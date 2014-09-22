@@ -30,8 +30,7 @@ def main():
     from bc import SortNodeIDs, extractPlane
     import fem_mesh
 
-    if sys.version < '2.7':
-        sys.exit("ERROR: Requires Python >= v2.7")
+    fem_mesh.check_version()
 
     opts = read_cli()
     loadtype = opts.loadtype
@@ -102,7 +101,6 @@ def writeNodeLoads(LOADFILE, planeNodeIDs, dofs):
 
 
 def read_cli():
-    # lets read in some command-line arguments
     import argparse as argp
 
     par = argp.ArgumentParser(description="Generate loading conditions "
