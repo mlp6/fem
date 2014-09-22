@@ -67,3 +67,6 @@ v0.1
 
 v0.1.1
  * Fixed --top designation in mesh/bc.py
+
+bme790s13
+ * Code used for BME790 in the Spring 2013 semester
