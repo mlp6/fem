@@ -17,6 +17,11 @@ Radiation Force," IEEE UFFC, 52(10): 1699-1712, 2005. [PMCID: 16382621]*
 
 Installation
 ============
+ * You can locally clone this repository:
+ ```
+ git clone git@github.com:Duke-Ultrasound/fem.git
+ ```
+
  * Add the fem subdirectories to your Matlab path.  One approach is to add the
    following to ```$HOME/matlab/startup.m```: 
  ```
@@ -32,6 +37,25 @@ Installation
    ```field/linear.m``` and ```field/curvilinear.m``` as starting points to
    define transducers.
 
+ * All of the python scripts have help available using the ```--help``` flag.
+
+
+Coordinate & Unit Conventions
+=============================
+
+ * The mesh (LS-DYNA) and Field II spatial axis conventions are different (this
+   is unfortunate, but maintained for legacy compatibility).
+
+ * LS-DYNA uses a rotated, right-hand rule coorindate system, where axial
+   extended into -z, lateral is +y, and elevation is -x.
+
+ * Field II has axial extended into +z, lateral is +x, and elevation is +y.
+
+ * Field II internally uses MKS units, but scripts will specify units on the
+   inputs
+
+ * LS-DYNA is run unitless, but scripts assume and scale quantitites assumine a
+   CGS unit system.
 
 Release Notes
 =============
