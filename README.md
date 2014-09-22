@@ -4,8 +4,8 @@ Finite Element Modeling (FEM) Code
 Python Tools, Field II Intensity Field Solution, LS-DYNA Pre/Post Processing
 
 This repository was managed via svn until 2013-04-22; migrated to GitHub for
-active management.  All software in this repository is licensed under the MIT
-license, as detailed in the LICENSE file.
+active management.  All software in this repository is licensed under the
+Apache v2.0 license, as detailed in the LICENSE file.
 
 If you are using these simulation tools in work that you publish, then please
 consider citing the following manuscript:
@@ -35,7 +35,9 @@ Installation
  * There is a ```probes``` submodule available to restricted institutions.  If
    you do not have access to that repository, then you can use
    ```field/linear.m``` and ```field/curvilinear.m``` as starting points to
-   define transducers.
+   define transducers.  If you do have access, then you can initialize the
+   submodule using ``git submodule init``` followed by ```git submodule
+   update```.
 
  * All of the python scripts have help available using the ```--help``` flag.
 
