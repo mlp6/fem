@@ -1,48 +1,27 @@
 #!/usr/local/bin/python2.7
 '''
-TopLoad.py - Generate compression conditions for the top surface of
-the specified mesh.  Search through the provided node file, extract the top
-layer of nodes and write out point loads for each matching node. Nodes are
-written in spatially-sorted order.
-
-This code was based on the older CompressLoad.pl and on bc.py
-
-MODIFICATION HISTORY:
-v0.2 (Mark Palmeri [2011-11-09])
-Imported SortNodeIDs and extractPlane from bc.py instead of having them copied
-here.
-
-v0.3 (Mark Palmeri, 2013-01-10)
-* converted from OptionParser to argparse
-* renamed to more general "TopLoad.py" from "CompressLoad.py"
-* added new inputs for direction, loadtype, amplitude and LCID
-
-v0.3.1 (Mark Palmeri, 2013-01-17)
-* fixed amplitude formatted print output from %i -> %f
-
-v0.3.2 (Mark Palmeri, 2013-01-29)
-* using argparse to display default options on --help
+TopLoad.py - Generate compression conditions for the top surface of the
+specified mesh.  Search through the provided node file, extract the top layer of
+nodes and write out point loads for each matching node. Nodes are written in
+spatially-sorted order.
 
 Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License.  You may obtain a copy of the
+License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations under the License.
 '''
 
 __author__ = "Mark Palmeri "
-__email__ = "mark.palmeri@duke.edu"
-__created__ = "2011-11-09"
-__modified__ = "2013-01-29"
-__license__ = "CC BY-NC-SA 3.0"
+__email__ = "mlp6@duke.edu"
+__license__ = "Apache v2.0"
 
 
 def main():
