@@ -106,7 +106,7 @@ def create_dat(args, nodout):
 def create_vtk(args, nodout):
     # this uses the StructuredGrid VTK XML format outlined here:
     # http://vtk.org/VTK/img/file-formats.pdf
-    # pages 11-15 
+    # pages 11-15
     import sys
 
     disp_position = open('pos_temp.txt', 'w')
@@ -115,7 +115,7 @@ def create_vtk(args, nodout):
     # firstStep flag is True only for the first timestep. This is useful
     # because there are certain expension operations that need to be done only
     # once. These operations include creating the temporary positions file and
-    # figuring out the number of values along each dimension. 
+    # figuring out the number of values along each dimension.
     firstStep = True
 
     firstLine = True
@@ -162,23 +162,23 @@ def create_vtk(args, nodout):
                 # get last read coordinates - now have range of x, y, z coordinates
                 # as well as x, y, z steps. this allows us to get number of steps in
                 # x, y, z directions, which is necessary to construct the VTK file.
-  
+
                 if firstStep:
                     x.append(float(lastReadCoords[0]))
                     y.append(float(lastReadCoords[1]))
                     z.append(float(lastReadCoords[2]))
-                                
+
                 # no longer reading the first step, so can close temporary
                 # point coordinate file.
                 if firstStep:
                     disp_position.close()
                     firstStep = False
-                # done creating .vts file for this timestep, so we can close 
+                # done creating .vts file for this timestep, so we can close
                 # temporary displacement file.
                 disp_displace.close()
-    
+
                 createVTKFile(args, x, y, z, numNodes, timestep_count)
-                
+
 
             else:
                 # reading position and displacement data inside a timestep
@@ -227,7 +227,7 @@ def create_vtk(args, nodout):
 
                 # write displacements to temporary file
                 disp_displace.write(' '.join(raw_data[1:4])+'\n')
- 
+
 
     # writing last timestep file
     disp_displace.close()
@@ -256,7 +256,7 @@ def parse_cli():
                                      argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("--nodout",
                         help="ASCII file containing nodout data",
-                        default="nodout.gz")
+                        default="nodout")
     parser.add_argument("--dispout", help="name of the binary displacement "
                         "output file", default="disp.dat")
     parser.add_argument("--dat", help="create a binary file", action='store_true')
