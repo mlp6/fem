@@ -1,5 +1,5 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName, ForceNonlinear)
-% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName, ForceNonlinear)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName,ForceNonlinear)
+% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName,ForceNonlinear)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUT:
 % NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
@@ -92,36 +92,3 @@ end
 
 disp('The next step is to run makeLoadsTemps.');
 disp('This will generate point loads and initial temperatures.');
-end
-
-
-function check_on_axis(measurementPoints)
-% function check_on_axis(measurementPoints)
-%
-% check to see if nodes exist on the x = y = 0 plane to insure that the
-% intensity fields are properly represented
-%
-xlocs = unique(measurementPoints(1,:));
-ylocs = unique(measurementPoints(2,:));
-
-% test for x and y locations that are at 0 (imaging plane), and if both don't
-% exist, then display a warning
-if((max(xlocs==0.0) + max(ylocs==0.0)) < 2),
-    warning('There are not nodes in the lateral / elevation plane = 0 (imaging plane). This can lead to inaccurate representations of the intensity fields!!');
-end
-end
-
-
-function [isUniform] = checkUniform(measurementPoints)
-% function [isUniform] = checkUniform(measurementPoints)
-%
-% check to see if mesh is linear or nonlinear. if mesh is nonlinear, this means
-% that force scaling needs to be done
-%
-x = unique(measurementPoints(:, 1));
-y = unique(measurementPoints(:, 2));
-z = unique(measurementPoints(:, 3));
-isUniform = all(abs(diff(x)/(x(2)-x(1))-1 < 10^-9)) &&...
-            all(abs(diff(y)/(y(2)-y(1))-1 < 10^-9)) &&...
-            all(abs(diff(z)/(z(2)-z(1))-1 < 10^-9));
-end

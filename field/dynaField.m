@@ -33,10 +33,8 @@ functionDir = fileparts(which(mfilename));
 probesPath = fullfile(functionDir, '../probes/fem');
 check_add_probes(probesPath);
 
-% check that Field II is in the Matlab search path
-check_Field_II;
-disp('Starting the Field II simulation');
-field_init(-1)
+% check that Field II is in the Matlab search path, and initialize
+check_start_Field_II;
 
 % define transducer-independent parameters
 set_field('c', FIELD_PARAMS.soundSpeed);
@@ -44,6 +42,13 @@ set_field('fs', FIELD_PARAMS.samplingFrequency);
 
 % define transducer-dependent parameters
 eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
+
+% check specs of the defined transducer
+FIELD_PARAMS.Th_data = xdc_get(Th, 'rect');
+
+% figure out the axial shift (m) that will need to be applied to the scatterers
+% to accomodate the mathematical element shift due to the lens
+FIELD_PARAMS.lens_correction_m = correct_axial_lens(FIELD_PARAMS.Th_data);
 
 % define the impulse response
 xdc_impulse(Th, impulseResponse);
@@ -101,7 +106,8 @@ if (useForLoop)
       if i == 1
           tic;
       end;
-      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4));
+      % include the lens correction (axial shift)
+      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4)+FIELD_PARAMS.lens_correction_m);
       intensity(i) = sum(pressure.*pressure);
     end
 else
@@ -145,20 +151,3 @@ spmd
 end
 intensity = gather(intensityDist);
 matlabpool close
-
-
-function check_Field_II
-% function check_Field_II
-% check that Field II is in the Matlab search path
-test_function_name = 'field_init';
-if ~exist(test_function_name),
-    error('Please add Field II to your Matlab path');
-end
-
-
-function check_add_probes(probesPath)
-if exist(probesPath),
-    addpath(probesPath);
-else,
-    warning('Probe definitions do not exist; must create your own');
-end;
