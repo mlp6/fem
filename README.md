@@ -1,11 +1,11 @@
-Finite Element Modeling (FEM) Code 
-==================================
+Finite Element Method (FEM) ARF Simulation Code 
+===============================================
 
-Python Tools, Field II Intensity Field Solution, LS-DYNA Pre/Post Processing
+Python Tools, [Field II](http://field-ii.dk) Intensity Field Solution, LS-DYNA
+Pre/Post Processing
 
-This repository was managed via svn until 2013-04-22; migrated to GitHub for
-active management.  All software in this repository is licensed under the
-Apache v2.0 license, as detailed in the LICENSE file.
+All software in this repository is licensed under the Apache v2.0 license, as
+detailed in the LICENSE file.
 
 If you are using these simulation tools in work that you publish, then please
 consider citing the following manuscript:
@@ -42,23 +42,6 @@ Installation
  * All of the python scripts have help available using the ```--help``` flag.
 
 
-Coordinate & Unit Conventions
-=============================
-
- * The mesh (LS-DYNA) and Field II spatial axis conventions are different (this
-   is unfortunate, but maintained for legacy compatibility).
-
- * LS-DYNA uses a rotated, right-hand rule coorindate system, where axial
-   extended into -z, lateral is +y, and elevation is -x.
-
- * Field II has axial extended into +z, lateral is +x, and elevation is +y.
-
- * Field II internally uses MKS units, but scripts will specify units on the
-   inputs
-
- * LS-DYNA is run unitless, but scripts assume and scale quantitites assumine a
-   CGS unit system.
-
 Code Layout
 ===========
 
@@ -66,9 +49,9 @@ This repository contains 3 subdirectories of code:
 
  1. ```mesh```: scripts to generate meshes, apply boundary conditions and
     simple loads ([mesh/README.md](mesh/README.md))
- 2. ```field```: Field II scripts to simulate acoustic radiation force
-    excitations to impose as point loads on your model.  The ```probes```
-    submodule can be utilized with these scripts
+ 2. ```field```: [Field II](http://field-ii.dk) scripts to simulate acoustic
+    radiation force excitations to impose as point loads on your model.  The
+    ```probes``` submodule can be utilized with these scripts
     ([field/README.md](field/README.md))
  3. ```post```: scripts to post-process LS-DYNA output for processing /
     visualization in ls-prepost, Matlab, and Paraview
@@ -76,6 +59,30 @@ This repository contains 3 subdirectories of code:
 
 Please see the ```README.md``` files in each respective subdirectory for more
 detailed descriptions of the available scripts.
+
+Coordinate & Unit Conventions
+=============================
+
+ * The mesh (LS-DYNA) and Field II spatial axis conventions are different (this
+   is unfortunate, but maintained for legacy compatibility).
+
+ * LS-DYNA and mesh-related tools use a rotated, right-hand rule coorindate
+   system: 
+   + Axial extends into -z, 
+   + Lateral extends into +y, 
+   + Elevation extends into -x.
+
+ * LS-DYNA is run unitless, but scripts assume and scale quantitites assuming a
+   CGS unit system.
+
+ * Field II tools a standard, right-hand rule coordinate system:
+   + Axial extends into +z, 
+   + Lateral extends into +x, 
+   + Elevation extends into +y.
+
+ * Field II internally uses MKS units, but scripts will specify units on the
+   inputs
+
 
 Testing
 =======

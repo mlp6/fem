@@ -19,7 +19,7 @@ function [axis,inten]=extractAxisIntensity(InputName,axis,location,Tol);
  
 % define node tolerance to search for axis line if not input specified
 if(nargin < 4),
-    Tol = 1e-3;
+    Tol = 0.05e-3;
 end;
 
 in = load(InputName);
