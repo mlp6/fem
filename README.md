@@ -17,6 +17,11 @@ Radiation Force," IEEE UFFC, 52(10): 1699-1712, 2005. [PMCID: 16382621]*
 
 Installation
 ============
+ * You can locally clone this repository:
+ ```
+ git clone git@github.com:Duke-Ultrasound/fem.git
+ ```
+
  * Add the fem subdirectories to your Matlab path.  One approach is to add the
    following to ```$HOME/matlab/startup.m```: 
  ```
@@ -33,3 +38,47 @@ Installation
    define transducers.  If you do have access, then you can initialize the
    submodule using ```git submodule init``` followed by ```git submodule
    update```.
+
+ * All of the python scripts have help available using the ```--help``` flag.
+
+
+Coordinate & Unit Conventions
+=============================
+
+ * The mesh (LS-DYNA) and Field II spatial axis conventions are different (this
+   is unfortunate, but maintained for legacy compatibility).
+
+ * LS-DYNA uses a rotated, right-hand rule coorindate system, where axial
+   extended into -z, lateral is +y, and elevation is -x.
+
+ * Field II has axial extended into +z, lateral is +x, and elevation is +y.
+
+ * Field II internally uses MKS units, but scripts will specify units on the
+   inputs
+
+ * LS-DYNA is run unitless, but scripts assume and scale quantitites assumine a
+   CGS unit system.
+
+Code Layout
+===========
+
+This repository contains 3 subdirectories of code:
+
+ 1. ```mesh```: scripts to generate meshes, apply boundary conditions and
+    simple loads ([mesh/README.md](mesh/README.md))
+ 2. ```field```: Field II scripts to simulate acoustic radiation force
+    excitations to impose as point loads on your model.  The ```probes```
+    submodule can be utilized with these scripts
+    ([field/README.md](field/README.md))
+ 3. ```post```: scripts to post-process LS-DYNA output for processing /
+    visualization in ls-prepost, Matlab, and Paraview
+    ([post/README.md](post/README.md))
+
+Please see the ```README.md``` files in each respective subdirectory for more
+detailed descriptions of the available scripts.
+
+Testing
+=======
+There are test scripts / models available for code validation and future
+development ([test/README.md](test/README.md)).  Please use existing tests if
+fixing bug / editing existing features, or create new tests for new features.
