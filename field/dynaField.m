@@ -107,7 +107,7 @@ if (useForLoop)
           tic;
       end;
       % include the lens correction (axial shift)
-      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4)+FIELD_PARAMS.len_correction_m);
+      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4)+FIELD_PARAMS.lens_correction_m);
       intensity(i) = sum(pressure.*pressure);
     end
 else
