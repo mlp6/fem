@@ -10,10 +10,10 @@ detailed in the LICENSE file.
 If you are using these simulation tools in work that you publish, then please
 consider citing the following manuscript:
 
-[http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/](Palmeri ML, Sharma AC,
-Bouchard RR, Nightingale RW, Nightingale KR.  "A Finite-Element Method Model of
-Soft Tissue Response to Impulsive Acoustic Radiation Force," IEEE UFFC, 52(10):
-1699-1712, 2005. [PMCID: 16382621])
+[Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR.  "A
+Finite-Element Method Model of Soft Tissue Response to Impulsive Acoustic
+Radiation Force," IEEE UFFC, 52(10): 1699-1712,
+2005.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/)
 
 Installation
 ============
@@ -22,9 +22,9 @@ Installation
  git clone git@github.com:Duke-Ultrasound/fem.git
  ```
 
- This approach will work if you have an
- [https://help.github.com/articles/generating-ssh-keys](SSH key) uploaded to
- GitHub.  If not, then you can also clone the reportory using:
+ This approach will work if you have an [SSH
+ key](https://help.github.com/articles/generating-ssh-keys) uploaded to GitHub.
+ If not, then you can also clone the reportory using:
  ```
  git clone https://github.com/Duke-Ultrasound/fem.git
  ```
