@@ -22,6 +22,13 @@ Installation
  git clone git@github.com:Duke-Ultrasound/fem.git
  ```
 
+ This approach will work if you have an
+ [https://help.github.com/articles/generating-ssh-keys](SSH key) uploaded to
+ GitHub.  If not, then you can also clone the reportory using:
+ ```
+ https://github.com/Duke-Ultrasound/fem.git
+ ```
+
  * Add the fem subdirectories to your Matlab path.  One approach is to add the
    following to ```$HOME/matlab/startup.m```: 
  ```
