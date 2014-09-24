@@ -46,10 +46,10 @@ if(isempty(find(abs(mpn(:,3)) < LatTol))),
     error('lat = 0 nodes missing for rad force excitation');
 end;
 
-NormFZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (NormFocalDepth - NormFocalDepth*AxialSearch) & abs(mpn(:,4)) < (NormFocalDepth + NormFocalDepth*AxialSearch)); 
+[NormAx, NormFZ] = extractAxisIntensity(NormName, 3, [0 0]);
 
 % what is the Isppa value that field has solved
-NormFieldIsppa = max(NormIntensity(NormFZ))
+NormFieldIsppa = max(NormFZ)
 
 % make plot of the intensity profile to make sure that
 % everything makes sense
@@ -65,10 +65,10 @@ InputIntensity = intensity;
 mpn = FIELD_PARAMS.measurementPointsandNodes;
 FocalDepth = FIELD_PARAMS.focus(3)*100;  % convert m -> cm
 
-FZ=find(abs(mpn(:,2)) < 5e-6 & abs(mpn(:,3))<LatTol & abs(mpn(:,4)) > (FocalDepth - FocalDepth*AxialSearch) & abs(mpn(:,4)) < (FocalDepth + FocalDepth*AxialSearch)); 
+[Ax, FZ] = extractAxisIntensity(InputName, 3, [0 0]);
 
 % what is the Isppa value that field has solved
-FieldIsppa = max(InputIntensity(FZ))
+FieldIsppa = max(FZ)
 
 if DEBUG,
     % add this one to the plot
