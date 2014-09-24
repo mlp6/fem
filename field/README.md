@@ -1,10 +1,12 @@
 fem/field
 =========
 
-These files are for running Field II simulations associated with FEM meshes.  I
-would be interested to see if FOCUS would have any benefits w/r to runtimes for
-very large meshes... something to do down the road.
+All of these functions are used in Matlab (not python).
 
-Mark Palmeri
-mlp6@duke.edu
-2013-07-31
+ * **field2dyna.m:** Primary function to read in node data and solve for the
+   intensities at each node for a user-defined focal configuration and
+   attenuation.  This will create a ```dyna*.mat``` file.
+
+ * **makeLoadsTemps.m:** Converts the intensities from ```field2dyna.m``` into
+   point loads applied at nodes (```PointLoads*.dyn```) and initial
+   temperatures (```InitTemp*.dyn```) for thermal safety simulations.
