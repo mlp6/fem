@@ -4,31 +4,6 @@ CreateStructure.py
 Create "simple" structures in the FE meshes (e.g., spheres, layers). This code
 was based on the older CreateLesion.pl and CreateLayer.pl scripts.
 
-===============================================================================
-MODIFICATION HISTORY
-===============================================================================
-v0.1.1 (2013-01-29) [mlp6]
-* using argparse to display default input values with --help
-* added license information
-
-v0.1.2 (2013-03-05) [brb17]
-* added struct for ellipsoid of arbitrary size and orientation
-
-v0.1.3 (2013-05-05) [nbb5]
-* added struct for cube
-
-v0.2a [mlp6]
-* PEP8 compliant
-* removed depreciated dict.has_keys()
-* changed versions to date stamps
-* THIS VERSION WILL YIELD SLIGHTLY DIFFERENT OUTPUT THAN PREVIOUS VERSIONS
-  + Round-off error was affecting previous versions, causing a small difference
-    in the structural boundaries
-  + This version will round-up, making structures slightly larger if there were
-    ambiguous boundaries in previous meshes
-* migrated to python3
-
-===============================================================================
 Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,13 +17,11 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-===============================================================================
 """
 
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
 __license__ = "Apache v2.0"
-__version__ = "v0.2a"
 
 
 def main():
@@ -69,15 +42,15 @@ def main():
     # generate the new element file with the structure elements assigned the
     # new part ID
     NEFILE = open(args.nefile, 'w')
-    NEFILE.write("$ Generated using %s (version %s) with the following "
-                 "options:\n" % (sys.argv[0], __version__))
+    NEFILE.write("$ Generated using %s with the following "
+                 "options:\n" % (sys.argv[0]))
     NEFILE.write("$ %s\n" % args)
     NEFILE.write('$ # Structure Nodes = %i\n' % structNodeIDs.__len__())
     NEFILE.write('$ # Structure Elements = %i\n' % structElemIDs.__len__())
     NEFILE.write('*ELEMENT_SOLID\n')
     for i in elems:
         if i[0] in structElemIDs:
-        #if structElemIDs.has_key(i[0]):
+        # if structElemIDs.has_key(i[0]):
             i[1] = args.partid
         j = i.tolist()
         NEFILE.write('%s\n' % ','.join('%i' % val for val in j[0:10]))
