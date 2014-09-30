@@ -25,7 +25,7 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,nu
 % 'elems.dyn', 1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-measurementPointsandNodes = read_mpn(NodeName, 4);
+measurementPointsandNodes = read_mpn(NodeName);
 
 % check to see if there are nodes in the x = y = 0 plane to make sure that
 % "on axis" intensities are properly captured

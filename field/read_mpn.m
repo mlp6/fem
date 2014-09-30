@@ -1,24 +1,36 @@
-function [mpn] = read_mpn(NodeName, HeaderLinesToSkip)
-% function [mpn] = read_mpn(NodeName, HeaderLinesToSkip)
+function [mpn] = read_mpn(NodeName)
+% function [mpn] = read_mpn(NodeName)
 % 
-% Read nodes.dyn and extract points & nodes, skipping the first HeaderLinesToSkip lines, which includes *NODE
+% Read nodes.dyn and extract points & nodes, skipping the header lines,
+% including *NODE, and ending when the 4 column fscanf is broken (by *END).
 %
 % INPUTS:   NodeName ('nodes.dyn')
-%           HeaderLinesToSkip (4)
 %
-% OUPUTS: mpn (array of nodeID, x, y, z coords)
+% OUPUTS:   mpn (array of nodeID, x, y, z coords)
 %
 % Mark Palmeri
 % mlp6@duke.edu
-% 2014-07-01
 
 try
-    fid = fopen(NodeName,'r');
+    fid = fopen(NodeName, 'r');
 catch
     error(sprintf('ERROR: %s does not exist', NodeName));
 end
 
-mpn = textscan(fid, '%f%f%f%f', 'Delimiter', ',', 'HeaderLines', HeaderLinesToSkip);
-mpn = cell2mat(mpn);
+endofline = sprintf('\n');
+  
+s = fscanf(fid, '%s', 1);
+while (~strcmp(s, '*NODE')),
+    s = fscanf(fid, '%s', 1);
+end
+
+c = fscanf(fid, '%c', 1);
+while(c ~= endofline);
+    c = fscanf(fid, '%c', 1);
+end
+
+[mpn] = fscanf(fid, '%d,%f,%f,%f', [4, inf]);
 
 fclose(fid);
+
+mpn = mpn';
