@@ -31,7 +31,7 @@ function [SortedNodeIDs,ele,lat,axial]=SortNodeIDs(nodes_file);
 tic;
 
 % load in the node IDs and corresponding coordinates
-nodes = read_mpn(nodes_file,4);
+nodes = read_mpn(nodes_file);
 
 % clean up the precision of the node locations since the
 % HyperMesh generation tolerance was so poor; this will help
