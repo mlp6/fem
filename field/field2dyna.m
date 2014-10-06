@@ -1,5 +1,5 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName,ForceNonlinear)
-% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,numWorkers,ElemName,ForceNonlinear)
+function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,ElemName,ForceNonlinear)
+% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,ElemName,ForceNonlinear)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INPUT:
 % NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
@@ -11,7 +11,6 @@ function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,nu
 % Frequency - excitation frequency (MHz)
 % Transducer (string) - 'vf105','vf73'
 % Impulse (string) - 'gaussian','exp'
-% numWorkers (int) - number of parallel jobs to spawn in dynaField()
 % ElemName (string) - file name to read elements from (default: elems.dyn);
 % like node file, needs to be comma-delimited.
 % ForceNonlinear(int) - optional input argument. Set as 1 if you want to
@@ -54,19 +53,14 @@ FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 200e6;
 
 % perform the field calculation
-% if numWorkers not specified, defaults to 1 (non-parallel version)
-if (nargin >= 8)
-    [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, numWorkers);
-else
-    [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
-end
+[intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
 
 % save intensity file
 eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
 
 % check if non-uniform force scaling must be done
 isUniform = checkUniform(measurementPointsandNodes(:,2:4));
-if (nargin < 10)
+if (nargin < 9)
     ForceNonlinear = 0;
 end
 if (~isUniform || ForceNonlinear == 1)

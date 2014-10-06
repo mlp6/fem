@@ -1,5 +1,5 @@
-function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
-% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
+function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
+% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 %
 % Generate intensity values at the nodal locations for conversion to force and
 % input into the dyna deck.
@@ -25,7 +25,7 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, numWorkers)
 %   FIELD_PARAMS - field parameter structure
 %
 % EXAMPLE:
-%   [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, numWorkers)
+%   [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS)
 %
 
 % figure out where this function exists to link probes submod
@@ -77,42 +77,18 @@ Time = datestr(StartTime, 'HH:MM:SS PM');
 disp(sprintf('Start Time: %s', Time))
 tic;
 
-useForLoop = false;
-
-% if numWorkers not specified, default to 1 and don't use parallel version
-if (nargin == 1)
-    numWorkers = 1;
-    useForLoop = true;
-% if numWorkers specified as 1, don't use parallel version
-elseif (numWorkers == 1)
-    useForLoop = true;
-else
-    useForLoop = false;
-    maxNumWorkers = feature('numCores');
-    if (numWorkers > maxNumWorkers)
-        warning('Invalid number of workers. Maximum is %i.  numWorkers set to %i', ...
-            maxNumWorkers, maxNumWorkers);
-        numWorkers = maxNumWorkers;
+numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
+progressPoints = 0:10000:numNodes;
+for i=1:numNodes,
+    if ~isempty(intersect(i, progressPoints)),
+        disp(sprintf('Processed %.1f%%', i * 100 / numNodes));
     end
-end
-
-if (useForLoop)
-    numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
-    progressPoints = 0:10000:numNodes;
-    for i=1:numNodes,
-      if ~isempty(intersect(i, progressPoints)),
-          disp(sprintf('Processed %.1f%%', i * 100 / numNodes));
-      end;
-      if i == 1
-          tic;
-      end;
-      % include the lens correction (axial shift)
-      [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4)+FIELD_PARAMS.lens_correction_m);
-      intensity(i) = sum(pressure.*pressure);
+    if i == 1
+        tic;
     end
-else
-    tic;
-    intensity = dynaFieldPar(FIELD_PARAMS, numWorkers);
+    % include the lens correction (axial shift)
+    [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4)+FIELD_PARAMS.lens_correction_m);
+    intensity(i) = sum(pressure.*pressure);
 end
 
 CalcTime = toc; % s
@@ -120,34 +96,3 @@ ActualRunTime = CalcTime/60; % min
 disp(sprintf('Actual Run Time = %.3f m\n', ActualRunTime));
 
 field_end;
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [intensity, FIELD_PARAMS] = dynaFieldPar(FIELD_PARAMS, numWorkers)
-
-% allocating number of workers
-currentWorkers = matlabpool('size');
-isPoolOpen = (currentWorkers > 0);
-if (isPoolOpen)
-    matlabpool close;
-end
-
-matlabpool('open', numWorkers);
-
-spmd
-    % separate the matrices such that each core gets a roughly equal number of
-    % measurement points to perform calculations on.  also, distributes
-    % matrices based on columns, rather than rows.
-    codistPoints = codistributed(FIELD_PARAMS.measurementPointsandNodes(:,2:4), ...
-        codistributor('1d', 1));
-    pointsSize = size(FIELD_PARAMS.measurementPointsandNodes(:,2:4));
-    
-    FIELD_PARAMS.measurementPointsandNodes(:,2:4) = getLocalPart(codistPoints);
-    [intensityCodist, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
-    
-    % combine all the separate matrices again.
-    intensityDist = codistributed.build(intensityCodist, ...
-        codistributor1d(2, codistributor1d.unsetPartition, [1 pointsSize(1)]));
-end
-intensity = gather(intensityDist);
-matlabpool close
