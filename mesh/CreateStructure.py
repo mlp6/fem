@@ -1,34 +1,8 @@
 """
 CreateStructure.py
 
-Create "simple" structures in the FE meshes (e.g., spheres, layers). This code
-was based on the older CreateLesion.pl and CreateLayer.pl scripts.
+Create "simple" structures in the FE meshes (e.g., spheres, layers).
 
-===============================================================================
-MODIFICATION HISTORY
-===============================================================================
-v0.1.1 (2013-01-29) [mlp6]
-* using argparse to display default input values with --help
-* added license information
-
-v0.1.2 (2013-03-05) [brb17]
-* added struct for ellipsoid of arbitrary size and orientation
-
-v0.1.3 (2013-05-05) [nbb5]
-* added struct for cube
-
-v0.2a [mlp6]
-* PEP8 compliant
-* removed depreciated dict.has_keys()
-* changed versions to date stamps
-* THIS VERSION WILL YIELD SLIGHTLY DIFFERENT OUTPUT THAN PREVIOUS VERSIONS
-  + Round-off error was affecting previous versions, causing a small difference
-    in the structural boundaries
-  + This version will round-up, making structures slightly larger if there were
-    ambiguous boundaries in previous meshes
-* migrated to python3
-
-===============================================================================
 Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,7 +22,6 @@ limitations under the License.
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"
 __license__ = "Apache v2.0"
-__version__ = "v0.2a"
 
 
 def main():
@@ -61,7 +34,7 @@ def main():
     args = parse_cli()
 
     # find nodes in the structure and assign them to a dictionary
-    structNodeIDs = findStructNodeIDs(args. nodefile, args.struct, args.sopts)
+    structNodeIDs = findStructNodeIDs(args)
 
     # find elements that contain the structure nodes
     (elems, structElemIDs) = findStructElemIDs(args.elefile, structNodeIDs)
@@ -69,15 +42,14 @@ def main():
     # generate the new element file with the structure elements assigned the
     # new part ID
     NEFILE = open(args.nefile, 'w')
-    NEFILE.write("$ Generated using %s (version %s) with the following "
-                 "options:\n" % (sys.argv[0], __version__))
+    NEFILE.write("$ Generated using %s with the following "
+                 "options:\n" % (sys.argv[0]))
     NEFILE.write("$ %s\n" % args)
     NEFILE.write('$ # Structure Nodes = %i\n' % structNodeIDs.__len__())
     NEFILE.write('$ # Structure Elements = %i\n' % structElemIDs.__len__())
     NEFILE.write('*ELEMENT_SOLID\n')
     for i in elems:
         if i[0] in structElemIDs:
-        #if structElemIDs.has_key(i[0]):
             i[1] = args.partid
         j = i.tolist()
         NEFILE.write('%s\n' % ','.join('%i' % val for val in j[0:10]))
@@ -106,29 +78,42 @@ def parse_cli():
                      dest="partid",
                      help="part ID to assign to the new structure",
                      default=2)
-    par.add_argument("--struct",
-                     dest="struct",
-                     help="type of structure (sphere, layer, ellipsoid, cube)",
-                     default="sphere")
+    s = par.add_mutually_exclusive_group(required=True)
+
+    s.add_argument("--sphere",
+                   help="center x, y, z, radius",
+                   action="store_true")
+    s.add_argument("--layer",
+                   help="normal dir, min max",
+                   action="store_true")
+    s.add_argument("--ellipsoid",
+                   help="center x, y, z, axis 1/2 length a, b, c, "
+                        "Euler angle phi, theta, psi (deg)",
+                   action="store_true")
+    s.add_argument("--cube",
+                   help="corner x, y, z, length x, y, z",
+                   action="store_true")
+
     par.add_argument("--sopts",
                      dest="sopts",
-                     help="structure options (see in-code comments)",
+                     help="struct options (see help for each struct type)",
                      nargs='+',
-                     type=float)
+                     type=float,
+                     required=True)
 
     args = par.parse_args()
 
     return args
 
 
-def findStructNodeIDs(nodefile, struct, sopts):
+def findStructNodeIDs(args):
     import sys
     import numpy as n
     import math as m
     import fem_mesh
 
-    header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
-    nodeIDcoords = n.loadtxt(nodefile,
+    header_comment_skips = fem_mesh.count_header_comment_skips(args.nodefile)
+    nodeIDcoords = n.loadtxt(args.nodefile,
                              delimiter=',',
                              skiprows=header_comment_skips,
                              comments='*',
@@ -137,11 +122,13 @@ def findStructNodeIDs(nodefile, struct, sopts):
 
     structNodeIDs = {}
 
-    if struct == 'sphere':
+    sopts = args.sopts
+
+    if args.sphere:
         '''
         sopts is assumed to be a 4 element tuple with the following items:
-            sphere center coordinates (x,y,z)
-            sphere radius
+        sphere center coordinates (x,y,z)
+        sphere radius
         '''
         for i in nodeIDcoords:
             nodeRad = n.sqrt(n.power((i[1] - sopts[0]), 2) +
@@ -150,22 +137,22 @@ def findStructNodeIDs(nodefile, struct, sopts):
             if nodeRad < sopts[3]:
                 structNodeIDs[i[0]] = True
 
-    elif struct == 'layer':
+    elif args.layer:
         '''
         sopts is assumed to be a 3 element tuple with the following items:
-            dimension for normal to layer (x = 1, y = 2, z = 3)
-            layer bounds (min,max)
+        dimension for normal to layer (x = 1, y = 2, z = 3)
+        layer bounds (min,max)
         '''
         for i in nodeIDcoords:
             if i[sopts[0]] > sopts[1] and i[sopts[0]] < sopts[2]:
                 structNodeIDs[i[0]] = True
 
-    elif struct == 'ellipsoid':
+    elif args.ellipsoid:
         '''
         sopts is assumed to be a 9 element tuple with the following items:
-            ellipsoid center coordinates (x,y,z)
-            ellipsoid half-axis lengths (a,b,c)
-            ellipsoid euler angles (phi,theta,psi) in DEGREES
+        ellipsoid center coordinates (x,y,z)
+        ellipsoid half-axis lengths (a,b,c)
+        ellipsoid euler angles (phi,theta,psi) in DEGREES
         '''
         cph = m.cos(m.radians(sopts[6]))    # cos(phi)
         sph = m.sin(m.radians(sopts[6]))    # sin(phi)
@@ -196,11 +183,11 @@ def findStructNodeIDs(nodefile, struct, sopts):
             if radVec.transpose().dot(A.I).dot(radVec) <= 1:
                 structNodeIDs[i[0]] = True
 
-    elif struct == 'cube':
+    elif args.cube:
         '''
         sopts is assumed to be a 6 element tuple with the following items:
-            Location of most-negative corner (x,y,z) Respective cube dimensions
-            (w,l,h)
+        Location of most-negative corner (x,y,z) Respective cube dimensions
+        (x,y,z)
         '''
         for i in nodeIDcoords:
             if i[1] >= sopts[0] and \
@@ -212,9 +199,9 @@ def findStructNodeIDs(nodefile, struct, sopts):
                         structNodeIDs[i[0]] = True
 
     else:
-        sys.exit('ERROR: The specific structure (%s) is not defined' % struct)
+        sys.exit('ERROR: The specified structure is not defined')
 
-    if structNodeIDs.__len__ == 0:
+    if len(structNodeIDs) == 0:
         sys.exit('ERROR: no structure nodes were found')
 
     return structNodeIDs
