@@ -98,7 +98,8 @@ def parse_cli():
                      dest="sopts",
                      help="struct options (see help for each struct type)",
                      nargs='+',
-                     type=float)
+                     type=float,
+                     required=True)
 
     args = par.parse_args()
 
