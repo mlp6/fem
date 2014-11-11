@@ -96,3 +96,10 @@ Testing
 There are test scripts / models available for code validation and future
 development ([test/README.md](test/README.md)).  Please use existing tests if
 fixing bug / editing existing features, or create new tests for new features.
+
+Contributors
+============
+ * Mark Palmeri (mlp6@duke.edu)
+ * Ningrui Li (nl91@duke.edu)
+ * Mallory Selzo (UNC-CH)
+ * Chris Moore (chrisjmoore@unc.edu)
