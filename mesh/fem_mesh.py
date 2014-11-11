@@ -92,3 +92,37 @@ def extractPlane(snic, axes, plane):
 
     planeNodeIDs = planeNodeIDs.squeeze()
     return planeNodeIDs
+
+
+def SortNodeIDs(nic):
+    '''
+    Sort the node IDs by spatial coordinates into a 3D matrix and return the
+    corresponding axes
+
+    INPUTS:
+        nic - nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
+
+    OUTPUTS:
+        SortedNodeIDs - n matrix (x,y,z)
+        x - array
+        y - array
+        z - array
+    '''
+
+    import sys
+    import numpy as n
+
+    axes = [n.unique(nic['x']), n.unique(nic['y']), n.unique(nic['z'])]
+
+    # test to make sure that we have the right dimension (and that precision
+    # issues aren't adding extra unique values)
+    if len(nic) != (axes[0].size * axes[1].size * axes[2].size):
+        sys.exit('ERROR: Dimension mismatch - possible precision error '
+                 'when sorting nodes (?)')
+
+    # sort the nodes by x, y, then z columns
+    I = nic.argsort(order=('x', 'y', 'z'))
+    snic = nic[I]
+    snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size))
+
+    return [snic, axes]

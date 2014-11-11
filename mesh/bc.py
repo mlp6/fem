@@ -36,7 +36,7 @@ def main():
     import fem_mesh
 
     fem_mesh.check_version()
- 
+
     opts = read_cli()
 
     # open the boundary condition file to write
@@ -57,7 +57,7 @@ def main():
     # there are 6 faces in these models; we need to (1) find all of them and
     # (2) apply the appropriate BCs we'll loop through all of the nodes, see if
     # they are on a face or edge, and then apply the appropriate BC
-    [snic, axes] = SortNodeIDs(nodeIDcoords)
+    [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
 
     # extract spatially-sorted node IDs on a specified plane (these could be
     # internal or external)
@@ -119,40 +119,6 @@ def main():
 
     # close all of our files open for read/write
     BCFILE.close()
-
-
-def SortNodeIDs(nic):
-    '''
-    Sort the node IDs by spatial coordinates into a 3D matrix and return the
-    corresponding axes
-
-    INPUTS:
-        nic - nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
-
-    OUTPUTS:
-        SortedNodeIDs - n matrix (x,y,z)
-        x - array
-        y - array
-        z - array
-    '''
-
-    import sys
-    import numpy as n
-
-    axes = [n.unique(nic['x']), n.unique(nic['y']), n.unique(nic['z'])]
-
-    # test to make sure that we have the right dimension (and that precision
-    # issues aren't adding extra unique values)
-    if len(nic) != (axes[0].size * axes[1].size * axes[2].size):
-        sys.exit('ERROR: Dimension mismatch - possible precision error '
-                 'when sorting nodes (?)')
-
-    # sort the nodes by x, y, then z columns
-    I = nic.argsort(order=('x', 'y', 'z'))
-    snic = nic[I]
-    snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size))
-
-    return [snic, axes]
 
 
 def writeSeg(BCFILE, title, segID, planeNodeIDs):
