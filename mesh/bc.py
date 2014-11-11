@@ -5,15 +5,15 @@ bc.py
 Apply boundary conditions to rectangular solid meshes (the majority of the FE
 sims); can handle quarter-, half-, and no symmetry models.
 
-There are 6 faces in these models; we need to: 
+There are 6 faces in these models; we need to:
  1. Find all of them, and
- 2. Apply the appropriate BCs 
+ 2. Apply the appropriate BCs
 
 We'll loop through all of the nodes, see if they are on a face or edge, and
 then apply the appropriate BC.
 
-EXAMPLE 
-======= 
+EXAMPLE
+=======
 NEED THIS
 
 =======
@@ -98,7 +98,7 @@ def main():
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
     segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
     if opts.top:
-    	writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
+        writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
 
     BCFILE.close()
 
@@ -162,12 +162,12 @@ def read_cli():
     return opts
 
 
- def load_nodeIDs_coords(nodefile):
- 	"""
+def load_nodeIDs_coords(nodefile):
+    """
  	load in node IDs and coordinates, excluding '*' keyword lines
  	"""
- 	import fem_mesh
- 	import numpy as n
+    import fem_mesh
+    import numpy as n
     header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
     nodeIDcoords = n.loadtxt(opts.nodefile,
                              delimiter=',',
@@ -179,9 +179,9 @@ def read_cli():
 
 
 def open_bcfile(opts, cmdline):
-	"""
-	open BC file for writing and write header with command line
-	"""
+    """
+    open BC file for writing and write header with command line
+    """
     BCFILE = open(opts.bcfile, 'w')
     BCFILE.write("$ Generated using %s with the following options:\n" %
                  cmdline)
