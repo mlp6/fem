@@ -100,6 +100,8 @@ def main():
     if opts.top:
         writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
 
+    write_nonreflecting(BCFILE, segID)
+
     BCFILE.close()
 
 
@@ -164,12 +166,12 @@ def read_cli():
 
 def load_nodeIDs_coords(nodefile):
     """
- 	load in node IDs and coordinates, excluding '*' keyword lines
- 	"""
+    load in node IDs and coordinates, excluding '*' keyword lines
+    """
     import fem_mesh
     import numpy as n
-    header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
-    nodeIDcoords = n.loadtxt(opts.nodefile,
+    header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
+    nodeIDcoords = n.loadtxt(nodefile,
                              delimiter=',',
                              comments='*',
                              skiprows=header_comment_skips,
@@ -190,9 +192,9 @@ def open_bcfile(opts, cmdline):
 
 
 def write_nonreflecting(BCFILE, segID):
-	"""
+    """
     write non-reflecting boundaries (set segment references)
-	"""
+    """
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
     for i in range(1, segID):
         BCFILE.write('%i,0.0,0.0\n' % i)
