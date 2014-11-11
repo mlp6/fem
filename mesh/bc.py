@@ -54,13 +54,11 @@ def main():
     segID = 1
 
     # BACK
-    plane = (0, axes[0].min())
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (0, axes[0].min()))
     segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
 
     # FRONT
-    plane = (0, axes[0].max())
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (0, axes[0].max()))
     if (opts.sym == 'q') or (opts.sym == 'h'):
         # no top / bottom rows (those will be defined in the
         # top/bottom defs)
@@ -69,8 +67,7 @@ def main():
         segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
 
     # LEFT (push side; non-reflecting or symmetry)
-    plane = (1, axes[1].min())
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (1, axes[1].min()))
     # if quarter-symmetry, then apply BCs, in addition to a
     # modified edge; and don't deal w/ top/bottom
     if opts.sym == 'q':
@@ -80,13 +77,11 @@ def main():
         segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
 
     # RIGHT (non-reflecting)
-    plane = (1, axes[1].max())
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (1, axes[1].max()))
     segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
 
     # BOTTOM
-    plane = (2, axes[2].min())
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (2, axes[2].min()))
     segID = writeSeg(BCFILE, 'BOTTOM', segID, planeNodeIDs)
     if opts.bottom == 'full':
         writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
@@ -94,8 +89,7 @@ def main():
         writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
 
     # TOP (transducer face)
-    plane = (2, axes[2].max())
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (2, axes[2].max()))
     segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
     if opts.top:
         writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
