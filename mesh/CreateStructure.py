@@ -25,39 +25,25 @@ __license__ = "Apache v2.0"
 
 
 def main():
-    import sys
     import fem_mesh
 
     fem_mesh.check_version()
 
-    # lets read in some CLI arguments
     args = parse_cli()
 
-    # find nodes in the structure and assign them to a dictionary
-    structNodeIDs = findStructNodeIDs(args)
+    struct_type = define_struct_type(args)
 
-    # find elements that contain the structure nodes
+    structNodeIDs = findStructNodeIDs(args.nodefile, struct_type, args.sopts)
+
     (elems, structElemIDs) = findStructElemIDs(args.elefile, structNodeIDs)
 
-    # generate the new element file with the structure elements assigned the
-    # new part ID
-    NEFILE = open(args.nefile, 'w')
-    NEFILE.write("$ Generated using %s with the following "
-                 "options:\n" % (sys.argv[0]))
-    NEFILE.write("$ %s\n" % args)
-    NEFILE.write('$ # Structure Nodes = %i\n' % structNodeIDs.__len__())
-    NEFILE.write('$ # Structure Elements = %i\n' % structElemIDs.__len__())
-    NEFILE.write('*ELEMENT_SOLID\n')
-    for i in elems:
-        if i[0] in structElemIDs:
-            i[1] = args.partid
-        j = i.tolist()
-        NEFILE.write('%s\n' % ','.join('%i' % val for val in j[0:10]))
-    NEFILE.write('*END')
-    NEFILE.close()
+    write_struct_elems()
 
 
 def parse_cli():
+    """
+    Read in command line arguments
+    """
     import argparse
 
     par = argparse.ArgumentParser(
@@ -106,14 +92,24 @@ def parse_cli():
     return args
 
 
-def findStructNodeIDs(args):
+def findStructNodeIDs(nodefile, struct_type, sopts):
+    """
+    Find node IDs that fall within a specified geometry (sphere, layer, cube,
+    ellipsoid).
+
+    INPUTS:     nodefile (nodes.dyn)
+                struct_type (sphere, layer, ellipsoid, cube)
+                sopts (struct-specific parameters)
+
+    OUTPUTS:    structNodeIDs (dict)
+    """
     import sys
     import numpy as n
     import math as m
     import fem_mesh
 
-    header_comment_skips = fem_mesh.count_header_comment_skips(args.nodefile)
-    nodeIDcoords = n.loadtxt(args.nodefile,
+    header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
+    nodeIDcoords = n.loadtxt(nodefile,
                              delimiter=',',
                              skiprows=header_comment_skips,
                              comments='*',
@@ -122,9 +118,7 @@ def findStructNodeIDs(args):
 
     structNodeIDs = {}
 
-    sopts = args.sopts
-
-    if args.sphere:
+    if struct_type is 'sphere':
         '''
         sopts is assumed to be a 4 element tuple with the following items:
         sphere center coordinates (x,y,z)
@@ -137,7 +131,7 @@ def findStructNodeIDs(args):
             if nodeRad < sopts[3]:
                 structNodeIDs[i[0]] = True
 
-    elif args.layer:
+    elif struct_type is 'layer':
         '''
         sopts is assumed to be a 3 element tuple with the following items:
         dimension for normal to layer (x = 1, y = 2, z = 3)
@@ -147,7 +141,7 @@ def findStructNodeIDs(args):
             if i[sopts[0]] > sopts[1] and i[sopts[0]] < sopts[2]:
                 structNodeIDs[i[0]] = True
 
-    elif args.ellipsoid:
+    elif struct_type is 'ellipsoid':
         '''
         sopts is assumed to be a 9 element tuple with the following items:
         ellipsoid center coordinates (x,y,z)
@@ -183,7 +177,7 @@ def findStructNodeIDs(args):
             if radVec.transpose().dot(A.I).dot(radVec) <= 1:
                 structNodeIDs[i[0]] = True
 
-    elif args.cube:
+    elif struct_type is 'cube':
         '''
         sopts is assumed to be a 6 element tuple with the following items:
         Location of most-negative corner (x,y,z) Respective cube dimensions
@@ -208,6 +202,9 @@ def findStructNodeIDs(args):
 
 
 def findStructElemIDs(elefile, structNodeIDs):
+    """
+    Find the elements that contain nodes in structNodeIDs.
+    """
     import sys
     import numpy as n
     import fem_mesh
@@ -231,10 +228,53 @@ def findStructElemIDs(elefile, structNodeIDs):
         if insideStruct:
             structElemIDs[i[0]] = True
 
-    if structElemIDs.__len__ == 0:
+    if len(structElemIDs) == 0:
         sys.exit('ERROR: no structure elements were found')
 
     return (elems, structElemIDs)
+
+
+def write_struct_elems(args, elems, structNodeIDs, structElemIDs):
+    """
+    Write new elements files with structure elements assigned a new part ID.
+    """
+    import sys
+
+    NEFILE = open(args.nefile, 'w')
+    NEFILE.write("$ Generated using %s with the following "
+                 "options:\n" % (sys.argv[0]))
+    NEFILE.write("$ %s\n" % args)
+    NEFILE.write('$ # Structure Nodes = %i\n' % len(structNodeIDs))
+    NEFILE.write('$ # Structure Elements = %i\n' % len(structElemIDs))
+    NEFILE.write('*ELEMENT_SOLID\n')
+    for i in elems:
+        if i[0] in structElemIDs:
+            i[1] = args.partid
+        j = i.tolist()
+        NEFILE.write('%s\n' % ','.join('%i' % val for val in j[0:10]))
+    NEFILE.write('*END')
+    NEFILE.close()
+
+
+def define_struct_type(args):
+    """
+    Determine the type of structure being defined from the Boolean input
+    arguments
+    """
+    import sys
+
+    if args.sphere:
+        struct_type = "sphere"
+    elif args.layer:
+        struct_type = "layer"
+    elif args.cube:
+        struct_type = "cube"
+    elif args.ellipsoid:
+        struct_type = "ellipsoid"
+    else:
+        sys.exit('ERROR: The specified structure is not defined')
+
+    return struct_type
 
 
 if __name__ == "__main__":
