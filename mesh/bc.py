@@ -35,9 +35,8 @@ def main():
     import numpy as n
     import fem_mesh
 
-    if sys.version_info[:2] < (2, 7):
-        sys.exit("ERROR: Requires Python >= 2.7")
-
+    fem_mesh.check_version()
+ 
     opts = read_cli()
 
     # open the boundary condition file to write
