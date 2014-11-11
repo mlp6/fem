@@ -55,7 +55,10 @@ def main():
 
     # BACK
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (0, axes[0].min()))
-    segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
+    if opts.nonreflect:
+        segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
+    elif opts.pml:
+        print('PML goes here')
 
     # FRONT
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (0, axes[0].max()))
@@ -64,7 +67,10 @@ def main():
         # top/bottom defs)
         writeNodeBC(BCFILE, planeNodeIDs[1:-1], '1,0,0,0,1,1')
     else:
-        segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
+        if opts.nonreflect:
+            segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
+        elif opts.pml:
+            print('PML goes here')
 
     # LEFT (push side; non-reflecting or symmetry)
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (1, axes[1].min()))
@@ -74,27 +80,40 @@ def main():
         writeNodeBC(BCFILE, planeNodeIDs[1:-1], '0,1,0,1,0,1')
     # else make it a non-reflecting boundary
     else:
-        segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
+        if opts.nonreflect:
+            segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
+        elif opts.pml:
+            print('PML goes here')
 
     # RIGHT (non-reflecting)
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (1, axes[1].max()))
-    segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
+    if opts.nonreflect:
+        segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
+    elif opts.pml:
+        print('PML goes here')
 
     # BOTTOM
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (2, axes[2].min()))
-    segID = writeSeg(BCFILE, 'BOTTOM', segID, planeNodeIDs)
-    if opts.bottom == 'full':
-        writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-    elif opts.bottom == 'inplane':
-        writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
+    if opts.nonreflect:
+        segID = writeSeg(BCFILE, 'BOTTOM', segID, planeNodeIDs)
+        if opts.bottom == 'full':
+            writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
+        elif opts.bottom == 'inplane':
+            writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
+    elif opts.pml:
+        print('PML goes here')
 
     # TOP (transducer face)
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (2, axes[2].max()))
-    segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
-    if opts.top:
-        writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
+    if opts.nonreflect:
+        segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
+        if opts.top:
+            writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
+    elif opts.pml:
+        print('PML goes here')
 
-    write_nonreflecting(BCFILE, segID)
+    if opts.nonreflect:
+        write_nonreflecting(BCFILE, segID)
 
     BCFILE.close()
 
@@ -149,9 +168,19 @@ def read_cli():
                         dest='top',
                         action='store_false')
     parser.set_defaults(top=True)
-    parser.add_argument("--bottom", help="full / inplane constraint "
+    parser.add_argument("--bottom", help="full / inplane constraint"
                         "of bottom boundary (opposite transducer surface) "
                         "[full, inplane]", default="full")
+    s = parser.add_mutually_exclusive_group(required=True)
+    s.add_argument("--nonreflect",
+                   help="apply non-reflection boundaries",
+                   dest='nonreflect',
+                   action='store_true')
+    s.add_argument("--pml",
+                   help="apply perfect matching layers",
+                   dest='pml',
+                   action='store_true')
+    s.set_defaults(nonreflect=False, pml=False)
 
     opts = parser.parse_args()
 
