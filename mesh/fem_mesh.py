@@ -60,3 +60,35 @@ def rm_tmp_file(nodefile_nocmt):
         os.remove(nodefile_nocmt)
     except OSError as e:
         print('ERROR: %s - %s.' % (e.argsfilename, e.argsstrerror))
+
+def extractPlane(snic, axes, plane):
+    '''
+    Extract the node IDs on a specified plane from a sorted node ID &
+    coordinate 3D array.
+
+    INPUTS:
+        snic - sorted node IDs & coordinates array
+        axes - list of unique coordinates in the x, y, and z dimensions
+        plane - list:
+            index - index of the plane to extract (x=0, y=1, z=2)
+            coord - coordinate of the plane to extract (must exist in axes
+                    list)
+
+    OUPUTS:
+        planeNodeIDs - spatially-sorted 2D node IDs on the specified plane
+
+    EXAMPLE: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
+    '''
+    import sys
+
+    if plane[0] == 0:
+        planeNodeIDs = snic[axes[plane[0]] == plane[1], :, :]
+    elif plane[0] == 1:
+        planeNodeIDs = snic[:, axes[plane[0]] == plane[1], :]
+    elif plane[0] == 2:
+        planeNodeIDs = snic[:, :, axes[plane[0]] == plane[1]]
+    else:
+        sys.exit("ERROR: Specified plane index to extract does not exist")
+
+    planeNodeIDs = planeNodeIDs.squeeze()
+    return planeNodeIDs
