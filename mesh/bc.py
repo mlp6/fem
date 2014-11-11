@@ -3,10 +3,17 @@
 bc.py
 
 Apply boundary conditions to rectangular solid meshes (the majority of the FE
-sims); can handle quarter- and half-symmetry models.
+sims); can handle quarter-, half-, and no symmetry models.
 
-EXAMPLE
-=======
+There are 6 faces in these models; we need to: 
+ 1. Find all of them, and
+ 2. Apply the appropriate BCs 
+
+We'll loop through all of the nodes, see if they are on a face or edge, and
+then apply the appropriate BC.
+
+EXAMPLE 
+======= 
 NEED THIS
 
 =======
@@ -31,93 +38,68 @@ __license__ = "Apache v2.0"
 
 
 def main():
-    import sys
-    import numpy as n
     import fem_mesh
+    import sys
 
     fem_mesh.check_version()
 
     opts = read_cli()
 
-    # open the boundary condition file to write
-    BCFILE = open(opts.bcfile, 'w')
-    BCFILE.write("$ Generated using %s with the following options:\n" %
-                 sys.argv[0])
-    BCFILE.write("$ %s\n" % opts)
+    BCFILE = open_bcfile(opts, sys.argv[0])
 
-    # load in all of the node data, excluding '*' lines
-    header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
-    nodeIDcoords = n.loadtxt(opts.nodefile,
-                             delimiter=',',
-                             comments='*',
-                             skiprows=header_comment_skips,
-                             dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
-                                    ('z', 'f4')])
+    nodeIDcoords = load_nodeIDs_coords(opts.nodefile)
 
-    # there are 6 faces in these models; we need to (1) find all of them and
-    # (2) apply the appropriate BCs we'll loop through all of the nodes, see if
-    # they are on a face or edge, and then apply the appropriate BC
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
 
-    # extract spatially-sorted node IDs on a specified plane (these could be
-    # internal or external)
     segID = 1
-    for r in range(0, 3):
-        for m in ('bcmin', 'bcmax'):
-            if m == 'bcmin':
-                plane = (r, axes[r].min())
-            elif m == 'bcmax':
-                plane = (r, axes[r].max())
-            planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
-            if r == 0:  # front/back (front - symmetry, back - non-reflecting)
-                if m == 'bcmin':  # back (non-reflecting)
-                    segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
-                elif m == 'bcmax':  # front (symmetry)
-                    if (opts.sym == 'q') or (opts.sym == 'h'):
-                        # no top / bottom rows (those will be defined in the
-                        # top/bottom defs)
-                        writeNodeBC(BCFILE, planeNodeIDs[1:-1], '1,0,0,0,1,1')
-                    else:
-                        if opts.sym != 'none':
-                            sys.exit("ERROR: invalid symmetry flag specified"
-                                     "(front face)")
-                        segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
-            elif r == 1:  # left/right (non-reflecting; left - symmetry)
-                if m == 'bcmin':  # left (push side)
-                    # if quarter-symmetry, then apply BCs, in addition to a
-                    # modified edge; and don't deal w/ top/bottom
-                    if opts.sym == 'q':
-                        writeNodeBC(BCFILE, planeNodeIDs[1:-1], '0,1,0,1,0,1')
-                    # else make it a non-reflecting boundary
-                    else:
-                        if (opts.sym != 'h') and (opts.sym != 'none'):
-                            sys.exit("ERROR: invalid symmetry flag specified"
-                                     " (left/push face)")
-                        segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
-                if m == 'bcmax':  # right
-                    segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
-            elif r == 2:  # top/bottom (fully-contrained & non-reflecting)
-                if m == 'bcmin':  # bottom
-                    segID = writeSeg(BCFILE, 'BOTTOM', segID, planeNodeIDs)
-                    if opts.bottom == 'full':
-                        writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-                    elif opts.bottom == 'inplane':
-                        writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
-                    else:
-                        sys.exit('ERROR: specific bottom BC invalid '
-                                 '(can only be full or inplane)')
-                if m == 'bcmax':  # top
-                    segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
-                    if opts.top:
-                        writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
 
-    # write non-reflecting boundaries (set segment references)
-    BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
-    for i in range(1, segID):
-        BCFILE.write('%i,0.0,0.0\n' % i)
-    BCFILE.write('*END\n')
+    # BACK
+    plane = (0, axes[0].min())
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
 
-    # close all of our files open for read/write
+    # FRONT
+    plane = (0, axes[0].max())
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    if (opts.sym == 'q') or (opts.sym == 'h'):
+        # no top / bottom rows (those will be defined in the
+        # top/bottom defs)
+        writeNodeBC(BCFILE, planeNodeIDs[1:-1], '1,0,0,0,1,1')
+    else:
+        segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
+
+    # LEFT (push side; non-reflecting or symmetry)
+    plane = (1, axes[1].min())
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    # if quarter-symmetry, then apply BCs, in addition to a
+    # modified edge; and don't deal w/ top/bottom
+    if opts.sym == 'q':
+        writeNodeBC(BCFILE, planeNodeIDs[1:-1], '0,1,0,1,0,1')
+    # else make it a non-reflecting boundary
+    else:
+        segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
+
+    # RIGHT (non-reflecting)
+    plane = (1, axes[1].max())
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
+
+    # BOTTOM
+    plane = (2, axes[2].min())
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    segID = writeSeg(BCFILE, 'BOTTOM', segID, planeNodeIDs)
+    if opts.bottom == 'full':
+        writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
+    elif opts.bottom == 'inplane':
+        writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
+
+    # TOP (transducer face)
+    plane = (2, axes[2].max())
+    planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
+    segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
+    if opts.top:
+    	writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
+
     BCFILE.close()
 
 
@@ -179,6 +161,42 @@ def read_cli():
 
     return opts
 
+
+ def load_nodeIDs_coords(nodefile):
+ 	"""
+ 	load in node IDs and coordinates, excluding '*' keyword lines
+ 	"""
+ 	import fem_mesh
+ 	import numpy as n
+    header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
+    nodeIDcoords = n.loadtxt(opts.nodefile,
+                             delimiter=',',
+                             comments='*',
+                             skiprows=header_comment_skips,
+                             dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
+                                    ('z', 'f4')])
+    return nodeIDcoords
+
+
+def open_bcfile(opts, cmdline):
+	"""
+	open BC file for writing and write header with command line
+	"""
+    BCFILE = open(opts.bcfile, 'w')
+    BCFILE.write("$ Generated using %s with the following options:\n" %
+                 cmdline)
+    BCFILE.write("$ %s\n" % opts)
+    return BCFILE
+
+
+def write_nonreflecting(BCFILE, segID):
+	"""
+    write non-reflecting boundaries (set segment references)
+	"""
+    BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
+    for i in range(1, segID):
+        BCFILE.write('%i,0.0,0.0\n' % i)
+    BCFILE.write('*END\n')
 
 if __name__ == "__main__":
     main()
