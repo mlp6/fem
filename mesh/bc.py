@@ -64,7 +64,7 @@ def main():
         segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
     elif opts.pml:
         apply_pml(BCFILE, planeNodeIDs, axis, axis_limit,
-                  axis_limit+opts.num_pml_elems*axdiff[axis], opts._pml_partID)
+                  axis_limit+opts.num_pml_elems*axdiff[axis], opts.pml_partID)
 
     # FRONT
     axis = 0
@@ -80,7 +80,7 @@ def main():
         elif opts.pml:
             apply_pml(BCFILE, planeNodeIDs, axis,
                       axis_limit-opts.num_pml_elems*axdiff[axis],
-                      axis_limit, opts._pml_partID)
+                      axis_limit, opts.pml_partID)
 
     # LEFT (push side; non-reflecting or symmetry)
     axis = 1
@@ -97,7 +97,7 @@ def main():
         elif opts.pml:
             apply_pml(BCFILE, planeNodeIDs, axis, axis_limit,
                       axis_limit+opts.num_pml_elems*axdiff[axis],
-                      opts._pml_partID)
+                      opts.pml_partID)
 
     # RIGHT (non-reflecting)
     axis = 1
@@ -108,7 +108,7 @@ def main():
     elif opts.pml:
         apply_pml(BCFILE, planeNodeIDs, axis,
                   axis_limit-opts.num_pml_elems*axdiff[axis],
-                  axis_limit, opts._pml_partID)
+                  axis_limit, opts.pml_partID)
 
     # BOTTOM
     axis = 2
@@ -123,7 +123,7 @@ def main():
     elif opts.pml:
         apply_pml(BCFILE, planeNodeIDs, axis, axis_limit,
                   axis_limit+opts.num_pml_elems*axdiff[axis],
-                  opts._pml_partID)
+                  opts.pml_partID)
 
     # TOP (transducer face)
     axis = 2
@@ -136,7 +136,7 @@ def main():
     elif opts.pml:
         apply_pml(BCFILE, planeNodeIDs, axis,
                   axis_limit-opts.num_pml_elems*axdiff[axis],
-                  axis_limit, opts._pml_partID)
+                  axis_limit, opts.pml_partID)
 
     if opts.nonreflect:
         write_nonreflecting(BCFILE, segID)
@@ -263,7 +263,7 @@ def apply_pml(BCFILE, planeNodeIDs, axis, axmin, axmax, pml_partID):
     """
     import os
     writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-    os.system('python CreateStructure.py --nefile elems_pml.dyn --layer '
+    os.system('python ../../mesh/CreateStructure.py --nefile elems_pml.dyn --layer '
               '--sopts %i %f %f --partid %i' %
               (axis, axmin, axmax, pml_partID))
 
