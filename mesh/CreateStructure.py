@@ -234,22 +234,17 @@ def findStructElemIDs(elefile, structNodeIDs):
     return (elems, structElemIDs)
 
 
-def write_struct_elems(args, elems, structNodeIDs, structElemIDs):
+def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
     """
     Write new elements files with structure elements assigned a new part ID.
     """
-    import sys
-
-    NEFILE = open(args.nefile, 'w')
-    NEFILE.write("$ Generated using %s with the following "
-                 "options:\n" % (sys.argv[0]))
-    NEFILE.write("$ %s\n" % args)
+    NEFILE = open(nefile, 'w')
     NEFILE.write('$ # Structure Nodes = %i\n' % len(structNodeIDs))
     NEFILE.write('$ # Structure Elements = %i\n' % len(structElemIDs))
     NEFILE.write('*ELEMENT_SOLID\n')
     for i in elems:
         if i[0] in structElemIDs:
-            i[1] = args.partid
+            i[1] = partid
         j = i.tolist()
         NEFILE.write('%s\n' % ','.join('%i' % val for val in j[0:10]))
     NEFILE.write('*END')
