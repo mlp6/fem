@@ -63,8 +63,9 @@ def main():
     if opts.nonreflect:
         segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
     elif opts.pml:
-        apply_pml(BCFILE, planeNodeIDs, axis, axis_limit,
-                  axis_limit+opts.num_pml_elems*axdiff[axis], opts.pml_partID)
+        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+                  axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
+                  opts.pml_partID)
 
     # FRONT
     axis = 0
@@ -78,7 +79,7 @@ def main():
         if opts.nonreflect:
             segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
         elif opts.pml:
-            apply_pml(BCFILE, planeNodeIDs, axis,
+            apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
                       axis_limit-opts.num_pml_elems*axdiff[axis],
                       axis_limit, opts.pml_partID)
 
@@ -95,8 +96,8 @@ def main():
         if opts.nonreflect:
             segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
         elif opts.pml:
-            apply_pml(BCFILE, planeNodeIDs, axis, axis_limit,
-                      axis_limit+opts.num_pml_elems*axdiff[axis],
+            apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+                      axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
                       opts.pml_partID)
 
     # RIGHT (non-reflecting)
@@ -106,7 +107,7 @@ def main():
     if opts.nonreflect:
         segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
     elif opts.pml:
-        apply_pml(BCFILE, planeNodeIDs, axis,
+        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
                   axis_limit-opts.num_pml_elems*axdiff[axis],
                   axis_limit, opts.pml_partID)
 
@@ -121,8 +122,8 @@ def main():
         elif opts.bottom == 'inplane':
             writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
     elif opts.pml:
-        apply_pml(BCFILE, planeNodeIDs, axis, axis_limit,
-                  axis_limit+opts.num_pml_elems*axdiff[axis],
+        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+                  axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
                   opts.pml_partID)
 
     # TOP (transducer face)
@@ -134,7 +135,7 @@ def main():
         if opts.top:
             writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
     elif opts.pml:
-        apply_pml(BCFILE, planeNodeIDs, axis,
+        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
                   axis_limit-opts.num_pml_elems*axdiff[axis],
                   axis_limit, opts.pml_partID)
 
@@ -256,17 +257,24 @@ def write_nonreflecting(BCFILE, segID):
     BCFILE.write('*END\n')
 
 
-def apply_pml(BCFILE, planeNodeIDs, axis, axmin, axmax, pml_partID):
+def apply_pml(nodefile, elefile, BCFILE, planeNodeIDs, axis, axmin, axmax,
+              pml_partID):
     """
     Apply full nodal constraints to the outer face nodes and then create outer
     layers that are assigned to *MAT_PML_ELASTIC.
     """
-    import os
-    writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-    os.system('python ../../mesh/CreateStructure.py --nefile elems_pml.dyn --layer '
-              '--sopts %i %f %f --partid %i' %
-              (axis, axmin, axmax, pml_partID))
+    import CreateStructure as CS
 
+    writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
+
+    structNodeIDs = CS.findStructNodeIDs(nodefile,
+                                         'layer',
+                                         (axis, axmin, axmax))
+
+    (elems, structElemIDs) = CS.findStructElemIDs(elefile, structNodeIDs)
+
+    CS.write_struct_elems('elems_pml.dyn', pml_partID, elems, structNodeIDs,
+                          structElemIDs)
 
 if __name__ == "__main__":
     main()
