@@ -133,33 +133,35 @@ def read_cli():
     """
     read command line arguments
     """
-    import argparse
+    import argparse as ap
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate boundary condition"
-                                     " data as specified on the command line.",
-                                     formatter_class=
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--bcfile", help="boundary condition output file",
-                        default="bc.dyn")
-    parser.add_argument("--nodefile", help="node defintion input file",
-                        default="nodes.dyn")
-    parser.add_argument("--sym", help="quarter (q), half (h) symmetry "
-                        "or none (none)", default="q")
-    parser.add_argument("--top",
-                        help="fully constrain top (xdcr surface)",
-                        dest='top',
-                        action='store_true')
-    parser.add_argument("--notop",
-                        help="top (xdcr surface) unconstrained",
-                        dest='top',
-                        action='store_false')
-    parser.set_defaults(top=True)
-    parser.add_argument("--bottom", help="full / inplane constraint "
-                        "of bottom boundary (opposite transducer surface) "
-                        "[full, inplane]", default="full")
+    p = ap.ArgumentParser(description="Generate boundary condition"
+                          " data as specified on the command line.",
+                          formatter_class=ap.ArgumentDefaultsHelpFormatter)
+    p.add_argument("--bcfile",
+                   help="boundary condition output file",
+                   default="bc.dyn")
+    p.add_argument("--nodefile",
+                   help="node defintion input file",
+                   default="nodes.dyn")
+    p.add_argument("--sym",
+                   help="quarter (q), half (h) symmetry or none (none)",
+                   default="q")
+    p.add_argument("--top",
+                   help="fully constrain top (xdcr surface)",
+                   dest='top',
+                   action='store_true')
+    p.add_argument("--notop",
+                   help="top (xdcr surface) unconstrained",
+                   dest='top',
+                   action='store_false')
+    p.set_defaults(top=True)
+    p.add_argument("--bottom", help="full / inplane constraint of bottom "
+                   "boundary (opposite transducer surface) [full, inplane]",
+                   default="full")
 
-    opts = parser.parse_args()
+    opts = p.parse_args()
 
     return opts
 
