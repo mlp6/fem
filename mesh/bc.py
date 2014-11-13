@@ -45,6 +45,9 @@ def main():
 
     opts = read_cli()
 
+    if opts.pml:
+        pmlfile = create_pml_elems_file(opts.elefile)
+
     BCFILE = open_bcfile(opts, sys.argv[0])
 
     nodeIDcoords = load_nodeIDs_coords(opts.nodefile)
@@ -63,7 +66,7 @@ def main():
     if opts.nonreflect:
         segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
     elif opts.pml:
-        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
                   axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
                   opts.pml_partID)
 
@@ -79,7 +82,7 @@ def main():
         if opts.nonreflect:
             segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
         elif opts.pml:
-            apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+            apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
                       axis_limit-opts.num_pml_elems*axdiff[axis],
                       axis_limit, opts.pml_partID)
 
@@ -96,7 +99,7 @@ def main():
         if opts.nonreflect:
             segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
         elif opts.pml:
-            apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+            apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
                       axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
                       opts.pml_partID)
 
@@ -107,7 +110,7 @@ def main():
     if opts.nonreflect:
         segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
     elif opts.pml:
-        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
                   axis_limit-opts.num_pml_elems*axdiff[axis],
                   axis_limit, opts.pml_partID)
 
@@ -122,7 +125,7 @@ def main():
         elif opts.bottom == 'inplane':
             writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
     elif opts.pml:
-        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
                   axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
                   opts.pml_partID)
 
@@ -135,7 +138,7 @@ def main():
         if opts.top:
             writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
     elif opts.pml:
-        apply_pml(opts.nodefile, opts.elefile, BCFILE, planeNodeIDs, axis,
+        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
                   axis_limit-opts.num_pml_elems*axdiff[axis],
                   axis_limit, opts.pml_partID)
 
@@ -173,38 +176,44 @@ def read_cli():
     """
     read command line arguments
     """
-    import argparse
+    import argparse as ap
 
     # lets read in some command-line arguments
-    parser = argparse.ArgumentParser(description="Generate boundary condition"
-                                     " data as specified on the command line.",
-                                     formatter_class=
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--bcfile", help="boundary condition output file",
-                        default="bc.dyn")
-    parser.add_argument("--nodefile", help="node defintion input file",
-                        default="nodes.dyn")
-    parser.add_argument("--sym", help="quarter (q), half (h) symmetry "
-                        "or none (none)", default="q")
-    parser.add_argument("--pml_partID",
-                        help="part ID to assign to PML",
-                        default=2)
-    parser.add_argument("--num_pml_elems",
-                        help="number of elements in PML (5-10)",
-                        default=5)
-    parser.add_argument("--top",
-                        help="fully constrain top (xdcr surface)",
-                        dest='top',
-                        action='store_true')
-    parser.add_argument("--notop",
-                        help="top (xdcr surface) unconstrained",
-                        dest='top',
-                        action='store_false')
-    parser.set_defaults(top=True)
-    parser.add_argument("--bottom", help="full / inplane constraint"
-                        "of bottom boundary (opposite transducer surface) "
-                        "[full, inplane]", default="full")
-    s = parser.add_mutually_exclusive_group(required=True)
+    p = ap.ArgumentParser(description="Generate boundary condition data as "
+                          "specified on the command line.",
+                          formatter_class=ap.ArgumentDefaultsHelpFormatter)
+    p.add_argument("--bcfile",
+                   help="boundary condition output file",
+                   default="bc.dyn")
+    p.add_argument("--nodefile",
+                   help="node defintion input file",
+                   default="nodes.dyn")
+    p.add_argument("--elefile",
+                   help="elem defintion input file",
+                   default="elems.dyn")
+    p.add_argument("--sym",
+                   help="quarter (q), half (h) symmetry or none (none)",
+                   default="q")
+    p.add_argument("--pml_partID",
+                   help="part ID to assign to PML",
+                   default=2)
+    p.add_argument("--num_pml_elems",
+                   help="number of elements in PML (5-10)",
+                   default=5)
+    p.add_argument("--top",
+                   help="fully constrain top (xdcr surface)",
+                   dest='top',
+                   action='store_true')
+    p.add_argument("--notop",
+                   help="top (xdcr surface) unconstrained",
+                   dest='top',
+                   action='store_false')
+    p.set_defaults(top=True)
+    p.add_argument("--bottom",
+                   help="full / inplane constraint of bottom boundary "
+                   "(opposite transducer surface) [full, inplane]",
+                   default="full")
+    s = p.add_mutually_exclusive_group(required=True)
     s.add_argument("--nonreflect",
                    help="apply non-reflection boundaries",
                    dest='nonreflect',
@@ -215,7 +224,7 @@ def read_cli():
                    action='store_true')
     s.set_defaults(nonreflect=False, pml=False)
 
-    opts = parser.parse_args()
+    opts = p.parse_args()
 
     return opts
 
@@ -257,7 +266,7 @@ def write_nonreflecting(BCFILE, segID):
     BCFILE.write('*END\n')
 
 
-def apply_pml(nodefile, elefile, BCFILE, planeNodeIDs, axis, axmin, axmax,
+def apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis, axmin, axmax,
               pml_partID):
     """
     Apply full nodal constraints to the outer face nodes and then create outer
@@ -269,12 +278,33 @@ def apply_pml(nodefile, elefile, BCFILE, planeNodeIDs, axis, axmin, axmax,
 
     structNodeIDs = CS.findStructNodeIDs(nodefile,
                                          'layer',
-                                         (axis, axmin, axmax))
+                                         (axis+1, axmin, axmax))
 
-    (elems, structElemIDs) = CS.findStructElemIDs(elefile, structNodeIDs)
+    (elems, structElemIDs) = CS.findStructElemIDs(pmlfile,
+                                                  structNodeIDs)
 
     CS.write_struct_elems('elems_pml.dyn', pml_partID, elems, structNodeIDs,
                           structElemIDs)
+
+
+def create_pml_elems_file(elefile):
+    """
+    create a new output elements file that the PML elements will be defined in
+    that has _pml added to the filename.  elefile is assumed to end in '.dyn'
+
+    this could be a homogeneous elems.dyn file, or a struct.dyn file
+
+    EXAMPLE:
+        elems.dyn -> elems_pml.dyn
+    """
+    import shutil
+
+    pmlfile = elefile.replace('.dyn', '_pml.dyn')
+
+    shutil.copy(elefile, pmlfile)
+
+    return pmlfile
+
 
 if __name__ == "__main__":
     main()
