@@ -69,15 +69,16 @@ if (~isUniform || ForceNonlinear == 1)
     if (nargin < 9)
         warning('This is a non-linear mesh, but elements file was not given as an input argument. Skipping node volume file generation.')
     else
-        if (exist(ElemName, 'file') ~= 0)
-            eval(sprintf('nodeVolSuccess = system(''python calcNodeVol.py --nodefile %s --elefile %s --nodevolfile %s'');', NodeName, ElemName, ['NodeVolume_' NodeName '_' ElemName '.txt']));
+        NodeVolumeFilename = ['NodeVolume_' NodeName '_' ElemName '.txt'];
+        if (exist(NodeVolumeFilename, 'file') == 0)
+            eval(sprintf('nodeVolSuccess = system(''python calcNodeVol.py --nodefile %s --elefile %s --nodevolfile %s'');', NodeName, ElemName, NodeVolumeFilename));
             if (nodeVolSuccess ~= 0)
               fprintf('Node volume generation failed. Check to make sure node and element files exist in specified directory.\n')
             else
               fprintf('%s has been created.\n', ['NodeVolume_' NodeName '_' ElemName '.txt'])
             end
         else
-            error('Element file name given as input argument could not be found.');
+            disp('Node volume file already exists; not generating new one');
         end
     end
 else
