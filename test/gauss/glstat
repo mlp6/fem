@@ -2,10 +2,10 @@
                          ls-dyna smp.78769 s            date 01/02/2013
 
 
- dt of cycle       1 is controlled by solid           9577 of part         1
+ dt of cycle       1 is controlled by solid         843750 of part         1
 
  time...........................   0.00000E+00
- time step......................   1.10000E-06
+ time step......................   6.11674E-07
  kinetic energy.................   0.00000E+00
  internal energy................   1.00000E-20
  spring and damper energy.......   1.00000E-20
@@ -25,139 +25,139 @@
  time per zone cycle.(nanosec)..             0
 
 
- dt of cycle     328 is controlled by solid           3810 of part         1
+ dt of cycle     820 is controlled by solid         573825 of part         1
 
- time...........................   4.98976E-04
- time step......................   1.52890E-06
- kinetic energy.................   1.34515E-03
- internal energy................   5.34590E-04
+ time...........................   4.99910E-04
+ time step......................   6.08770E-07
+ kinetic energy.................   3.27330E-01
+ internal energy................   1.33758E-01
  spring and damper energy.......   1.00000E-20
- hourglass energy ..............   9.07430E-06
+ hourglass energy ..............   6.08150E-04
  system damping energy..........   0.00000E+00
  sliding interface energy.......   0.00000E+00
- external work..................   1.88903E-03
+ external work..................   4.61728E-01
  eroded kinetic energy..........   0.00000E+00
  eroded internal energy.........   0.00000E+00
  eroded hourglass energy........   0.00000E+00
- total energy...................   1.88882E-03
- total energy / initial energy..   9.99888E-01
- energy ratio w/o eroded energy.   9.99888E-01
- global x velocity..............  -1.36376E-05
- global y velocity..............   1.69772E-05
- global z velocity..............  -1.56828E-02
- time per zone cycle.(nanosec)..           289
+ total energy...................   4.61696E-01
+ total energy / initial energy..   9.99930E-01
+ energy ratio w/o eroded energy.   9.99930E-01
+ global x velocity..............  -3.51938E-05
+ global y velocity..............   3.51818E-05
+ global z velocity..............  -5.65957E-02
+ time per zone cycle.(nanosec)..           323
 
 
- dt of cycle     655 is controlled by solid           8410 of part         1
+ dt of cycle    1640 is controlled by solid         196950 of part         1
 
- time...........................   9.98896E-04
- time step......................   1.52879E-06
- kinetic energy.................   6.57307E-04
- internal energy................   1.16369E-03
+ time...........................   9.99398E-04
+ time step......................   6.09472E-07
+ kinetic energy.................   1.69021E-01
+ internal energy................   2.91682E-01
  spring and damper energy.......   1.00000E-20
- hourglass energy ..............   1.50134E-05
+ hourglass energy ..............   9.37591E-04
  system damping energy..........   0.00000E+00
  sliding interface energy.......   0.00000E+00
- external work..................   1.83623E-03
+ external work..................   4.61728E-01
  eroded kinetic energy..........   0.00000E+00
  eroded internal energy.........   0.00000E+00
  eroded hourglass energy........   0.00000E+00
- total energy...................   1.83601E-03
- total energy / initial energy..   9.99882E-01
- energy ratio w/o eroded energy.   9.99882E-01
- global x velocity..............  -8.74265E-06
- global y velocity..............   1.09487E-05
- global z velocity..............  -1.47157E-02
- time per zone cycle.(nanosec)..           289
+ total energy...................   4.61641E-01
+ total energy / initial energy..   9.99811E-01
+ energy ratio w/o eroded energy.   9.99811E-01
+ global x velocity..............  -6.55187E-05
+ global y velocity..............   6.56220E-05
+ global z velocity..............  -5.38310E-02
+ time per zone cycle.(nanosec)..           286
 
 
- dt of cycle     982 is controlled by solid           2610 of part         1
+ dt of cycle    2461 is controlled by solid         151950 of part         1
 
- time...........................   1.49883E-03
- time step......................   1.52886E-06
- kinetic energy.................   4.85928E-04
- internal energy................   1.20180E-03
+ time...........................   1.49975E-03
+ time step......................   6.09476E-07
+ kinetic energy.................   1.44499E-01
+ internal energy................   3.15996E-01
  spring and damper energy.......   1.00000E-20
- hourglass energy ..............   2.44867E-05
+ hourglass energy ..............   1.09352E-03
  system damping energy..........   0.00000E+00
  sliding interface energy.......   0.00000E+00
- external work..................   1.71242E-03
+ external work..................   4.61728E-01
  eroded kinetic energy..........   0.00000E+00
  eroded internal energy.........   0.00000E+00
  eroded hourglass energy........   0.00000E+00
- total energy...................   1.71222E-03
- total energy / initial energy..   9.99881E-01
- energy ratio w/o eroded energy.   9.99881E-01
- global x velocity..............  -4.95365E-07
- global y velocity..............  -8.53053E-06
- global z velocity..............  -1.18278E-02
- time per zone cycle.(nanosec)..           291
+ total energy...................   4.61588E-01
+ total energy / initial energy..   9.99697E-01
+ energy ratio w/o eroded energy.   9.99697E-01
+ global x velocity..............  -9.05224E-05
+ global y velocity..............   9.07955E-05
+ global z velocity..............  -4.41998E-02
+ time per zone cycle.(nanosec)..           323
 
 
- dt of cycle    1309 is controlled by solid           2810 of part         1
+ dt of cycle    3281 is controlled by solid         219450 of part         1
 
- time...........................   1.99878E-03
- time step......................   1.52893E-06
- kinetic energy.................   5.74523E-04
- internal energy................   9.35022E-04
+ time...........................   1.99965E-03
+ time step......................   6.09948E-07
+ kinetic energy.................   1.80714E-01
+ internal energy................   2.79621E-01
  spring and damper energy.......   1.00000E-20
- hourglass energy ..............   2.99685E-05
+ hourglass energy ..............   1.18691E-03
  system damping energy..........   0.00000E+00
  sliding interface energy.......   0.00000E+00
- external work..................   1.53972E-03
+ external work..................   4.61696E-01
  eroded kinetic energy..........   0.00000E+00
  eroded internal energy.........   0.00000E+00
  eroded hourglass energy........   0.00000E+00
- total energy...................   1.53951E-03
- total energy / initial energy..   9.99867E-01
- energy ratio w/o eroded energy.   9.99867E-01
- global x velocity..............   1.06276E-05
- global y velocity..............  -5.52557E-06
- global z velocity..............  -7.08560E-03
- time per zone cycle.(nanosec)..           289
+ total energy...................   4.61522E-01
+ total energy / initial energy..   9.99622E-01
+ energy ratio w/o eroded energy.   9.99622E-01
+ global x velocity..............  -6.79159E-05
+ global y velocity..............   6.76726E-05
+ global z velocity..............  -2.47738E-02
+ time per zone cycle.(nanosec)..           282
 
 
- dt of cycle    1636 is controlled by solid           1850 of part         1
+ dt of cycle    4100 is controlled by solid         152542 of part         1
 
- time...........................   2.49876E-03
- time step......................   1.52901E-06
- kinetic energy.................   6.00547E-04
- internal energy................   7.12178E-04
+ time...........................   2.49952E-03
+ time step......................   6.10547E-07
+ kinetic energy.................   2.03386E-01
+ internal energy................   2.51880E-01
  spring and damper energy.......   1.00000E-20
- hourglass energy ..............   3.39177E-05
+ hourglass energy ..............   1.27548E-03
  system damping energy..........   0.00000E+00
  sliding interface energy.......   0.00000E+00
- external work..................   1.34685E-03
+ external work..................   4.56627E-01
  eroded kinetic energy..........   0.00000E+00
  eroded internal energy.........   0.00000E+00
  eroded hourglass energy........   0.00000E+00
- total energy...................   1.34664E-03
- total energy / initial energy..   9.99846E-01
- energy ratio w/o eroded energy.   9.99846E-01
- global x velocity..............   4.30385E-06
- global y velocity..............  -7.33081E-06
- global z velocity..............  -1.95412E-03
- time per zone cycle.(nanosec)..           289
+ total energy...................   4.56541E-01
+ total energy / initial energy..   9.99813E-01
+ energy ratio w/o eroded energy.   9.99813E-01
+ global x velocity..............   1.56742E-05
+ global y velocity..............  -1.57855E-05
+ global z velocity..............   1.85375E-03
+ time per zone cycle.(nanosec)..           279
 
 
- dt of cycle    1963 is controlled by solid          11821 of part         1
+ dt of cycle    4919 is controlled by solid         164088 of part         1
 
- time...........................   2.99874E-03
- time step......................   1.52903E-06
- kinetic energy.................   5.63342E-04
- internal energy................   5.83217E-04
+ time...........................   2.99962E-03
+ time step......................   6.10695E-07
+ kinetic energy.................   2.06953E-01
+ internal energy................   2.31725E-01
  spring and damper energy.......   1.00000E-20
- hourglass energy ..............   3.67659E-05
+ hourglass energy ..............   1.36040E-03
  system damping energy..........   0.00000E+00
  sliding interface energy.......   0.00000E+00
- external work..................   1.18353E-03
+ external work..................   4.40061E-01
  eroded kinetic energy..........   0.00000E+00
  eroded internal energy.........   0.00000E+00
  eroded hourglass energy........   0.00000E+00
- total energy...................   1.18332E-03
- total energy / initial energy..   9.99825E-01
- energy ratio w/o eroded energy.   9.99825E-01
- global x velocity..............   3.62828E-06
- global y velocity..............  -3.28300E-06
- global z velocity..............   2.03872E-03
- time per zone cycle.(nanosec)..           289
+ total energy...................   4.40038E-01
+ total energy / initial energy..   9.99947E-01
+ energy ratio w/o eroded energy.   9.99947E-01
+ global x velocity..............   7.28170E-05
+ global y velocity..............  -7.27769E-05
+ global z velocity..............   2.37315E-02
+ time per zone cycle.(nanosec)..           292
