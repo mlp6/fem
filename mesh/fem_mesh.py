@@ -3,7 +3,7 @@ fem_mesh.py
 
 Generic functions for all meshing functions
 
-Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
+Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

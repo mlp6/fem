@@ -4,7 +4,7 @@ create_res_sim_mat.py
 Create res_sim.mat file from disp.dat (This was originally called
 from StructPost, but now is a stand-alone Python script.)
 
-Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
+Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
