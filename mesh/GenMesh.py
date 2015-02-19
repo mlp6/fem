@@ -3,7 +3,7 @@ GenMesh.py
 
 Generate a 3D rectilinear mesh as node and element input files for LS-DYNA3D.
 
-Copyright (c) 2014 Mark L. Palmeri
+Copyright 2015 Mark L. Palmeri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

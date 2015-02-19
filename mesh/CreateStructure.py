@@ -1,14 +1,9 @@
 """
 CreateStructure.py
 
-<<<<<<< HEAD
 Create "simple" structures in the FE meshes (e.g., spheres, layers).
-=======
-Create "simple" structures in the FE meshes (e.g., spheres, layers). This code
-was based on the older CreateLesion.pl and CreateLayer.pl scripts.
->>>>>>> b67e2da618435faa586748dcdd5695127829d380
 
-Copyright 2014 Mark L. Palmeri (mlp6@duke.edu)
+Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
