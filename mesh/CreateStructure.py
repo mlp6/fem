@@ -36,7 +36,8 @@ def main():
 
     (elems, structElemIDs) = findStructElemIDs(args.elefile, structNodeIDs)
 
-    write_struct_elems(args, elems, structNodeIDs, structElemIDs)
+    write_struct_elems(args.nefile, args.partid, elems, structNodeIDs,
+                       structElemIDs)
 
 
 def parse_cli():
