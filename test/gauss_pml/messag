@@ -1,0 +1,263 @@
+      Date: 02/19/2015      Time: 15:50:44  
+
+     ___________________________________________________
+     |                                                 |
+     |  Livermore  Software  Technology  Corporation   |
+     |                                                 |
+     |  7374 Las Positas Road                          |
+     |  Livermore, CA 94551                            |
+     |  Tel: (925) 449-2500  Fax: (925) 449-2507       |
+     |  www.lstc.com                                   |
+     |_________________________________________________|
+     |                                                 |
+     |  LS-DYNA, A Program for Nonlinear Dynamic       |
+     |  Analysis of Structures in Three Dimensions     |
+     |  Version : smp s R6.1.1    Date: 01/02/2013     |
+     |  Revision: 78769           Time: 07:43:30       |
+     |                                                 |
+     |  Features enabled in this version:              |
+     |    Shared Memory Parallel                       |
+     |    Interactive Graphics                         |
+     |    ANSYS Database format                        |
+     |    ANSYS License (ANSYS140)                     |
+     |    MADYMO indirect coupling (7.2 or higer)      |
+     |                                                 |
+     |  Licensed to: Duke University - 081             |
+     |  Issued by  : LSTC_01062015                     |
+     |                                                 |
+     |  Platform   : Xeon64 System                     |
+     |  OS Level   : Linux 2.6.18                      |
+     |  Compiler   : Intel Fortran Compiler 10.1       |
+     |  Hostname   : farlow.egr.duke.edu               |
+     |  Precision  : Single precision (I4R4)           |
+     |  SVN Version: 78774                             |
+     |                                                 |
+     |  Unauthorized use infringes LSTC copyrights     |
+     |_________________________________________________|
+
+ Input file: gauss_pml.dyn                                                           
+
+
+ The native file format       : 32-bit small endian
+ Memory size from *KEYWORD    :   200000000
+ expanding   memory to   200000000 starting ls-dyna
+
+ ********  notice  ********  notice  ********  notice  ********
+ *                                                            *
+ * This is the LS-DYNA Finite Element code.                   *
+ *                                                            *
+ * Neither LSTC nor the authors assume any responsibility for *
+ * the validity, accuracy, or applicability of any results    *
+ * obtained from this system. The user must verify his own    *
+ * results.                                                   *
+ *                                                            *
+ * LSTC endeavors to make the LS-DYNA code as complete,       *
+ * accurate and easy to use as possible.                      *
+ * Suggestions and comments are welcomed.  Please report any  *
+ * errors encountered in either the documentation or results  *
+ * immediately to LSTC through your site focus.               *
+ *                                                            *
+ * Copyright (C) 1990-2013                                    *
+ * by Livermore Software Technology Corp. (LSTC)              *
+ * All rights reserved                                        *
+ *                                                            *
+ ********  notice  ********  notice  ********  notice  ********
+
+ Beginning of keyword reader                                   02/19/15 15:50:44
+ contracting memory to           1 beginning of keyword reader
+ expanding   memory to       22080  
+ expanding   memory to     5266824  
+ expanding   memory to    20499324  
+ expanding   memory to    20529324  
+ expanding   memory to    20589324  
+ expanding   memory to    20609746  
+ expanding   memory to    24001434  
+ expanding   memory to    27380434  
+ expanding   memory to    27401550  
+
+ Open include file: ./nodes.dyn
+
+ Open include file: ./elems_pml.dyn
+
+ Open include file: ./bc.dyn
+ expanding   memory to    27422346  
+ expanding   memory to    27442346  
+ expanding   memory to    27462346  
+ expanding   memory to    27482346  
+ expanding   memory to    27502346  
+ expanding   memory to    27522346  
+ expanding   memory to    27542346  
+ expanding   memory to    27562346  
+ expanding   memory to    27582346  
+ expanding   memory to    27602346  
+ expanding   memory to    27622346  
+ expanding   memory to    27642346  
+ expanding   memory to    27662346  
+ expanding   memory to    27682346  
+ expanding   memory to    27702346  
+ expanding   memory to    27722346  
+ expanding   memory to    27742346  
+ expanding   memory to    27762346  
+ expanding   memory to    27782346  
+ expanding   memory to    27802346  
+ expanding   memory to    27822346  
+ expanding   memory to    27842346  
+ expanding   memory to    27862346  
+ expanding   memory to    27882346  
+ expanding   memory to    27902346  
+ expanding   memory to    27922346  
+ expanding   memory to    27942346  
+ expanding   memory to    27962346  
+ expanding   memory to    27982346  
+ expanding   memory to    28002346  
+ expanding   memory to    28022346  
+ expanding   memory to    28042346  
+
+ Open include file: ./loads.dyn
+ expanding   memory to    28085346  
+ expanding   memory to    28125346  
+ expanding   memory to    28165346  
+ expanding   memory to    28205346  
+ expanding   memory to    28245346  
+ expanding   memory to    28285346  
+ expanding   memory to    28325346  
+ expanding   memory to    29197522  
+ expanding   memory to    30069698  
+ expanding   memory to    39663634  
+ expanding   memory to    40535810  
+ expanding   memory to    55723310  
+ expanding   memory to    56595486  
+ expanding   memory to    57468662  
+ expanding   memory to    60961366  
+ expanding   memory to    60981366  
+ expanding   memory to    61001366  
+ expanding   memory to    61021366  
+ expanding   memory to    61041366  
+ expanding   memory to    61061366  
+ expanding   memory to    61081366  
+ expanding   memory to    61101366  
+ expanding   memory to    61121366  
+ expanding   memory to    61141366  
+ expanding   memory to    61161366  
+ expanding   memory to    61181366  
+ expanding   memory to    61246218  
+ expanding   memory to    61303070  
+ expanding   memory to    61529886  
+ expanding   memory to    62364606  
+ expanding   memory to    62386606  
+ expanding   memory to    62408606  
+ expanding   memory to    62430606  
+ expanding   memory to    62452606  
+ expanding   memory to    62474606  
+ expanding   memory to    62496606  
+ expanding   memory to    62518606  
+ expanding   memory to    62540606  
+ expanding   memory to    62562606  
+ expanding   memory to    62584606  
+ expanding   memory to    62606606  
+ expanding   memory to    62628606  
+ expanding   memory to    62650606  
+ expanding   memory to    62672606  
+ expanding   memory to    62694606  
+ expanding   memory to    62716606  
+ expanding   memory to    62738606  
+ expanding   memory to    62760606  
+ expanding   memory to    62782606  
+ expanding   memory to    62804606  
+ expanding   memory to    62826606  
+ expanding   memory to    62848606  
+ expanding   memory to    62870606  
+ expanding   memory to    62892606  
+ expanding   memory to    62914606  
+ expanding   memory to    62936606  
+ expanding   memory to    62958606  
+ expanding   memory to    62980606  
+ expanding   memory to    63615352  
+
+ Memory required to process keyword     :     63615352
+ contracting memory to           1 end of keyword reader
+
+ LS-DYNA will perform a structural only analysis 
+
+ TEST MESH (GAUSSIAN, PML, QSYM)                                         
+                         ls-dyna smp.78769 s            date 01/02/2013
+ expanding   memory to        5757 material, node and element data
+ expanding   memory to        5984 material added airbag porosity leakage 
+ contracting memory to        5984 material properties
+ expanding   memory to    11903799 element data for composite material
+ expanding   memory to    16433004 gradient of damage data
+ expanding   memory to    29089589 user control for contact interfaces
+ contracting memory to    29089569 for boundary cond. vectorization
+ expanding   memory to    29933319 arbitrary element numbering input
+ contracting memory to    29089569 thick shell int. pt. strain
+ expanding   memory to    30211649 spc cards
+ expanding   memory to   121618348 process element material data
+ expanding   memory to   121620354 load curve data
+ expanding   memory to   122027622 user_define_loading_set
+ expanding   memory to   122027830 regularize time history data
+ contracting memory to   122027622 rigidwall definitions
+ expanding   memory to   122913020 nodal constraint sets
+ expanding   memory to   128808586 contact interfaces
+ expanding   memory to   130553938 implicit contact 1
+ contracting memory to   128809586 contact segment data 1
+ expanding   memory to   138176114 contact segment data 3
+ contracting memory to   129680762 contact definition
+ expanding   memory to   133170790 rigid body
+ contracting memory to   129682552 contact friction
+ expanding   memory to   129682732 joints
+ contracting memory to   129682732 accelerometers
+ expanding   memory to   129682832 rigid bodies for disp. termination
+ contracting memory to   129682832 transformation to move nodes
+ expanding   memory to   131427184 interfac for file
+ contracting memory to   130555020 thermal expansion 0
+ expanding   memory to   130555032 flexible body 2
+ contracting memory to   130555032 implicit joints
+
+ S t o r a g e   a l l o c a t i o n   
+
+ Memory required to begin solution      :    138176114
+ Additional dynamically allocated memory:     47893583
+                                   Total:    186069697
+       1 t 0.0000E+00 dt 6.12E-07 flush i/o buffers            02/19/15 15:54:53
+       1 t 0.0000E+00 dt 6.12E-07 write d3plot file            02/19/15 15:54:53
+ 
+ *** termination time reached ***
+    4918 t 3.0004E-03 dt 6.10E-07 write d3dump01 file          02/19/15 16:28:45
+    4918 t 3.0004E-03 dt 6.10E-07 write d3plot file            02/19/15 16:28:45
+
+ N o r m a l    t e r m i n a t i o n                          02/19/15 16:28:45
+
+ S t o r a g e   a l l o c a t i o n   
+
+ Memory required to complete solution   :    138176114
+ Additional dynamically allocated memory:     47893590
+                                   Total:    186069704
+
+ T i m i n g   i n f o r m a t i o n
+                        CPU(seconds)   %CPU  Clock(seconds) %Clock
+  ----------------------------------------------------------------
+  Initialization ....... 2.4763E+02    5.76     2.4770E+02   10.86
+  Element processing ... 4.0358E+03   93.93     2.0202E+03   88.59
+  Binary databases ..... 2.1910E-01    0.01     1.0973E-01    0.00
+  ASCII database ....... 1.3018E+01    0.30     1.2292E+01    0.54
+  Contact algorithm .... 7.2717E-02    0.00     4.3975E-02    0.00
+  Contact entities ..... 0.0000E+00    0.00     0.0000E+00    0.00
+  Rigid bodies ......... 6.0753E-02    0.00     3.0358E-02    0.00
+  Implicit Nonlinear ... 0.0000E+00    0.00     0.0000E+00    0.00
+  Implicit Lin. Alg. ... 0.0000E+00    0.00     0.0000E+00    0.00
+  ----------------------------------------------------------------
+  T o t a l s            4.2968E+03  100.00     2.2804E+03  100.00
+
+ Problem time       =    3.0004E-03
+ Problem cycle      =      4918
+ Total CPU time     =      4297 seconds (   1 hours 11 minutes 37 seconds)
+ CPU time per zone cycle  =       975 nanoseconds
+ Clock time per zone cycle=       489 nanoseconds
+
+ Number of CPU's    2
+ NLQ used/max     384/  384
+ Start time   02/19/2015 15:50:44  
+ End time     02/19/2015 16:28:45  
+ Elapsed time    2281 seconds(   0 hours 38 min.  1 sec.) for    4918 cycles
+
+ N o r m a l    t e r m i n a t i o n                          02/19/15 16:28:45
