@@ -1,0 +1,184 @@
+      Date: 02/19/2015      Time: 14:55:39  
+
+     ___________________________________________________
+     |                                                 |
+     |  Livermore  Software  Technology  Corporation   |
+     |                                                 |
+     |  7374 Las Positas Road                          |
+     |  Livermore, CA 94551                            |
+     |  Tel: (925) 449-2500  Fax: (925) 449-2507       |
+     |  www.lstc.com                                   |
+     |_________________________________________________|
+     |                                                 |
+     |  LS-DYNA, A Program for Nonlinear Dynamic       |
+     |  Analysis of Structures in Three Dimensions     |
+     |  Version : smp s R6.1.1    Date: 01/02/2013     |
+     |  Revision: 78769           Time: 07:43:30       |
+     |                                                 |
+     |  Features enabled in this version:              |
+     |    Shared Memory Parallel                       |
+     |    Interactive Graphics                         |
+     |    ANSYS Database format                        |
+     |    ANSYS License (ANSYS140)                     |
+     |    MADYMO indirect coupling (7.2 or higer)      |
+     |                                                 |
+     |  Licensed to: Duke University - 081             |
+     |  Issued by  : LSTC_01062015                     |
+     |                                                 |
+     |  Platform   : Xeon64 System                     |
+     |  OS Level   : Linux 2.6.18                      |
+     |  Compiler   : Intel Fortran Compiler 10.1       |
+     |  Hostname   : farlow.egr.duke.edu               |
+     |  Precision  : Single precision (I4R4)           |
+     |  SVN Version: 78774                             |
+     |                                                 |
+     |  Unauthorized use infringes LSTC copyrights     |
+     |_________________________________________________|
+
+ Input file: gauss.dyn                                                               
+
+
+ The native file format       : 32-bit small endian
+ Memory size from default     :    20000000
+ expanding   memory to    20000000 starting ls-dyna
+
+ ********  notice  ********  notice  ********  notice  ********
+ *                                                            *
+ * This is the LS-DYNA Finite Element code.                   *
+ *                                                            *
+ * Neither LSTC nor the authors assume any responsibility for *
+ * the validity, accuracy, or applicability of any results    *
+ * obtained from this system. The user must verify his own    *
+ * results.                                                   *
+ *                                                            *
+ * LSTC endeavors to make the LS-DYNA code as complete,       *
+ * accurate and easy to use as possible.                      *
+ * Suggestions and comments are welcomed.  Please report any  *
+ * errors encountered in either the documentation or results  *
+ * immediately to LSTC through your site focus.               *
+ *                                                            *
+ * Copyright (C) 1990-2013                                    *
+ * by Livermore Software Technology Corp. (LSTC)              *
+ * All rights reserved                                        *
+ *                                                            *
+ ********  notice  ********  notice  ********  notice  ********
+
+ Beginning of keyword reader                                   02/19/15 14:55:39
+ contracting memory to           1 beginning of keyword reader
+ expanding   memory to       22040  
+ expanding   memory to      118234  
+ expanding   memory to      379234  
+ expanding   memory to      409234  
+ expanding   memory to      469234  
+ expanding   memory to      489498  
+ expanding   memory to      553942  
+ expanding   memory to      605942  
+ expanding   memory to      627058  
+
+ Open include file: ./nodes.dyn
+
+ Open include file: ./elems.dyn
+
+ Open include file: ./bc.dyn
+ expanding   memory to      647154  
+ expanding   memory to      667154  
+
+ Open include file: ./loads.dyn
+ expanding   memory to      710194  
+ expanding   memory to      738378  
+ expanding   memory to      893380  
+ expanding   memory to     1123472  
+ expanding   memory to     1152656  
+ expanding   memory to     1213020  
+ expanding   memory to     1235020  
+ expanding   memory to     1265102  
+
+ Memory required to process keyword     :      1265102
+ contracting memory to           1 end of keyword reader
+
+ LS-DYNA will perform a structural only analysis 
+
+ TEST MESH (GAUSSIAN, QSYM)                                              
+                         ls-dyna smp.78769 s            date 01/02/2013
+ expanding   memory to        2314 material, node and element data
+ expanding   memory to        2398 material added airbag porosity leakage 
+ contracting memory to        2398 material properties
+ expanding   memory to      176675 element data for composite material
+ expanding   memory to      253488 gradient of damage data
+ expanding   memory to      433537 user control for contact interfaces
+ contracting memory to      433517 for boundary cond. vectorization
+ expanding   memory to      445517 arbitrary element numbering input
+ contracting memory to      433517 thick shell int. pt. strain
+ expanding   memory to      475817 spc cards
+ expanding   memory to      777186 process element material data
+ expanding   memory to      779192 load curve data
+ expanding   memory to      806624 user_define_loading_set
+ expanding   memory to      806832 regularize time history data
+ contracting memory to      806624 rigidwall definitions
+ expanding   memory to      820908 nodal constraint sets
+ expanding   memory to      904922 contact interfaces
+ expanding   memory to      934104 implicit contact 1
+ contracting memory to      905922 contact segment data 1
+ expanding   memory to     1044195 contact segment data 3
+ contracting memory to      919013 contact definition
+ expanding   memory to      975491 rigid body
+ contracting memory to      919538 contact friction
+ expanding   memory to      919553 joints
+ contracting memory to      919553 accelerometers
+ expanding   memory to      937153 non-reflecting silent boundary 1
+ expanding   memory to      937253 rigid bodies for disp. termination
+ contracting memory to      937253 transformation to move nodes
+ expanding   memory to      965435 interfac for file
+ contracting memory to      951345 thermal expansion 0
+ expanding   memory to      951346 flexible body 2
+ contracting memory to      951346 implicit joints
+ expanding   memory to      999346 initialization phase
+
+ S t o r a g e   a l l o c a t i o n   
+
+ Memory required to begin solution      :      1265102
+ Additional dynamically allocated memory:       815360
+                                   Total:      2080462
+       1 t 0.0000E+00 dt 1.10E-06 flush i/o buffers            02/19/15 14:55:40
+       1 t 0.0000E+00 dt 1.10E-06 write d3plot file            02/19/15 14:55:40
+ 
+ *** termination time reached ***
+    1963 t 3.0003E-03 dt 1.53E-06 write d3dump01 file          02/19/15 14:55:43
+    1963 t 3.0003E-03 dt 1.53E-06 write d3plot file            02/19/15 14:55:43
+
+ N o r m a l    t e r m i n a t i o n                          02/19/15 14:55:43
+
+ S t o r a g e   a l l o c a t i o n   
+
+ Memory required to complete solution   :      1265102
+ Additional dynamically allocated memory:       815367
+                                   Total:      2080469
+
+ T i m i n g   i n f o r m a t i o n
+                        CPU(seconds)   %CPU  Clock(seconds) %Clock
+  ----------------------------------------------------------------
+  Initialization ....... 4.4529E-01    5.88     4.1961E-01   10.35
+  Element processing ... 6.8341E+00   90.18     3.4252E+00   84.45
+  Binary databases ..... 4.6521E-03    0.06     2.3730E-03    0.06
+  ASCII database ....... 2.7567E-01    3.64     1.9885E-01    4.90
+  Contact algorithm .... 1.1872E-02    0.16     6.3315E-03    0.16
+  Contact entities ..... 0.0000E+00    0.00     0.0000E+00    0.00
+  Rigid bodies ......... 6.9134E-03    0.09     3.4100E-03    0.08
+  Implicit Nonlinear ... 0.0000E+00    0.00     0.0000E+00    0.00
+  Implicit Lin. Alg. ... 0.0000E+00    0.00     0.0000E+00    0.00
+  ----------------------------------------------------------------
+  T o t a l s            7.5785E+00  100.00     4.0557E+00  100.00
+
+ Problem time       =    3.0003E-03
+ Problem cycle      =      1963
+ Total CPU time     =         8 seconds (   0 hours  0 minutes  8 seconds)
+ CPU time per zone cycle  =       302 nanoseconds
+ Clock time per zone cycle=       154 nanoseconds
+
+ Number of CPU's    2
+ NLQ used/max     384/  384
+ Start time   02/19/2015 14:55:39  
+ End time     02/19/2015 14:55:43  
+ Elapsed time       4 seconds(   0 hours  0 min.  4 sec.) for    1963 cycles
+
+ N o r m a l    t e r m i n a t i o n                          02/19/15 14:55:43
