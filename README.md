@@ -101,9 +101,9 @@ of the testing directories.
 
 Contributors
 ============
- * Mark Palmeri (mlp6@duke.edu)
- * Ningrui Li (nl91@duke.edu)
+ * Mark Palmeri (@mlp6)
+ * Ningrui Li (@Ningrui-Li)
  * Mallory Selzo (UNC-CH)
  * Chris Moore (chrisjmoore@unc.edu)
- * David Bradway (david.bradway@duke.edu)
- * Nick Bottenus (nbb@duke.edu)
+ * David Bradway (@davidbradway)
+ * Nick Bottenus (@nbottenus)
