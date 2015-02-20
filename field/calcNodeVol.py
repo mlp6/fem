@@ -180,7 +180,7 @@ for node in nodeElemDict:
         average = sum(Volumes)/len(Volumes)			#Calculates average volume around a node
         NODEVOLUME.write('%s \n' % average)		#writes the average volume to the node volume file and returns
     else:
-        print "No Volume Data for Node: %s" % nodeelem[0]
+        print("No Volume Data for Node: %s" % nodeelem[0])
 NODEVOLUME.close()
 nodeFile.close()
 elemFile.close()
