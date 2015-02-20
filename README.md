@@ -46,7 +46,8 @@ Installation
    submodule using ```git submodule init``` followed by ```git submodule
    update```.
 
- * All of the python scripts have help available using the ```--help``` flag.
+ * All of the python scripts require python >=2.7 and are python3 compliant.
+   All scripts have help available using the ```--help``` flag.
 
 
 Code Layout
