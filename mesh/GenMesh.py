@@ -140,7 +140,7 @@ def writeNodes(pos, nodefile, header_comment):
                 NODEFILE.write("%i,%.6f,%.6f,%.6f\n" % (NodeID, x, y, z))
     NODEFILE.write("*END\n")
     NODEFILE.close()
-    print("%i/%i nodes written to %s" % (NodeID, nodesTotal, nodefile))
+    print(("%i/%i nodes written to %s" % (NodeID, nodesTotal, nodefile)))
 
 
 def writeElems(numElem, partid, elefile, header_comment):
@@ -195,7 +195,7 @@ def writeElems(numElem, partid, elefile, header_comment):
         zplane += 1
     ELEMFILE.write("*END\n")
     ELEMFILE.close()
-    print("%i/%i elements written to %s" % (ElemID, elemTotal, elefile))
+    print(("%i/%i elements written to %s" % (ElemID, elemTotal, elefile)))
 
 
 def check_x0_y0(pos):
