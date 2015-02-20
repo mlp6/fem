@@ -59,7 +59,7 @@ def rm_tmp_file(nodefile_nocmt):
     try:
         os.remove(nodefile_nocmt)
     except OSError as e:
-        print('ERROR: %s - %s.' % (e.argsfilename, e.argsstrerror))
+        print(('ERROR: %s - %s.' % (e.argsfilename, e.argsstrerror)))
 
 def extractPlane(snic, axes, plane):
     '''

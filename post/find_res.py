@@ -73,9 +73,9 @@ def display_status(args):
     else:
         print_msg = 'in'
 
-    print('%s is %s the following %s subdirs in %s :' % (args.res, print_msg,
+    print(('%s is %s the following %s subdirs in %s :' % (args.res, print_msg,
                                                          args.sdir,
-                                                         args.simroot))
+                                                         args.simroot)))
 
 def walk_n_find(args):
     '''
@@ -87,10 +87,10 @@ def walk_n_find(args):
         if args.sdir in os.path.basename(root):
             if args.missing:
                 if args.res not in files:
-                    print(' %s' % root)
+                    print((' %s' % root))
             else:
                 if args.res in files:
-                    print(' %s' % root)
+                    print((' %s' % root))
 
 
 if __name__ == '__main__':
