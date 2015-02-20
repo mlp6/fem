@@ -97,7 +97,7 @@ def create_dat(args, nodout):
             else:
                 raw_data = line.split()
                 corrected_raw_data = correct_Enot(raw_data)
-                data.append(map(float, corrected_raw_data))
+                data.append(list(map(float, corrected_raw_data)))
 
     # close all open files
     dispout.close()
