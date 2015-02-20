@@ -19,11 +19,11 @@
  global x velocity..............   0.00000E+00
  global y velocity..............   0.00000E+00
  global z velocity..............   0.00000E+00
- cpu time per zone cycle............       273 nanoseconds
- average cpu time per zone cycle....       513 nanoseconds
- average clock time per zone cycle..       355 nanoseconds
+ cpu time per zone cycle............       307 nanoseconds
+ average cpu time per zone cycle....       611 nanoseconds
+ average clock time per zone cycle..       319 nanoseconds
 
- estimated total cpu time          =      2362 sec (       0 hrs 39 mins)
- estimated cpu time to complete    =      2120 sec (       0 hrs 35 mins)
- estimated total clock time        =      1709 sec (       0 hrs 28 mins)
- estimated clock time to complete  =      1468 sec (       0 hrs 24 mins)
+ estimated total cpu time          =      8669 sec (       2 hrs 24 mins)
+ estimated cpu time to complete    =      8428 sec (       2 hrs 20 mins)
+ estimated total clock time        =      4636 sec (       1 hrs 17 mins)
+ estimated clock time to complete  =      4398 sec (       1 hrs 13 mins)

@@ -1,4 +1,4 @@
-      Date: 02/19/2015      Time: 15:33:19  
+      Date: 02/19/2015      Time: 19:55:35  
 
      ___________________________________________________
      |                                                 |
@@ -63,7 +63,7 @@
  *                                                            *
  ********  notice  ********  notice  ********  notice  ********
 
- Beginning of keyword reader                                   02/19/15 15:33:19
+ Beginning of keyword reader                                   02/19/15 19:55:35
  contracting memory to           1 beginning of keyword reader
  expanding   memory to       22040  
  expanding   memory to     5266744  
@@ -181,48 +181,52 @@
  S t o r a g e   a l l o c a t i o n   
 
  Memory required to begin solution      :     66015001
- Additional dynamically allocated memory:     47893522
-                                   Total:    113908523
-       1 t 0.0000E+00 dt 6.12E-07 flush i/o buffers            02/19/15 15:37:18
-       1 t 0.0000E+00 dt 6.12E-07 write d3plot file            02/19/15 15:37:18
+ Additional dynamically allocated memory:     53126578
+                                   Total:    119141579
+       1 t 0.0000E+00 dt 6.12E-07 flush i/o buffers            02/19/15 19:59:32
+       1 t 0.0000E+00 dt 6.12E-07 write d3plot file            02/19/15 19:59:32
+    5000 t 3.0491E-03 dt 6.11E-07 flush i/o buffers            02/19/15 20:06:03
+   10000 t 6.1040E-03 dt 6.11E-07 flush i/o buffers            02/19/15 20:15:19
+   15000 t 9.1594E-03 dt 6.11E-07 flush i/o buffers            02/19/15 20:24:40
+   16375 t 9.9998E-03 dt 6.11E-07 write d3plot file            02/19/15 20:27:13
  
  *** termination time reached ***
-    4919 t 3.0002E-03 dt 6.11E-07 write d3dump01 file          02/19/15 15:47:12
-    4919 t 3.0002E-03 dt 6.11E-07 write d3plot file            02/19/15 15:47:12
+   16375 t 1.0000E-02 dt 6.11E-07 write d3dump01 file          02/19/15 20:27:16
+   16375 t 1.0000E-02 dt 6.11E-07 write d3plot file            02/19/15 20:27:16
 
- N o r m a l    t e r m i n a t i o n                          02/19/15 15:47:13
+ N o r m a l    t e r m i n a t i o n                          02/19/15 20:27:16
 
  S t o r a g e   a l l o c a t i o n   
 
  Memory required to complete solution   :     66015001
- Additional dynamically allocated memory:     47893529
-                                   Total:    113908530
+ Additional dynamically allocated memory:     53126585
+                                   Total:    119141586
 
  T i m i n g   i n f o r m a t i o n
                         CPU(seconds)   %CPU  Clock(seconds) %Clock
   ----------------------------------------------------------------
-  Initialization ....... 2.3790E+02   16.82     2.3798E+02   28.57
-  Element processing ... 1.1633E+03   82.24     5.8243E+02   69.93
-  Binary databases ..... 3.4018E-01    0.02     1.9693E-01    0.02
-  ASCII database ....... 1.2841E+01    0.91     1.2240E+01    1.47
-  Contact algorithm .... 7.7103E-02    0.01     4.6407E-02    0.01
+  Initialization ....... 2.3573E+02    3.51     2.3568E+02   12.41
+  Element processing ... 6.4254E+03   95.65     1.6149E+03   85.01
+  Binary databases ..... 9.0461E-01    0.01     2.2665E-01    0.01
+  ASCII database ....... 5.4318E+01    0.81     4.8584E+01    2.56
+  Contact algorithm .... 6.8653E-01    0.01     2.0933E-01    0.01
   Contact entities ..... 0.0000E+00    0.00     0.0000E+00    0.00
-  Rigid bodies ......... 6.1826E-02    0.00     3.0854E-02    0.00
+  Rigid bodies ......... 4.5508E-01    0.01     1.1236E-01    0.01
   Implicit Nonlinear ... 0.0000E+00    0.00     0.0000E+00    0.00
   Implicit Lin. Alg. ... 0.0000E+00    0.00     0.0000E+00    0.00
   ----------------------------------------------------------------
-  T o t a l s            1.4145E+03  100.00     8.3292E+02  100.00
+  T o t a l s            6.7175E+03  100.00     1.8997E+03  100.00
 
- Problem time       =    3.0002E-03
- Problem cycle      =      4919
- Total CPU time     =      1415 seconds (   0 hours 23 minutes 35 seconds)
- CPU time per zone cycle  =       283 nanoseconds
- Clock time per zone cycle=       143 nanoseconds
+ Problem time       =    1.0000E-02
+ Problem cycle      =     16375
+ Total CPU time     =      6717 seconds (   1 hours 51 minutes 57 seconds)
+ CPU time per zone cycle  =       469 nanoseconds
+ Clock time per zone cycle=       120 nanoseconds
 
- Number of CPU's    2
+ Number of CPU's    4
  NLQ used/max     384/  384
- Start time   02/19/2015 15:33:19  
- End time     02/19/2015 15:47:13  
- Elapsed time     834 seconds(   0 hours 13 min. 54 sec.) for    4919 cycles
+ Start time   02/19/2015 19:55:35  
+ End time     02/19/2015 20:27:16  
+ Elapsed time    1901 seconds(   0 hours 31 min. 41 sec.) for   16375 cycles
 
- N o r m a l    t e r m i n a t i o n                          02/19/15 15:47:13
+ N o r m a l    t e r m i n a t i o n                          02/19/15 20:27:16
