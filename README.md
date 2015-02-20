@@ -96,6 +96,8 @@ Testing
 There are test scripts / models available for code validation and future
 development ([test/README.md](test/README.md)).  Please use existing tests if
 fixing bug / editing existing features, or create new tests for new features.
+Ipython notebooks documenting testing, performance, etc. are also saved in some
+of the testing directories.
 
 Contributors
 ============
@@ -103,3 +105,5 @@ Contributors
  * Ningrui Li (nl91@duke.edu)
  * Mallory Selzo (UNC-CH)
  * Chris Moore (chrisjmoore@unc.edu)
+ * David Bradway (david.bradway@duke.edu)
+ * Nick Bottenus (nbb@duke.edu)
