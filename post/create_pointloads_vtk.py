@@ -90,6 +90,8 @@ def parse_cli():
                         default=None, action='store_true')
     parser.add_argument("--loadout", help="name of output .vts file.",
                         default="nodeLoads.vts")
+    parser.add_argument("--numElem", help="number of elements (ints) in each dimension "
+                        "(x, y, z)", type=int, nargs='+', default=(None, None, None))
     args = parser.parse_args()
 
     return args
@@ -166,7 +168,7 @@ def writeNodePositions(loadout, args, filetype):
     loadout file. returns array containing number of
     nodes (index = 0) and number of elements (index = 1).
     '''
-    print('Writing node positions')
+    print 'Writing node positions'
     nodes = open(args.nodefile, 'r')
 
     headerWritten = False
@@ -184,7 +186,6 @@ def writeNodePositions(loadout, args, filetype):
         # when number of elements are defined in node file header.
 
         # cannot get dimension data from nodefile header or nodes are nonlinear
-
         if not headerWritten:
             if args.nonlinear:
                 # get max node ID and coordinates of padding node
@@ -227,23 +228,32 @@ def writeNodePositions(loadout, args, filetype):
                     dimensionsEnd = line.find(']')
                     dimensions = line[dimensionsStart+1:dimensionsEnd].split(', ')
                     dimensions = [int(x) for x in dimensions]
-                    numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
-                    numElems = dimensions[0]*dimensions[1]*dimensions[2]
+		else:
+		    if args.numElem[0] == None:
+			import sys
+		    	print "Info about # of elements in each dimension not found in node file header."
+		        print "Re-run this script with input argument --numElem to give me this info."
+	                sys.exit("ERROR: # of elements in each dimension could not be found. Use --numElem.")
+		    else:
+		    	dimensions = args.numElem
 
-                    # writing volume dimensions to .vts file, and finishing up header
-                    if filetype is 'vts':
-                        loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' \
-                                          % (dimensions[0], dimensions[1], dimensions[2]))
-                        loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
-                                          % (dimensions[0], dimensions[1], dimensions[2]))
-                    if filetype is 'vtu':
-                            loadout.write('\t<UnstructuredGrid>\n')
-                            loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
+		numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
+                numElems = dimensions[0]*dimensions[1]*dimensions[2]
+
+                # writing volume dimensions to .vts file, and finishing up header
+                if filetype is 'vts':
+                    loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' \
+                                      % (dimensions[0], dimensions[1], dimensions[2]))
+                    loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
+                                      % (dimensions[0], dimensions[1], dimensions[2]))
+                if filetype is 'vtu':
+                    loadout.write('\t<UnstructuredGrid>\n')
+                    loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
                                               % (numNodes, numElems))
 
-                    loadout.write('\t\t\t<Points>\n')
-                    loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
-                    headerWritten = True
+                loadout.write('\t\t\t<Points>\n')
+                loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
+                headerWritten = True
 
         # reading node position data from nodefile
         if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
@@ -271,7 +281,7 @@ def writeNodeIDs(loadout, args, numNodes):
     writes node IDs to loadout file
     '''
 
-    print('Writing node IDs')
+    print 'Writing node IDs'
     loadout.write('\t\t\t\t<DataArray type="Float32" Name="node_id" format="ascii">\n')
     for i in range(1, numNodes+1):
         loadout.write('\t\t\t\t\t%.1f\n' % i)
@@ -281,7 +291,7 @@ def writePointLoads(loadout, args, numNodes):
     '''
     writes point loads to loadout file
     '''
-    print('Writing point loads')
+    print 'Writing point loads'
     loadout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" Name="loads" format="ascii">\n')
 
     # note that PointLoads file only list nodes with nonzero loads,
@@ -310,7 +320,7 @@ def writeCells(loadout, args):
     '''
     writes cell connectivity and types to loadout file
     '''
-    print('Writing cells')
+    print 'Writing cells'
     loadout.write('\t\t\t<Cells>\n')
 
     # unfortunately need to loop through entire elements file 3 separate times
@@ -366,7 +376,7 @@ def writeCellData(loadout, args):
     '''
     writes cell part IDs
     '''
-    print('Writing cell data')
+    print 'Writing cell data'
 
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="part id" Format="ascii">\n')
     elems = open(args.elefile, 'r')
