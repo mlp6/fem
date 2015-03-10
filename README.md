@@ -7,13 +7,21 @@ Pre/Post Processing
 All software in this repository is licensed under the Apache v2.0 license, as
 detailed in the LICENSE file.
 
-If you are using these simulation tools in work that you publish, then please
+If you are using the FEM simulation tools in work that you publish, then please
 consider citing the following manuscript:
 
 [Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR.  "A
 Finite-Element Method Model of Soft Tissue Response to Impulsive Acoustic
 Radiation Force," IEEE UFFC, 52(10): 1699-1712,
 2005.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/)
+
+Also please cite the following manuscript if you use Field II:
+
+[J.A. Jensen and N. B. Svendsen: Calculation of pressure fields from
+arbitrarily shaped, apodized, and excited ultrasound transducers, IEEE Trans.
+Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
+1992.](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123)
+
 
 Installation
 ============

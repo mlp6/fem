@@ -15,7 +15,7 @@ EXAMPLE
 create_disp_dat.py
 
 =======
-Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
+Copyright 2015 Mark L. Palmeri (mlp6@duke.edu) and Ningrui Li (nl91@duke.edu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -29,10 +29,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
 
 
 def main():
@@ -63,6 +59,7 @@ def main():
 
     if (args.vtk):
         create_vtk(args, nodout)
+
 
 def create_dat(args, nodout):
     import sys
@@ -103,6 +100,7 @@ def create_dat(args, nodout):
     dispout.close()
     nodout.close()
 
+
 def create_vtk(args, nodout):
     # this uses the StructuredGrid VTK XML format outlined here:
     # http://vtk.org/VTK/img/file-formats.pdf
@@ -127,8 +125,8 @@ def create_vtk(args, nodout):
     numNodes = 0
     # x, y, and z hold the range (min, max) of values in each dimension.
     # they also hold the step values/differences between consecutive
-    # values in each dimension. This is used to calculate the number of elements
-    # going in each dimension.
+    # values in each dimension. This is used to calculate the number of
+    # elements going in each dimension.
     x = []
     y = []
     z = []
@@ -141,7 +139,8 @@ def create_vtk(args, nodout):
         if 'n o d a l' in line:
             raw_data = line.split()
             # get time value of timestep
-            # consider using regular expressions rather than hardcoding this value?
+            # consider using regular expressions rather than hardcoding this
+            # value?
             timestep_values.append(str(float(raw_data[28])))
         if 'nodal' in line:
 
@@ -157,11 +156,12 @@ def create_vtk(args, nodout):
             sys.stdout.flush()
             continue
         if timestep_read:
-            if line.startswith('\n'):  #done reading a time step
+            if line.startswith('\n'):  # done reading a time step
                 timestep_read = False
-                # get last read coordinates - now have range of x, y, z coordinates
-                # as well as x, y, z steps. this allows us to get number of steps in
-                # x, y, z directions, which is necessary to construct the VTK file.
+                # get last read coordinates - now have range of x, y, z
+                # coordinates as well as x, y, z steps. this allows us to get
+                # number of steps in x, y, z directions, which is necessary to
+                # construct the VTK file.
 
                 if firstStep:
                     x.append(float(lastReadCoords[0]))
@@ -178,12 +178,11 @@ def create_vtk(args, nodout):
                 disp_displace.close()
 
                 createVTKFile(args, x, y, z, numNodes, timestep_count)
-
-
             else:
                 # reading position and displacement data inside a timestep
                 raw_data = line.split()
-                # correcting for cases when the E is dropped from number formatting
+                # correcting for cases when the E is dropped from number
+                # formatting
                 raw_data = correct_Enot(raw_data)
                 raw_data = [str(float(i)) for i in raw_data]
                 # get minimum range of x, y, z coordinates
@@ -197,7 +196,7 @@ def create_vtk(args, nodout):
                 # timesteps.
                 if firstStep:
                     if not firstLine:
-                    # check to see if we have x, y, z differences
+                        # check to see if we have x, y, z differences
                         xStep = float(lastReadCoords[0])-float(raw_data[10])
                         if xStep != 0.0 and not xStepFound:
                             x.append(xStep)
@@ -213,12 +212,13 @@ def create_vtk(args, nodout):
                             z.append(zStep)
                             zStepFound = True
 
-                    # save the position coordinates in case they are the last ones to be read.
-                    # this is useful for getting the range of x, y, z coordinates
+                    # save the position coordinates in case they are the last
+                    # ones to be read.  this is useful for getting the range of
+                    # x, y, z coordinates
                     lastReadCoords = raw_data[10:13]
                     # write positions to temporary file. since positions
-                    # are the same for all timesteps, this only needs to be done once.
-                    # same with number of nodes.
+                    # are the same for all timesteps, this only needs to be
+                    # done once.  same with number of nodes.
                     disp_position.write(' '.join(raw_data[10:13])+'\n')
                     numNodes += 1
 
@@ -228,14 +228,13 @@ def create_vtk(args, nodout):
                 # write displacements to temporary file
                 disp_displace.write(' '.join(raw_data[1:4])+'\n')
 
-
     # writing last timestep file
     disp_displace.close()
     createVTKFile(args, x, y, z, numNodes, timestep_count)
     sys.stdout.write('\n')
     sys.stdout.flush()
-    # time dependence! look at .pvd file stucture for instructions on how to create this.
-    # here is an example of the .pvd file format:
+    # time dependence! look at .pvd file stucture for instructions on how to
+    # create this.  here is an example of the .pvd file format:
     # http://public.kitware.com/pipermail/paraview/2008-August/009062.html
     createPVDFile(args, timestep_values)
 
@@ -244,6 +243,8 @@ def create_vtk(args, nodout):
     import os
     os.remove('disp_temp.txt')
     os.remove('pos_temp.txt')
+
+
 def parse_cli():
     '''
     parse command-line interface arguments
@@ -259,7 +260,8 @@ def parse_cli():
                         default="nodout")
     parser.add_argument("--dispout", help="name of the binary displacement "
                         "output file", default="disp.dat")
-    parser.add_argument("--dat", help="create a binary file", action='store_true')
+    parser.add_argument("--dat", help="create a binary file",
+                        action='store_true')
     parser.add_argument("--vtk", help="create a vtk file", action='store_true')
     args = parser.parse_args()
 
@@ -312,6 +314,7 @@ def process_timestep_data(data, outfile):
         for i in [0, 1, 2, 3]
         for j in range(len(data))]
 
+
 def correct_Enot(raw_data):
     '''
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
@@ -323,10 +326,11 @@ def correct_Enot(raw_data):
         raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]', 'E-100', raw_data[i])
     return raw_data
 
+
 def createVTKFile(args, x, y, z, numNodes, timestep):
     '''
-    creates .vts file for visualizing the displacement data during a single timestep
-    in Paraview.
+    creates .vts file for visualizing the displacement data during a single
+    timestep in Paraview.
     '''
     import os
     # quick check to make sure file extension is correct
@@ -337,7 +341,7 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
     # open .vts file for writing)
     if not os.path.exists(fileName):
         os.makedirs(fileName)
-    dispout = open(os.path.join(fileName,fileName+str(timestep)+'.vts'), 'w')
+    dispout = open(os.path.join(fileName, fileName+str(timestep)+'.vts'), 'w')
 
     # writing the VTK file outline
     dispout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
@@ -376,11 +380,12 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
 
     dispout.close()
 
+
 def createPVDFile(args, timestep_values):
     '''
-    creates .pvd file that encompasses displacement for all timesteps.
-    The .pvd file can be loaded into Paraview, and the timesteps can be scrolled through
-    using the time slider bar.
+    creates .pvd file that encompasses displacement for all timesteps.  The
+    .pvd file can be loaded into Paraview, and the timesteps can be scrolled
+    through using the time slider bar.
     '''
     import os
     # quick check to make sure file extension is correct
@@ -391,7 +396,7 @@ def createPVDFile(args, timestep_values):
     # open .pvd file for writing)
     if not os.path.exists(fileName):
         os.makedirs(fileName)
-    dispout = open(os.path.join(fileName,fileName+'.pvd'), 'w')
+    dispout = open(os.path.join(fileName, fileName+'.pvd'), 'w')
     dispout.write('<VTKFile type="Collection" version="0.1">\n')
     dispout.write('\t<Collection>\n')
 

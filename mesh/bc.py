@@ -145,6 +145,7 @@ def main():
     if opts.nonreflect:
         write_nonreflecting(BCFILE, segID)
 
+    BCFILE.write('*END\n')
     BCFILE.close()
 
 
@@ -263,7 +264,6 @@ def write_nonreflecting(BCFILE, segID):
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
     for i in range(1, segID):
         BCFILE.write('%i,0.0,0.0\n' % i)
-    BCFILE.write('*END\n')
 
 
 def apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis, axmin, axmax,

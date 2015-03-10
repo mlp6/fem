@@ -1,6 +1,0 @@
-
-*INCLUDE
-./nodes.dyn
-*INCLUDE
-./elems.dyn
-*END
