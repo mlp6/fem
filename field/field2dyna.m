@@ -1,28 +1,31 @@
-function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,ElemName,ForceNonlinear)
-% function []=field2dyna(NodeName,alpha,Fnum,focus,Frequency,Transducer,Impulse,ElemName,ForceNonlinear)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, ElemName, ForceNonlinear)
+% function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, ElemName, ForceNonlinear)
+%
 % INPUT:
-% NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
-% be a comma-delimited file with header/footer lines that
-% start with *
-% alpha - 0.5, 1.0, etc. (dB/cm/MHz)
-% Fnum - F/# (e.g. 1.3)
-% focus - [x y z] (m) "Field" coordinates
-% Frequency - excitation frequency (MHz)
-% Transducer (string) - 'vf105','vf73'
-% Impulse (string) - 'gaussian','exp'
-% ElemName (string) - file name to read elements from (default: elems.dyn);
-% like node file, needs to be comma-delimited.
-% ForceNonlinear(int) - optional input argument. Set as 1 if you want to
-% force nodal volumes to be calculated.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
+%                       be a comma-delimited file with header/footer lines that
+%                       start with '*'
+%   alpha - 0.5, 1.0, etc. (dB/cm/MHz)
+%   Fnum - F/# (e.g. 1.3)
+%   focus - [x y z] (m) "Field" coordinates
+%   Frequency - excitation frequency (MHz)
+%   Transducer (string) - 'vf105','vf73'
+%   Impulse (string) - 'gaussian','exp'
+%   ElemName (string) - file name to read elements from (default: elems.dyn);
+%                       like node file, needs to be comma-delimited.
+%   ForceNonlinear(int) - optional input argument. Set as 1 if you want to
+%                         force nodal volumes to be calculated.
+%
 % OUTPUT:
-% dyna_ispta*.mat file is saved to CWD
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   dyna-I-*.mat file is saved to CWD and filename string returned
+%
 % EXAMPLE:
-% field2dyna('nodes.dyn',0.5,1.3,[0 0 0.02],7.2,'vf105','gaussian', 12,...
-% 'elems.dyn', 1);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% dynaImatfile = field2dyna('nodes.dyn', 0.5, 1.3, [0 0 0.02], 7.2, 'vf105', 'gaussian', ...
+%                            12, 'elems.dyn', 1);
+%
+% Mark Palmeri
+% mlp6@duke.edu
+% 2015-03-17
 
 measurementPointsandNodes = read_mpn(NodeName);
 
@@ -56,7 +59,9 @@ FIELD_PARAMS.samplingFrequency = 200e6;
 [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
 
 % save intensity file
-eval(sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS',Frequency,Fnum,focus(3),alpha));
+dynaImat = sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS', ...
+                    Frequency, Fnum, focus(3), alpha);
+save(dynaImat, 'intensity' 'FIELD_PARAMS');
 
 % check if non-uniform force scaling must be done
 isUniform = checkUniform(measurementPointsandNodes(:,2:4));
