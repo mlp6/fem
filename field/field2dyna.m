@@ -59,8 +59,7 @@ FIELD_PARAMS.samplingFrequency = 200e6;
 [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
 
 % save intensity file
-dynaImat = sprintf('save dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat intensity FIELD_PARAMS', ...
-                    Frequency, Fnum, focus(3), alpha);
+dynaImat = sprintf('dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat', Frequency, Fnum, focus(3), alpha);
 save(dynaImat, 'intensity', 'FIELD_PARAMS');
 
 % check if non-uniform force scaling must be done
