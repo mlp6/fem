@@ -166,7 +166,7 @@ def writeNodePositions(loadout, args, filetype):
     loadout file. returns array containing number of
     nodes (index = 0) and number of elements (index = 1).
     '''
-    print('Writing node positions')
+    print 'Writing node positions'
     nodes = open(args.nodefile, 'r')
 
     headerWritten = False
@@ -184,7 +184,6 @@ def writeNodePositions(loadout, args, filetype):
         # when number of elements are defined in node file header.
 
         # cannot get dimension data from nodefile header or nodes are nonlinear
-
         if not headerWritten:
             if args.nonlinear:
                 # get max node ID and coordinates of padding node
@@ -221,25 +220,39 @@ def writeNodePositions(loadout, args, filetype):
                 headerWritten = True
 
             else:
-                if 'numElem=' in line:
-                    # parse dimensions from node file header
-                    dimensionsStart = line.find('[')
-                    dimensionsEnd = line.find(']')
-                    dimensions = line[dimensionsStart+1:dimensionsEnd].split(', ')
-                    dimensions = [int(x) for x in dimensions]
+                if '$' in line:
+                    if 'numElem=' in line:
+                        # parse dimensions from node file header
+                        dimensionsStart = line.find('[')
+                        dimensionsEnd = line.find(']')
+                        dimensions = line[dimensionsStart+1:dimensionsEnd].split(', ')
+                        dimensions = [int(x) for x in dimensions]
+                        foundDimensions = True
+                    else:
+                        foundDimensions = False
+                else:
+                    if args.numElem[0] == None:
+                        import sys
+                        print "Info about # of elements in each dimension not found in node file header."
+                        print "Re-run this script with input argument --numElem to give me this info."
+                        sys.exit("ERROR: # of elements in each dimension could not be found. Use --numElem.")
+                    else:
+                        dimensions = args.numElem
+                
+                if foundDimensions:
                     numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
                     numElems = dimensions[0]*dimensions[1]*dimensions[2]
 
                     # writing volume dimensions to .vts file, and finishing up header
                     if filetype is 'vts':
                         loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' \
-                                          % (dimensions[0], dimensions[1], dimensions[2]))
+                                      % (dimensions[0], dimensions[1], dimensions[2]))
                         loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
-                                          % (dimensions[0], dimensions[1], dimensions[2]))
+                                      % (dimensions[0], dimensions[1], dimensions[2]))
                     if filetype is 'vtu':
-                            loadout.write('\t<UnstructuredGrid>\n')
-                            loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
-                                              % (numNodes, numElems))
+                        loadout.write('\t<UnstructuredGrid>\n')
+                        loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
+                                      % (numNodes, numElems))
 
                     loadout.write('\t\t\t<Points>\n')
                     loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
