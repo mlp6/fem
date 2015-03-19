@@ -283,7 +283,7 @@ def apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis, axmin, axmax,
     (elems, structElemIDs) = CS.findStructElemIDs(pmlfile,
                                                   structNodeIDs)
 
-    CS.write_struct_elems('elems_pml.dyn', pml_partID, elems, structNodeIDs,
+    CS.write_struct_elems(pmlfile, pml_partID, elems, structNodeIDs,
                           structElemIDs)
 
 
