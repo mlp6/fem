@@ -16,21 +16,21 @@ int main () {
     fstream dispin ("disp.dat", ios::in | ios::binary);
     fstream dispout ("disp_scaled.dat", ios::out | ios::binary);
 
-    for (int count=0; count < 7; count++) {
-        dispin.read((char*)&value, wordSize);
-        // cout << "Value: " << value << '\n';
-
+    while (dispin.read((char*)&value, wordSize)) {
         if (count == 0) {
             NUM_NODES = (int) value;
             dispout.write((char*)&value, wordSize);
-            cout << "Number of nodes: " << NUM_NODES << '\n';
+            // cout << "Number of nodes: " << NUM_NODES << '\n';
+            count++;
             }
         else if (count < (headerCount + NUM_NODES)) {
             dispout.write((char*)&value, wordSize);
+            count++;
             }
         else {
             value *= 0.1;
             dispout.write((char*)&value, wordSize);
+            count++;
         }
     }
 
