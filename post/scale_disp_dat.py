@@ -15,6 +15,7 @@ with open('disp.dat', 'rb') as dispin:
             value = struct.unpack('f', d)
             if count == 0:
                 NUM_NODES = value[0]
+                count += 1
             elif count < (headerCount+NUM_NODES):
                 dispout.write(struct.pack('f', value[0]))
                 count += 1
