@@ -66,7 +66,13 @@ int main (int argc, char **argv) {
         else {
             value *= 0.1;
             dispout.write((char*)&value, wordSize);
-            count++;
+            // reset the counter if we've completed a time step
+            if (count == (headerCount + NUM_NODES*4 - 1)) {
+                count = headerCount;
+            }
+            else {
+                count++;
+            }
         }
     }
 
