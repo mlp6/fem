@@ -272,8 +272,17 @@ def generate_header(data, outfile):
     """
     generate headers from data matrix of first time step
     """
+    ts_count = count_timesteps(outfile)
+    header = {'numnodes': len(data),
+              'numdims': 4,
+              'numtimesteps' : ts_count
+              }
+
+    return header
+
+
+def count_timesteps(outfile):
     import re
-    header = {'numnodes': len(data), 'numdims': 4}
     ts_count = 0
     t = re.compile('time')
     if outfile.name.endswith('gz'):
@@ -281,15 +290,11 @@ def generate_header(data, outfile):
         n = gzip.open(outfile.name)
     else:
         n = open(outfile.name)
-
     with n as f:
         for line in f:
             if t.search(line):
                 ts_count += 1
-    # the re.search detects 1 extra line, so subtract 1
-    header['numtimesteps'] = ts_count - 1
-
-    return header
+    return ts_count
 
 
 def write_headers(outfile, header):
