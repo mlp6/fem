@@ -273,7 +273,7 @@ def generate_header(data, outfile):
     generate headers from data matrix of first time step
     """
     import re
-    header = {'numnodes': data.__len__(), 'numdims': 4}
+    header = {'numnodes': len(data), 'numdims': 4}
     ts_count = 0
     t = re.compile('time')
     if outfile.name.endswith('gz'):
