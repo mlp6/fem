@@ -310,7 +310,10 @@ def write_headers(outfile, header):
     """
     import struct
     outfile.write(struct.pack('fff', header['numnodes'],
-                              header['numdims'], header['numtimesteps']))
+                                     header['numdims'],
+                              header['numtimesteps']
+                              )
+                  )
 
 
 def process_timestep_data(data, outfile):
