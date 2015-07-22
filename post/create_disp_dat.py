@@ -41,7 +41,7 @@ def main():
     args = parse_cli()
 
     # default to make a binary file if output file type isn't indicated
-    if (not args.vtk and not args.dat):
+    if not args.vtk and not args.dat:
         args.dat = True
 
     # open nodout file
@@ -54,10 +54,10 @@ def main():
         nodout = open(args.nodout, 'r')
 
     # create output file
-    if (args.dat):
+    if args.dat:
         create_dat(args, nodout)
 
-    if (args.vtk):
+    if args.vtk:
         create_vtk(args, nodout)
 
 
@@ -73,7 +73,7 @@ def create_dat(args, nodout):
     for line in nodout:
         if 'nodal' in line:
             timestep_read = True
-            timestep_count = timestep_count + 1
+            timestep_count += 1
             if timestep_count == 1:
                 sys.stdout.write('Time Step: ')
                 sys.stdout.flush()
@@ -148,7 +148,7 @@ def create_vtk(args, nodout):
             disp_displace = open('disp_temp.txt', 'w')
 
             timestep_read = True
-            timestep_count = timestep_count + 1
+            timestep_count += 1
             if timestep_count == 1:
                 sys.stdout.write('Time Step: ')
                 sys.stdout.flush()
@@ -246,9 +246,9 @@ def create_vtk(args, nodout):
 
 
 def parse_cli():
-    '''
+    """
     parse command-line interface arguments
-    '''
+    """
     import argparse
 
     parser = argparse.ArgumentParser(description="Generate disp.dat "
@@ -269,13 +269,11 @@ def parse_cli():
 
 
 def generate_header(data, outfile):
-    '''
+    """
     generate headers from data matrix of first time step
-    '''
+    """
     import re
-    header = {}
-    header['numnodes'] = data.__len__()
-    header['numdims'] = 4  # node ID, x-val, y-val, z-val
+    header = {'numnodes': data.__len__(), 'numdims': 4}
     ts_count = 0
     t = re.compile('time')
     if outfile.name.endswith('gz'):
@@ -287,7 +285,7 @@ def generate_header(data, outfile):
     with n as f:
         for line in f:
             if t.search(line):
-                ts_count = ts_count + 1
+                ts_count += 1
     # the re.search detects 1 extra line, so subtract 1
     header['numtimesteps'] = ts_count - 1
 
@@ -295,19 +293,19 @@ def generate_header(data, outfile):
 
 
 def write_headers(outfile, header):
-    '''
+    """
     write binary header information to reformat things on read downstream
     'header' is a dictionary containing the necessary information
-    '''
+    """
     import struct
     outfile.write(struct.pack('fff', header['numnodes'],
                               header['numdims'], header['numtimesteps']))
 
 
 def process_timestep_data(data, outfile):
-    '''
+    """
     operate on each time step data row
-    '''
+    """
     import struct
     # write all node IDs, then x-val, then y-val, then z-val
     [outfile.write(struct.pack('f', data[j][i]))
@@ -316,11 +314,11 @@ def process_timestep_data(data, outfile):
 
 
 def correct_Enot(raw_data):
-    '''
+    """
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
-    '''
+    """
     import re
     for i in range(len(raw_data)):
         raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]', 'E-100', raw_data[i])
@@ -328,13 +326,13 @@ def correct_Enot(raw_data):
 
 
 def createVTKFile(args, x, y, z, numNodes, timestep):
-    '''
+    """
     creates .vts file for visualizing the displacement data during a single
     timestep in Paraview.
-    '''
+    """
     import os
     # quick check to make sure file extension is correct
-    if ('.' in args.dispout):
+    if '.' in args.dispout:
         fileName = args.dispout[:args.dispout.find('.')]
     else:
         fileName = args.dispout
@@ -382,14 +380,14 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
 
 
 def createPVDFile(args, timestep_values):
-    '''
+    """
     creates .pvd file that encompasses displacement for all timesteps.  The
     .pvd file can be loaded into Paraview, and the timesteps can be scrolled
     through using the time slider bar.
-    '''
+    """
     import os
     # quick check to make sure file extension is correct
-    if ('.' in args.dispout):
+    if '.' in args.dispout:
         fileName = args.dispout[:args.dispout.find('.')]
     else:
         fileName = args.dispout
