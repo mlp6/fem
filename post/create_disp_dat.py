@@ -45,13 +45,8 @@ def main():
         args.dat = True
 
     # open nodout file
-    if args.nodout.endswith('gz'):
-        import gzip
-        print("Extracting gzip-compressed data . . .\n")
-        nodout = gzip.open(args.nodout, 'r')
-    else:
-        print("Extracting data . . .\n")
-        nodout = open(args.nodout, 'r')
+    print("Extracting data . . .\n")
+    nodout = open(args.nodout, 'r')
 
     # create output file
     if args.dat:
@@ -93,8 +88,12 @@ def create_dat(args, nodout):
                 process_timestep_data(data, dispout)
             else:
                 raw_data = line.split()
-                corrected_raw_data = correct_Enot(raw_data)
-                data.append(list(map(float, corrected_raw_data)))
+                try:
+                    raw_data = [float(x) for x in raw_data]
+                except ValueError:
+                    raw_data = correct_Enot(raw_data)
+                    raw_data = [float(x) for x in raw_data]
+                data.append(list(raw_data))
 
     # close all open files
     dispout.close()
@@ -291,12 +290,7 @@ def count_timesteps(outfile):
     import re
     ts_count = 0
     t = re.compile('time')
-    if outfile.endswith('gz'):
-        import gzip
-        n = gzip.open(outfile)
-    else:
-        n = open(outfile)
-    with n as f:
+    with open(outfile, 'r') as f:
         for line in f:
             if t.search(line):
                 ts_count += 1
