@@ -276,7 +276,7 @@ def count_timesteps(outfile):
     :param outfile:
     :return: ts_count
     """
-    ts_count = 0
+    ts_count = -1  # start at -1 since there is one extra instance of 'time' in the nodout file
     with open(outfile, 'r') as f:
         for line in f:
             if 'time' in line:
