@@ -1,8 +1,9 @@
 '''
 create_res_sim_mat.py
 
-Create res_sim.mat file from disp.dat (This was originally called
-from StructPost, but now is a stand-alone Python script.)
+create res_sim.mat file from disp.dat
+
+EXAMPLE: python create_res_sim_mat.py --dynadeck desk.dyn
 
 Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
 
@@ -19,27 +20,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
-
+# TODO: integrate createsimres.m functionality into this script
 
 def main():
     import os
     import sys
     import fem_mesh
 
-    if sys.version < '2.7':
-        sys.exit("ERROR: Requires Python >= v2.7")
-
     args = read_cli()
+
+    if args.legacynodes:
+        legacynodes = 'true'
+    else:
+        legacynodes = 'false'
 
     mat_tmp_run = 'runmatlab.m'
     matfile = open(mat_tmp_run, 'w')
-    matfile.write('addpath(\'%s\');\n' % args.fempath)
-    matfile.write('createsimres(\'%s\',\'%s\',\'%s\');\n' % (args.dispout,
-                                                             args.nodedyn,
-                                                             args.dynadeck))
+    matfile.write('createsimres(\'%s\', \'%s\', \'%s\', %s);\n' %
+                  (args.dispout, args.nodedyn, args.dynadeck, legacynodes))
     matfile.close()
 
     os.system('matlab -nodesktop -nosplash < runmatlab.m')
@@ -65,16 +63,15 @@ def read_cli():
     par.add_argument("--ressim",
                      help="name of the matlab output file",
                      default="res_sim.mat")
-    par.add_argument("--fempath",
-                     help="path to the FEM post-processing scripts",
-                     default="/home/mlp6/git/fem/post")
     par.add_argument("--nodedyn",
                      help="ls-dyna node definition file",
                      default="nodes.dyn")
     par.add_argument("--dynadeck",
                      help="ls-dyna input deck",
                      default="dynadeck.dyn")
-
+    par.add_argument("--legacynodes",
+                     help="read in disp.dat file that has node IDs saved for each timestep",
+                     action="store_true")
     args = par.parse_args()
 
     return args

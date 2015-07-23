@@ -1,5 +1,5 @@
-function []=createsimres(dispfile,node_dyn,dyn_file);
-% function []=createsimres(dispfile,node_dyn,dyn_file);
+function []=createsimres(dispfile, node_dyn, dyn_file, legacynodes);
+% function []=createsimres(dispfile,node_dyn,dyn_file, legacynodes);
 %
 % Create simres.mat that shares the same format as experimental res*.mat files.
 %
@@ -7,35 +7,16 @@ function []=createsimres(dispfile,node_dyn,dyn_file);
 %   dispfile (string) - path for disp.dat created by create_disp_vel_dat.py
 %   node_dyn (string) - path to the node ID & coordinate file (nodes.dyn)
 %   dyn_file (string) - path to the input dyna deck that includes the d3plot time step
-%
+%   legacynodes (boolean) - does disp.dat not have the node IDs repeated every timestep
 % 
 % OUTPUTS:
 %   Saves the file sim_res.mat to the CWD.
 %
 % Requires the function SortNodeIDs.m 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% MODIFICATION HISTORY
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Originally written
-% Mark 03/07/08
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 2009-07-08
-% Modified to read individual time steps from the disp.dat binary file so that
-% large chunks of RAM are needed.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 2010-01-24 (Mark)
-% (1) Very annoying to have to enter the 'TimeStep' and 'TerminationTime' as inputs
-% when you are trying to batch a job; so, that has been "upgraded" to now read
-% those values from the dyna deck, which is now an input.  Assumptions about 
-% reading in that data automatically are detailed below.
 %
-% (2) Added more graceful error-checking upfront (checking that input files exist)
-% to allow batch jobs to run completely even with some missing files along the way. 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% changed nodes.asc -> nodes.dyn (i.e., handle header/footer starting with '*'
-% Mark 2011-04-21
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Mark Palmeri (mlp6)
+% 2015-07-23
+%
 
 % check to make sure the specified files actually exist
 if(exist(node_dyn) ~= 2 || exist(dyn_file) ~= 2),
@@ -67,7 +48,7 @@ NUM_NODES = fread(disp_fid,1,'float32')
 NUM_DIMS = fread(disp_fid,1,'float32')
 NUM_TIMESTEPS = fread(disp_fid,1,'float32')
 
-[arfidata] = extract_binary_data(disp_fid, NUM_NODES, NUM_DIMS, NUM_TIMESTEPS, image_plane);
+[arfidata] = extract_binary_data(disp_fid, NUM_NODES, NUM_DIMS, NUM_TIMESTEPS, image_plane, legacynodes);
 
 TimeStep = extract_TimeStep(dyn_file);
 t = [0:(NUM_TIMESTEPS-1)].*TimeStep;
@@ -83,20 +64,35 @@ axial = single(axial);
 t = single(t);
 save res_sim.mat arfidata lat axial t
 
-function [binary_data_out] = extract_binary_data(fid, NUM_NODES, NUM_DIMS, NUM_TIMESTEPS, image_plane)
-for t=1:NUM_TIMESTEPS,
-    disp(t)
-    % extract the disp values for the appropriate time step
-    fseek(fid,3*4+NUM_NODES*NUM_DIMS*(t-1)*4,-1);
-    disp_slice = fread(fid,NUM_NODES*NUM_DIMS,'float32');
-    disp_slice = double(reshape(disp_slice,NUM_NODES,NUM_DIMS));
+function [binary_data_out] = extract_binary_data(fid, NUM_NODES, NUM_DIMS, NUM_TIMESTEPS, image_plane, legacynodes)
 
-    temp(disp_slice(:,1)) = disp_slice(:,4);
-    temp2 = -temp(image_plane)*1e4;
-    temp2 = shiftdim(temp2,1);
-    binary_data_out(:,:,t) = temp2;
-    clear temp temp2
-end;
+    headerWords = 3*4;
+    
+    for t=1:NUM_TIMESTEPS,
+        disp(t)
+        % extract the disp values for the appropriate time step
+        if (t == 1 | legacynodes),
+            fseek(fid, headerWords + NUM_NODES*NUM_DIMS*(t-1)*4, -1);
+            disp_slice = fread(fid,NUM_NODES*NUM_DIMS, 'float32');
+            disp_slice = double(reshape(disp_slice,NUM_NODES,NUM_DIMS));
+            % extract the node IDs on the image plane and save
+            nodeIDlist= disp_slice(:,1);
+            % reduce disp_slice to just have the x,y,z disps
+            disp_slice = disp_slice(:,2:4);
+        % node IDs are _not_ saved after the first timestep in latest disp.dat files
+        % (flagged by legacynodes boolean)
+        else,
+            fseek(fid, headerWords + NUM_NODES*NUM_DIMS*4 + NUM_NODES*(NUM_DIMS-1)*4*(t-2), -1);
+            disp_slice = fread(fid, NUM_NODES*(NUM_DIMS-1), 'float32');
+            disp_slice = double(reshape(disp_slice, NUM_NODES, (NUM_DIMS-1)));
+        end
+        
+        temp(nodeIDlist) = disp_slice(:, 3);
+        temp2 = -temp(image_plane)*1e4;
+        temp2 = shiftdim(temp2, 1);
+        binary_data_out(:,:,t) = temp2;
+        clear temp temp2
+    end
 
 function [TimeStep]=extract_TimeStep(dyn_file)
 fid = fopen(dyn_file);
