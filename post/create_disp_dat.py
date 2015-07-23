@@ -73,7 +73,7 @@ def create_dat(args, nodout):
                     header = generate_header(data, nodout)
                     write_headers(dispout, header)
                     header_written = True
-                if timestep_count > 1 and args.reducenodes:
+                if timestep_count > 1 and not args.legacynodes:
                     writenode = False
                 process_timestep_data(data, dispout, writenode)
             else:
@@ -256,8 +256,8 @@ def parse_cli():
     parser.add_argument("--vtk",
                         help="create a vtk file",
                         action='store_true')
-    parser.add_argument("--reducenodes",
-                        help="do not repeat saving node IDs for each timestep",
+    parser.add_argument("--legacynodes",
+                        help="repeat saving node IDs for each timestep",
                         action="store_true")
     args = parser.parse_args()
 
@@ -300,7 +300,7 @@ def write_headers(outfile, header):
     import struct
     outfile.write(struct.pack('fff', header['numnodes'],
                                      header['numdims'],
-                              header['numtimesteps']
+                                     header['numtimesteps']
                               )
                   )
 
