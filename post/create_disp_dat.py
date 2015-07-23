@@ -24,7 +24,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# TODO: Allow user to input number of timesteps to (1) reduce time associated with figuring that out, and (2) allowing the user to extract a subset of time steps
 # TODO: Add option to not save node save node IDs and coordinates for every timestep
 
 def main():
@@ -316,7 +315,9 @@ def correct_Enot(raw_data):
     """
     import re
     for i in range(len(raw_data)):
-        raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]', 'E-100', raw_data[i])
+        raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]',
+                             'E-100',
+                             raw_data[i])
     return raw_data
 
 
