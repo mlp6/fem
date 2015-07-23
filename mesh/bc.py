@@ -12,9 +12,7 @@ There are 6 faces in these models; we need to:
 We'll loop through all of the nodes, see if they are on a face or edge, and
 then apply the appropriate BC.
 
-EXAMPLE
-=======
-NEED THIS
+EXAMPLE:
 
 =======
 Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
@@ -32,10 +30,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
-
 
 def main():
     import fem_mesh
@@ -50,7 +44,7 @@ def main():
 
     BCFILE = open_bcfile(opts, sys.argv[0])
 
-    nodeIDcoords = load_nodeIDs_coords(opts.nodefile)
+    nodeIDcoords = fem_mesh.load_nodeIDs_coords(opts.nodefile)
 
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
     axdiff = [axes[0][1]-axes[0][0],
@@ -228,22 +222,6 @@ def read_cli():
     opts = p.parse_args()
 
     return opts
-
-
-def load_nodeIDs_coords(nodefile):
-    """
-    load in node IDs and coordinates, excluding '*' keyword lines
-    """
-    import fem_mesh
-    import numpy as n
-    header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
-    nodeIDcoords = n.loadtxt(nodefile,
-                             delimiter=',',
-                             comments='*',
-                             skiprows=header_comment_skips,
-                             dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
-                                    ('z', 'f4')])
-    return nodeIDcoords
 
 
 def open_bcfile(opts, cmdline):

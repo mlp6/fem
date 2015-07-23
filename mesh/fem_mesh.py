@@ -18,9 +18,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
 
 def check_version():
     """
@@ -126,3 +123,19 @@ def SortNodeIDs(nic):
     snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size))
 
     return [snic, axes]
+
+
+def load_nodeIDs_coords(nodefile):
+    """
+    load in node IDs and coordinates, excluding '*' keyword lines
+    """
+    import fem_mesh
+    import numpy as n
+    header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
+    nodeIDcoords = n.loadtxt(nodefile,
+                             delimiter=',',
+                             comments='*',
+                             skiprows=header_comment_skips,
+                             dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
+                                    ('z', 'f4')])
+    return nodeIDcoords
