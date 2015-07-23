@@ -24,8 +24,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# TODO: Add option to not save node save node IDs and coordinates for every timestep
-
 def main():
     # let's read in some command-line arguments
     args = parse_cli()
@@ -45,6 +43,7 @@ def main():
 
 
 def create_dat(args, nodout):
+    global writenode
     import sys
 
     # open dispout for binary writing
@@ -53,6 +52,7 @@ def create_dat(args, nodout):
     header_written = False
     timestep_read = False
     timestep_count = 0
+    writenode = True
     for line in nodout:
         if 'nodal' in line:
             timestep_read = True
@@ -73,7 +73,9 @@ def create_dat(args, nodout):
                     header = generate_header(data, nodout)
                     write_headers(dispout, header)
                     header_written = True
-                process_timestep_data(data, dispout)
+                if timestep_count > 1 and args.reducenodes:
+                    writenode = False
+                process_timestep_data(data, dispout, writenode)
             else:
                 raw_data = line.split()
                 try:
@@ -245,11 +247,18 @@ def parse_cli():
     parser.add_argument("--nodout",
                         help="ASCII file containing nodout data",
                         default="nodout")
-    parser.add_argument("--dispout", help="name of the binary displacement "
-                        "output file", default="disp.dat")
-    parser.add_argument("--dat", help="create a binary file",
+    parser.add_argument("--dispout",
+                        help="name of the binary displacement output file",
+                        default="disp.dat")
+    parser.add_argument("--dat",
+                        help="create a binary file",
                         action='store_true')
-    parser.add_argument("--vtk", help="create a vtk file", action='store_true')
+    parser.add_argument("--vtk",
+                        help="create a vtk file",
+                        action='store_true')
+    parser.add_argument("--reducenodes",
+                        help="do not repeat saving node IDs for each timestep",
+                        action="store_true")
     args = parser.parse_args()
 
     return args
@@ -296,15 +305,21 @@ def write_headers(outfile, header):
                   )
 
 
-def process_timestep_data(data, outfile):
+def process_timestep_data(data, outfile, writenode):
     """
-    operate on each time step data row
+    write data for the entire timestep to outfile (object)
+
+    writenode is a Boolean if the node IDs should be written to save ~25% of the disp.dat file size
     """
     import struct
-    # write all node IDs, then x-val, then y-val, then z-val
-    [outfile.write(struct.pack('f', data[j][i]))
-        for i in [0, 1, 2, 3]
-        for j in range(len(data))]
+
+    # columns are node ID, x-disp, y-disp, z-disp
+    if writenode:
+        cols2write = [0, 1, 2, 3]
+    else:
+        cols2write = [1, 2, 3]
+
+    [outfile.write(struct.pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
 
 
 def correct_Enot(raw_data):
