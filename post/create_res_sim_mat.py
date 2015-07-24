@@ -21,36 +21,34 @@ limitations under the License.
 
 
 def main():
-    import os
-    import sys
     import fem_mesh
 
     args = read_cli()
 
     if args.legacynodes:
-        legacynodes = 'true'
+        legacynodes = True
     else:
-        legacynodes = 'false'
+        legacynodes = False
 
-    nodeIDcoords = fem_mesh.load_nodeIDs_coords(args.nodedyn)
-    [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
+    node_id_coords = fem_mesh.load_nodeIDs_coords(args.nodedyn)
+    [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
-    image_plane = extractImagePlane(snic, axes, elePosition=0.0)
+    image_plane = extract_image_plane(snic, axes, ele_pos=0.0)
 
-    header = readHeader(args.dispout)
-    TimeStep = extractTimeStep(args.nodedyn);
-    t = [x*TimeStep for x in range(0, (header['NUM_TIMESTEPS']-1))]
+    header = read_header(args.dispout)
+    dt = extract_dt(args.dynadeck)
+    t = [float(x)*dt for x in range(0, header['num_timesteps']-1)]
 
-    arfidata = extractARFIdata(args.dispout, header, image_plane, args.legacynodes)
+    arfidata = extract_arfi_data(args.dispout, header, image_plane, legacynodes)
 
     save_res_mat(args.ressim, arfidata, lat, axial, t)
 
 
-def extractARFIdata(dispout, header, image_plane, legacynodes):
+def extract_arfi_data(dispout, header, image_plane, legacynodes):
     """ extract ARFI data from disp.dat
 
     :param dispout: name of disp.dat file
-    :param header: NUM_NODES, NUM_DIMS, NUM_TIMESTEPS
+    :param header: num_nodes, num_dims, num_timesteps
     :param image_plane: matrix of image plane node IDs spatially sorted
     :param legacynodes: boolean flag to use legacy disp.dat format with node IDs repeated every timestep
     :return arfidata:  arfidata matrix
@@ -58,36 +56,43 @@ def extractARFIdata(dispout, header, image_plane, legacynodes):
     import numpy as np
     import struct
 
-    headerBytes = 3*4;
+    word_size = 4
+    header_bytes = 3*word_size
+    first_timestep_bytes = header['num_nodes']*header['num_dims']*word_size
+    timestep_bytes = header['num_nodes']*(header['num_dims']-1)*word_size
 
     fid = open(dispout, 'rb')
-    # TODO: convert this loop from Matlab -> Python
-    for t in range(1, header['NUM_TIMESTEPS']+1):
-        print t
+    trange = [x for x in range(1, header['num_timesteps']+1)]
+    arfidata = np.zeros((image_plane.shape[0], image_plane.shape[1], len(trange)))
+    print 'Working on time step:'
+    for t in trange:
         # extract the disp values for the appropriate time step
-        if t == 1 or legacynodes:
-            # TODO: confirm that unpack_from does the same as a seek and starts from the beginning each time!
-            # TODO: generate 'f' based on the length of data to be read in
-            disp_slice = struct.unpack_from('f', fid.read(header['NUM_NODES']*header['NUM_DIMS']),
-                                            headerBytes + header['NUM_NODES']*header['NUM_DIMS']*(t-1)*4)
-            disp_slice = np.reshape(disp_slice, header['NUM_NODES'], header['NUM_DIMS'])
-            # extract the node IDs on the image plane and save
-            nodeIDlist = disp_slice[:, 1]
-            # reduce disp_slice to just have the x,y,z disps
-            disp_slice = disp_slice[:, 2:4]
+        if (t == 1) or legacynodes:
+            print '%i (first time step)' % t
+            fmt = 'f'*int(first_timestep_bytes/word_size)
+            fid.seek(header_bytes + first_timestep_bytes*(t-1), 0)
+            print fid.tell()
+            disp_slice = np.asarray(struct.unpack(fmt, fid.read(first_timestep_bytes)))
+
+            disp_slice = np.reshape(disp_slice, (header['num_nodes'], header['num_dims']))
+
+            # extract the nodcount()e IDs on the image plane and save
+            nodeidlist = disp_slice[:, 0]
+            # reduce disp_slicount()ce to just have the x,y,z disps
+            disp_slice = disp_slice[:, 1:4]
+
         # node IDs are _not_ saved after the first timestep in latest disp.dat files
         # (flagged by legacynodes boolean)
         else:
-            disp_slice = struct.unpack_from('f', fid.read(header['NUM_NODES']*(header['NUM_DIMS']-1)),
-                                                 headerBytes + header['NUM_NODES']*header['NUM_DIMS']*4 +
-                                                 header['NUM_NODES']*(header['NUM_DIMS']-1)*4*(t-2))
-            disp_slice = np.reshape(disp_slice, header['NUM_NODES'], (header['NUM_DIMS']-1))
+            print t
+            fmt = 'f'*int(timestep_bytes/word_size)
+            fid.seek(header_bytes + first_timestep_bytes + timestep_bytes*(t-2), 0)
+            print fid.tell()
+            disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
+            disp_slice = np.reshape(disp_slice, (header['num_nodes'], (header['num_dims']-1)))
 
-        temp[nodeIDlist] = disp_slice[:, 3]
-        temp2 = -temp(image_plane)*1e4
-        temp2 = shiftdim(temp2, 1)
-        arfidata[:, :, t] = temp2
-        clear temp temp2
+        #arfidata[nodeidlist, t] = -1e4*disp_slice[:, 2].transpose()
+        test = -1e4*disp_slice[:, 2]
 
     fid.close()
 
@@ -122,13 +127,13 @@ def read_cli():
     return args
 
 
-def extractImagePlane(snic, axes, elePosition):
+def extract_image_plane(snic, axes, ele_pos):
     """ Extract a 2D matrix of the imaging plane node IDs based on the elevation position (mesh coordinates)
     """
     import numpy as np
 
-    ele0 = min(np.where(axes[0] >= elePosition))
-    image_plane = snic[ele0, :, :]
+    ele0 = min(np.where(axes[0] >= ele_pos))
+    image_plane = np.squeeze(snic[ele0, :, :])
 
     return image_plane
 
@@ -149,49 +154,51 @@ def save_res_mat(resfile, arfidata, lat, axial, t):
              'lat': lat,
              'axial': axial,
              't': t},
-            do_compression = True
-    )
+            do_compression=True
+            )
 
 
-def readHeader(dispout):
+def read_header(dispout):
     """ Read header (first 3 words) from disp.dat
 
     :param dispout: disp.dat filename
-    :return header: NUM_NODES, NUM_DIMS, NUM_TIMESTEPS
+    :return header: num_nodes, num_dims, num_timesteps
     """
     import struct
 
     word_size = 4  # bytes
     d = open(dispout, 'rb')
-    NUM_NODES = struct.unpack('f', d.read(word_size))
-    NUM_DIMS = struct.unpack('f', d.read(word_size))
-    NUM_TIMESTEPS = struct.unpack('f', d.read(word_size))
-    header = {'NUM_NODES': NUM_NODES,
-              'NUM_DIMS': NUM_DIMS,
-              'NUM_TIMESTEPS': NUM_TIMESTEPS}
+    num_nodes = struct.unpack('f', d.read(word_size))
+    num_dims = struct.unpack('f', d.read(word_size))
+    num_timesteps = struct.unpack('f', d.read(word_size))
+    header = {'num_nodes': int(num_nodes[0]),
+              'num_dims': int(num_dims[0]),
+              'num_timesteps': int(num_timesteps[0])}
     return header
 
-def extractTimeStep(dyn_file):
+
+def extract_dt(dyn_file):
     """ extract time step (dt) from dyna input deck
     assumes that input deck is comma-delimited
 
     :param dyn_file: input.dyn filename
-    :return TimeStep: dt from input.dyn binary data save parameter
+    :return dt: dt from input.dyn binary data save parameter
     """
-    foundDatabase = False;
+    found_database = False
     with open(dyn_file, 'r') as d:
         for dyn_line in d:
-            if foundDatabase:
+            if found_database:
                 line_items = dyn_line.split(',')
                 # make sure we're not dealing with a comment
                 if '$' in line_items[0]:
                     continue
                 else:
-                    TimeStep = float(line_items[0])
-                    return TimeStep
+                    dt = float(line_items[0])
+                    break
             elif '*DATABASE_BINARY_D3PLOT' in dyn_line:
-                foundDatabase = True
+                found_database = True
 
+    return dt
 
 if __name__ == "__main__":
     main()
