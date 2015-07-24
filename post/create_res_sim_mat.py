@@ -37,11 +37,11 @@ def main():
 
     header = read_header(args.dispout)
     dt = extract_dt(args.dynadeck)
-    t = [float(x)*dt for x in range(0, header['num_timesteps']-1)]
+    t = [float(x)*dt for x in range(0, header['num_timesteps'])]
 
     arfidata = extract_arfi_data(args.dispout, header, image_plane, legacynodes)
 
-    save_res_mat(args.ressim, arfidata, lat, axial, t)
+    save_res_mat(args.ressim, arfidata, axes, t)
 
 
 def extract_arfi_data(dispout, header, image_plane, legacynodes):
@@ -93,6 +93,7 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
 
         #arfidata[nodeidlist, t] = -1e4*disp_slice[:, 2].transpose()
         test = -1e4*disp_slice[:, 2]
+        print test.shape
 
     fid.close()
 
@@ -138,16 +139,21 @@ def extract_image_plane(snic, axes, ele_pos):
     return image_plane
 
 
-def save_res_mat(resfile, arfidata, lat, axial, t):
+def save_res_mat(resfile, arfidata, axes, t):
     """ save res_sim.mat file using variables scanner-generated data
     data are saved as float32 to save space
+    :param resfile: res_sim.mat filename
+    :param arfidata: arfidata matrix
+    :param axes: ele, lat, axial (mesh units)
+    :param t: time
+    :return void:
     """
     from scipy.io import savemat
     import numpy as np
 
     # convert to mm and transpose
-    axial = -10*np.transpose(axial)
-    lat = 10*np.transpose(lat)
+    axial = -10*np.transpose(axes[2])
+    lat = 10*np.transpose(axes[1])
 
     savemat(resfile,
             {'arfidata': arfidata,
