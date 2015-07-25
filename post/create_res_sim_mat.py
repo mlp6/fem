@@ -55,49 +55,68 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
     """
     import numpy as np
     import struct
+    import sys
 
     word_size = 4
     header_bytes = 3*word_size
+    first_timestep_words = header['num_nodes']*header['num_dims']
     first_timestep_bytes = header['num_nodes']*header['num_dims']*word_size
     timestep_bytes = header['num_nodes']*(header['num_dims']-1)*word_size
 
     fid = open(dispout, 'rb')
     trange = [x for x in range(1, header['num_timesteps']+1)]
-    arfidata = np.zeros((image_plane.shape[0], image_plane.shape[1], len(trange)))
-    print 'Working on time step:'
+    arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0], len(trange)))
+    print('Working on time step: '),
     for t in trange:
         # extract the disp values for the appropriate time step
         if (t == 1) or legacynodes:
-            print '%i (first time step)' % t
-            fmt = 'f'*int(first_timestep_bytes/word_size)
+            print('%i ' % t),
+            sys.stdout.flush()
+            fmt = 'f'*int(first_timestep_words)
             fid.seek(header_bytes + first_timestep_bytes*(t-1), 0)
-            print fid.tell()
-            disp_slice = np.asarray(struct.unpack(fmt, fid.read(first_timestep_bytes)))
-
-            disp_slice = np.reshape(disp_slice, (header['num_nodes'], header['num_dims']))
-
+            disp_slice = np.asarray(struct.unpack(fmt, fid.read(first_timestep_bytes)), int)
+            disp_slice = np.reshape(disp_slice, (header['num_nodes'], header['num_dims']), order='F')
             # extract the nodcount()e IDs on the image plane and save
-            nodeidlist = disp_slice[:, 0]
-            # reduce disp_slicount()ce to just have the x,y,z disps
-            disp_slice = disp_slice[:, 1:4]
+            nodeidlist = disp_slice[:, 0].squeeze()
+            # just work with the z-disp (index 3)
+            zdisp = np.zeros((nodeidlist.max()+1, 1))
+            zdisp = create_zdisp(nodeidlist, disp_slice[:, 3].squeeze(), zdisp)
 
         # node IDs are _not_ saved after the first timestep in latest disp.dat files
         # (flagged by legacynodes boolean)
         else:
-            print t
+            print('%i ' % t),
+            sys.stdout.flush()
             fmt = 'f'*int(timestep_bytes/word_size)
             fid.seek(header_bytes + first_timestep_bytes + timestep_bytes*(t-2), 0)
-            print fid.tell()
             disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
-            disp_slice = np.reshape(disp_slice, (header['num_nodes'], (header['num_dims']-1)))
+            disp_slice = np.reshape(disp_slice, (header['num_nodes'], (header['num_dims']-1)), order='F')
+            # just work with the z-disp (index 2)
+            zdisp = create_zdisp(nodeidlist, disp_slice[:, 2].squeeze(), zdisp)
 
-        #arfidata[nodeidlist, t] = -1e4*disp_slice[:, 2].transpose()
-        test = -1e4*disp_slice[:, 2]
-        print test.shape
+        # TODO: this should have some optimized form (list comprehension?)
+        for (i, j), nodeid in np.ndenumerate(image_plane):
+            arfidata[j, i, t-1] = -1e4*zdisp[nodeid]
 
+    print('done!')
     fid.close()
 
     return arfidata
+
+
+def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
+    """create zdisp array from squeezed disp_slice at appropriate index
+
+    :param nodeidlist: first column of disp_slice with node IDs in row order
+    :param disp_slice_z_only: squeezed disp_slice of just zisp
+    :return zdisp: array of z-disp in rows corresponding to node ID (for fast read access)
+    """
+    import numpy as np
+
+    for i, nodeid in np.ndenumerate(nodeidlist):
+        zdisp[nodeid] = disp_slice_z_only[i]
+
+    return zdisp
 
 
 def read_cli():
@@ -149,11 +168,11 @@ def save_res_mat(resfile, arfidata, axes, t):
     :return void:
     """
     from scipy.io import savemat
-    import numpy as np
 
-    # convert to mm and transpose
-    axial = -10*np.transpose(axes[2])
-    lat = 10*np.transpose(axes[1])
+    # convert to mm
+    axial = -10*axes[2]
+    axial = axial[::-1]
+    lat = 10*axes[1]
 
     savemat(resfile,
             {'arfidata': arfidata,
