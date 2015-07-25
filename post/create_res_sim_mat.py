@@ -65,7 +65,7 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
 
     fid = open(dispout, 'rb')
     trange = [x for x in range(1, header['num_timesteps']+1)]
-    arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0], len(trange)))
+    arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0], len(trange)), dtype=np.float32)
     print('Working on time step: '),
     for t in trange:
         # extract the disp values for the appropriate time step
