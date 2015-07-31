@@ -188,8 +188,8 @@ def parse_cli():
                         help="ASCII file containing nodout data",
                         default="nodout")
     parser.add_argument("--vtkout",
-                        help="name of the binary displacement output file",
-                        default="disp.dat")
+                        help="VTK filename (without extension)",
+                        default="disp")
     args = parser.parse_args()
 
     return args
