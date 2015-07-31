@@ -55,7 +55,6 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
     """
     import numpy as np
     import struct
-    import sys
 
     word_size = 4
     header_bytes = 3*word_size
@@ -71,7 +70,6 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
         # extract the disp values for the appropriate time step
         if (t == 1) or legacynodes:
             print('%i ' % t),
-            sys.stdout.flush()
             fmt = 'f'*int(first_timestep_words)
             fid.seek(header_bytes + first_timestep_bytes*(t-1), 0)
             disp_slice = np.asarray(struct.unpack(fmt, fid.read(first_timestep_bytes)), int)
@@ -86,7 +84,6 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
         # (flagged by legacynodes boolean)
         else:
             print('%i ' % t),
-            sys.stdout.flush()
             fmt = 'f'*int(timestep_bytes/word_size)
             fid.seek(header_bytes + first_timestep_bytes + timestep_bytes*(t-2), 0)
             disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
