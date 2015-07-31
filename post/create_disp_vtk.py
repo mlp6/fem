@@ -110,11 +110,15 @@ def create_vtk(args, nodout):
             else:
                 # reading position and displacement data inside a timestep
                 raw_data = line.split()
+
                 # correcting for cases when the E is dropped from number
                 # formatting
-                # TODO: only call if try/catch exception (see create_disp_dat)
-                raw_data = correct_Enot(raw_data)
-                raw_data = [str(float(i)) for i in raw_data]
+                try:
+                    raw_data = [str(float(j)) for j in raw_data]
+                except:
+                    raw_data = correct_Enot(raw_data)
+                    raw_data = [str(float(j)) for j in raw_data]
+
                 # get minimum range of x, y, z coordinates
                 if firstLine is True:
                     x.append(float(raw_data[10]))
