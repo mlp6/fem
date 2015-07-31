@@ -227,21 +227,21 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
     vtkout.write('\t\t\t\t</DataArray>\n')
     # writing displacement values
     vtkout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" Name="displacement" format="ascii">\n')
-    # TODO: replace with with syntax
-    displace_temp = open('disp_temp.txt', 'r')
-    for line in displace_temp:
-        vtkout.write('\t\t\t\t\t'+line)
-    displace_temp.close()
+
+    with open('disp_temp.txt', 'r') as displace_temp:
+        for line in displace_temp:
+            vtkout.write('\t\t\t\t\t'+line)
+
     vtkout.write('\t\t\t\t</DataArray>\n')
     vtkout.write('\t\t\t</PointData>\n')
     # writing point position values
     vtkout.write('\t\t\t<Points>\n')
     vtkout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
-    # TODO: replace with with syntax
-    pos_temp = open('pos_temp.txt', 'r')
-    for line in pos_temp:
-        vtkout.write('\t\t\t\t\t'+line)
-    pos_temp.close()
+
+    with open('pos_temp.txt', 'r') as pos_temp:
+        for line in pos_temp:
+            vtkout.write('\t\t\t\t\t'+line)
+
     vtkout.write('\t\t\t\t</DataArray>\n')
     vtkout.write('\t\t\t</Points>\n')
     vtkout.write('\t\t</Piece>\n')
@@ -252,9 +252,8 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
 
 
 def createPVDFile(args, timestep_values):
-    """
-    creates .pvd file that encompasses displacement for all timesteps.  The
-    .pvd file can be loaded into Paraview, and the timesteps can be scrolled
+    """creates .pvd file that encompasses displacement for all timesteps.
+    The .pvd file can be loaded into Paraview, and the timesteps can be scrolled
     through using the time slider bar.
     :param args: CLI input arguments
     :param timestep_values: vector of timesteps to process
