@@ -6,7 +6,9 @@ Python scripts to generate result files for use in Matlab and the
 tools.
 
  * **create_disp_dat.py:** Generate a binary ```disp.dat``` file (used by
-   ```ultratrack```) and/or a VTK results file (used by Paraview).
+   ```ultratrack```) 
+
+ * **create_disp_vtk.py:** Generate a VTK results file (used by Paraview).
 
  * **create_res_sim_mat.py:** Generate a ```res_sim.mat``` file from
    ```disp.dat``` that has ARFI result file-formatted imaging plane
