@@ -205,11 +205,7 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
     """
     from os import path, makedirs
     # quick check to make sure file extension is correct
-    # TODO: break out into own function
-    if '.' in args.vtkout:
-        fileName = args.vtkout[:args.vtkout.find('.')]
-    else:
-        fileName = args.vtkout
+   fileName = set_filename(args.vtkout)
     # open .vts file for writing)
     if not path.exists(fileName):
         makedirs(fileName)
@@ -264,11 +260,7 @@ def createPVDFile(args, timestep_values):
     :param timestep_values: vector of timesteps to process
     """
     # quick check to make sure file extension is correct
-    # TODO: break out into own function
-    if '.' in args.vtkout:
-        fileName = args.vtkout[:args.vtkout.find('.')]
-    else:
-        fileName = args.vtkout
+    fileName = set_filename(args.vtkout)
     # open .pvd file for writing)
     if not path.exists(fileName):
         makedirs(fileName)
@@ -282,6 +274,21 @@ def createPVDFile(args, timestep_values):
         timestep += 1
     vtkout.write('\t</Collection>\n')
     vtkout.write('</VTKFile>\n')
+
+
+def set_filename(vtkout):
+    """set filename from args.vtkout
+    strip file extension if exists
+    :param vtkout: input arg-specified VTK filename
+    :return fileName: filename with extension
+    """
+    if '.' in vtkout:
+        fileName = vtkout[:vtkout.find('.')]
+    else:
+        fileName = vtkout
+
+    return fileName
+
 
 if __name__ == "__main__":
     main()
