@@ -17,12 +17,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
 def main():
-    # let's read in some command-line arguments
     args = parse_cli()
-
     nodout = open(args.nodout, 'r')
-
     create_vtk(args, nodout)
 
 
@@ -33,7 +31,6 @@ def create_vtk(args, nodout):
     :param args: CLI input arguments
     :param nodout: nodout filename
     """
-    import sys
     from os import remove
     from create_disp_dat import correct_Enot
 
@@ -64,7 +61,6 @@ def create_vtk(args, nodout):
     yStepFound = False
     zStepFound = False
 
-    disp_position = open('pos_temp.txt', 'w')
     for line in nodout:
         if 'n o d a l' in line:
             raw_data = line.split()
@@ -79,10 +75,8 @@ def create_vtk(args, nodout):
             timestep_read = True
             timestep_count += 1
             if timestep_count == 1:
-                sys.stdout.write('Time Step: ')
-                sys.stdout.flush()
-            sys.stdout.write('%i ' % timestep_count)
-            sys.stdout.flush()
+                print('Time Step: '),
+            print('%i ' % timestep_count),
             continue
         if timestep_read:
             if line.startswith('\n'):  # done reading a time step
@@ -167,8 +161,7 @@ def create_vtk(args, nodout):
 
     createVTKFile(args, x, y, z, numNodes, timestep_count)
 
-    sys.stdout.write('\n')
-    sys.stdout.flush()
+    print('\n'),
 
     # time dependence! look at .pvd file structure for instructions on how to
     # create this.  here is an example of the .pvd file format:
@@ -209,7 +202,7 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
     """
     from os import path, makedirs
     # quick check to make sure file extension is correct
-   fileName = set_filename(args.vtkout)
+    fileName = set_filename(args.vtkout)
     # open .vts file for writing)
     if not path.exists(fileName):
         makedirs(fileName)
@@ -262,6 +255,7 @@ def createPVDFile(args, timestep_values):
     :param args: CLI input arguments
     :param timestep_values: vector of timesteps to process
     """
+    from os import path, makedirs
     # quick check to make sure file extension is correct
     fileName = set_filename(args.vtkout)
     # open .pvd file for writing)
