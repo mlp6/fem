@@ -1,5 +1,4 @@
-#!/usr/bin/python
-'''
+""" Generate Gaussian ARF distribution
 
 Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
 
@@ -18,24 +17,22 @@ limitations under the License.
 20100520
   * consolidated sigmas into one input tuple
   * corrected need for abs value on the symmetry searches
-  * corrected the Guassian amplitude calculation to actually include the sigmas!
+  * corrected the Gaussian amplitude calculation to actually include the sigmas!
   * converted the 'fields' read from the nodefile to floats right off the bat
 
 2012-08-27 (Palmeri)
   * Added 'none' symmetry option in case no symmetry is being used in the model
 
-'''
-
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
+Mark Palmeri
+mlp6@duke.edu
+"""
 
 import sys
 import math
 import fem_mesh
 
 def main():
-    """
-    Generate Guassian-weighted point load distribution
+    """ Generate Gaussian-weighted point load distribution
     """
     fem_mesh.check_version()
 
@@ -111,8 +108,7 @@ def main():
     LOADFILE.close()
 
 def read_cli():
-    """
-    read CLI arguments
+    """ read CLI arguments
     """
     import argparse as ap
 
@@ -137,7 +133,7 @@ def read_cli():
     p.add_argument("--amp_cut",
                    type=float,
                    help="Cutoff from peak amplitude to discard (so a lot "
-                   "of the nodes don't have neglible loads on them)",
+                   "of the nodes don't have negligible loads on them)",
                    default=0.05)
     p.add_argument("--center",
                    type=float,
