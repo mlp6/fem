@@ -47,12 +47,8 @@ Installation
  ```
  where ```fem_root``` is the path of your git-cloned fem repository.
 
- * There is a ```probes``` submodule available to restricted institutions.  If
-   you do not have access to that repository, then you can use
-   ```field/linear.m``` and ```field/curvilinear.m``` as starting points to
-   define transducers.  If you do have access, then you can initialize the
-   submodule using ```git submodule init``` followed by ```git submodule
-   update```.
+ * Siemens proprietary probe definitions can be cloned from the Duke
+   access-restricted repository: https://gitlab.oit.duke.edu/ultrasound/probes .
 
  * All of the python scripts require python >=2.7 and are python3 compliant.
    All scripts have help available using the ```--help``` flag.
