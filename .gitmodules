@@ -1,3 +1,0 @@
-[submodule "probes"]
-	path = probes
-	url = git@github.com:Duke-Ultrasound/probes.git
