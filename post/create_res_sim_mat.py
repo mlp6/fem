@@ -171,7 +171,7 @@ def save_res_mat(resfile, arfidata, axes, t):
     axial = -10*axes[2]
     axial = axial[::-1]
     lat = 10*axes[1]
-    arfidata = np.flipud(arifdata)
+    arfidata = np.flipud(arfidata)
 
     savemat(resfile,
             {'arfidata': arfidata,
