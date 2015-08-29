@@ -18,6 +18,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 
 
 def main():
@@ -39,7 +42,8 @@ def main():
     dt = extract_dt(args.dynadeck)
     t = [float(x)*dt for x in range(0, header['num_timesteps'])]
 
-    arfidata = extract_arfi_data(args.dispout, header, image_plane, legacynodes)
+    arfidata = extract_arfi_data(args.dispout, header, image_plane,
+                                 legacynodes)
 
     save_res_mat(args.ressim, arfidata, axes, t)
 
@@ -50,7 +54,8 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
     :param dispout: name of disp.dat file
     :param header: num_nodes, num_dims, num_timesteps
     :param image_plane: matrix of image plane node IDs spatially sorted
-    :param legacynodes: boolean flag to use legacy disp.dat format with node IDs repeated every timestep
+    :param legacynodes: boolean flag to use legacy disp.dat format with node
+                        IDs repeated every timestep
     :return arfidata:  arfidata matrix
     """
     import numpy as np
@@ -64,30 +69,36 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
 
     fid = open(dispout, 'rb')
     trange = [x for x in range(1, header['num_timesteps']+1)]
-    arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0], len(trange)), dtype=np.float32)
-    print('Working on time step: '),
+    arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
+                         len(trange)), dtype=np.float32)
+    print(('Working on time step: '), end=' ')
     for t in trange:
         # extract the disp values for the appropriate time step
         if (t == 1) or legacynodes:
-            print('%i ' % t),
+            print(('%i ' % t), end=' ')
             fmt = 'f'*int(first_timestep_words)
             fid.seek(header_bytes + first_timestep_bytes*(t-1), 0)
-            disp_slice = np.asarray(struct.unpack(fmt, fid.read(first_timestep_bytes)), int)
-            disp_slice = np.reshape(disp_slice, (header['num_nodes'], header['num_dims']), order='F')
+            disp_slice = np.asarray(struct.unpack(fmt,
+                                    fid.read(first_timestep_bytes)), int)
+            disp_slice = np.reshape(disp_slice, (header['num_nodes'],
+                                    header['num_dims']), order='F')
             # extract the nodcount()e IDs on the image plane and save
             nodeidlist = disp_slice[:, 0].squeeze()
             # just work with the z-disp (index 3)
             zdisp = np.zeros((nodeidlist.max()+1, 1))
             zdisp = create_zdisp(nodeidlist, disp_slice[:, 3].squeeze(), zdisp)
 
-        # node IDs are _not_ saved after the first timestep in latest disp.dat files
-        # (flagged by legacynodes boolean)
+        # node IDs are _not_ saved after the first timestep in latest disp.dat
+        # files (flagged by legacynodes boolean)
         else:
-            print('%i ' % t),
+            print(('%i ' % t), end=' ')
             fmt = 'f'*int(timestep_bytes/word_size)
-            fid.seek(header_bytes + first_timestep_bytes + timestep_bytes*(t-2), 0)
+            fid.seek(header_bytes + first_timestep_bytes +
+                     timestep_bytes*(t-2), 0)
             disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
-            disp_slice = np.reshape(disp_slice, (header['num_nodes'], (header['num_dims']-1)), order='F')
+            disp_slice = np.reshape(disp_slice, (header['num_nodes'],
+                                                 (header['num_dims']-1)),
+                                    order='F')
             # just work with the z-disp (index 2)
             zdisp = create_zdisp(nodeidlist, disp_slice[:, 2].squeeze(), zdisp)
 
@@ -106,7 +117,8 @@ def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
 
     :param nodeidlist: first column of disp_slice with node IDs in row order
     :param disp_slice_z_only: squeezed disp_slice of just zisp
-    :return zdisp: array of z-disp in rows corresponding to node ID (for fast read access)
+    :return zdisp: array of z-disp in rows corresponding to node ID
+                   (for fast read access)
     """
     import numpy as np
 
@@ -137,7 +149,8 @@ def read_cli():
                      help="ls-dyna input deck",
                      default="dynadeck.dyn")
     par.add_argument("--legacynodes",
-                     help="read in disp.dat file that has node IDs saved for each timestep",
+                     help="read in disp.dat file that has node IDs saved for"
+                          "each timestep",
                      action="store_true")
     args = par.parse_args()
 
@@ -145,7 +158,8 @@ def read_cli():
 
 
 def extract_image_plane(snic, axes, ele_pos):
-    """ Extract a 2D matrix of the imaging plane node IDs based on the elevation position (mesh coordinates)
+    """ Extract a 2D matrix of the imaging plane node IDs based on the
+    elevation position (mesh coordinates)
     """
     import numpy as np
 
