@@ -1,6 +1,8 @@
 '''
 find_res.py
 '''
+from __future__ import absolute_import
+from __future__ import print_function
 
 __author__ = "Mark Palmeri"
 __email__ = "mlp6@duke.edu"

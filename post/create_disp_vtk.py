@@ -16,6 +16,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 
 
 def main():
@@ -75,8 +78,8 @@ def create_vtk(args, nodout):
             timestep_read = True
             timestep_count += 1
             if timestep_count == 1:
-                print('Time Step: '),
-            print('%i ' % timestep_count),
+                print(('Time Step: '), end=' ')
+            print(('%i ' % timestep_count), end=' ')
             continue
         if timestep_read:
             if line.startswith('\n'):  # done reading a time step
@@ -161,7 +164,7 @@ def create_vtk(args, nodout):
 
     createVTKFile(args, x, y, z, numNodes, timestep_count)
 
-    print('\n'),
+    print(('\n'), end=' ')
 
     # time dependence! look at .pvd file structure for instructions on how to
     # create this.  here is an example of the .pvd file format:

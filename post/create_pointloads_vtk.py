@@ -41,6 +41,9 @@ python create_disp_dat.py --nodefile nodes.dyn
                           --loadout loadout.vts
 =======
 """
+from __future__ import absolute_import
+from __future__ import print_function
+from six.moves import range
 
 def main():
     import sys
@@ -168,7 +171,7 @@ def writeNodePositions(loadout, args, filetype):
     loadout file. returns array containing number of
     nodes (index = 0) and number of elements (index = 1).
     '''
-    print 'Writing node positions'
+    print('Writing node positions')
     nodes = open(args.nodefile, 'r')
 
     headerWritten = False
@@ -231,8 +234,8 @@ def writeNodePositions(loadout, args, filetype):
 		else:
 		    if args.numElem[0] == None:
 			import sys
-		    	print "Info about # of elements in each dimension not found in node file header."
-		        print "Re-run this script with input argument --numElem to give me this info."
+		    	print("Info about # of elements in each dimension not found in node file header.")
+		        print("Re-run this script with input argument --numElem to give me this info.")
 	                sys.exit("ERROR: # of elements in each dimension could not be found. Use --numElem.")
 		    else:
 		    	dimensions = args.numElem
@@ -281,7 +284,7 @@ def writeNodeIDs(loadout, args, numNodes):
     writes node IDs to loadout file
     '''
 
-    print 'Writing node IDs'
+    print('Writing node IDs')
     loadout.write('\t\t\t\t<DataArray type="Float32" Name="node_id" format="ascii">\n')
     for i in range(1, numNodes+1):
         loadout.write('\t\t\t\t\t%.1f\n' % i)
@@ -291,7 +294,7 @@ def writePointLoads(loadout, args, numNodes):
     '''
     writes point loads to loadout file
     '''
-    print 'Writing point loads'
+    print('Writing point loads')
     loadout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" Name="loads" format="ascii">\n')
 
     # note that PointLoads file only list nodes with nonzero loads,
@@ -320,7 +323,7 @@ def writeCells(loadout, args):
     '''
     writes cell connectivity and types to loadout file
     '''
-    print 'Writing cells'
+    print('Writing cells')
     loadout.write('\t\t\t<Cells>\n')
 
     # unfortunately need to loop through entire elements file 3 separate times
@@ -376,7 +379,7 @@ def writeCellData(loadout, args):
     '''
     writes cell part IDs
     '''
-    print 'Writing cell data'
+    print('Writing cell data')
 
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="part id" Format="ascii">\n')
     elems = open(args.elefile, 'r')
