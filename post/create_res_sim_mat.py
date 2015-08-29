@@ -165,13 +165,11 @@ def save_res_mat(resfile, arfidata, axes, t):
     :return void:
     """
     from scipy.io import savemat
-    import numpy as np
 
     # convert to mm
     axial = -10*axes[2]
     axial = axial[::-1]
     lat = 10*axes[1]
-    arfidata = np.flipud(arifdata)
 
     savemat(resfile,
             {'arfidata': arfidata,
