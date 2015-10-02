@@ -1,0 +1,23 @@
+All scripts can be run as\+: {\ttfamily python script.\+py \mbox{[}-\/-\/options\mbox{]}}. The {\ttfamily -\/-\/help} option can be used to get descriptions of all available options and default values.
+
+\subsection*{Active Scripts }
+
+
+\begin{DoxyItemize}
+\item {\bfseries Gen\+Mesh.\+py\+:} Generate a uniform, 3\+D hexahedral mesh with specified spatial extent and element density.
+\item {\bfseries bc.\+py\+:} Specify boundary conditions on the mesh, including those for quarter-\/ and half-\/symmetry (using L\+S-\/\+D\+Y\+N\+A coordinate system).
+\item {\bfseries Create\+Structure.\+py\+:} Create structure within an existing mesh of specified shape, location, size and Part I\+D.
+\item {\bfseries Gauss\+Exc.\+py\+:} Create a Gaussian-\/weighted A\+R\+F excitation with specified Gaussian width, location and amplitude cutoff.
+\item {\bfseries Top\+Load.\+py\+:} Create a loading condition on the top suface of the model, either prescribed displacement, force, or acceleration.
+\item {\bfseries fem\+\_\+mesh.\+py\+:} This will never be directly run, but it is a module with common functions used by several of the scripts.
+\end{DoxyItemize}
+
+\subsection*{Legacy Scripts }
+
+The following scripts are maintained for old simulations that are still being used for older projects.
+
+
+\begin{DoxyItemize}
+\item {\bfseries parse\+Elems\+Nodes.\+py\+:} Legacy script to extract {\ttfamily nodes.\+dyn} and {\ttfamily elems.\+dyn} input files from a mesh generated in ls-\/prepost using {\ttfamily Mesh\+Gen.\+cfile}.
+\item {\bfseries Mesh\+Gen.\+cfile}\+: Example command script to generate a mesh, similar to {\ttfamily Gen\+Mesh.\+py}, but with some quirks (e.\+g., points at 0 sometimes are not printed). This generates a {\ttfamily mesh.\+dyn} file that is space delimited and can be parsed using {\ttfamily parse\+Elems\+Nodes.\+py}. 
+\end{DoxyItemize}

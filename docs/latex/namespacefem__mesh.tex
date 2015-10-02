@@ -1,0 +1,118 @@
+\hypertarget{namespacefem__mesh}{}\section{fem\+\_\+mesh Namespace Reference}
+\label{namespacefem__mesh}\index{fem\+\_\+mesh@{fem\+\_\+mesh}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacefem__mesh_a54340024168d84ee90e2731de604b7c9}{check\+\_\+version} ()
+\item 
+\hypertarget{namespacefem__mesh_acb8e341fc4a11a41122239e92e80ef25}{}def {\bfseries strip\+\_\+comments} (nodefile)\label{namespacefem__mesh_acb8e341fc4a11a41122239e92e80ef25}
+
+\item 
+def \hyperlink{namespacefem__mesh_aecdc87300dbd7f57c9590be2eedfd4fd}{count\+\_\+header\+\_\+comment\+\_\+skips} (nodefile)
+\item 
+\hypertarget{namespacefem__mesh_a482eed29183411d7e6275f9936210eca}{}def {\bfseries rm\+\_\+tmp\+\_\+file} (nodefile\+\_\+nocmt)\label{namespacefem__mesh_a482eed29183411d7e6275f9936210eca}
+
+\item 
+def \hyperlink{namespacefem__mesh_a9426734369dcc9c64d9076c9e64eb761}{extract\+Plane} (snic, axes, plane)
+\item 
+def \hyperlink{namespacefem__mesh_a5c79e3243c130de5fe8c49b64ce408b1}{Sort\+Node\+I\+Ds} (nic)
+\item 
+def \hyperlink{namespacefem__mesh_ac22e65233eb8ce28d6b9d61969697859}{load\+\_\+node\+I\+Ds\+\_\+coords} (nodefile)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyVerb}fem_mesh.py
+
+Generic functions for all meshing functions
+
+Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+\end{DoxyVerb}
+ 
+
+\subsection{Function Documentation}
+\hypertarget{namespacefem__mesh_a54340024168d84ee90e2731de604b7c9}{}\index{fem\+\_\+mesh@{fem\+\_\+mesh}!check\+\_\+version@{check\+\_\+version}}
+\index{check\+\_\+version@{check\+\_\+version}!fem\+\_\+mesh@{fem\+\_\+mesh}}
+\subsubsection[{check\+\_\+version}]{\setlength{\rightskip}{0pt plus 5cm}def fem\+\_\+mesh.\+check\+\_\+version (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{namespacefem__mesh_a54340024168d84ee90e2731de604b7c9}
+\begin{DoxyVerb}Check that at least python2.7 is being used for argparse compatibility
+\end{DoxyVerb}
+ \hypertarget{namespacefem__mesh_aecdc87300dbd7f57c9590be2eedfd4fd}{}\index{fem\+\_\+mesh@{fem\+\_\+mesh}!count\+\_\+header\+\_\+comment\+\_\+skips@{count\+\_\+header\+\_\+comment\+\_\+skips}}
+\index{count\+\_\+header\+\_\+comment\+\_\+skips@{count\+\_\+header\+\_\+comment\+\_\+skips}!fem\+\_\+mesh@{fem\+\_\+mesh}}
+\subsubsection[{count\+\_\+header\+\_\+comment\+\_\+skips}]{\setlength{\rightskip}{0pt plus 5cm}def fem\+\_\+mesh.\+count\+\_\+header\+\_\+comment\+\_\+skips (
+\begin{DoxyParamCaption}
+\item[{}]{nodefile}
+\end{DoxyParamCaption}
+)}\label{namespacefem__mesh_aecdc87300dbd7f57c9590be2eedfd4fd}
+\begin{DoxyVerb}count the number of file head comments lines to skip before the first
+keyword (line starting with *)
+\end{DoxyVerb}
+ \hypertarget{namespacefem__mesh_a9426734369dcc9c64d9076c9e64eb761}{}\index{fem\+\_\+mesh@{fem\+\_\+mesh}!extract\+Plane@{extract\+Plane}}
+\index{extract\+Plane@{extract\+Plane}!fem\+\_\+mesh@{fem\+\_\+mesh}}
+\subsubsection[{extract\+Plane}]{\setlength{\rightskip}{0pt plus 5cm}def fem\+\_\+mesh.\+extract\+Plane (
+\begin{DoxyParamCaption}
+\item[{}]{snic, }
+\item[{}]{axes, }
+\item[{}]{plane}
+\end{DoxyParamCaption}
+)}\label{namespacefem__mesh_a9426734369dcc9c64d9076c9e64eb761}
+\begin{DoxyVerb}Extract the node IDs on a specified plane from a sorted node ID &
+coordinate 3D array.
+
+INPUTS:
+    snic - sorted node IDs & coordinates array
+    axes - list of unique coordinates in the x, y, and z dimensions
+    plane - list:
+        index - index of the plane to extract (x=0, y=1, z=2)
+        coord - coordinate of the plane to extract (must exist in axes
+                list)
+
+OUPUTS:
+    planeNodeIDs - spatially-sorted 2D node IDs on the specified plane
+
+EXAMPLE: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
+\end{DoxyVerb}
+ \hypertarget{namespacefem__mesh_ac22e65233eb8ce28d6b9d61969697859}{}\index{fem\+\_\+mesh@{fem\+\_\+mesh}!load\+\_\+node\+I\+Ds\+\_\+coords@{load\+\_\+node\+I\+Ds\+\_\+coords}}
+\index{load\+\_\+node\+I\+Ds\+\_\+coords@{load\+\_\+node\+I\+Ds\+\_\+coords}!fem\+\_\+mesh@{fem\+\_\+mesh}}
+\subsubsection[{load\+\_\+node\+I\+Ds\+\_\+coords}]{\setlength{\rightskip}{0pt plus 5cm}def fem\+\_\+mesh.\+load\+\_\+node\+I\+Ds\+\_\+coords (
+\begin{DoxyParamCaption}
+\item[{}]{nodefile}
+\end{DoxyParamCaption}
+)}\label{namespacefem__mesh_ac22e65233eb8ce28d6b9d61969697859}
+\begin{DoxyVerb}load in node IDs and coordinates, excluding '*' keyword lines
+\end{DoxyVerb}
+ \hypertarget{namespacefem__mesh_a5c79e3243c130de5fe8c49b64ce408b1}{}\index{fem\+\_\+mesh@{fem\+\_\+mesh}!Sort\+Node\+I\+Ds@{Sort\+Node\+I\+Ds}}
+\index{Sort\+Node\+I\+Ds@{Sort\+Node\+I\+Ds}!fem\+\_\+mesh@{fem\+\_\+mesh}}
+\subsubsection[{Sort\+Node\+I\+Ds}]{\setlength{\rightskip}{0pt plus 5cm}def fem\+\_\+mesh.\+Sort\+Node\+I\+Ds (
+\begin{DoxyParamCaption}
+\item[{}]{nic}
+\end{DoxyParamCaption}
+)}\label{namespacefem__mesh_a5c79e3243c130de5fe8c49b64ce408b1}
+\begin{DoxyVerb}Sort the node IDs by spatial coordinates into a 3D matrix and return the
+corresponding axes
+
+INPUTS:
+    nic - nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
+
+OUTPUTS:
+    SortedNodeIDs - n matrix (x,y,z)
+    x - array
+    y - array
+    z - array
+\end{DoxyVerb}
+ 

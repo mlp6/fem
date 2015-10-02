@@ -1,0 +1,15 @@
+Python scripts to generate result files for use in Matlab and the \mbox{[}\href{https://github.com/Duke-Ultrasound/ultratrack.git}{\tt https\+://github.\+com/\+Duke-\/\+Ultrasound/ultratrack.\+git}\mbox{]}(ultratrack) simulation tools.
+
+
+\begin{DoxyItemize}
+\item {\bfseries create\+\_\+disp\+\_\+dat.\+py\+:} Generate a binary {\ttfamily disp.\+dat} file (used by {\ttfamily ultratrack})
+\item {\bfseries create\+\_\+disp\+\_\+vtk.\+py\+:} Generate a V\+T\+K results file (used by Paraview).
+\item {\bfseries create\+\_\+res\+\_\+sim\+\_\+mat.\+py\+:} Generate a {\ttfamily res\+\_\+sim.\+mat} file from {\ttfamily disp.\+dat} that has A\+R\+F\+I result file-\/formatted imaging plane displacement data.
+\item {\bfseries res\+\_\+sim.\+mat\+:} Created by {\ttfamily create\+\_\+res\+\_\+sim\+\_\+mat.\+py} and contains\+:
+\begin{DoxyItemize}
+\item {\ttfamily arfidata}\+: 3\+D matrix of z-\/displacement data (microns) in the imaging plane (axial x lateral x time)
+\item {\ttfamily axial}\+: axis (mm)
+\item {\ttfamily lat}\+: axis (mm)
+\item {\ttfamily t}\+: time (s) 
+\end{DoxyItemize}
+\end{DoxyItemize}

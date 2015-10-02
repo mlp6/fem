@@ -1,0 +1,77 @@
+Python Tools, \href{http://field-ii.dk}{\tt Field I\+I} Intensity Field Solution, L\+S-\/\+D\+Y\+N\+A Pre/\+Post Processing
+
+All software in this repository is licensed under the Apache v2.\+0 license, as detailed in the L\+I\+C\+E\+N\+S\+E file.
+
+If you are using the F\+E\+M simulation tools in work that you publish, then please consider citing the following manuscript\+:
+
+\mbox{[}Palmeri M\+L, Sharma A\+C, Bouchard R\+R, Nightingale R\+W, Nightingale K\+R. "A Finite-\/\+Element Method Model of Soft Tissue Response to Impulsive Acoustic Radiation Force," I\+E\+E\+E U\+F\+F\+C, 52(10)\+: 1699-\/1712, 2005.\mbox{]}(\href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/}{\tt http\+://www.\+ncbi.\+nlm.\+nih.\+gov/pmc/articles/\+P\+M\+C2818996/})
+
+Also please cite the following manuscript if you use Field I\+I\+:
+
+\mbox{[}J.\+A. Jensen and N. B. Svendsen\+: Calculation of pressure fields from arbitrarily shaped, apodized, and excited ultrasound transducers, I\+E\+E\+E Trans. Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-\/267, 1992.\mbox{]}(\href{http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123}{\tt http\+://ieeexplore.\+ieee.\+org/xpls/abs\+\_\+all.\+jsp?arnumber=139123})
+
+\section*{Installation }
+
+
+\begin{DoxyItemize}
+\item You can locally clone this repository\+: ``` git clone \href{mailto:git@gitlab.oit.duke.edu}{\tt git@gitlab.\+oit.\+duke.\+edu}\+:mlp6/fem.\+git ```
+\end{DoxyItemize}
+
+This approach will work if you have an \href{https://help.github.com/articles/generating-ssh-keys}{\tt S\+S\+H key} uploaded to Git\+Hub. If not, then you can also clone the reportory using\+: ``` git clone \href{http://gitlab.oit.duke.edu/mlp6/fem.git}{\tt http\+://gitlab.\+oit.\+duke.\+edu/mlp6/fem.\+git} ```
+
+
+\begin{DoxyItemize}
+\item Add the fem subdirectories to your Matlab path. One approach is to add the following to {\ttfamily \$\+H\+O\+M\+E/matlab/startup.m}\+: ``` fem\+\_\+root = \textquotesingle{}P\+A\+T\+H/\+T\+O/\+G\+I\+T/\+C\+L\+O\+N\+E\+D/fem\textquotesingle{}; addpath(fullfile(fem\+\_\+root, \textquotesingle{}mesh\textquotesingle{})); addpath(fullfile(fem\+\_\+root, \textquotesingle{}field\textquotesingle{})); addpath(fullfile(fem\+\_\+root, \textquotesingle{}post\textquotesingle{})); {\ttfamily  where}fem\+\_\+root``` is the path of your git-\/cloned fem repository.
+\item Siemens proprietary probe definitions can be cloned from the Duke access-\/restricted repository\+: \href{https://gitlab.oit.duke.edu/ultrasound/probes}{\tt https\+://gitlab.\+oit.\+duke.\+edu/ultrasound/probes} .
+\item All of the python scripts require python $>$=2.\+7 and are python3 compliant. All scripts have help available using the {\ttfamily -\/-\/help} flag.
+\end{DoxyItemize}
+
+\section*{Code Layout }
+
+This repository contains 3 subdirectories of code\+:
+
+
+\begin{DoxyEnumerate}
+\item {\ttfamily mesh}\+: scripts to generate meshes, apply boundary conditions and simple loads (mesh/\+R\+E\+A\+D\+M\+E.md)
+\item {\ttfamily field}\+: \href{http://field-ii.dk}{\tt Field I\+I} scripts to simulate acoustic radiation force excitations to impose as point loads on your model. The {\ttfamily probes} submodule can be utilized with these scripts (field/\+R\+E\+A\+D\+M\+E.md)
+\item {\ttfamily post}\+: scripts to post-\/process L\+S-\/\+D\+Y\+N\+A output for processing / visualization in ls-\/prepost, Matlab, and Paraview (post/\+R\+E\+A\+D\+M\+E.md)
+\end{DoxyEnumerate}
+
+Please see the {\ttfamily R\+E\+A\+D\+M\+E.\+md} files in each respective subdirectory for more detailed descriptions of the available scripts.
+
+\section*{Coordinate \& Unit Conventions }
+
+
+\begin{DoxyItemize}
+\item The mesh (L\+S-\/\+D\+Y\+N\+A) and Field I\+I spatial axis conventions are different (this is unfortunate, but maintained for legacy compatibility).
+\item L\+S-\/\+D\+Y\+N\+A and mesh-\/related tools use a rotated, right-\/hand rule coorindate system\+:
+\begin{DoxyItemize}
+\item Axial extends into -\/z,
+\item Lateral extends into +y,
+\item Elevation extends into -\/x.
+\end{DoxyItemize}
+\item L\+S-\/\+D\+Y\+N\+A is run unitless, but scripts assume and scale quantitites assuming a C\+G\+S unit system.
+\item Field I\+I tools a standard, right-\/hand rule coordinate system\+:
+\begin{DoxyItemize}
+\item Axial extends into +z,
+\item Lateral extends into +x,
+\item Elevation extends into +y.
+\end{DoxyItemize}
+\item Field I\+I internally uses M\+K\+S units, but scripts will specify units on the inputs
+\end{DoxyItemize}
+
+\section*{Testing }
+
+There are test scripts / models available for code validation and future development (test/\+R\+E\+A\+D\+M\+E.md). Please use existing tests if fixing bug / editing existing features, or create new tests for new features. Ipython notebooks documenting testing, performance, etc. are also saved in some of the testing directories.
+
+\section*{Contributors }
+
+
+\begin{DoxyItemize}
+\item Mark Palmeri ()
+\item Ningrui Li (-\/\+Li)
+\item Mallory Selzo (U\+N\+C-\/\+C\+H)
+\item Chris Moore (\href{mailto:chrisjmoore@unc.edu}{\tt chrisjmoore@unc.\+edu})
+\item David Bradway ()
+\item Nick Bottenus () 
+\end{DoxyItemize}

@@ -1,0 +1,121 @@
+\hypertarget{namespaceGenMesh}{}\section{Gen\+Mesh Namespace Reference}
+\label{namespaceGenMesh}\index{Gen\+Mesh@{Gen\+Mesh}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespaceGenMesh_af11a4af1dd3bdcb8b0d3486683758812}{}def {\bfseries main} ()\label{namespaceGenMesh_af11a4af1dd3bdcb8b0d3486683758812}
+
+\item 
+\hypertarget{namespaceGenMesh_a9a4c1f381fb4677f8dd50787b44db625}{}def {\bfseries parse\+\_\+cli} ()\label{namespaceGenMesh_a9a4c1f381fb4677f8dd50787b44db625}
+
+\item 
+def \hyperlink{namespaceGenMesh_abc935a1e9a6644479bb396c552badb4a}{calc\+\_\+node\+\_\+pos} (xyz, num\+Elem)
+\item 
+def \hyperlink{namespaceGenMesh_aa43424591af5f0d1524b446ac2b394d1}{write\+Nodes} (pos, nodefile, header\+\_\+comment)
+\item 
+def \hyperlink{namespaceGenMesh_a3aca926178f852fdb02618a5a299681d}{write\+Elems} (num\+Elem, partid, elefile, header\+\_\+comment)
+\item 
+def \hyperlink{namespaceGenMesh_a3f0064bed0a30d98493d7924919e6468}{check\+\_\+x0\+\_\+y0} (pos)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespaceGenMesh_ae72bab920317d34184cbb5299b5f8105}{}string {\bfseries \+\_\+\+\_\+author\+\_\+\+\_\+} = \char`\"{}Mark Palmeri\char`\"{}\label{namespaceGenMesh_ae72bab920317d34184cbb5299b5f8105}
+
+\item 
+\hypertarget{namespaceGenMesh_a0d6434d536da6f76b95e6c47f8399d32}{}string {\bfseries \+\_\+\+\_\+email\+\_\+\+\_\+} = \char`\"{}mlp6@duke.\+edu\char`\"{}\label{namespaceGenMesh_a0d6434d536da6f76b95e6c47f8399d32}
+
+\item 
+\hypertarget{namespaceGenMesh_a2098deb4051637a89446d6660704ff62}{}string {\bfseries \+\_\+\+\_\+license\+\_\+\+\_\+} = \char`\"{}Apache v2.\+0\char`\"{}\label{namespaceGenMesh_a2098deb4051637a89446d6660704ff62}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyVerb}GenMesh.py
+
+Generate a 3D rectilinear mesh as node and element input files for LS-DYNA3D.
+
+Copyright 2015 Mark L. Palmeri
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+\end{DoxyVerb}
+ 
+
+\subsection{Function Documentation}
+\hypertarget{namespaceGenMesh_abc935a1e9a6644479bb396c552badb4a}{}\index{Gen\+Mesh@{Gen\+Mesh}!calc\+\_\+node\+\_\+pos@{calc\+\_\+node\+\_\+pos}}
+\index{calc\+\_\+node\+\_\+pos@{calc\+\_\+node\+\_\+pos}!Gen\+Mesh@{Gen\+Mesh}}
+\subsubsection[{calc\+\_\+node\+\_\+pos}]{\setlength{\rightskip}{0pt plus 5cm}def Gen\+Mesh.\+calc\+\_\+node\+\_\+pos (
+\begin{DoxyParamCaption}
+\item[{}]{xyz, }
+\item[{}]{num\+Elem}
+\end{DoxyParamCaption}
+)}\label{namespaceGenMesh_abc935a1e9a6644479bb396c552badb4a}
+\begin{DoxyVerb}Calculate nodal spatial positions based on CLI specs
+INPUTS
+    xyz (xmin, xmax, ymin, ymax, zmin, zmax) - tuple
+    numElem (xEle, yEle, zEle) - int tuple
+
+OUTPUT
+    pos - list of lists containing x, y, and z positions
+\end{DoxyVerb}
+ \hypertarget{namespaceGenMesh_a3f0064bed0a30d98493d7924919e6468}{}\index{Gen\+Mesh@{Gen\+Mesh}!check\+\_\+x0\+\_\+y0@{check\+\_\+x0\+\_\+y0}}
+\index{check\+\_\+x0\+\_\+y0@{check\+\_\+x0\+\_\+y0}!Gen\+Mesh@{Gen\+Mesh}}
+\subsubsection[{check\+\_\+x0\+\_\+y0}]{\setlength{\rightskip}{0pt plus 5cm}def Gen\+Mesh.\+check\+\_\+x0\+\_\+y0 (
+\begin{DoxyParamCaption}
+\item[{}]{pos}
+\end{DoxyParamCaption}
+)}\label{namespaceGenMesh_a3f0064bed0a30d98493d7924919e6468}
+\begin{DoxyVerb}check to make sure that nodes exist at (x, y) = (0, 0) so that the focus /
+peak of an ARF excitation is captured by the mesh
+\end{DoxyVerb}
+ \hypertarget{namespaceGenMesh_a3aca926178f852fdb02618a5a299681d}{}\index{Gen\+Mesh@{Gen\+Mesh}!write\+Elems@{write\+Elems}}
+\index{write\+Elems@{write\+Elems}!Gen\+Mesh@{Gen\+Mesh}}
+\subsubsection[{write\+Elems}]{\setlength{\rightskip}{0pt plus 5cm}def Gen\+Mesh.\+write\+Elems (
+\begin{DoxyParamCaption}
+\item[{}]{num\+Elem, }
+\item[{}]{partid, }
+\item[{}]{elefile, }
+\item[{}]{header\+\_\+comment}
+\end{DoxyParamCaption}
+)}\label{namespaceGenMesh_a3aca926178f852fdb02618a5a299681d}
+\begin{DoxyVerb}write element file using calculated position data
+
+INPUTS
+    pos - list of lists of x, y, z positions
+    elefile - elems.dyn
+    header_comment - what version / syntax of calling command
+
+OUTPUTS
+    elems.dyn written (or specified filename)
+\end{DoxyVerb}
+ \hypertarget{namespaceGenMesh_aa43424591af5f0d1524b446ac2b394d1}{}\index{Gen\+Mesh@{Gen\+Mesh}!write\+Nodes@{write\+Nodes}}
+\index{write\+Nodes@{write\+Nodes}!Gen\+Mesh@{Gen\+Mesh}}
+\subsubsection[{write\+Nodes}]{\setlength{\rightskip}{0pt plus 5cm}def Gen\+Mesh.\+write\+Nodes (
+\begin{DoxyParamCaption}
+\item[{}]{pos, }
+\item[{}]{nodefile, }
+\item[{}]{header\+\_\+comment}
+\end{DoxyParamCaption}
+)}\label{namespaceGenMesh_aa43424591af5f0d1524b446ac2b394d1}
+\begin{DoxyVerb}write node file using calculated position data
+
+INPUTS
+    pos - list of lists of x, y, z positions
+    nodefile - nodes.dyn
+    header_comment - what version / syntax of calling command
+
+OUTPUTS
+    nodes.dyn written (or specified filename)
+\end{DoxyVerb}
+ 

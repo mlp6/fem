@@ -1,0 +1,148 @@
+\hypertarget{namespacecreate__res__sim__mat}{}\section{create\+\_\+res\+\_\+sim\+\_\+mat Namespace Reference}
+\label{namespacecreate__res__sim__mat}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{namespacecreate__res__sim__mat_a606ad8a6d39174adbd2f7253ff733e2a}{}def {\bfseries main} ()\label{namespacecreate__res__sim__mat_a606ad8a6d39174adbd2f7253ff733e2a}
+
+\item 
+def \hyperlink{namespacecreate__res__sim__mat_af9dabec2b0d66834aaeae1dd2f6ae588}{extract\+\_\+arfi\+\_\+data} (dispout, header, image\+\_\+plane, legacynodes)
+\item 
+def \hyperlink{namespacecreate__res__sim__mat_a1731cdac3ad0afae24ea3d88ac5a3471}{create\+\_\+zdisp} (nodeidlist, disp\+\_\+slice\+\_\+z\+\_\+only, zdisp)
+\item 
+def \hyperlink{namespacecreate__res__sim__mat_a8237a5569e44ddf490f7d2173a4c56b3}{read\+\_\+cli} ()
+\item 
+def \hyperlink{namespacecreate__res__sim__mat_a36991d38a13e1cd603d67d13c549fa04}{extract\+\_\+image\+\_\+plane} (snic, axes, ele\+\_\+pos)
+\item 
+def \hyperlink{namespacecreate__res__sim__mat_a36ca0c809441bb01f607af61cc483e2e}{save\+\_\+res\+\_\+mat} (resfile, arfidata, axes, t)
+\item 
+def \hyperlink{namespacecreate__res__sim__mat_ace51ce9387ce5b304b797688375f06af}{read\+\_\+header} (dispout)
+\item 
+def \hyperlink{namespacecreate__res__sim__mat_aeae3e50426069c6b90f8f4314bdde1a9}{extract\+\_\+dt} (dyn\+\_\+file)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+\begin{DoxyVerb}create_res_sim_mat.py
+
+create res_sim.mat file from disp.dat
+
+EXAMPLE: python create_res_sim_mat.py --dynadeck desk.dyn
+
+Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+\end{DoxyVerb}
+ 
+
+\subsection{Function Documentation}
+\hypertarget{namespacecreate__res__sim__mat_a1731cdac3ad0afae24ea3d88ac5a3471}{}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}!create\+\_\+zdisp@{create\+\_\+zdisp}}
+\index{create\+\_\+zdisp@{create\+\_\+zdisp}!create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsubsection[{create\+\_\+zdisp}]{\setlength{\rightskip}{0pt plus 5cm}def create\+\_\+res\+\_\+sim\+\_\+mat.\+create\+\_\+zdisp (
+\begin{DoxyParamCaption}
+\item[{}]{nodeidlist, }
+\item[{}]{disp\+\_\+slice\+\_\+z\+\_\+only, }
+\item[{}]{zdisp}
+\end{DoxyParamCaption}
+)}\label{namespacecreate__res__sim__mat_a1731cdac3ad0afae24ea3d88ac5a3471}
+\begin{DoxyVerb}create zdisp array from squeezed disp_slice at appropriate index
+
+:param nodeidlist: first column of disp_slice with node IDs in row order
+:param disp_slice_z_only: squeezed disp_slice of just zisp
+:return zdisp: array of z-disp in rows corresponding to node ID
+               (for fast read access)
+\end{DoxyVerb}
+ \hypertarget{namespacecreate__res__sim__mat_af9dabec2b0d66834aaeae1dd2f6ae588}{}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}!extract\+\_\+arfi\+\_\+data@{extract\+\_\+arfi\+\_\+data}}
+\index{extract\+\_\+arfi\+\_\+data@{extract\+\_\+arfi\+\_\+data}!create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsubsection[{extract\+\_\+arfi\+\_\+data}]{\setlength{\rightskip}{0pt plus 5cm}def create\+\_\+res\+\_\+sim\+\_\+mat.\+extract\+\_\+arfi\+\_\+data (
+\begin{DoxyParamCaption}
+\item[{}]{dispout, }
+\item[{}]{header, }
+\item[{}]{image\+\_\+plane, }
+\item[{}]{legacynodes}
+\end{DoxyParamCaption}
+)}\label{namespacecreate__res__sim__mat_af9dabec2b0d66834aaeae1dd2f6ae588}
+\begin{DoxyVerb}extract ARFI data from disp.dat
+
+:param dispout: name of disp.dat file
+:param header: num_nodes, num_dims, num_timesteps
+:param image_plane: matrix of image plane node IDs spatially sorted
+:param legacynodes: boolean flag to use legacy disp.dat format with node
+                    IDs repeated every timestep
+:return arfidata:  arfidata matrix
+\end{DoxyVerb}
+ \hypertarget{namespacecreate__res__sim__mat_aeae3e50426069c6b90f8f4314bdde1a9}{}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}!extract\+\_\+dt@{extract\+\_\+dt}}
+\index{extract\+\_\+dt@{extract\+\_\+dt}!create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsubsection[{extract\+\_\+dt}]{\setlength{\rightskip}{0pt plus 5cm}def create\+\_\+res\+\_\+sim\+\_\+mat.\+extract\+\_\+dt (
+\begin{DoxyParamCaption}
+\item[{}]{dyn\+\_\+file}
+\end{DoxyParamCaption}
+)}\label{namespacecreate__res__sim__mat_aeae3e50426069c6b90f8f4314bdde1a9}
+\begin{DoxyVerb}extract time step (dt) from dyna input deck
+assumes that input deck is comma-delimited
+
+:param dyn_file: input.dyn filename
+:return dt: dt from input.dyn binary data save parameter
+\end{DoxyVerb}
+ \hypertarget{namespacecreate__res__sim__mat_a36991d38a13e1cd603d67d13c549fa04}{}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}!extract\+\_\+image\+\_\+plane@{extract\+\_\+image\+\_\+plane}}
+\index{extract\+\_\+image\+\_\+plane@{extract\+\_\+image\+\_\+plane}!create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsubsection[{extract\+\_\+image\+\_\+plane}]{\setlength{\rightskip}{0pt plus 5cm}def create\+\_\+res\+\_\+sim\+\_\+mat.\+extract\+\_\+image\+\_\+plane (
+\begin{DoxyParamCaption}
+\item[{}]{snic, }
+\item[{}]{axes, }
+\item[{}]{ele\+\_\+pos}
+\end{DoxyParamCaption}
+)}\label{namespacecreate__res__sim__mat_a36991d38a13e1cd603d67d13c549fa04}
+\begin{DoxyVerb}Extract a 2D matrix of the imaging plane node IDs based on the
+elevation position (mesh coordinates)
+\end{DoxyVerb}
+ \hypertarget{namespacecreate__res__sim__mat_a8237a5569e44ddf490f7d2173a4c56b3}{}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}!read\+\_\+cli@{read\+\_\+cli}}
+\index{read\+\_\+cli@{read\+\_\+cli}!create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsubsection[{read\+\_\+cli}]{\setlength{\rightskip}{0pt plus 5cm}def create\+\_\+res\+\_\+sim\+\_\+mat.\+read\+\_\+cli (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{namespacecreate__res__sim__mat_a8237a5569e44ddf490f7d2173a4c56b3}
+\begin{DoxyVerb}read in command line arguments
+\end{DoxyVerb}
+ \hypertarget{namespacecreate__res__sim__mat_ace51ce9387ce5b304b797688375f06af}{}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}!read\+\_\+header@{read\+\_\+header}}
+\index{read\+\_\+header@{read\+\_\+header}!create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsubsection[{read\+\_\+header}]{\setlength{\rightskip}{0pt plus 5cm}def create\+\_\+res\+\_\+sim\+\_\+mat.\+read\+\_\+header (
+\begin{DoxyParamCaption}
+\item[{}]{dispout}
+\end{DoxyParamCaption}
+)}\label{namespacecreate__res__sim__mat_ace51ce9387ce5b304b797688375f06af}
+\begin{DoxyVerb}Read header (first 3 words) from disp.dat
+
+:param dispout: disp.dat filename
+:return header: num_nodes, num_dims, num_timesteps
+\end{DoxyVerb}
+ \hypertarget{namespacecreate__res__sim__mat_a36ca0c809441bb01f607af61cc483e2e}{}\index{create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}!save\+\_\+res\+\_\+mat@{save\+\_\+res\+\_\+mat}}
+\index{save\+\_\+res\+\_\+mat@{save\+\_\+res\+\_\+mat}!create\+\_\+res\+\_\+sim\+\_\+mat@{create\+\_\+res\+\_\+sim\+\_\+mat}}
+\subsubsection[{save\+\_\+res\+\_\+mat}]{\setlength{\rightskip}{0pt plus 5cm}def create\+\_\+res\+\_\+sim\+\_\+mat.\+save\+\_\+res\+\_\+mat (
+\begin{DoxyParamCaption}
+\item[{}]{resfile, }
+\item[{}]{arfidata, }
+\item[{}]{axes, }
+\item[{}]{t}
+\end{DoxyParamCaption}
+)}\label{namespacecreate__res__sim__mat_a36ca0c809441bb01f607af61cc483e2e}
+\begin{DoxyVerb}save res_sim.mat file using variables scanner-generated data
+data are saved as float32 to save space
+:param resfile: res_sim.mat filename
+:param arfidata: arfidata matrix
+:param axes: ele, lat, axial (mesh units)
+:param t: time
+:return void:
+\end{DoxyVerb}
+ 
