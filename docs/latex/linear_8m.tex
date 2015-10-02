@@ -1,0 +1,101 @@
+\hypertarget{linear_8m}{}\section{field/linear.m File Reference}
+\label{linear_8m}\index{field/linear.\+m@{field/linear.\+m}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textquotesingle{}Transducer\+:\+Linear\textquotesingle{} \hyperlink{linear_8m_a3dde95d85425710a1f22384904945224}{disp} ()
+\item 
+id \hyperlink{linear_8m_aad499ccb51bb8f6217ea3d03e8bc6b2d}{width} ()
+\item 
+\hyperlink{optical__piston_8m_ac863a3eba22b0750d99d87e65e1fc3e1}{fractional\+Bandwidth}, \hyperlink{optical__piston_8m_a9f4f9a562cdd63f792d44d5d84a5ebcd}{center\+Frequency}, F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S \hyperlink{linear_8m_a68e3a12aa04d90fcbd3eb241b5ae698b}{define\+Imp\+Resp} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{linear_8m_a64f73a6ae8c9f989f01f64d4b82ad8fc}{function} \mbox{[}\hyperlink{optical__piston_8m_af886915c2885b6e3d90932b4320ba82f}{Th}, \hyperlink{defineImpResp_8m_a0798256ffa42d915762399f871d0b09e}{impulse\+Response}\mbox{]} =linear(F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S)
+\item 
+\hyperlink{linear_8m_a0730107c31c8e9b522d2a94a76826622}{no\+\_\+elements\+\_\+y} =1
+\item 
+\hyperlink{linear_8m_a5558ace5433f9aabbf0a0ec059900d94}{width} =.\+2e-\/3
+\item 
+\hyperlink{linear_8m_ab33f9cfee3fc10d0b53890ff4cfdc218}{kerf} =0.\+02e-\/3
+\item 
+\hyperlink{linear_8m_afe627986b4147fc678023fb03e010791}{pitch} = \hyperlink{linear_8m_aad499ccb51bb8f6217ea3d03e8bc6b2d}{width} + \hyperlink{linear_8m_ab33f9cfee3fc10d0b53890ff4cfdc218}{kerf}
+\item 
+\hyperlink{linear_8m_a509290c21d570ff479c1b9d9b1fe8810}{height} =5e-\/3
+\item 
+define \hyperlink{linear_8m_a8e199f55032ed8c89e7e217d3089b0aa}{no\+\_\+elements} =(\hyperlink{optical__piston_8m_abf799b2fba41a9266c0672d9139c10d5}{F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+focus}(3)/\hyperlink{field2dyna_8m_a039f827847a789514c36bd2c6a1ae2b5}{F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+Fnum})/\hyperlink{linear_8m_afe627986b4147fc678023fb03e010791}{pitch}
+\item 
+lens \hyperlink{optical__piston_8m_abf799b2fba41a9266c0672d9139c10d5}{focus} \hyperlink{linear_8m_ac813fef3ecb20ba7efa467efb335ea80}{Rfocus} =19e-\/3
+\item 
+\hyperlink{linear_8m_adb2035e6a791060f04d9535e6a8a2eb2}{no\+\_\+sub\+\_\+x} =1
+\item 
+define the transducer handle \hyperlink{linear_8m_af886915c2885b6e3d90932b4320ba82f}{Th} = xdc\+\_\+focused\+\_\+multirow(\hyperlink{linear_8m_a8e199f55032ed8c89e7e217d3089b0aa}{no\+\_\+elements},\hyperlink{linear_8m_aad499ccb51bb8f6217ea3d03e8bc6b2d}{width},\hyperlink{linear_8m_a0730107c31c8e9b522d2a94a76826622}{no\+\_\+elements\+\_\+y},\hyperlink{linear_8m_a509290c21d570ff479c1b9d9b1fe8810}{height},\hyperlink{linear_8m_ab33f9cfee3fc10d0b53890ff4cfdc218}{kerf},\hyperlink{linear_8m_ab33f9cfee3fc10d0b53890ff4cfdc218}{kerf},\hyperlink{linear_8m_ac813fef3ecb20ba7efa467efb335ea80}{Rfocus},\hyperlink{linear_8m_adb2035e6a791060f04d9535e6a8a2eb2}{no\+\_\+sub\+\_\+x},no\+\_\+sub\+\_\+y,\hyperlink{optical__piston_8m_abf799b2fba41a9266c0672d9139c10d5}{F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+focus})
+\item 
+define the fractional bandwidth \hyperlink{linear_8m_aa06deabb8e61a6305354676c82d6b9bd}{fractional\+Bandwidth} = 0.\+5
+\item 
+\hyperlink{linear_8m_a9f4f9a562cdd63f792d44d5d84a5ebcd}{center\+Frequency} = 7.\+56e6
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{linear_8m_a68e3a12aa04d90fcbd3eb241b5ae698b}{}\index{linear.\+m@{linear.\+m}!define\+Imp\+Resp@{define\+Imp\+Resp}}
+\index{define\+Imp\+Resp@{define\+Imp\+Resp}!linear.\+m@{linear.\+m}}
+\subsubsection[{define\+Imp\+Resp}]{\setlength{\rightskip}{0pt plus 5cm}{\bf fractional\+Bandwidth},{\bf center\+Frequency},F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S define\+Imp\+Resp (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{linear_8m_a68e3a12aa04d90fcbd3eb241b5ae698b}
+\hypertarget{linear_8m_a3dde95d85425710a1f22384904945224}{}\index{linear.\+m@{linear.\+m}!disp@{disp}}
+\index{disp@{disp}!linear.\+m@{linear.\+m}}
+\subsubsection[{disp}]{\setlength{\rightskip}{0pt plus 5cm}\textquotesingle{}Transducer\+: Linear\textquotesingle{} disp (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{linear_8m_a3dde95d85425710a1f22384904945224}
+\hypertarget{linear_8m_aad499ccb51bb8f6217ea3d03e8bc6b2d}{}\index{linear.\+m@{linear.\+m}!width@{width}}
+\index{width@{width}!linear.\+m@{linear.\+m}}
+\subsubsection[{width}]{\setlength{\rightskip}{0pt plus 5cm}id width (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [virtual]}}\label{linear_8m_aad499ccb51bb8f6217ea3d03e8bc6b2d}
+
+
+\subsection{Variable Documentation}
+\hypertarget{linear_8m_a9f4f9a562cdd63f792d44d5d84a5ebcd}{}\index{linear.\+m@{linear.\+m}!center\+Frequency@{center\+Frequency}}
+\index{center\+Frequency@{center\+Frequency}!linear.\+m@{linear.\+m}}
+\subsubsection[{center\+Frequency}]{\setlength{\rightskip}{0pt plus 5cm}center\+Frequency = 7.\+56e6}\label{linear_8m_a9f4f9a562cdd63f792d44d5d84a5ebcd}
+\hypertarget{linear_8m_aa06deabb8e61a6305354676c82d6b9bd}{}\index{linear.\+m@{linear.\+m}!fractional\+Bandwidth@{fractional\+Bandwidth}}
+\index{fractional\+Bandwidth@{fractional\+Bandwidth}!linear.\+m@{linear.\+m}}
+\subsubsection[{fractional\+Bandwidth}]{\setlength{\rightskip}{0pt plus 5cm}define the fractional bandwidth fractional\+Bandwidth = 0.\+5}\label{linear_8m_aa06deabb8e61a6305354676c82d6b9bd}
+\hypertarget{linear_8m_a64f73a6ae8c9f989f01f64d4b82ad8fc}{}\index{linear.\+m@{linear.\+m}!function@{function}}
+\index{function@{function}!linear.\+m@{linear.\+m}}
+\subsubsection[{function}]{\setlength{\rightskip}{0pt plus 5cm}function\mbox{[}{\bf Th}, {\bf impulse\+Response}\mbox{]} =linear(F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S)}\label{linear_8m_a64f73a6ae8c9f989f01f64d4b82ad8fc}
+\hypertarget{linear_8m_a509290c21d570ff479c1b9d9b1fe8810}{}\index{linear.\+m@{linear.\+m}!height@{height}}
+\index{height@{height}!linear.\+m@{linear.\+m}}
+\subsubsection[{height}]{\setlength{\rightskip}{0pt plus 5cm}height =5e-\/3}\label{linear_8m_a509290c21d570ff479c1b9d9b1fe8810}
+\hypertarget{linear_8m_ab33f9cfee3fc10d0b53890ff4cfdc218}{}\index{linear.\+m@{linear.\+m}!kerf@{kerf}}
+\index{kerf@{kerf}!linear.\+m@{linear.\+m}}
+\subsubsection[{kerf}]{\setlength{\rightskip}{0pt plus 5cm}kerf =0.\+02e-\/3}\label{linear_8m_ab33f9cfee3fc10d0b53890ff4cfdc218}
+\hypertarget{linear_8m_a8e199f55032ed8c89e7e217d3089b0aa}{}\index{linear.\+m@{linear.\+m}!no\+\_\+elements@{no\+\_\+elements}}
+\index{no\+\_\+elements@{no\+\_\+elements}!linear.\+m@{linear.\+m}}
+\subsubsection[{no\+\_\+elements}]{\setlength{\rightskip}{0pt plus 5cm}no\+\_\+elements =({\bf F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+focus}(3)/{\bf F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+Fnum})/{\bf pitch}}\label{linear_8m_a8e199f55032ed8c89e7e217d3089b0aa}
+\hypertarget{linear_8m_a0730107c31c8e9b522d2a94a76826622}{}\index{linear.\+m@{linear.\+m}!no\+\_\+elements\+\_\+y@{no\+\_\+elements\+\_\+y}}
+\index{no\+\_\+elements\+\_\+y@{no\+\_\+elements\+\_\+y}!linear.\+m@{linear.\+m}}
+\subsubsection[{no\+\_\+elements\+\_\+y}]{\setlength{\rightskip}{0pt plus 5cm}no\+\_\+elements\+\_\+y =1}\label{linear_8m_a0730107c31c8e9b522d2a94a76826622}
+\hypertarget{linear_8m_adb2035e6a791060f04d9535e6a8a2eb2}{}\index{linear.\+m@{linear.\+m}!no\+\_\+sub\+\_\+x@{no\+\_\+sub\+\_\+x}}
+\index{no\+\_\+sub\+\_\+x@{no\+\_\+sub\+\_\+x}!linear.\+m@{linear.\+m}}
+\subsubsection[{no\+\_\+sub\+\_\+x}]{\setlength{\rightskip}{0pt plus 5cm}no\+\_\+sub\+\_\+x =1}\label{linear_8m_adb2035e6a791060f04d9535e6a8a2eb2}
+\hypertarget{linear_8m_afe627986b4147fc678023fb03e010791}{}\index{linear.\+m@{linear.\+m}!pitch@{pitch}}
+\index{pitch@{pitch}!linear.\+m@{linear.\+m}}
+\subsubsection[{pitch}]{\setlength{\rightskip}{0pt plus 5cm}pitch = {\bf width} + {\bf kerf}}\label{linear_8m_afe627986b4147fc678023fb03e010791}
+\hypertarget{linear_8m_ac813fef3ecb20ba7efa467efb335ea80}{}\index{linear.\+m@{linear.\+m}!Rfocus@{Rfocus}}
+\index{Rfocus@{Rfocus}!linear.\+m@{linear.\+m}}
+\subsubsection[{Rfocus}]{\setlength{\rightskip}{0pt plus 5cm}lens {\bf focus} Rfocus =19e-\/3}\label{linear_8m_ac813fef3ecb20ba7efa467efb335ea80}
+\hypertarget{linear_8m_af886915c2885b6e3d90932b4320ba82f}{}\index{linear.\+m@{linear.\+m}!Th@{Th}}
+\index{Th@{Th}!linear.\+m@{linear.\+m}}
+\subsubsection[{Th}]{\setlength{\rightskip}{0pt plus 5cm}define the transducer handle Th = xdc\+\_\+focused\+\_\+multirow({\bf no\+\_\+elements},{\bf width},{\bf no\+\_\+elements\+\_\+y},{\bf height},{\bf kerf},{\bf kerf},{\bf Rfocus},{\bf no\+\_\+sub\+\_\+x},no\+\_\+sub\+\_\+y,{\bf F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+focus})}\label{linear_8m_af886915c2885b6e3d90932b4320ba82f}
+\hypertarget{linear_8m_a5558ace5433f9aabbf0a0ec059900d94}{}\index{linear.\+m@{linear.\+m}!width@{width}}
+\index{width@{width}!linear.\+m@{linear.\+m}}
+\subsubsection[{width}]{\setlength{\rightskip}{0pt plus 5cm}width =.\+2e-\/3}\label{linear_8m_a5558ace5433f9aabbf0a0ec059900d94}

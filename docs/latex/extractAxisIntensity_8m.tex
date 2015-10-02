@@ -1,0 +1,134 @@
+\hypertarget{extractAxisIntensity_8m}{}\section{field/extract\+Axis\+Intensity.m File Reference}
+\label{extractAxisIntensity_8m}\index{field/extract\+Axis\+Intensity.\+m@{field/extract\+Axis\+Intensity.\+m}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+I\+N\+P\+U\+T\+S based \hyperlink{makeLoadsTemps_8m_a58ab1fd68e97078232808206b850161b}{on} dyna \hyperlink{SortNodeIDs_8m_a0ab117b0f05fd5f577fba1ddd0b6a7a5}{coordinates}\mbox{[}1=\hyperlink{field2dyna_8m_a88e807e5b5c0fcdb056f7d5364866bcb}{elevation}, 2=lateral, 3=\hyperlink{SortNodeIDs_8m_ac22a81ee948912d89e107057cfcea933}{axial}\mbox{]} \hyperlink{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}{location} (floats)-\/2 element vector with locations of the orthogonal positions(dyna units
+\item 
+I\+N\+P\+U\+T\+S based \hyperlink{makeLoadsTemps_8m_a58ab1fd68e97078232808206b850161b}{on} dyna \hyperlink{SortNodeIDs_8m_a0ab117b0f05fd5f577fba1ddd0b6a7a5}{coordinates}\mbox{[}1=\hyperlink{field2dyna_8m_a88e807e5b5c0fcdb056f7d5364866bcb}{elevation}, 2=lateral, 3=\hyperlink{SortNodeIDs_8m_ac22a81ee948912d89e107057cfcea933}{axial}\mbox{]} cm \hyperlink{extractAxisIntensity_8m_abc2b6075050ff78cf945338b5fde80a2}{tol} (float)-\/optional node search tolerance(dyna units
+\item 
+first index is node then \hyperlink{extractAxisIntensity_8m_a34dfd9bff5c3c702017eca60ce544d67}{z} (2-\/4) Search\+Dims
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{extractAxisIntensity_8m_abe757c71defe0d41cae8fd2e2210a484}{function} \mbox{[}\hyperlink{extractAxisIntensity_8m_accc088009d44c521706aa98d6387ee21}{axis}, \hyperlink{extractAxisIntensity_8m_a8341cae157f6c93e2e5903087ad42b0d}{inten}\mbox{]} =\hyperlink{makeLoadsTemps_8m_ac0429bf84756e1f741a2c3993cea9543}{extract\+Axis\+Intensity}(Input\+Name,\hyperlink{extractAxisIntensity_8m_accc088009d44c521706aa98d6387ee21}{axis},\hyperlink{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}{location},\hyperlink{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}{Tol})
+\item 
+I\+N\+P\+U\+T\+S \hyperlink{extractAxisIntensity_8m_a7668239c728d4236db489bdbfd4034ef}{\+\_\+\+\_\+pad0\+\_\+\+\_\+}
+\item 
+I\+N\+P\+U\+T\+S based \hyperlink{makeLoadsTemps_8m_a58ab1fd68e97078232808206b850161b}{on} dyna \hyperlink{SortNodeIDs_8m_a0ab117b0f05fd5f577fba1ddd0b6a7a5}{coordinates}\mbox{[}1=\hyperlink{field2dyna_8m_a88e807e5b5c0fcdb056f7d5364866bcb}{elevation}, 2=lateral, 3=\hyperlink{SortNodeIDs_8m_ac22a81ee948912d89e107057cfcea933}{axial}\mbox{]} cm cm \hyperlink{extractAxisIntensity_8m_a436e2e47e980b4c78bf2213c6ace83d4}{O\+U\+T\+P\+U\+T\+S}
+\item 
+I\+N\+P\+U\+T\+S based \hyperlink{makeLoadsTemps_8m_a58ab1fd68e97078232808206b850161b}{on} dyna \hyperlink{SortNodeIDs_8m_a0ab117b0f05fd5f577fba1ddd0b6a7a5}{coordinates}\mbox{[}1=\hyperlink{field2dyna_8m_a88e807e5b5c0fcdb056f7d5364866bcb}{elevation}, 2=lateral, 3=\hyperlink{SortNodeIDs_8m_ac22a81ee948912d89e107057cfcea933}{axial}\mbox{]} cm cm \hyperlink{extractAxisIntensity_8m_a0f6a3e1eb54d6d3b41495640dbc47282}{intensity}
+\item 
+I\+N\+P\+U\+T\+S based \hyperlink{makeLoadsTemps_8m_a58ab1fd68e97078232808206b850161b}{on} dyna \hyperlink{SortNodeIDs_8m_a0ab117b0f05fd5f577fba1ddd0b6a7a5}{coordinates}\mbox{[}1=\hyperlink{field2dyna_8m_a88e807e5b5c0fcdb056f7d5364866bcb}{elevation}, 2=lateral, 3=\hyperlink{SortNodeIDs_8m_ac22a81ee948912d89e107057cfcea933}{axial}\mbox{]} cm cm \hyperlink{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}{Tol} = 0.\+05e-\/3
+\item 
+\hyperlink{extractAxisIntensity_8m_afb358f48b1646c750fb9da6c6585be2b}{end}
+\item 
+\hyperlink{extractAxisIntensity_8m_a64b0840001d30ff8cd416759a03542ce}{in} = \hyperlink{makeLoadsTemps_8m_a59d9d8b41e7c63610d439804c63f9df7}{load}(Input\+Name)
+\item 
+\hyperlink{extractAxisIntensity_8m_af34ed92ede39bb33c3a06c6ac6f75d03}{Input\+Intensity} = \hyperlink{dynaField_8m_a05e212b384acd1c63e61f62f1e0e772a}{in.\+intensity}
+\item 
+\hyperlink{extractAxisIntensity_8m_ab2c871b1158c14ae5f68ecedbb2cf7e9}{mpn} = \hyperlink{field2dyna_8m_a5ebcf322018cd232e3d96a8f61821e50}{in.\+F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+measurement\+Pointsand\+Nodes}
+\item 
+\hyperlink{extractAxisIntensity_8m_accc088009d44c521706aa98d6387ee21}{axis} = axis + 1
+\item 
+first index is node \hyperlink{extractAxisIntensity_8m_ad81d06a6f12f3c5a9c31e3d7554294df}{I\+D}
+\item 
+first index is node then \hyperlink{extractAxisIntensity_8m_a6e9c7c2885c4939c9e74ade67167c791}{x}
+\item 
+first index is node then \hyperlink{extractAxisIntensity_8m_ae1e118e91e59431bb8a7b8255b9ef172}{y}
+\item 
+\hyperlink{extractAxisIntensity_8m_ac6bf70a1c7f8461f6f360a420b325193}{axis\+Of\+Interest}
+\item 
+\hyperlink{extractAxisIntensity_8m_a8341cae157f6c93e2e5903087ad42b0d}{inten} = \hyperlink{makeLoadsTemps_8m_ad15be5710f277cfc232aaa3f15a5ba66}{Input\+Intensity}(\hyperlink{extractAxisIntensity_8m_ac6bf70a1c7f8461f6f360a420b325193}{axis\+Of\+Interest})
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!location@{location}}
+\index{location@{location}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{location}]{\setlength{\rightskip}{0pt plus 5cm}I\+N\+P\+U\+T\+S based {\bf on} dyna {\bf coordinates} \mbox{[}1 = {\bf elevation}, 2 = lateral, 3 = {\bf axial}\mbox{]} location (
+\begin{DoxyParamCaption}
+\item[{floats}]{}
+\end{DoxyParamCaption}
+)}\label{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}
+\hypertarget{extractAxisIntensity_8m_abc2b6075050ff78cf945338b5fde80a2}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!tol@{tol}}
+\index{tol@{tol}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{tol}]{\setlength{\rightskip}{0pt plus 5cm}I\+N\+P\+U\+T\+S based {\bf on} dyna {\bf coordinates} \mbox{[}1 = {\bf elevation}, 2 = lateral, 3 = {\bf axial}\mbox{]} cm tol (
+\begin{DoxyParamCaption}
+\item[{float}]{}
+\end{DoxyParamCaption}
+)}\label{extractAxisIntensity_8m_abc2b6075050ff78cf945338b5fde80a2}
+\hypertarget{extractAxisIntensity_8m_a34dfd9bff5c3c702017eca60ce544d67}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!z@{z}}
+\index{z@{z}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{z}]{\setlength{\rightskip}{0pt plus 5cm}first index is node then z (
+\begin{DoxyParamCaption}
+\item[{2-\/}]{4}
+\end{DoxyParamCaption}
+)}\label{extractAxisIntensity_8m_a34dfd9bff5c3c702017eca60ce544d67}
+
+
+\subsection{Variable Documentation}
+\hypertarget{extractAxisIntensity_8m_a7668239c728d4236db489bdbfd4034ef}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!\+\_\+\+\_\+pad0\+\_\+\+\_\+@{\+\_\+\+\_\+pad0\+\_\+\+\_\+}}
+\index{\+\_\+\+\_\+pad0\+\_\+\+\_\+@{\+\_\+\+\_\+pad0\+\_\+\+\_\+}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{\+\_\+\+\_\+pad0\+\_\+\+\_\+}]{\setlength{\rightskip}{0pt plus 5cm}I\+N\+P\+U\+T\+S \+\_\+\+\_\+pad0\+\_\+\+\_\+}\label{extractAxisIntensity_8m_a7668239c728d4236db489bdbfd4034ef}
+\hypertarget{extractAxisIntensity_8m_accc088009d44c521706aa98d6387ee21}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!axis@{axis}}
+\index{axis@{axis}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{axis}]{\setlength{\rightskip}{0pt plus 5cm}axis = axis + 1}\label{extractAxisIntensity_8m_accc088009d44c521706aa98d6387ee21}
+\hypertarget{extractAxisIntensity_8m_ac6bf70a1c7f8461f6f360a420b325193}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!axis\+Of\+Interest@{axis\+Of\+Interest}}
+\index{axis\+Of\+Interest@{axis\+Of\+Interest}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{axis\+Of\+Interest}]{\setlength{\rightskip}{0pt plus 5cm}axis\+Of\+Interest}\label{extractAxisIntensity_8m_ac6bf70a1c7f8461f6f360a420b325193}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+=find(abs(\hyperlink{extractAxisIntensity_8m_ab2c871b1158c14ae5f68ecedbb2cf7e9}{mpn}(:,SearchDims(1))) < (\hyperlink{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}{location}(1) + \hyperlink{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}{Tol}) & ...
+    abs(\hyperlink{extractAxisIntensity_8m_ab2c871b1158c14ae5f68ecedbb2cf7e9}{mpn}(:,SearchDims(1))) > (\hyperlink{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}{location}(1) - \hyperlink{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}{Tol}) & ...
+    abs(\hyperlink{extractAxisIntensity_8m_ab2c871b1158c14ae5f68ecedbb2cf7e9}{mpn}(:,SearchDims(2))) < (\hyperlink{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}{location}(2) + \hyperlink{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}{Tol}) & ...
+    abs(\hyperlink{extractAxisIntensity_8m_ab2c871b1158c14ae5f68ecedbb2cf7e9}{mpn}(:,SearchDims(2))) > (\hyperlink{extractAxisIntensity_8m_ae0bc31bfeb86debd67e2a52807bd3af9}{location}(2) - \hyperlink{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}{Tol}))
+\end{DoxyCode}
+\hypertarget{extractAxisIntensity_8m_afb358f48b1646c750fb9da6c6585be2b}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!end@{end}}
+\index{end@{end}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{end}]{\setlength{\rightskip}{0pt plus 5cm}end}\label{extractAxisIntensity_8m_afb358f48b1646c750fb9da6c6585be2b}
+\hypertarget{extractAxisIntensity_8m_abe757c71defe0d41cae8fd2e2210a484}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!function@{function}}
+\index{function@{function}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{function}]{\setlength{\rightskip}{0pt plus 5cm}function\mbox{[}{\bf axis}, {\bf inten}\mbox{]} ={\bf extract\+Axis\+Intensity}(Input\+Name,{\bf axis},{\bf location},{\bf Tol})}\label{extractAxisIntensity_8m_abe757c71defe0d41cae8fd2e2210a484}
+\hypertarget{extractAxisIntensity_8m_ad81d06a6f12f3c5a9c31e3d7554294df}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!I\+D@{I\+D}}
+\index{I\+D@{I\+D}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{I\+D}]{\setlength{\rightskip}{0pt plus 5cm}first index is node I\+D}\label{extractAxisIntensity_8m_ad81d06a6f12f3c5a9c31e3d7554294df}
+\hypertarget{extractAxisIntensity_8m_a64b0840001d30ff8cd416759a03542ce}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!in@{in}}
+\index{in@{in}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{in}]{\setlength{\rightskip}{0pt plus 5cm}in = {\bf load}(Input\+Name)}\label{extractAxisIntensity_8m_a64b0840001d30ff8cd416759a03542ce}
+\hypertarget{extractAxisIntensity_8m_af34ed92ede39bb33c3a06c6ac6f75d03}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!Input\+Intensity@{Input\+Intensity}}
+\index{Input\+Intensity@{Input\+Intensity}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{Input\+Intensity}]{\setlength{\rightskip}{0pt plus 5cm}toss intensities below of Isppa Input\+Intensity = {\bf in.\+intensity}}\label{extractAxisIntensity_8m_af34ed92ede39bb33c3a06c6ac6f75d03}
+\hypertarget{extractAxisIntensity_8m_a8341cae157f6c93e2e5903087ad42b0d}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!inten@{inten}}
+\index{inten@{inten}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{inten}]{\setlength{\rightskip}{0pt plus 5cm}inten = {\bf Input\+Intensity}({\bf axis\+Of\+Interest})}\label{extractAxisIntensity_8m_a8341cae157f6c93e2e5903087ad42b0d}
+\hypertarget{extractAxisIntensity_8m_a0f6a3e1eb54d6d3b41495640dbc47282}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!intensity@{intensity}}
+\index{intensity@{intensity}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{intensity}]{\setlength{\rightskip}{0pt plus 5cm}I\+N\+P\+U\+T\+S based {\bf on} dyna {\bf coordinates} \mbox{[}1 = {\bf elevation}, 2 = lateral, 3 = {\bf axial}\mbox{]} cm cm intensity}\label{extractAxisIntensity_8m_a0f6a3e1eb54d6d3b41495640dbc47282}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+=\hyperlink{makeLoadsTemps_8m_ac0429bf84756e1f741a2c3993cea9543}{extractAxisIntensity}(\textcolor{stringliteral}{'dyna.mat'},3,[0 0])
+%
+% Mark Palmeri 
+% mlp6@duke.edu
+% 2013-10-16
+ 
+% define \hyperlink{namespacecalcNodeVol_a9ea89ae9b0c2f371d156b0ae2aeeb273}{node} tolerance to search for \hyperlink{extractAxisIntensity_8m_accc088009d44c521706aa98d6387ee21}{axis} \hyperlink{namespaceparseElemsNodes_a0409c90a612f75ca8a96b04f30c3af99}{line} \hyperlink{SortNodeIDs_8m_a803ce50c376d0f588a04b9dbf9cd0cde}{if} not input specified
+\hyperlink{SortNodeIDs_8m_a803ce50c376d0f588a04b9dbf9cd0cde}{if}(nargin < 4)
+\end{DoxyCode}
+\hypertarget{extractAxisIntensity_8m_ab2c871b1158c14ae5f68ecedbb2cf7e9}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!mpn@{mpn}}
+\index{mpn@{mpn}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{mpn}]{\setlength{\rightskip}{0pt plus 5cm}mpn = {\bf in.\+F\+I\+E\+L\+D\+\_\+\+P\+A\+R\+A\+M\+S.\+measurement\+Pointsand\+Nodes}}\label{extractAxisIntensity_8m_ab2c871b1158c14ae5f68ecedbb2cf7e9}
+\hypertarget{extractAxisIntensity_8m_a436e2e47e980b4c78bf2213c6ace83d4}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!O\+U\+T\+P\+U\+T\+S@{O\+U\+T\+P\+U\+T\+S}}
+\index{O\+U\+T\+P\+U\+T\+S@{O\+U\+T\+P\+U\+T\+S}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{O\+U\+T\+P\+U\+T\+S}]{\setlength{\rightskip}{0pt plus 5cm}I\+N\+P\+U\+T\+S based {\bf on} dyna {\bf coordinates} \mbox{[}1 = {\bf elevation}, 2 = lateral, 3 = {\bf axial}\mbox{]} cm cm O\+U\+T\+P\+U\+T\+S}\label{extractAxisIntensity_8m_a436e2e47e980b4c78bf2213c6ace83d4}
+\hypertarget{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!Tol@{Tol}}
+\index{Tol@{Tol}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{Tol}]{\setlength{\rightskip}{0pt plus 5cm}I\+N\+P\+U\+T\+S based {\bf on} dyna {\bf coordinates} \mbox{[}1 = {\bf elevation}, 2 = lateral, 3 = {\bf axial}\mbox{]} cm cm Tol = 0.\+05e-\/3}\label{extractAxisIntensity_8m_a2367e54470271df1ec24449072cbcf48}
+\hypertarget{extractAxisIntensity_8m_a6e9c7c2885c4939c9e74ade67167c791}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!x@{x}}
+\index{x@{x}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{x}]{\setlength{\rightskip}{0pt plus 5cm}first index is node then x}\label{extractAxisIntensity_8m_a6e9c7c2885c4939c9e74ade67167c791}
+\hypertarget{extractAxisIntensity_8m_ae1e118e91e59431bb8a7b8255b9ef172}{}\index{extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}!y@{y}}
+\index{y@{y}!extract\+Axis\+Intensity.\+m@{extract\+Axis\+Intensity.\+m}}
+\subsubsection[{y}]{\setlength{\rightskip}{0pt plus 5cm}first index is node then y}\label{extractAxisIntensity_8m_ae1e118e91e59431bb8a7b8255b9ef172}

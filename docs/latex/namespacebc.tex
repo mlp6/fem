@@ -1,0 +1,111 @@
+\hypertarget{namespacebc}{}\section{bc Namespace Reference}
+\label{namespacebc}\index{bc@{bc}}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \hyperlink{namespacebc_a4cf71b4bbc84d23159eba5f59bf178f5}{main} ()
+\item 
+def \hyperlink{namespacebc_a35463a7b582e5de1b1a3c5ae9d34d913}{write\+Seg} (B\+C\+F\+I\+L\+E, \hyperlink{makeLoadsTemps_8m_aacb2c4fc9674678831924fefe696c2de}{title}, seg\+I\+D, plane\+Node\+I\+Ds)
+\item 
+def \hyperlink{namespacebc_af21ebde085be8d5b7fb326da58fc415c}{write\+Node\+B\+C} (B\+C\+F\+I\+L\+E, plane\+Node\+I\+Ds, dofs)
+\item 
+def \hyperlink{namespacebc_aec781928da985d56a69074db81974832}{read\+\_\+cli} ()
+\item 
+def \hyperlink{namespacebc_a5d1d6a658e5c54ce844670ce25456c44}{open\+\_\+bcfile} (opts, cmdline)
+\item 
+def \hyperlink{namespacebc_a3060f97f6ab0c3cc2c9e4a69dcf6858a}{write\+\_\+nonreflecting} (B\+C\+F\+I\+L\+E, seg\+I\+D)
+\item 
+def \hyperlink{namespacebc_ab4afd9429871367fa18a9fc90d64327a}{apply\+\_\+pml} (nodefile, pmlfile, B\+C\+F\+I\+L\+E, plane\+Node\+I\+Ds, \hyperlink{extractAxisIntensity_8m_accc088009d44c521706aa98d6387ee21}{axis}, axmin, axmax, pml\+\_\+part\+I\+D)
+\item 
+def \hyperlink{namespacebc_aea70fa7870b98d12de76eef412858025}{create\+\_\+pml\+\_\+elems\+\_\+file} (elefile)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{namespacebc_ab4afd9429871367fa18a9fc90d64327a}{}\index{bc@{bc}!apply\+\_\+pml@{apply\+\_\+pml}}
+\index{apply\+\_\+pml@{apply\+\_\+pml}!bc@{bc}}
+\subsubsection[{apply\+\_\+pml}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+apply\+\_\+pml (
+\begin{DoxyParamCaption}
+\item[{}]{nodefile, }
+\item[{}]{pmlfile, }
+\item[{}]{B\+C\+F\+I\+L\+E, }
+\item[{}]{plane\+Node\+I\+Ds, }
+\item[{}]{axis, }
+\item[{}]{axmin, }
+\item[{}]{axmax, }
+\item[{}]{pml\+\_\+part\+I\+D}
+\end{DoxyParamCaption}
+)}\label{namespacebc_ab4afd9429871367fa18a9fc90d64327a}
+\begin{DoxyVerb}Apply full nodal constraints to the outer face nodes and then create outer
+layers that are assigned to *MAT_PML_ELASTIC.
+\end{DoxyVerb}
+ \hypertarget{namespacebc_aea70fa7870b98d12de76eef412858025}{}\index{bc@{bc}!create\+\_\+pml\+\_\+elems\+\_\+file@{create\+\_\+pml\+\_\+elems\+\_\+file}}
+\index{create\+\_\+pml\+\_\+elems\+\_\+file@{create\+\_\+pml\+\_\+elems\+\_\+file}!bc@{bc}}
+\subsubsection[{create\+\_\+pml\+\_\+elems\+\_\+file}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+create\+\_\+pml\+\_\+elems\+\_\+file (
+\begin{DoxyParamCaption}
+\item[{}]{elefile}
+\end{DoxyParamCaption}
+)}\label{namespacebc_aea70fa7870b98d12de76eef412858025}
+\begin{DoxyVerb}create a new output elements file that the PML elements will be defined in
+that has _pml added to the filename.  elefile is assumed to end in '.dyn'
+
+this could be a homogeneous elems.dyn file, or a struct.dyn file
+
+EXAMPLE:
+    elems.dyn -> elems_pml.dyn
+\end{DoxyVerb}
+ \hypertarget{namespacebc_a4cf71b4bbc84d23159eba5f59bf178f5}{}\index{bc@{bc}!main@{main}}
+\index{main@{main}!bc@{bc}}
+\subsubsection[{main}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+main (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{namespacebc_a4cf71b4bbc84d23159eba5f59bf178f5}
+\hypertarget{namespacebc_a5d1d6a658e5c54ce844670ce25456c44}{}\index{bc@{bc}!open\+\_\+bcfile@{open\+\_\+bcfile}}
+\index{open\+\_\+bcfile@{open\+\_\+bcfile}!bc@{bc}}
+\subsubsection[{open\+\_\+bcfile}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+open\+\_\+bcfile (
+\begin{DoxyParamCaption}
+\item[{}]{opts, }
+\item[{}]{cmdline}
+\end{DoxyParamCaption}
+)}\label{namespacebc_a5d1d6a658e5c54ce844670ce25456c44}
+\begin{DoxyVerb}open BC file for writing and write header with command line
+\end{DoxyVerb}
+ \hypertarget{namespacebc_aec781928da985d56a69074db81974832}{}\index{bc@{bc}!read\+\_\+cli@{read\+\_\+cli}}
+\index{read\+\_\+cli@{read\+\_\+cli}!bc@{bc}}
+\subsubsection[{read\+\_\+cli}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+read\+\_\+cli (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{namespacebc_aec781928da985d56a69074db81974832}
+\begin{DoxyVerb}read command line arguments
+\end{DoxyVerb}
+ \hypertarget{namespacebc_a3060f97f6ab0c3cc2c9e4a69dcf6858a}{}\index{bc@{bc}!write\+\_\+nonreflecting@{write\+\_\+nonreflecting}}
+\index{write\+\_\+nonreflecting@{write\+\_\+nonreflecting}!bc@{bc}}
+\subsubsection[{write\+\_\+nonreflecting}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+write\+\_\+nonreflecting (
+\begin{DoxyParamCaption}
+\item[{}]{B\+C\+F\+I\+L\+E, }
+\item[{}]{seg\+I\+D}
+\end{DoxyParamCaption}
+)}\label{namespacebc_a3060f97f6ab0c3cc2c9e4a69dcf6858a}
+\begin{DoxyVerb}write non-reflecting boundaries (set segment references)
+\end{DoxyVerb}
+ \hypertarget{namespacebc_af21ebde085be8d5b7fb326da58fc415c}{}\index{bc@{bc}!write\+Node\+B\+C@{write\+Node\+B\+C}}
+\index{write\+Node\+B\+C@{write\+Node\+B\+C}!bc@{bc}}
+\subsubsection[{write\+Node\+B\+C}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+write\+Node\+B\+C (
+\begin{DoxyParamCaption}
+\item[{}]{B\+C\+F\+I\+L\+E, }
+\item[{}]{plane\+Node\+I\+Ds, }
+\item[{}]{dofs}
+\end{DoxyParamCaption}
+)}\label{namespacebc_af21ebde085be8d5b7fb326da58fc415c}
+\hypertarget{namespacebc_a35463a7b582e5de1b1a3c5ae9d34d913}{}\index{bc@{bc}!write\+Seg@{write\+Seg}}
+\index{write\+Seg@{write\+Seg}!bc@{bc}}
+\subsubsection[{write\+Seg}]{\setlength{\rightskip}{0pt plus 5cm}def bc.\+write\+Seg (
+\begin{DoxyParamCaption}
+\item[{}]{B\+C\+F\+I\+L\+E, }
+\item[{}]{title, }
+\item[{}]{seg\+I\+D, }
+\item[{}]{plane\+Node\+I\+Ds}
+\end{DoxyParamCaption}
+)}\label{namespacebc_a35463a7b582e5de1b1a3c5ae9d34d913}
