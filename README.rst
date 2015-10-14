@@ -1,0 +1,40 @@
+Finite Element Method (FEM) ARF Simulation Code
+===============================================
+
+Python Tools, `Field II <http://field-ii.dk>`__ Intensity Field
+Solution, LS-DYNA Pre/Post Processing
+
+All software in this repository is licensed under the Apache v2.0
+license, as detailed in the LICENSE file.
+
+If you are using the FEM simulation tools in work that you publish, then
+please consider citing the following manuscript:
+
+`Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR. "A
+Finite-Element Method Model of Soft Tissue Response to Impulsive
+Acoustic Radiation Force," IEEE UFFC, 52(10): 1699-1712,
+2005. <http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/>`__
+
+Also please cite the following manuscript if you use Field II:
+
+`J.A. Jensen and N. B. Svendsen: Calculation of pressure fields from
+arbitrarily shaped, apodized, and excited ultrasound transducers, IEEE
+Trans. Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
+1992. <http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123>`__
+
+Documentation
+=============
+
+The latest documentation is automatically generated using sphinx and can be
+built in ``docs/``.  The same documentation is also built and rendered
+automatically at http://fem.readthedocs.org/.
+
+Contributors
+============
+
+-  Mark Palmeri (@mlp6)
+-  Ningrui Li (@Ningrui-Li)
+-  Mallory Selzo (UNC-CH)
+-  Chris Moore (chrisjmoore@unc.edu)
+-  David Bradway (@davidbradway)
+-  Nick Bottenus (@nbottenus)

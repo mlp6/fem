@@ -11,11 +11,15 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   install
+   code_layout
+   coordinates_units
    create_dyna_mesh
    mesh_modules
    simulate_ARFI
    post_modules
    hypermesh
+   testing
 
 Indices and tables
 ==================
