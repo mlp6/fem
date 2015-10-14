@@ -26,6 +26,9 @@ __license__ = "Apache v2.0"
 
 
 def main():
+    """way too complicated for now
+    """
+
     import sys
     import numpy as n
     import fem_mesh
@@ -95,12 +98,23 @@ def main():
 
 
 def writeNodeLoads(LOADFILE, planeNodeIDs, dofs):
+    """write load keyword file
+
+    :param LOADFILE: file object
+    :param planeNodeIDS: array of node IDs
+    :param dofs: degrees of freedom to constrain
+    :returns: None
+
+    """
     for i in planeNodeIDs:
         for j in i:
             LOADFILE.write("%i,%s\n" % (j[0], dofs))
 
 
 def read_cli():
+    """read CLI args
+    """
+
     import argparse as argp
 
     par = argp.ArgumentParser(description="Generate loading conditions "

@@ -84,14 +84,11 @@ def parse_cli():
 
 
 def calc_node_pos(xyz, numElem):
-    """
-    Calculate nodal spatial positions based on CLI specs
-    INPUTS
-        xyz (xmin, xmax, ymin, ymax, zmin, zmax) - tuple
-        numElem (xEle, yEle, zEle) - int tuple
+    """Calculate nodal spatial positions based on CLI specs
+    :param xyz: (xmin, xmax, ymin, ymax, zmin, zmax)
+    :param int numElem: (xEle, yEle, zEle)
+    :returns: pos - list of lists containing x, y, and z positions
 
-    OUTPUT
-        pos - list of lists containing x, y, and z positions
     """
     import numpy as n
     import warnings as w
@@ -118,17 +115,15 @@ def calc_node_pos(xyz, numElem):
 
 
 def writeNodes(pos, nodefile, header_comment):
-    """
-    write node file using calculated position data
+    """write node file using calculated position data
 
-    INPUTS
-        pos - list of lists of x, y, z positions
-        nodefile - nodes.dyn
-        header_comment - what version / syntax of calling command
+    :param pos: list of lists of x, y, z positions
+    :param nodefile: nodes.dyn
+    :param header_comment: what version / syntax of calling command
+    :returns: nodes.dyn written (or specified filename)
 
-    OUTPUTS
-        nodes.dyn written (or specified filename)
     """
+    # TODO: clean up syntax
     nodesTotal = pos[0].__len__() * pos[1].__len__() * pos[2].__len__()
 
     NODEFILE = open(nodefile, 'w')
@@ -147,16 +142,13 @@ def writeNodes(pos, nodefile, header_comment):
 
 
 def writeElems(numElem, partid, elefile, header_comment):
-    """
-    write element file using calculated position data
+    """write element file using calculated position data
 
-    INPUTS
-        pos - list of lists of x, y, z positions
-        elefile - elems.dyn
-        header_comment - what version / syntax of calling command
+    :param pos: list of lists of x, y, z positions
+    :param str elefile: elems.dyn
+    :param str header_comment: what version / syntax of calling command
+    :returns: elems.dyn written (or specified filename)
 
-    OUTPUTS
-        elems.dyn written (or specified filename)
     """
     # calculate total number of expected elements
     elemTotal = numElem[0] * numElem[1] * numElem[2]
@@ -202,12 +194,17 @@ def writeElems(numElem, partid, elefile, header_comment):
 
 
 def check_x0_y0(pos):
-    """
-    check to make sure that nodes exist at (x, y) = (0, 0) so that the focus /
-    peak of an ARF excitation is captured by the mesh
+    """check model position
+
+    Check to make sure that nodes exist at (x, y) = (0, 0) so that the focus /
+    peak of an ARF excitation is captured by the mesh.
+
+    :param pos: node positions
+    :raises: warning if (0, 0) is not in the mesh
+
     """
     import warnings as w
-    if not 0.0 in pos[0] and not 0.0 in pos[1]:
+    if 0.0 not in pos[0] and 0.0 not in pos[1]:
         w.warn("Your mesh does not contain nodes at (x, y) = (0, 0)!  This "
                "could lead to poor representation of your ARF focus.")
 
