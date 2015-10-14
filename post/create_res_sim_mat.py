@@ -56,7 +56,8 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes):
     :param image_plane: matrix of image plane node IDs spatially sorted
     :param legacynodes: boolean flag to use legacy disp.dat format with node
                         IDs repeated every timestep
-    :return arfidata:  arfidata matrix
+    :returns: arfidata matrix
+
     """
     import numpy as np
     import struct
@@ -117,8 +118,9 @@ def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
 
     :param nodeidlist: first column of disp_slice with node IDs in row order
     :param disp_slice_z_only: squeezed disp_slice of just zisp
-    :return zdisp: array of z-disp in rows corresponding to node ID
-                   (for fast read access)
+    :returns: zdisp -- array of z-disp in rows corresponding to node ID
+                       (for fast read access)
+
     """
     import numpy as np
 
@@ -158,8 +160,16 @@ def read_cli():
 
 
 def extract_image_plane(snic, axes, ele_pos):
-    """ Extract a 2D matrix of the imaging plane node IDs based on the
-    elevation position (mesh coordinates)
+    """extract 2D imaging plane node IDs
+
+    Extract a 2D matrix of the imaging plane node IDs based on the
+    elevation position (mesh coordinates).
+
+    :param snic: sorted node IDs and coordinates
+    :param axes: spatial axes
+    :param ele_pos: elevation position for plane of interest
+    :returns: image_plane (node IDs)
+
     """
     import numpy as np
 
@@ -171,12 +181,15 @@ def extract_image_plane(snic, axes, ele_pos):
 
 def save_res_mat(resfile, arfidata, axes, t):
     """ save res_sim.mat file using variables scanner-generated data
+
     data are saved as float32 to save space
+
     :param resfile: res_sim.mat filename
     :param arfidata: arfidata matrix
     :param axes: ele, lat, axial (mesh units)
     :param t: time
-    :return void:
+    :returns: None
+
     """
     from scipy.io import savemat
 
@@ -198,7 +211,8 @@ def read_header(dispout):
     """ Read header (first 3 words) from disp.dat
 
     :param dispout: disp.dat filename
-    :return header: num_nodes, num_dims, num_timesteps
+    :returns: header (num_nodes, num_dims, num_timesteps)
+
     """
     import struct
 
@@ -215,10 +229,12 @@ def read_header(dispout):
 
 def extract_dt(dyn_file):
     """ extract time step (dt) from dyna input deck
+
     assumes that input deck is comma-delimited
 
     :param dyn_file: input.dyn filename
-    :return dt: dt from input.dyn binary data save parameter
+    :returns: dt from input.dyn binary data save parameter
+
     """
     found_database = False
     with open(dyn_file, 'r') as d:
@@ -235,6 +251,7 @@ def extract_dt(dyn_file):
                 found_database = True
 
     return dt
+
 
 if __name__ == "__main__":
     main()

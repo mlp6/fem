@@ -26,6 +26,7 @@ limitations under the License.
 from __future__ import absolute_import
 from six.moves import range
 
+
 def main():
     args = parse_cli()
     nodout = open(args.nodout, 'r')
@@ -33,6 +34,12 @@ def main():
 
 
 def create_dat(args, nodout):
+    """create binary data file
+
+    :param args: CLI args
+    :param str nodout: nodout file create my ls-dyna
+
+    """
     global writenode
     import sys
 
@@ -81,8 +88,7 @@ def create_dat(args, nodout):
 
 
 def parse_cli():
-    """
-    parse command-line interface arguments
+    """parse command-line interface arguments
     """
     import argparse
 
@@ -105,26 +111,32 @@ def parse_cli():
 
 
 def generate_header(data, outfile):
-    """
-    generate headers from data matrix of first time step
+    """generate headers from data matrix of first time step
+
+    :param data: data
+    :param str outfile: output filename to count times from
+    :returns: header
+
     """
     ts_count = count_timesteps(outfile.name)
     header = {'numnodes': len(data),
               'numdims': 4,
-              'numtimesteps' : ts_count
+              'numtimesteps': ts_count
               }
 
     return header
 
 
 def count_timesteps(outfile):
-    """
-    count timesteps written to nodout by search for all 'time' strings
+    """count timesteps written to nodout
+
+    searches for 'time' in lines
 
     :param outfile:
-    :return: ts_count
+    :returns: ts_count
+
     """
-    ts_count = -1  # start at -1 since there is one extra instance of 'time' in the nodout file
+    ts_count = -1  # start at -1 (one extra instance of 'time' in nodout)
     with open(outfile, 'r') as f:
         for line in f:
             if 'time' in line:
@@ -133,23 +145,33 @@ def count_timesteps(outfile):
 
 
 def write_headers(outfile, header):
-    """
+    """write binary header
+
     write binary header information to reformat things on read downstream
-    'header' is a dictionary containing the necessary information
+
+    :param str outfile: output file object
+    :param header: dictcontaining the necessary information
+    :returns: None
+
     """
     import struct
-    outfile.write(struct.pack('fff', header['numnodes'],
-                                     header['numdims'],
-                                     header['numtimesteps']
+    outfile.write(struct.pack('fff',
+                              header['numnodes'],
+                              header['numdims'],
+                              header['numtimesteps']
                               )
                   )
 
 
 def process_timestep_data(data, outfile, writenode):
-    """
-    write data for the entire timestep to outfile (object)
+    """write data for the entire timestep to outfile
 
-    writenode is a Boolean if the node IDs should be written to save ~25% of the disp.dat file size
+    :param data:
+    :param outfile: output file object
+    :param writenode: Boolean if the node IDs should be written to save
+                      ~25% of the disp.dat file size
+    :returns: None
+
     """
     import struct
 
