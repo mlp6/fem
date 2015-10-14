@@ -11,24 +11,8 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-Mesh Tools
-==========
-
-.. automodule:: fem_mesh
-   :members:
-   :undoc-members:
-
-.. automodule:: CreateStructure
-   :members:
-   :undoc-members:
-
-Post-Processing Tools
-=====================
-
-
-Field II Simulation Tools
-=========================
-
+   mesh_modules
+   post_modules
 
 Indices and tables
 ==================
