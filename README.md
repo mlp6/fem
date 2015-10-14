@@ -23,6 +23,10 @@ Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
 1992.](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123)
 
 
+Documentation
+=============
+The latest documentation can be built in docs/, and can also be found here: http://fem.readthedocs.org/.
+
 Installation
 ============
  * You can locally clone this repository:
