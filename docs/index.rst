@@ -11,6 +11,7 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   create_dyna_mesh
    mesh_modules
    post_modules
    hypermesh

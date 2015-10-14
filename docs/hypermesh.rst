@@ -4,7 +4,7 @@ Hypermesh Tutorial
 Rectilinear Mesh Generation Using Hypermesh (Douglas Dumont)
 
 Set Global Properties to LS Dyna
-================================
+--------------------------------
 
 #. Click on the global button in the lower-right.
 
@@ -14,7 +14,7 @@ Set Global Properties to LS Dyna
 #. Click return.
 
 Define the Part and Set Material Properties
-===========================================
+-------------------------------------------
 
 #. Goto the Collectors Menu.
 
@@ -36,7 +36,7 @@ Define the Part and Set Material Properties
 #. Return to the main menus.
 
 Uniform Mesh Generation
-=======================
+-----------------------
 
 #. Click on Perf rather than Std besides GFX. This will make mesh
    generation much faster.
@@ -108,7 +108,7 @@ Uniform Mesh Generation
    drag this new mesh to create a volume.
 
 Removing unneeded nodes and surfaces
-====================================
+------------------------------------
 
 #. The volume is almost finished. Now the nodes and surfaces created
    earlier should be deleted. To do this, click on Display and turn
