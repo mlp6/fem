@@ -13,6 +13,7 @@ Contents:
 
    create_dyna_mesh
    mesh_modules
+   simulate_ARFI
    post_modules
    hypermesh
 
