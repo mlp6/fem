@@ -13,6 +13,7 @@ Contents:
 
    mesh_modules
    post_modules
+   hypermesh
 
 Indices and tables
 ==================
