@@ -20,6 +20,7 @@ Contents:
    post_modules
    hypermesh
    testing
+   thermal
 
 Indices and tables
 ==================
