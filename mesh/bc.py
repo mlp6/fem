@@ -175,6 +175,7 @@ def read_cli():
                    help="part ID to assign to PML",
                    default=2)
     p.add_argument("--num_pml_elems",
+                   type=int,
                    help="number of elements in PML (5-10)",
                    default=5)
     p.add_argument("--top",
