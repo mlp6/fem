@@ -15,7 +15,7 @@
 
 def main():
     import fem_mesh
-    import sys
+    from sys import argv
 
     fem_mesh.check_version()
 
@@ -24,7 +24,7 @@ def main():
     if opts.pml:
         pmlfile = create_pml_elems_file(opts.elefile)
 
-    BCFILE = open_bcfile(opts, sys.argv[0])
+    BCFILE = open_bcfile(opts, argv[0])
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(opts.nodefile)
 
