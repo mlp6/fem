@@ -1,7 +1,7 @@
 Hypermesh Tutorial
 ==================
 
-Rectilinear Mesh Generation Using Hypermesh (Douglas Dumont)
+Rectilinear mesh generation using HyperMesh (Douglas Dumont)
 
 Set Global Properties to LS Dyna
 --------------------------------
@@ -145,3 +145,19 @@ Removing unneeded nodes and surfaces
 
 #. Drink a beer. Watch a movie. Work from home. Your mesh is now
    finished.
+
+HyperMesh Alternatives
+======================
+
+Commercial HyperMesh is not cheap, so there are some other considerations:
+
+#. HyperMesh Student Edition (restricted to 1 computer; no direct ls-dyna export)
+#. LS-PREPOST
+#. http://geuz.org/gmsh/
+#. http://www.vmtk.org/
+#. http://febio.org/preview/
+#. http://sourceforge.net/projects/netgen-mesher/
+#. http://wias-berlin.de/software/tetgen/
+
+Keep in mind that tetrahedral elements are not well conditioned for
+nearly-incompressible materials, so most of these are not ideal options.
