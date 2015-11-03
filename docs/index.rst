@@ -19,6 +19,7 @@ Contents:
    simulate_ARFI
    post_modules
    hypermesh
+   examples
    testing
    thermal
 
