@@ -14,6 +14,11 @@
 """
 
 def main():
+    """apply prescribed boundary conditions to nodes/face segments
+
+    TODO: THIS IS WAY TOO COMPLEX
+    """
+
     import fem_mesh
     from sys import argv
 
@@ -126,6 +131,14 @@ def main():
 
 
 def writeSeg(BCFILE, title, segID, planeNodeIDs):
+    """write face segments to BC input file
+
+    :param BCFILE: file IO object
+    :param str title: header comment line
+    :param int segID: segment ID #
+    :param planeNodeIDs: 2D array
+    :returns: segID (inc +1)
+    """
     BCFILE.write('*SET_SEGMENT_TITLE\n')
     BCFILE.write('%s\n' % title)
     BCFILE.write('%i\n' % segID)
@@ -137,10 +150,17 @@ def writeSeg(BCFILE, title, segID, planeNodeIDs):
                                             planeNodeIDs[i + 1, j + 1][0],
                                             planeNodeIDs[i, j + 1][0]))
     segID = segID + 1
+
     return segID
 
 
 def writeNodeBC(BCFILE, planeNodeIDs, dofs):
+    """write BC keywords to BC input file
+
+    :param BCFILE: file IO object
+    :param planeNodeIDs: 2D array
+    :param str dofs: degrees of freedom
+    """
     BCFILE.write('*BOUNDARY_SPC_NODE\n')
     # don't grab the top / bottom rows (those will be defined in the top/bottom
     # defs)
@@ -150,8 +170,9 @@ def writeNodeBC(BCFILE, planeNodeIDs, dofs):
 
 
 def read_cli():
-    """
-    read command line arguments
+    """read command line arguments
+
+    :returns: opts (argparse object)
     """
     import argparse as ap
 
@@ -208,19 +229,27 @@ def read_cli():
 
 
 def open_bcfile(opts, cmdline):
-    """
-    open BC file for writing and write header with command line
+    """ open BC file for writing and write header
+
+    TODO: only pass in filename (don't need entire BC object!!)
+
+    :param opts: argparse object
+    :param str cmdline: command line text to put in header
+    :returns: BCFILE
     """
     BCFILE = open(opts.bcfile, 'w')
     BCFILE.write("$ Generated using %s with the following options:\n" %
                  cmdline)
     BCFILE.write("$ %s\n" % opts)
+
     return BCFILE
 
 
 def write_nonreflecting(BCFILE, segID):
-    """
-    write non-reflecting boundaries (set segment references)
+    """write non-reflecting boundaries (set segments)
+
+    :param BCFILE: file IO object
+    :param int segID: segment ID #
     """
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
     for i in range(1, segID):
@@ -229,9 +258,12 @@ def write_nonreflecting(BCFILE, segID):
 
 def apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis, axmin, axmax,
               pml_partID):
-    """
+    """apply PMLs
+
     Apply full nodal constraints to the outer face nodes and then create outer
     layers that are assigned to *MAT_PML_ELASTIC.
+
+    TODO: delinieate input params
     """
     import CreateStructure as CS
 
@@ -250,10 +282,13 @@ def apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis, axmin, axmax,
 
 def create_pml_elems_file(elefile):
     """
-    create a new output elements file that the PML elements will be defined in
+    Create a new output elements file that the PML elements will be defined in
     that has _pml added to the filename.  elefile is assumed to end in '.dyn'
 
     this could be a homogeneous elems.dyn file, or a struct.dyn file
+
+    TODO: ADD PARAMS
+    TODO: ADD EXAMPLE SYNTAX
 
     EXAMPLE:
         elems.dyn -> elems_pml.dyn
