@@ -32,9 +32,10 @@ automatically at http://fem.readthedocs.org/.
 Contributors
 ============
 
--  Mark Palmeri (@mlp6)
--  Ningrui Li (@Ningrui-Li)
--  Mallory Selzo (UNC-CH)
--  Chris Moore (chrisjmoore@unc.edu)
--  David Bradway (@davidbradway)
--  Nick Bottenus (@nbottenus)
+- Mark Palmeri (mlp6@duke.edu)
+- Ningrui Li (nl91@duke.edu)
+- Mallory Selzo (UNC-CH)
+- Chris Moore (chrisjmoore@unc.edu)
+- David Bradway (david.bradway@duke.edu)
+- Nick Bottenus (nbb5@duke.edu)
+- Brian Bigler (brian.bigler@duke.edu)
