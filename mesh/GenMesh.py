@@ -41,11 +41,24 @@ def main():
 
     pos = calc_node_pos(args.xyz, args.numElem)
 
+    # check to make sure nodes fall at (x, y) = (0, 0)
+    check_x0_y0(pos)
+
     writeNodes(pos, args.nodefile, out_file_header)
     writeElems(args.numElem, args.partid, args.elefile, out_file_header)
 
 
 def parse_cli():
+    """parse commandline arguments
+
+    Defines:
+        --nodefile [nodes.dyn]
+        --elefile [elems.dyn]
+        --partid [1]
+        --xyz [(xmin, xmax, ymin, ymax,...)]
+        --numElem [(x, y, z)]
+    """
+
     import argparse as ap
 
     par = ap.ArgumentParser(description="Generate rectilinear 3D mesh as "
@@ -85,10 +98,10 @@ def parse_cli():
 
 def calc_node_pos(xyz, numElem):
     """Calculate nodal spatial positions based on CLI specs
+
     :param xyz: (xmin, xmax, ymin, ymax, zmin, zmax)
     :param int numElem: (xEle, yEle, zEle)
     :returns: pos - list of lists containing x, y, and z positions
-
     """
     import numpy as n
     import warnings as w
@@ -108,9 +121,6 @@ def calc_node_pos(xyz, numElem):
         ptemp = n.linspace(minpos, maxpos, numElem[i] + 1)
         pos.append(ptemp.tolist())
 
-    # check to make sure nodes fall at (x, y) = (0, 0)
-    check_x0_y0(pos)
-
     return pos
 
 
@@ -121,7 +131,6 @@ def writeNodes(pos, nodefile, header_comment):
     :param nodefile: nodes.dyn
     :param header_comment: what version / syntax of calling command
     :returns: nodes.dyn written (or specified filename)
-
     """
     # TODO: clean up syntax
     nodesTotal = pos[0].__len__() * pos[1].__len__() * pos[2].__len__()
@@ -148,7 +157,6 @@ def writeElems(numElem, partid, elefile, header_comment):
     :param str elefile: elems.dyn
     :param str header_comment: what version / syntax of calling command
     :returns: elems.dyn written (or specified filename)
-
     """
     # calculate total number of expected elements
     elemTotal = numElem[0] * numElem[1] * numElem[2]
@@ -195,13 +203,11 @@ def writeElems(numElem, partid, elefile, header_comment):
 
 def check_x0_y0(pos):
     """check model position
-
     Check to make sure that nodes exist at (x, y) = (0, 0) so that the focus /
     peak of an ARF excitation is captured by the mesh.
 
     :param pos: node positions
     :raises: warning if (0, 0) is not in the mesh
-
     """
     import warnings as w
     if 0.0 not in pos[0] and 0.0 not in pos[1]:
