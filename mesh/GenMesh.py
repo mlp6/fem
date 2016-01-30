@@ -107,7 +107,7 @@ def calc_node_pos(xyz, numElem):
     import warnings as w
     import sys
 
-    if xyz.__len__() != 6:
+    if len(xyz) != 6:
         sys.exit("ERROR: Wrong number of position range limits input.")
 
     pos = []
@@ -133,7 +133,7 @@ def writeNodes(pos, nodefile, header_comment):
     :returns: nodes.dyn written (or specified filename)
     """
     # TODO: clean up syntax
-    nodesTotal = pos[0].__len__() * pos[1].__len__() * pos[2].__len__()
+    nodesTotal = len(pos[0]) * len(pos[1]) * len(pos[2])
 
     NODEFILE = open(nodefile, 'w')
     NODEFILE.write("%s\n" % (header_comment))
