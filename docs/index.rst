@@ -23,6 +23,7 @@ Contents:
    examples
    testing
    thermal
+   tests
 
 Indices and tables
 ==================
