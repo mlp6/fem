@@ -15,6 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import sys, os
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../')
+
 xyz = (0, 2, 3, 5, 6, 8)
 numElem = (2, 2, 2)
 pos = [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0]]
