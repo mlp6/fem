@@ -3,7 +3,7 @@ GenMesh.py
 
 Generate a 3D rectilinear mesh as node and element input files for LS-DYNA3D.
 
-Copyright 2015 Mark L. Palmeri
+Copyright 2016 Mark L. Palmeri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ def main():
     check_x0_y0(pos)
 
     writeNodes(pos, args.nodefile, out_file_header)
+    
     writeElems(args.numElem, args.partid, args.elefile, out_file_header)
 
 
@@ -132,7 +133,6 @@ def writeNodes(pos, nodefile, header_comment):
     :param header_comment: what version / syntax of calling command
     :returns: nodes.dyn written (or specified filename)
     """
-    # TODO: clean up syntax
     nodesTotal = len(pos[0]) * len(pos[1]) * len(pos[2])
 
     NODEFILE = open(nodefile, 'w')
