@@ -208,11 +208,15 @@ def check_x0_y0(pos):
 
     :param pos: node positions
     :raises: warning if (0, 0) is not in the mesh
+    :returns: 0/1 (1 = fail)
     """
     import warnings as w
     if 0.0 not in pos[0] and 0.0 not in pos[1]:
         w.warn("Your mesh does not contain nodes at (x, y) = (0, 0)!  This "
                "could lead to poor representation of your ARF focus.")
+        return 1
+    else:
+        return 0
 
 
 if __name__ == "__main__":
