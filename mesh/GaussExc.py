@@ -17,6 +17,7 @@ import sys
 import math
 import fem_mesh
 
+
 def main():
     """ Generate Gaussian-weighted point load distribution
     """
@@ -25,7 +26,8 @@ def main():
     opts = read_cli()
 
     # setup the new output file with a very long, but unique, filename
-    loadfilename = ("gauss_exc_sigma_%.3f_%.3f_%.3f_center_%.3f_%.3f_%.3f_amp_%.3f_amp_cut_%.3f_%s.dyn" %
+    loadfilename = ("gauss_exc_sigma_%.3f_%.3f_%.3f_"
+                    "center_%.3f_%.3f_%.3f_amp_%.3f_amp_cut_%.3f_%s.dyn" %
                     (opts.sigma[0], opts.sigma[1], opts.sigma[2],
                      opts.center[0], opts.center[1], opts.center[2],
                      opts.amp, opts.amp_cut, opts.sym))
@@ -39,7 +41,7 @@ def main():
     # excitation field
     sym_node_count = 0
     node_count = 0
-    NODEFILE = open(opts.nodefile,'r')
+    NODEFILE = open(opts.nodefile, 'r')
     for i in NODEFILE:
         # make sure not to process comment and command syntax lines
         if i[0] != "$" and i[0] != "*":
@@ -68,7 +70,7 @@ def main():
                 # check for quarter symmetry force reduction (if needed)
                 if opts.sym == 'qsym':
                     if (math.fabs(fields[1]) < opts.search_tol and
-                       math.fabs(fields[2]) < opts.search_tol):
+                        math.fabs(fields[2]) < opts.search_tol):
                         nodeGaussAmp = nodeGaussAmp/4
                         sym_node_count += 1
                     elif (math.fabs(fields[1]) < opts.search_tol or
@@ -92,6 +94,7 @@ def main():
     LOADFILE.write("$ %i loads generated\n" % node_count)
     LOADFILE.write("$ %i exist on a symmetry plane / edge\n" % sym_node_count)
     LOADFILE.close()
+
 
 def read_cli():
     """ read CLI arguments
@@ -140,4 +143,3 @@ def read_cli():
 
 if __name__ == "__main__":
     main()
-
