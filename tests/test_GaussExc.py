@@ -54,8 +54,11 @@ def test_check_num_fields():
     assert "Unexpected number of node columns" in str(excinfo.value)
 
 
-def test_read_node_positions():
-    """read_node_positions
+def test_read_process_nodes():
+    """read_process_nodes
+
+    This is tricky to test since it calls a lot of other functions.
+    Probably need to refactor to make a more meaningful, independent test.
     """
     pass
 
@@ -65,8 +68,7 @@ def test_write_load_file(tmpdir):
     """
     from GaussExc import write_load_file
 
-    loadfile = "loads.dyn"
-    f = tmpdir.join(loadfile)
+    f = tmpdir.join("loads.dyn")
     load_nodeID_amp = [(1, 2.0), (3, 4.0)]
     write_load_file(f.strpath, load_nodeID_amp, sigma, center, amp)
 
