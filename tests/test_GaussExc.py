@@ -3,6 +3,7 @@
 
 import os
 import sys
+import pytest
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../mesh/')
 
@@ -33,6 +34,18 @@ def test_sym_scale_amp():
     assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'qsym') == 2.0
     assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'hsym') == 4.0
     assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'none') == 8.0
+
+
+def test_check_num_fields():
+    """test that error is raised
+    """
+    from GaussExc import check_num_fields
+
+    assert check_num_fields([1.0, 1.0, 2.0, 3.0]) == 0
+    with pytest.raises(SyntaxError) as excinfo:
+        check_num_fields([1.0, 1.0, 2.0, 3.0, 4.0])
+    assert "Unexpected number of node columns" in str(excinfo.value)
+
 
 """
 def test_writeNodes(tmpdir):

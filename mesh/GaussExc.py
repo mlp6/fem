@@ -13,15 +13,14 @@
 from __future__ import absolute_import
 from __future__ import print_function
 
-import sys
-import math
-import fem_mesh
-
 
 def main():
     """ Generate Gaussian-weighted point load distribution
     """
-    fem_mesh.check_version()
+    from fem_mesh import check_version
+    check_version()
+
+    import sys
 
     opts = read_cli()
 
@@ -52,10 +51,8 @@ def main():
             # out what's wrong)
             # TODO: Do I want this to check each time?  Looks like it could
             #       slow things down on really large files
-            if len(fields) != 4:
-                print("ERROR: Unexpected number of node columns")
-                print(fields)
-                sys.exit(1)
+            check_num_fields(fields)
+
             # compute the Gaussian amplitude at the node
             nodeGaussAmp = calc_gauss_amp(fields, opts.center, opts.sigma,
                                           opts.amp)
@@ -74,6 +71,19 @@ def main():
     NODEFILE.close()
     LOADFILE.write("*END\n")
     LOADFILE.close()
+
+
+def check_num_fields(fields):
+    """check for 4 fields
+
+    :param fields: list (node ID, x, y, z)
+    """
+    from sys import exit
+    if len(fields) != 4:
+        raise SyntaxError("Unexpected number of node columns")
+        exit(1)
+    else:
+        return 0
 
 
 def sym_scale_amp(fields, nodeGaussAmp, sym, search_tol=0.0001):
