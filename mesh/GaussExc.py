@@ -43,14 +43,9 @@ def main():
 
         if fields:
             nodeGaussAmp = calc_gauss_amp(fields, opts.center, opts.sigma,
-                                          opts.amp)
+                                          opts.amp, opts.amp_cut, opts.sym)
 
-            # write the point load only if the amplitude is above the cutoff
-            # dyna input needs to be limited in precision
-            if nodeGaussAmp > opts.amp*opts.amp_cut:
-
-                nodeGaussAmp = sym_scale_amp(fields, nodeGaussAmp,
-                                             opts.sym, opts.search_tol)
+            if nodeGaussAmp:
 
                 LOADFILE.write("%i,3,1,-%.4f\n" % (int(fields[0]),
                                                    nodeGaussAmp))
@@ -79,6 +74,7 @@ def read_node_positions(line):
         fields = None
 
     return fields
+
 
 def check_num_fields(fields):
     """check for 4 fields
@@ -119,20 +115,29 @@ def sym_scale_amp(fields, nodeGaussAmp, sym, search_tol=0.0001):
     return nodeGaussAmp
 
 
-def calc_gauss_amp(node_xyz, center, sigma, amp):
+def calc_gauss_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0, 1.0),
+                   amp=1.0, amp_cut=0.05, sym="qsym"):
     """calculated the Gaussian amplitude at the node
 
-    :param: node_xyz (list of x,y,z node coordinates)
-    :param: center (list of x,y,z for Gaussian center)
-    :param: sigma (list of x,y,z Guassian width)
-    :param: amp (peak Gaussian source amplitude)
-    :returns nodeGaussAmp: point load amplitude at the specified node
+    :param node_xyz: list of x,y,z node coordinates
+    :param center: list of x,y,z for Gaussian center
+    :param sigma: list of x,y,z Guassian width
+    :param amp: peak Gaussian source amplitude
+    :param amp_cut: lower threshold (pct of max) for amplitude creating a
+                    point load
+    :param qsym: mesh symemetry (qsym, hsym, none)
+    :returns: nodeGaussAmp - point load amplitude at the specified node
     """
     from math import pow, exp
     exp1 = pow((node_xyz[1]-center[0])/sigma[0], 2)
     exp2 = pow((node_xyz[2]-center[1])/sigma[1], 2)
     exp3 = pow((node_xyz[3]-center[2])/sigma[2], 2)
     nodeGaussAmp = amp * exp(-(exp1 + exp2 + exp3))
+
+    if (nodeGaussAmp/amp) < amp_cut:
+        nodeGaussAmp = None
+    else:
+        nodeGaussAmp = sym_scale_amp(node_xyz, nodeGaussAmp, sym)
 
     return nodeGaussAmp
 
