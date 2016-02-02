@@ -52,15 +52,15 @@ def main():
             fields = [float(j) for j in fields]
             # check for unexpected inputs and exit if needed (have user figure
             # out what's wrong)
+            # TODO: Do I want this to check each time?  Looks like it could
+            #       slow things down on really large files
             if len(fields) != 4:
                 print("ERROR: Unexpected number of node columns")
                 print(fields)
                 sys.exit(1)
             # compute the Gaussian amplitude at the node
-            exp1 = math.pow((fields[1]-opts.center[0])/opts.sigma[0], 2)
-            exp2 = math.pow((fields[2]-opts.center[1])/opts.sigma[1], 2)
-            exp3 = math.pow((fields[3]-opts.center[2])/opts.sigma[2], 2)
-            nodeGaussAmp = opts.amp * math.exp(-(exp1 + exp2 + exp3))
+            nodeGaussAmp = calc_gauss_amp(fields, opts.center, opts.sigma,
+                                          opts.amp)
 
             # write the point load only if the amplitude is above the cutoff
             # dyna input needs to be limited in precision
@@ -94,6 +94,24 @@ def main():
     LOADFILE.write("$ %i loads generated\n" % node_count)
     LOADFILE.write("$ %i exist on a symmetry plane / edge\n" % sym_node_count)
     LOADFILE.close()
+
+
+def calc_gauss_amp(node_xyz, center, sigma, amp):
+    """calculated the Gaussian amplitude at the node
+
+    :param: node_xyz (list of x,y,z node coordinates)
+    :param: center (list of x,y,z for Gaussian center)
+    :param: sigma (list of x,y,z Guassian width)
+    :param: amp (peak Gaussian source amplitude)
+    :returns nodeGaussAmp: point load amplitude at the specified node
+    """
+    from math import pow, exp
+    exp1 = pow((node_xyz[1]-center[0])/sigma[0], 2)
+    exp2 = pow((node_xyz[2]-center[1])/sigma[1], 2)
+    exp3 = pow((node_xyz[3]-center[2])/sigma[2], 2)
+    nodeGaussAmp = amp * exp(-(exp1 + exp2 + exp3))
+
+    return  nodeGaussAmp
 
 
 def read_cli():

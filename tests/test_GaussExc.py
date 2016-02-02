@@ -1,0 +1,39 @@
+"""test_GaussExc.py
+"""
+
+import os
+import sys
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../mesh/')
+
+
+def test_calc_gauss_amp():
+    """test node assigmnet of Gaussian amplitude
+    """
+    from GaussExc import calc_gauss_amp
+
+    node_xyz = [1, 0.0, 0.0, -2.0]
+    center = [0.0, 0.0, -2.0]
+    sigma = [0.25, 0.25, 0.25]
+    amp = 1.0
+
+    assert calc_gauss_amp(node_xyz, center, sigma, amp) == 1.0
+
+    node_xyz = [1, 0.25, 0.0, -2.0]
+
+    assert round(calc_gauss_amp(node_xyz, center, sigma, amp) -
+                 0.36787944117144233, 5) == 0
+
+"""
+def test_writeNodes(tmpdir):
+    from GenMesh import writeNodes
+
+    nodefile = "nodes.dyn"
+    f = tmpdir.join(nodefile)
+    writeNodes(pos, f.strpath, header_comment)
+    lines = f.readlines()
+    assert lines[0] == header_comment+"\n"
+    assert lines[1] == "*NODE\n"
+    assert lines[2] == "1,0.000000,3.000000,6.000000\n"
+    assert lines[-1] == "*END\n"
+"""
