@@ -15,8 +15,6 @@ from __future__ import print_function
 
 
 def main():
-    """ Generate Gaussian-weighted point load distribution
-    """
     from fem_mesh import check_version
     check_version()
 
@@ -41,19 +39,9 @@ def main():
     NODEFILE = open(opts.nodefile, 'r')
     for i in NODEFILE:
         # make sure not to process comment and command syntax lines
-        if i[0] != "$" and i[0] != "*":
-            i = i.rstrip('\n')
-            # dyna scripts should be kicking out comma-delimited data; if not,
-            # then the user needs to deal with it
-            fields = i.split(',')
-            fields = [float(j) for j in fields]
-            # check for unexpected inputs and exit if needed (have user figure
-            # out what's wrong)
-            # TODO: Do I want this to check each time?  Looks like it could
-            #       slow things down on really large files
-            check_num_fields(fields)
+        fields = read_node_positions(i)
 
-            # compute the Gaussian amplitude at the node
+        if fields:
             nodeGaussAmp = calc_gauss_amp(fields, opts.center, opts.sigma,
                                           opts.amp)
 
@@ -72,6 +60,25 @@ def main():
     LOADFILE.write("*END\n")
     LOADFILE.close()
 
+
+def read_node_positions(line):
+    """read node position fields from line in nodefile
+
+    Ignore lines that start with '$' (comments) and '*' keywords;
+    Assume that all data entries are comma-delimited without spaces.
+
+    :param line: single line string from nodefile
+    :returns fields: 1x4 float list of node ID, x, y, z; None if appropriate
+    """
+    if line[0] != "$" and line[0] != "*":
+        line = line.rstrip('\n')
+        fields = line.split(',')
+        fields = [float(i) for i in fields]
+        check_num_fields(fields)
+    else:
+        fields = None
+
+    return fields
 
 def check_num_fields(fields):
     """check for 4 fields

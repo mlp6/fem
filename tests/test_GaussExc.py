@@ -47,6 +47,11 @@ def test_check_num_fields():
     assert "Unexpected number of node columns" in str(excinfo.value)
 
 
+def test_read_node_positions():
+    """read_node_positions
+    """
+    pass
+
 """
 def test_writeNodes(tmpdir):
     from GenMesh import writeNodes
