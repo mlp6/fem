@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Finite Element Method (FEM) ARF Simulation Code documentation build configuration file, created by
+# Acoustic Radiation Force FEM Tools documentation build configuration file, created by
 # sphinx-quickstart on Wed Oct 14 01:59:19 2015.
 #
 # This file is execfile()d with the current directory set to its
@@ -48,7 +48,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'Finite Element Method (FEM) ARF Simulation Code'
+project = 'Acoustic Radiation Force FEM Tools'
 copyright = '2016, Mark Palmeri'
 
 # The version info for the project you're documenting, acts as replacement for
