@@ -24,6 +24,16 @@ def test_calc_gauss_amp():
     assert round(calc_gauss_amp(node_xyz, center, sigma, amp) -
                  0.36787944117144233, 5) == 0
 
+
+def test_sym_scale_amp():
+    """test symmetry scaling of point load
+    """
+    from GaussExc import sym_scale_amp
+
+    assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'qsym') == 2.0
+    assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'hsym') == 4.0
+    assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'none') == 8.0
+
 """
 def test_writeNodes(tmpdir):
     from GenMesh import writeNodes

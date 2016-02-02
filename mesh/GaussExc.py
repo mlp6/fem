@@ -39,8 +39,6 @@ def main():
 
     # loop through all of the nodes and see which ones fall w/i the Gaussian
     # excitation field
-    sym_node_count = 0
-    node_count = 0
     NODEFILE = open(opts.nodefile, 'r')
     for i in NODEFILE:
         # make sure not to process comment and command syntax lines
@@ -66,24 +64,8 @@ def main():
             # dyna input needs to be limited in precision
             if nodeGaussAmp > opts.amp*opts.amp_cut:
 
-                node_count += 1
-                # check for quarter symmetry force reduction (if needed)
-                if opts.sym == 'qsym':
-                    if (math.fabs(fields[1]) < opts.search_tol and
-                        math.fabs(fields[2]) < opts.search_tol):
-                        nodeGaussAmp = nodeGaussAmp/4
-                        sym_node_count += 1
-                    elif (math.fabs(fields[1]) < opts.search_tol or
-                          math.fabs(fields[2]) < opts.search_tol):
-                        nodeGaussAmp = nodeGaussAmp/2
-                        sym_node_count += 1
-                # check for half symmetry force reduction (if needed)
-                elif opts.sym == 'hsym':
-                    if math.fabs(fields[1]) < opts.search_tol:
-                        nodeGaussAmp = nodeGaussAmp/2
-                        sym_node_count += 1
-                elif opts.sym != 'none':
-                    sys.exit('ERROR: Invalid symmetry option specified.')
+                nodeGaussAmp = sym_scale_amp(fields, nodeGaussAmp,
+                                             opts.sym, opts.search_tol)
 
                 LOADFILE.write("%i,3,1,-%.4f\n" % (int(fields[0]),
                                                    nodeGaussAmp))
@@ -91,9 +73,33 @@ def main():
     # wrap everything up
     NODEFILE.close()
     LOADFILE.write("*END\n")
-    LOADFILE.write("$ %i loads generated\n" % node_count)
-    LOADFILE.write("$ %i exist on a symmetry plane / edge\n" % sym_node_count)
     LOADFILE.close()
+
+
+def sym_scale_amp(fields, nodeGaussAmp, sym, search_tol=0.0001):
+    """scale point load amplitude on symmetry faces / edges
+
+    :param fields: list (node ID, x, y, z)
+    :param nodeGaussAmp: amplitude of point load
+    :param sym: type of mesh symmetry (none, qsym, hsym)
+    :param search_tol: spatial tolerance to find nearby nodes
+    :returns nodeGaussAmp: symmetry-scaled point load amplitude
+    """
+    from math import fabs
+    import sys
+
+    if sym == 'qsym':
+        if (fabs(fields[1]) < search_tol and fabs(fields[2]) < search_tol):
+            nodeGaussAmp = nodeGaussAmp/4
+        elif (fabs(fields[1]) < search_tol or fabs(fields[2]) < search_tol):
+            nodeGaussAmp = nodeGaussAmp/2
+    elif sym == 'hsym':
+        if fabs(fields[1]) < search_tol:
+            nodeGaussAmp = nodeGaussAmp/2
+    elif sym != 'none':
+        sys.exit('ERROR: Invalid symmetry option specified.')
+
+    return nodeGaussAmp
 
 
 def calc_gauss_amp(node_xyz, center, sigma, amp):
@@ -111,7 +117,7 @@ def calc_gauss_amp(node_xyz, center, sigma, amp):
     exp3 = pow((node_xyz[3]-center[2])/sigma[2], 2)
     nodeGaussAmp = amp * exp(-(exp1 + exp2 + exp3))
 
-    return  nodeGaussAmp
+    return nodeGaussAmp
 
 
 def read_cli():
