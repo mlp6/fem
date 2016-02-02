@@ -58,6 +58,13 @@ def test_read_node_positions():
     """
     pass
 
+
+def test_write_load_file():
+    """write_load_file
+    """
+    pass
+
+
 """
 def test_writeNodes(tmpdir):
     from GenMesh import writeNodes
