@@ -7,6 +7,10 @@ import pytest
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../mesh/')
 
+center = [0.0, 0.0, -2.0]
+sigma = [0.25, 0.25, 0.25]
+amp = 1.0
+
 
 def test_calc_gauss_amp():
     """test node assigmnet of Gaussian amplitude under all symmetry conditions
@@ -14,9 +18,6 @@ def test_calc_gauss_amp():
     from GaussExc import calc_gauss_amp
 
     node_xyz = [1, 0.0, 0.0, -2.0]
-    center = [0.0, 0.0, -2.0]
-    sigma = [0.25, 0.25, 0.25]
-    amp = 1.0
 
     assert calc_gauss_amp(node_xyz, center, sigma, amp, sym="none") == 1.0
     assert calc_gauss_amp(node_xyz, center, sigma, amp, sym="hsym") == 0.5
@@ -59,22 +60,19 @@ def test_read_node_positions():
     pass
 
 
-def test_write_load_file():
+def test_write_load_file(tmpdir):
     """write_load_file
     """
-    pass
+    from GaussExc import write_load_file
 
+    loadfile = "loads.dyn"
+    f = tmpdir.join(loadfile)
+    load_nodeID_amp = [(1, 2.0), (3, 4.0)]
+    write_load_file(f.strpath, load_nodeID_amp, sigma, center, amp)
 
-"""
-def test_writeNodes(tmpdir):
-    from GenMesh import writeNodes
-
-    nodefile = "nodes.dyn"
-    f = tmpdir.join(nodefile)
-    writeNodes(pos, f.strpath, header_comment)
     lines = f.readlines()
-    assert lines[0] == header_comment+"\n"
-    assert lines[1] == "*NODE\n"
-    assert lines[2] == "1,0.000000,3.000000,6.000000\n"
+    assert lines[0][0] == "$"
+    assert lines[1] == "*LOAD_NODE_POINT\n"
+    assert lines[2] == "1,3,1,-2.0000\n"
+    assert lines[3] == "3,3,1,-4.0000\n"
     assert lines[-1] == "*END\n"
-"""
