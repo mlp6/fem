@@ -9,14 +9,6 @@
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-from six.moves import range
-
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
-
 
 def main():
     import sys
