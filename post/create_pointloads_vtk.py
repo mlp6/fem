@@ -1,6 +1,13 @@
 #!/bin/env python
 """
-create_pointloads_vtk.py
+:mod:`create_pointloads_vtk.py` -- create .vts from node & point load files
+
+.. module:: create_pointloads_vtk
+   :synopsis: create .vts from node & point load files
+   :license: Apache v2.0, see LICENSE for details
+   :copyright: Copyright 2016 Ningrui Li & Mark Palmeri
+
+.. moduleauthor:: Ningrui Li <nl91@duke.edu>
 
 Creates .vts file, which can be viewed in Paraview, from node and point loads
 files.
@@ -32,8 +39,6 @@ Opacity in the Properties tab of the sidebar, and change the opacity to around
 0.5. You should now be able to see the loads that were previously hidden inside
 the mesh.
 
-
-
 EXAMPLE
 =======
 python create_disp_dat.py --nodefile nodes.dyn
@@ -41,9 +46,7 @@ python create_disp_dat.py --nodefile nodes.dyn
                           --loadout loadout.vts
 =======
 """
-from __future__ import absolute_import
-from __future__ import print_function
-from six.moves import range
+
 
 def main():
     import sys

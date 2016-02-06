@@ -4,3 +4,4 @@
 .idea
 scale_disp_dat
 _build
+.cache

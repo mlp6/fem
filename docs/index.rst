@@ -1,10 +1,10 @@
-.. Finite Element Method (FEM) ARF Simulation Code documentation master file, created by
+.. Acoustic Radiation Force FEM Tools documentation master file, created by
    sphinx-quickstart on Wed Oct 14 01:59:19 2015.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Finite Element Method (FEM) ARF Simulation Code's documentation!
-===========================================================================
+Acoustic Radiation Force FEM Tools
+==================================
 
 Contents:
 
@@ -15,7 +15,8 @@ Contents:
    code_layout
    coordinates_units
    create_dyna_mesh
-   mesh_modules
+   mesh
+   optistruct
    simulate_ARFI
    post_modules
    hypermesh
