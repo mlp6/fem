@@ -11,6 +11,10 @@
 
 
 def main():
+    import os
+    import sys
+    myPath = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, myPath + '/../mesh/')
     import fem_mesh
 
     args = read_cli()
