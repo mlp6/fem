@@ -1,27 +1,15 @@
 """
-CreateStructure.py
+:mod:`CreateStructe` -- define structures in meshes
+===================================================
 
-Create "simple" structures in the FE meshes (e.g., spheres, layers).
+.. module:: CreateStructure
+   :synopsis: define structures in meshes
+   :license: Apache v2.0, see LICENSE for details
+   :copyright: Copyright 2016 Mark Palmeri
 
-Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
+.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
 """
-from __future__ import absolute_import
-
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
 
 
 def main():
