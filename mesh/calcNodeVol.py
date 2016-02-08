@@ -1,9 +1,6 @@
-from __future__ import absolute_import
-from __future__ import print_function
 import math
 import numpy as np
 import argparse
-from six.moves import range
 
 parser = argparse.ArgumentParser(description='Creates node volume file from nodes.dyn and elems.dyn, specified on the command-line.')
 parser.add_argument("--nodefile", dest="nodefile", help = "node definition input file", default="nodes.dyn")

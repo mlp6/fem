@@ -31,9 +31,6 @@ Opacity in the Properties tab of the sidebar, and change the opacity to around
 0.5. You should now be able to see the loads that were previously hidden inside
 the mesh.
 """
-from __future__ import absolute_import
-from __future__ import print_function
-from six.moves import range
 
 
 def main():
