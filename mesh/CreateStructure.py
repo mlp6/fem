@@ -98,6 +98,7 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
     import fem_mesh
 
     header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
+    # TODO: make separate function
     nodeIDcoords = n.loadtxt(nodefile,
                              delimiter=',',
                              skiprows=header_comment_skips,
@@ -107,6 +108,7 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
 
     structNodeIDs = {}
 
+    # TODO: replace sopts approach; figure out something more robust
     if struct_type is 'sphere':
         """
         sopts is assumed to be a 4 element tuple with the following items:
@@ -214,7 +216,7 @@ def findStructElemIDs(elefile, structNodeIDs):
     structElemIDs = {}
 
     for i in elems:
-        # I hate this hard-coded syntax, but this works (for now)
+        # TODO: optimize this mess of nested loops
         j = i.tolist()
         insideStruct = any(x in structNodeIDs for x in j[2:10])
         if insideStruct:
