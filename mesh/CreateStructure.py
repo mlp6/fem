@@ -99,6 +99,7 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
 
     header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
     # TODO: make separate function
+    # TODO: remove labeling; make a 2D array
     nodeIDcoords = n.loadtxt(nodefile,
                              delimiter=',',
                              skiprows=header_comment_skips,
@@ -204,6 +205,8 @@ def findStructElemIDs(elefile, structNodeIDs):
     import fem_mesh
 
     header_comment_skips = fem_mesh.count_header_comment_skips(elefile)
+    # TODO: read in elems in separate function
+    # TODO: remove labeling; make a 2D array
     elems = n.loadtxt(elefile,
                       delimiter=',',
                       comments='*',
