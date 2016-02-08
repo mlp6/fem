@@ -121,22 +121,22 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
                 structNodeIDs[i[0]] = True
 
     elif struct_type is 'layer':
-        '''
+        """
         sopts is assumed to be a 3 element tuple with the following items:
         dimension for normal to layer (x = 1, y = 2, z = 3)
         layer bounds (min,max)
-        '''
+        """
         for i in nodeIDcoords:
             if i[sopts[0]] > sopts[1] and i[sopts[0]] < sopts[2]:
                 structNodeIDs[i[0]] = True
 
     elif struct_type is 'ellipsoid':
-        '''
+        """
         sopts is assumed to be a 9 element tuple with the following items:
         ellipsoid center coordinates (x,y,z)
         ellipsoid half-axis lengths (a,b,c)
         ellipsoid euler angles (phi,theta,psi) in DEGREES
-        '''
+        """
         cph = m.cos(m.radians(sopts[6]))    # cos(phi)
         sph = m.sin(m.radians(sopts[6]))    # sin(phi)
         cth = m.cos(m.radians(sopts[7]))    # cos(theta)
@@ -167,11 +167,11 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
                 structNodeIDs[i[0]] = True
 
     elif struct_type is 'cube':
-        '''
+        """
         sopts is assumed to be a 6 element tuple with the following items:
         Location of most-negative corner (x,y,z) Respective cube dimensions
         (x,y,z)
-        '''
+        """
         for i in nodeIDcoords:
             if i[1] >= sopts[0] and \
                 i[1] <= (sopts[0] + sopts[3]) and \
@@ -192,10 +192,10 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
 
 def findStructElemIDs(elefile, structNodeIDs):
     """find elements that contain nodes in structNodeIDs
+
     :param str elefile: element filename
     :param structNodeIDs: numpy array
     :returns: (elems, structElemIds)
-
     """
     import sys
     import numpy as n
