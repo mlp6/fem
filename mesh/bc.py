@@ -34,9 +34,8 @@ def main():
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(opts.nodefile)
 
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
-    axdiff = [axes[0][1]-axes[0][0],
-              axes[1][1]-axes[1][0],
-              axes[2][1]-axes[2][0]]
+
+    axdiff = axis_spacing(axes)
 
     segID = 1
 
@@ -300,6 +299,19 @@ def create_pml_elems_file(elefile):
     shutil.copy(elefile, pmlfile)
 
     return pmlfile
+
+
+def axis_spacing(axes):
+    """calculate node spacing along each axis
+
+    :param axes:
+    :return: axdiff
+    """
+
+    axdiff = [axes[0][1]-axes[0][0],
+              axes[1][1]-axes[1][0],
+              axes[2][1]-axes[2][0]]
+    return axdiff
 
 
 if __name__ == "__main__":
