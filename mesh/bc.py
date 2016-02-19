@@ -24,6 +24,7 @@ def main():
 
     opts = read_cli()
     nodefile = opts.nodefile
+    elefile = opts.elefile
     num_pml_elems = opts.num_pml_elems
     pml_partID = opts.pml_partID
     sym = opts.sym
@@ -33,8 +34,9 @@ def main():
     top = opts.top
 
     if pml:
-        pmlfile = create_pml_elems_file(opts.elefile)
+        pmlfile = create_pml_elems_file(elefile)
 
+    # TODO: replace w/ explicit variable value prints
     BCFILE = open_bcfile(opts, argv[0])
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
@@ -286,21 +288,18 @@ def apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis, axmin, axmax,
 def create_pml_elems_file(elefile):
     """
     Create a new output elements file that the PML elements will be defined in
-    that has _pml added to the filename.  elefile is assumed to end in '.dyn'
+    that has '_pml' added to the filename.  Assume elefile ends with '.dyn'.
 
     this could be a homogeneous elems.dyn file, or a struct.dyn file
 
-    TODO: ADD PARAMS
-    TODO: ADD EXAMPLE SYNTAX
-
-    EXAMPLE:
-        elems.dyn -> elems_pml.dyn
+    :param elefile: elems.dyn (filename)
+    :returns: pmlfile (filename)
     """
-    import shutil
+    from shutil import copy
 
     pmlfile = elefile.replace('.dyn', '_pml.dyn')
 
-    shutil.copy(elefile, pmlfile)
+    copy(elefile, pmlfile)
 
     return pmlfile
 
