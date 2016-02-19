@@ -161,8 +161,6 @@ def writeNodeBC(BCFILE, planeNodeIDs, dofs):
     :param str dofs: degrees of freedom
     """
     BCFILE.write('*BOUNDARY_SPC_NODE\n')
-    # don't grab the top / bottom rows (those will be defined in the top/bottom
-    # defs)
     for i in planeNodeIDs:
         for j in i:
             BCFILE.write("%i,0,%s\n" % (j[0], dofs))
