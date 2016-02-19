@@ -9,8 +9,6 @@
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 
-:Example: TEST
-
 """
 
 def main():
@@ -25,13 +23,21 @@ def main():
     fem_mesh.check_version()
 
     opts = read_cli()
+    nodefile = opts.nodefile
+    num_pml_elems = opts.num_pml_elems
+    pml_partID = opts.pml_partID
+    sym = opts.sym
+    nonreflect = opts.nonreflect
+    pml = opts.pml
+    bottom = opts.bottom
+    top = opts.top
 
-    if opts.pml:
+    if pml:
         pmlfile = create_pml_elems_file(opts.elefile)
 
     BCFILE = open_bcfile(opts, argv[0])
 
-    nodeIDcoords = fem_mesh.load_nodeIDs_coords(opts.nodefile)
+    nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
 
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
 
@@ -43,28 +49,28 @@ def main():
     axis = 0
     axis_limit = axes[0].min()
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if opts.nonreflect:
+    if nonreflect:
         segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
-    elif opts.pml:
-        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
-                  opts.pml_partID)
+    elif pml:
+        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
+                  axis_limit, axis_limit+num_pml_elems*axdiff[axis],
+                  pml_partID)
 
     # FRONT
     axis = 0
     axis_limit = axes[0].max()
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if (opts.sym == 'q') or (opts.sym == 'h'):
+    if (sym == 'q') or (sym == 'h'):
         # no top / bottom rows (those will be defined in the
         # top/bottom defs)
         writeNodeBC(BCFILE, planeNodeIDs[1:-1], '1,0,0,0,1,1')
     else:
-        if opts.nonreflect:
+        if nonreflect:
             segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
-        elif opts.pml:
-            apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                      axis_limit-opts.num_pml_elems*axdiff[axis],
-                      axis_limit, opts.pml_partID)
+        elif pml:
+            apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
+                      axis_limit-num_pml_elems*axdiff[axis],
+                      axis_limit, pml_partID)
 
     # LEFT (push side; non-reflecting or symmetry)
     axis = 1
@@ -72,57 +78,57 @@ def main():
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
     # if quarter-symmetry, then apply BCs, in addition to a
     # modified edge; and don't deal w/ top/bottom
-    if opts.sym == 'q':
+    if sym == 'q':
         writeNodeBC(BCFILE, planeNodeIDs[1:-1], '0,1,0,1,0,1')
     # else make it a non-reflecting boundary
     else:
-        if opts.nonreflect:
+        if nonreflect:
             segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
-        elif opts.pml:
-            apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                      axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
-                      opts.pml_partID)
+        elif pml:
+            apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
+                      axis_limit, axis_limit+num_pml_elems*axdiff[axis],
+                      pml_partID)
 
     # RIGHT (non-reflecting)
     axis = 1
     axis_limit = axes[1].max()
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if opts.nonreflect:
+    if nonreflect:
         segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
-    elif opts.pml:
-        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit-opts.num_pml_elems*axdiff[axis],
-                  axis_limit, opts.pml_partID)
+    elif pml:
+        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
+                  axis_limit-num_pml_elems*axdiff[axis],
+                  axis_limit, pml_partID)
 
     # BOTTOM
     axis = 2
     axis_limit = axes[2].min()
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if opts.nonreflect:
+    if nonreflect:
         segID = writeSeg(BCFILE, 'BOTTOM', segID, planeNodeIDs)
-        if opts.bottom == 'full':
+        if bottom == 'full':
             writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-        elif opts.bottom == 'inplane':
+        elif bottom == 'inplane':
             writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
-    elif opts.pml:
-        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit, axis_limit+opts.num_pml_elems*axdiff[axis],
-                  opts.pml_partID)
+    elif pml:
+        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
+                  axis_limit, axis_limit+num_pml_elems*axdiff[axis],
+                  pml_partID)
 
     # TOP (transducer face)
     axis = 2
     axis_limit = axes[2].max()
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if opts.nonreflect:
+    if nonreflect:
         segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
-        if opts.top:
+        if top:
             writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-    elif opts.pml:
-        apply_pml(opts.nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit-opts.num_pml_elems*axdiff[axis],
-                  axis_limit, opts.pml_partID)
+    elif pml:
+        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
+                  axis_limit-num_pml_elems*axdiff[axis],
+                  axis_limit, pml_partID)
 
-    if opts.nonreflect:
+    if nonreflect:
         write_nonreflecting(BCFILE, segID)
 
     BCFILE.write('*END\n')
