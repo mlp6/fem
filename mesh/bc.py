@@ -40,11 +40,17 @@ def main():
     BCFILE = open_bcfile(opts, argv[0])
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
-
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
+    [elems] = fem_mesh.load_elems(elefile)
+    [sorted_elemIDs] = fem_mesh.SortElemIDs(elems, axes)
 
     axdiff = axis_spacing(axes)
 
+    # TODO: Change input syntax to something like:
+    # nodeBC = [(1, 1, 1, 1, 1, 1), (0, 1, 0, 1, 1, 1), ...] ordered by [xmin,
+    # xmax, ymin, ymax, ...]
+    # pmlElems = [0, 5, 0, 5, 5, 5] ordered by [xmin, xmax, ymin, ...]
+    # qsym_edge = [0, 1, 1, 0, 0, 0]
     segID = 1
 
     # BACK
