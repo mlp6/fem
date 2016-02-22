@@ -102,13 +102,14 @@ def extractPlane(snic, axes, plane):
     return planeNodeIDs
 
 
-def SortNodeIDs(nic):
+def SortNodeIDs(nic, sort=False):
     """spatially sort node IDs
 
     Sort the node IDs by spatial coordinates into a 3D matrix and return the
     corresponding axes
 
     :param nic: nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
+    :param sort: False (assume node ordering); True (spatially sort)
     :returns: [SortedNodeIDs - n matrix (x,y,z), axes]
     """
 
@@ -124,9 +125,12 @@ def SortNodeIDs(nic):
              'when sorting nodes (?)')
 
     # sort the nodes by x, y, then z columns
-    I = nic.argsort(order=('x', 'y', 'z'))
-    snic = nic[I]
-    snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size))
+    if sort:
+        I = nic.argsort(order=('x', 'y', 'z'))
+        snic = nic[I]
+        snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size))
+    else:
+        snic = nic.reshape((axes[0].size, axes[1].size, axes[2].size))
 
     return [snic, axes]
 
