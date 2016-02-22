@@ -103,16 +103,12 @@ def extractPlane(snic, axes, plane):
 
 
 def SortNodeIDs(nic, sort=False):
-    """spatially sort node IDs
-
-    Sort the node IDs by spatial coordinates into a 3D matrix and return the
-    corresponding axes
+    """spatially sort node IDs into 3D matrix
 
     :param nic: nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
     :param sort: False (assume node ordering); True (spatially sort)
     :returns: [SortedNodeIDs - n matrix (x,y,z), axes]
     """
-
     from sys import exit
     from numpy import unique
 
@@ -135,17 +131,28 @@ def SortNodeIDs(nic, sort=False):
     return [snic, axes]
 
 
-def load_nodeIDs_coords(nodefile):
+def SortElemIDs(elems, axes):
+    """spatially sort node IDs into 3D matrix
+
+    :param elems: element definitions, as read from elems.dyn
+    :param axes: lists of x, y, z axis positions
+    :returns: sorted_elems
+    """
+    sorted_elems = elemIDs.reshape((axes[0].size, axes[1].size, axes[2].size))
+
+    return sorted_elems
+
+
+def load_nodeIDs_coords(nodefile="nodes.dyn"):
     """load in node IDs and coordinates
 
     Exclude '*' keyword lines
 
-    :param nodefile: node filename
+    :param nodefile: node filename (nodes.dyn)
     :returns: nodeIDcoords (numpy array)
     """
-    import fem_mesh
     from numpy import loadtxt
-    header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
+    header_comment_skips = count_header_comment_skips(nodefile)
     nodeIDcoords = loadtxt(nodefile,
                            delimiter=',',
                            comments='*',
@@ -153,3 +160,23 @@ def load_nodeIDs_coords(nodefile):
                            dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
                                   ('z', 'f4')])
     return nodeIDcoords
+
+
+def load_elems(elefile="elems.dyn"):
+    """
+
+    :param elefile: elems.dyn
+    :return: elems
+    """
+    from numpy import loadtxt
+    header_comment_skips = count_header_comment_skips(elefile)
+    elems = loadtxt(elefile,
+                    delimiter=',',
+                    comments='*',
+                    skiprows=header_comment_skips,
+                    dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
+                           ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
+                           ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
+                           ('n8', 'i4')])
+
+    return elems
