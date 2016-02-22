@@ -131,19 +131,19 @@ def SortNodeIDs(nic, sort=False):
     return [snic, axes]
 
 
-def SortElemIDs(elems, axes):
+def SortElems(elems, axes):
     """spatially sort node IDs into 3D matrix
 
     :param elems: element definitions, as read from elems.dyn
     :param axes: lists of x, y, z axis positions
-    :returns: sorted_elemIDs
+    :returns: sorted_elems
     """
 
-    sorted_elemIDs = elems['id'].reshape((axes[0].size-1,
+    sorted_elems = elems.reshape((axes[0].size-1,
                                   axes[1].size-1,
                                   axes[2].size-1))
 
-    return sorted_elemIDs
+    return sorted_elems
 
 
 def load_nodeIDs_coords(nodefile="nodes.dyn"):

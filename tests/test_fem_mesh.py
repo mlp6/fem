@@ -82,7 +82,7 @@ def test_SortElems():
     from fem_mesh import load_nodeIDs_coords
     from fem_mesh import load_elems
     from fem_mesh import SortNodeIDs
-    from fem_mesh import SortElemIDs
+    from fem_mesh import SortElems
 
     nodefile = '%s/nodes.dyn' % myPath
     elefile = '%s/elems.dyn' % myPath
@@ -90,7 +90,11 @@ def test_SortElems():
     nodeIDcoords = load_nodeIDs_coords(nodefile)
     [snic, axes] = SortNodeIDs(nodeIDcoords)
     elems = load_elems(elefile)
-    sorted_elemIDs = SortElemIDs(elems, axes)
+    sorted_elems = SortElems(elems, axes)
 
-    assert sorted_elemIDs[0][0][0] ==  1
-    assert sorted_elemIDs[-1][-1][-1] == 1000
+    assert sorted_elems[0][0][0][0] ==  1
+    assert sorted_elems[0][0][0][2] ==  1
+    assert sorted_elems[0][0][0][-1] ==  133
+    assert sorted_elems[-1][-1][-1][0] == 1000
+    assert sorted_elems[-1][-1][-1][2] == 1198
+    assert sorted_elems[-1][-1][-1][-1] == 1330
