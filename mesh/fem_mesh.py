@@ -17,8 +17,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from __future__ import absolute_import
-from __future__ import print_function
 
 
 def check_version():
@@ -27,23 +25,22 @@ def check_version():
     Needed for argparse compatibility
 
     """
-    import sys
+    from sys import version_info, exit
 
-    if sys.version_info[:2] < (2, 7):
-        sys.exit("ERROR: Requires Python >= 2.7")
+    if version_info[:2] < (2, 7):
+        exit("ERROR: Requires Python >= 2.7")
 
 
 def strip_comments(nodefile):
     """strip comments
-
     string comment lines starting with $
 
     :param nodefile: keyword filename
-
     """
-    import os
+    from os import system
     nodefile_nocmt = '%s.tmp' % nodefile
-    os.system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
+    system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
+
     return nodefile_nocmt
 
 
@@ -66,10 +63,11 @@ def count_header_comment_skips(nodefile):
             else:
                 count = count + 1
 
+
 def rm_tmp_file(nodefile_nocmt):
-    import os
+    from os import remove
     try:
-        os.remove(nodefile_nocmt)
+        remove(nodefile_nocmt)
     except OSError as e:
         print(('ERROR: %s - %s.' % (e.argsfilename, e.argsstrerror)))
 
@@ -87,11 +85,9 @@ def extractPlane(snic, axes, plane):
             coord - coordinate of the plane to extract (must exist in axes
                     list)
     :returns: planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
-
     :example: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
-
     """
-    import sys
+    from sys import exit
 
     if plane[0] == 0:
         planeNodeIDs = snic[axes[plane[0]] == plane[1], :, :]
@@ -100,7 +96,7 @@ def extractPlane(snic, axes, plane):
     elif plane[0] == 2:
         planeNodeIDs = snic[:, :, axes[plane[0]] == plane[1]]
     else:
-        sys.exit("ERROR: Specified plane index to extract does not exist")
+        exit("ERROR: Specified plane index to extract does not exist")
 
     planeNodeIDs = planeNodeIDs.squeeze()
     return planeNodeIDs
@@ -113,21 +109,19 @@ def SortNodeIDs(nic):
     corresponding axes
 
     :param nic: nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
-
     :returns: [SortedNodeIDs - n matrix (x,y,z), axes]
-
     """
 
-    import sys
-    import numpy as n
+    from sys import exit
+    from numpy import unique
 
-    axes = [n.unique(nic['x']), n.unique(nic['y']), n.unique(nic['z'])]
+    axes = [unique(nic['x']), unique(nic['y']), unique(nic['z'])]
 
     # test to make sure that we have the right dimension (and that precision
     # issues aren't adding extra unique values)
     if len(nic) != (axes[0].size * axes[1].size * axes[2].size):
-        sys.exit('ERROR: Dimension mismatch - possible precision error '
-                 'when sorting nodes (?)')
+        exit('ERROR: Dimension mismatch - possible precision error '
+             'when sorting nodes (?)')
 
     # sort the nodes by x, y, then z columns
     I = nic.argsort(order=('x', 'y', 'z'))
@@ -144,15 +138,14 @@ def load_nodeIDs_coords(nodefile):
 
     :param nodefile: node filename
     :returns: nodeIDcoords (numpy array)
-
     """
     import fem_mesh
-    import numpy as n
+    from numpy import loadtxt
     header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
-    nodeIDcoords = n.loadtxt(nodefile,
-                             delimiter=',',
-                             comments='*',
-                             skiprows=header_comment_skips,
-                             dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
-                                    ('z', 'f4')])
+    nodeIDcoords = loadtxt(nodefile,
+                           delimiter=',',
+                           comments='*',
+                           skiprows=header_comment_skips,
+                           dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
+                                  ('z', 'f4')])
     return nodeIDcoords
