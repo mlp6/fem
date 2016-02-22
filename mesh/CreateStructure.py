@@ -193,11 +193,8 @@ def findStructElemIDs(elefile, structNodeIDs):
     :param structNodeIDs: numpy array
     :returns: (elems, structElemIds)
     """
-    import sys
-    import fem_mesh
+    from fem_mesh import load_elems
 
-    header_comment_skips = fem_mesh.count_header_comment_skips(elefile)
-    # TODO: remove labeling; make a 2D array
     elems = fem_mesh.load_elems(elefile)
 
     structElemIDs = {}
@@ -210,7 +207,8 @@ def findStructElemIDs(elefile, structNodeIDs):
             structElemIDs[i[0]] = True
 
     if len(structElemIDs) == 0:
-        sys.exit('ERROR: no structure elements were found')
+        from sys import exit
+        exit('ERROR: no structure elements were found')
 
     return (elems, structElemIDs)
 
