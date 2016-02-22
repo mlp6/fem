@@ -90,11 +90,11 @@ def extractPlane(snic, axes, plane):
     from sys import exit
 
     if plane[0] == 0:
-        planeNodeIDs = snic[axes[plane[0]] == plane[1], :, :]
+        planeNodeIDs = snic[:, :, axes[plane[0]] == plane[1]]
     elif plane[0] == 1:
         planeNodeIDs = snic[:, axes[plane[0]] == plane[1], :]
     elif plane[0] == 2:
-        planeNodeIDs = snic[:, :, axes[plane[0]] == plane[1]]
+        planeNodeIDs = snic[axes[plane[0]] == plane[1], :, :]
     else:
         exit("ERROR: Specified plane index to extract does not exist")
 
