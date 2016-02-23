@@ -36,8 +36,6 @@ def main():
     if pml:
         pmlfile = create_pml_elems_file(elefile)
 
-    # TODO: replace w/ explicit variable value prints
-    BCFILE = open_bcfile(opts, argv[0])
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -47,10 +45,10 @@ def main():
     axdiff = axis_spacing(axes)
 
     # TODO: Change input syntax to something like:
-    # nodeBC = [(1, 1, 1, 1, 1, 1), (0, 1, 0, 1, 1, 1), ...] ordered by [xmin,
+    # nodeBC = [[(1, 1, 1, 1, 1, 1), (0, 1, 0, 1, 1, 1)], ...] ordered by [xmin,
     # xmax, ymin, ymax, ...]
-    # pmlElems = [0, 5, 0, 5, 5, 5] ordered by [xmin, xmax, ymin, ...]
-    # qsym_edge = [0, 1, 1, 0, 0, 0]
+    # pmlElems = [[0, 5], [0, 5], [5, 5]] ordered by [xmin, xmax, ymin, ...]
+    # qsym_edge = [[0, 1], [1, 0], [0, 0]]
     segID = 1
 
     # BACK
@@ -139,8 +137,7 @@ def main():
     if nonreflect:
         write_nonreflecting(BCFILE, segID)
 
-    BCFILE.write('*END\n')
-    BCFILE.close()
+    # TODO: write_bc_file()
 
 
 def writeSeg(BCFILE, title, segID, planeNodeIDs):
@@ -167,18 +164,28 @@ def writeSeg(BCFILE, title, segID, planeNodeIDs):
     return segID
 
 
-def writeNodeBC(BCFILE, planeNodeIDs, dofs):
-    """write BC keywords to BC input file
+def write_bc_file(planeNodeIDs, dofs, bcfile="bc.dyn"):
+    """write BC keywords to BC file
 
-    :param BCFILE: file IO object
     :param planeNodeIDs: 2D array
     :param str dofs: degrees of freedom
+    :param bcfile: boundary conditiona filename (bc.dyn)
     """
+
+    BCFILE = open(bcfile, 'w')
+    BCFILE.write("$ Generated using %s with the following options:\n" %
+                 cmdline)
+    # TODO: replace w/ explicit variable value prints
+    BCFILE.write("$ %s\n" % opts)
     BCFILE.write('*BOUNDARY_SPC_NODE\n')
+
+    # TODO: replace with printing node BC dict
     for i in planeNodeIDs:
         for j in i:
             BCFILE.write("%i,0,%s\n" % (j[0], dofs))
 
+    BCFILE.write('*END\n')
+    BCFILE.close()
 
 def read_cli():
     """read command line arguments
@@ -237,23 +244,6 @@ def read_cli():
     opts = p.parse_args()
 
     return opts
-
-
-def open_bcfile(opts, cmdline):
-    """ open BC file for writing and write header
-
-    TODO: only pass in filename (don't need entire BC object!!)
-
-    :param opts: argparse object
-    :param str cmdline: command line text to put in header
-    :returns: BCFILE
-    """
-    BCFILE = open(opts.bcfile, 'w')
-    BCFILE.write("$ Generated using %s with the following options:\n" %
-                 cmdline)
-    BCFILE.write("$ %s\n" % opts)
-
-    return BCFILE
 
 
 def write_nonreflecting(BCFILE, segID):
