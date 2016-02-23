@@ -92,12 +92,12 @@ def test_SortElems():
     elems = load_elems(elefile)
     sorted_elems = SortElems(elems, axes)
 
-    assert sorted_elems[0][0][0][0] ==  1
-    assert sorted_elems[0][0][0][2] ==  1
-    assert sorted_elems[0][0][0][-1] ==  133
-    assert sorted_elems[-1][-1][-1][0] == 1000
-    assert sorted_elems[-1][-1][-1][2] == 1198
-    assert sorted_elems[-1][-1][-1][-1] == 1330
+    assert sorted_elems['id'][0][0][0] ==  1
+    assert sorted_elems['n1'][0][0][0] ==  1
+    assert sorted_elems['n8'][0][0][0] ==  133
+    assert sorted_elems['id'][-1][-1][-1] == 1000
+    assert sorted_elems['n1'][-1][-1][-1] == 1198
+    assert sorted_elems['n8'][-1][-1][-1] == 1330
 
 
 def test_extractPlane():
