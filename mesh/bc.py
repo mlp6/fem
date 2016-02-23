@@ -25,30 +25,26 @@ def main():
     opts = read_cli()
     nodefile = opts.nodefile
     elefile = opts.elefile
-    num_pml_elems = opts.num_pml_elems
     pml_partID = opts.pml_partID
-    sym = opts.sym
     nonreflect = opts.nonreflect
     pml = opts.pml
-    bottom = opts.bottom
-    top = opts.top
-
-    if pml:
-        pmlfile = create_pml_elems_file(elefile)
-
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
     [elems] = fem_mesh.load_elems(elefile)
     [sorted_elemIDs] = fem_mesh.SortElemIDs(elems, axes)
-
     axdiff = axis_spacing(axes)
+
+    if pml:
+        pmlfile = create_pml_elems_file(elefile)
+
 
     # TODO: Change input syntax to something like:
     # nodeBC = [[(1, 1, 1, 1, 1, 1), (0, 1, 0, 1, 1, 1)], ...] ordered by [xmin,
     # xmax, ymin, ymax, ...]
-    # pmlElems = [[0, 5], [0, 5], [5, 5]] ordered by [xmin, xmax, ymin, ...]
+    # pml_elems = [[0, 5], [0, 5], [5, 5]] ordered by [xmin, xmax, ymin, ...]
     # qsym_edge = [[0, 1], [1, 0], [0, 0]]
+
     segID = 1
 
     # BACK
@@ -217,19 +213,6 @@ def read_cli():
                    type=int,
                    help="number of elements in PML (5-10)",
                    default=5)
-    p.add_argument("--top",
-                   help="fully constrain top (xdcr surface)",
-                   dest='top',
-                   action='store_true')
-    p.add_argument("--notop",
-                   help="top (xdcr surface) unconstrained",
-                   dest='top',
-                   action='store_false')
-    p.set_defaults(top=True)
-    p.add_argument("--bottom",
-                   help="full / inplane constraint of bottom boundary "
-                   "(opposite transducer surface) [full, inplane]",
-                   default="full")
     s = p.add_mutually_exclusive_group(required=True)
     s.add_argument("--nonreflect",
                    help="apply non-reflection boundaries",
@@ -239,13 +222,14 @@ def read_cli():
                    help="apply perfect matching layers",
                    dest='pml',
                    action='store_true')
-    s.set_defaults(nonreflect=False, pml=False)
+    s.set_defaults(nonreflect=False, pml=True)
 
     opts = p.parse_args()
 
     return opts
 
 
+# TODO: consolidate this when writing the bc file
 def write_nonreflecting(BCFILE, segID):
     """write non-reflecting boundaries (set segments)
 
@@ -257,29 +241,22 @@ def write_nonreflecting(BCFILE, segID):
         BCFILE.write('%i,0.0,0.0\n' % i)
 
 
-def apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis, axmin, axmax,
-              pml_partID):
-    """apply PMLs
+def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
+    """assign PML elements in the sorted element matrix
 
-    Apply full nodal constraints to the outer face nodes and then create outer
-    layers that are assigned to *MAT_PML_ELASTIC.
-
-    TODO: delinieate input params
+    :param sorted_elems: sorted element matrix
+    :param pml_elems: list of tuples of # PML elems on each axis edge ([[xmin, max], [ymin, ymax], ...)
+    :param pml_partID: default = 2
+    :return: sorted_pml_elems (to be written to new file)
     """
-    import CreateStructure as CS
+    sorted_elems['pid'][:, :, 0:pml_elems[0][0]] = pml_partID
+    sorted_elems['pid'][:, :, -1:-pml_elems[0][1]-1:-1] = pml_partID
+    sorted_elems['pid'][:, 0:pml_elems[1][0], :] = pml_partID
+    sorted_elems['pid'][:, -1:-pml_elems[1][1]-1:-1, :] = pml_partID
+    sorted_elems['pid'][0:pml_elems[2][0], :, :] = pml_partID
+    sorted_elems['pid'][-1:-pml_elems[2][1]-1:-1, :, :] = pml_partID
 
-    writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-
-    structNodeIDs = CS.findStructNodeIDs(nodefile,
-                                         'layer',
-                                         (axis+1, axmin, axmax))
-
-    (elems, structElemIDs) = CS.findStructElemIDs(pmlfile,
-                                                  structNodeIDs)
-
-    CS.write_struct_elems(pmlfile, pml_partID, elems, structNodeIDs,
-                          structElemIDs)
-
+    return sorted_elems
 
 def create_pml_elems_file(elefile):
     """
