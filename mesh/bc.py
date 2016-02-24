@@ -25,24 +25,29 @@ def main():
     opts = read_cli()
     nodefile = opts.nodefile
     elefile = opts.elefile
+    pmlfile = opts.pmlfile
+    pml_elems = opts.pml_elems
     pml_partID = opts.pml_partID
-    nonreflect = opts.nonreflect
-    pml = opts.pml
+    nonreflect_faces = opts.nonreflect_faces
+    node_constraints = opts.node_constraints
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
     [elems] = fem_mesh.load_elems(elefile)
-    [sorted_elemIDs] = fem_mesh.SortElemIDs(elems, axes)
+    [sorted_elems] = fem_mesh.SortElemIDs(elems, axes)
     axdiff = axis_spacing(axes)
 
-    if pml:
-        pmlfile = write_pml_elems(sorted_pml_elems, pmlfile="elems_pml.dyn")
-
+    if pml_elems:
+        sorted_pml_elems = assign_pml_elems(sorted_elems, pml_elems)
+        write_pml_elems(sorted_pml_elems, pmlfile)
+        write_bc_file()
+    elif nonreflect_faces:
+        write_nonreflecting(BCFILE, segID)
+        write_bc_file()
 
     # TODO: Change input syntax to something like:
     # nodeBC = [[(1, 1, 1, 1, 1, 1), (0, 1, 0, 1, 1, 1)], ...] ordered by [xmin,
     # xmax, ymin, ymax, ...]
-    # pml_elems = [[0, 5], [0, 5], [5, 5]] ordered by [xmin, xmax, ymin, ...]
     # qsym_edge = [[0, 1], [1, 0], [0, 0]]
 
     segID = 1
@@ -54,9 +59,6 @@ def main():
     if nonreflect:
         segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
     elif pml:
-        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit, axis_limit+num_pml_elems*axdiff[axis],
-                  pml_partID)
 
     # FRONT
     axis = 0
@@ -70,9 +72,6 @@ def main():
         if nonreflect:
             segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
         elif pml:
-            apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                      axis_limit-num_pml_elems*axdiff[axis],
-                      axis_limit, pml_partID)
 
     # LEFT (push side; non-reflecting or symmetry)
     axis = 1
@@ -87,9 +86,6 @@ def main():
         if nonreflect:
             segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
         elif pml:
-            apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                      axis_limit, axis_limit+num_pml_elems*axdiff[axis],
-                      pml_partID)
 
     # RIGHT (non-reflecting)
     axis = 1
@@ -98,9 +94,6 @@ def main():
     if nonreflect:
         segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
     elif pml:
-        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit-num_pml_elems*axdiff[axis],
-                  axis_limit, pml_partID)
 
     # BOTTOM
     axis = 2
@@ -113,9 +106,6 @@ def main():
         elif bottom == 'inplane':
             writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
     elif pml:
-        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit, axis_limit+num_pml_elems*axdiff[axis],
-                  pml_partID)
 
     # TOP (transducer face)
     axis = 2
@@ -126,12 +116,7 @@ def main():
         if top:
             writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
     elif pml:
-        apply_pml(nodefile, pmlfile, BCFILE, planeNodeIDs, axis,
-                  axis_limit-num_pml_elems*axdiff[axis],
-                  axis_limit, pml_partID)
 
-    if nonreflect:
-        write_nonreflecting(BCFILE, segID)
 
     # TODO: write_bc_file()
 
@@ -273,19 +258,6 @@ def write_pml_elems(sorted_pml_elems, pmlfile="elems_pml.dyn"):
     pml.close()
 
     return 0
-
-
-def axis_spacing(axes):
-    """calculate node spacing along each axis
-
-    :param axes:
-    :return: axdiff
-    """
-
-    axdiff = [axes[0][1]-axes[0][0],
-              axes[1][1]-axes[1][0],
-              axes[2][1]-axes[2][0]]
-    return axdiff
 
 
 if __name__ == "__main__":
