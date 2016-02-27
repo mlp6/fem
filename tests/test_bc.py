@@ -2,15 +2,15 @@
 """
 
 import sys
-
 import os
+import pytest
 
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../mesh/')
 
 
-def test_write_pml_elems(tmpdir):
-    from bc import write_pml_elems
+@pytest.fixture
+def get_sorted_elems():
     from fem_mesh import load_nodeIDs_coords
     from fem_mesh import load_elems
     from fem_mesh import SortNodeIDs
@@ -23,6 +23,13 @@ def test_write_pml_elems(tmpdir):
     [snic, axes] = SortNodeIDs(nodeIDcoords)
     elems = load_elems(elefile)
     sorted_elems = SortElems(elems, axes)
+
+    return sorted_elems
+
+
+def test_write_pml_elems(tmpdir):
+    from bc import write_pml_elems
+    sorted_elems = get_sorted_elems()
 
     f = tmpdir.join("elems_pml.dyn")
     write_pml_elems(sorted_elems, pmlfile=f.strpath)
@@ -35,20 +42,7 @@ def test_write_pml_elems(tmpdir):
 
 def test_assign_pml_elems():
     from bc import assign_pml_elems
-
-    # TODO: this can probably be put into some sort of pytest fixture
-    from fem_mesh import load_nodeIDs_coords
-    from fem_mesh import load_elems
-    from fem_mesh import SortNodeIDs
-    from fem_mesh import SortElems
-
-    nodefile = '%s/nodes.dyn' % myPath
-    elefile = '%s/elems.dyn' % myPath
-
-    nodeIDcoords = load_nodeIDs_coords(nodefile)
-    [snic, axes] = SortNodeIDs(nodeIDcoords)
-    elems = load_elems(elefile)
-    sorted_elems = SortElems(elems, axes)
+    sorted_elems = get_sorted_elems()
 
     pml_elems = ((3, 0), (0, 1), (2, 3))
 
