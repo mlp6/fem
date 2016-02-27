@@ -126,9 +126,9 @@ def SortNodeIDs(nic, sort=False):
     if sort:
         I = nic.argsort(order=('x', 'y', 'z'))
         snic = nic[I]
-        snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size))
+        snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size), order='F')
     else:
-        snic = nic.reshape((axes[0].size, axes[1].size, axes[2].size))
+        snic = nic.reshape((axes[0].size, axes[1].size, axes[2].size), order='F')
 
     return [snic, axes]
 

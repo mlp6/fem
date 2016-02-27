@@ -98,42 +98,42 @@ def test_extractPlane(nodeIDcoords):
     planeNodeIDs = extractPlane(snic, axes, [0, -1.0])
     assert planeNodeIDs.shape == (11, 11)
     assert planeNodeIDs[0, 0] == 1
-    #assert planeNodeIDs[0, 10] == 111
-    assert planeNodeIDs[10, 0] == 1211
+    assert planeNodeIDs[0, 10] == 1211
+    assert planeNodeIDs[10, 0] == 111
     assert planeNodeIDs[10, 10] == 1321
 
     planeNodeIDs = extractPlane(snic, axes, [0, 0.0])
     assert planeNodeIDs.shape == (11, 11)
     assert planeNodeIDs[0, 0] == 11
-    assert planeNodeIDs[0, 10] == 121
-    assert planeNodeIDs[10, 0] == 1221
+    assert planeNodeIDs[0, 10] == 1221
+    assert planeNodeIDs[10, 0] == 121
     assert planeNodeIDs[10, 10] == 1331
 
     planeNodeIDs = extractPlane(snic, axes, [1, 0.0])
     assert planeNodeIDs.shape == (11, 11)
     assert planeNodeIDs[0, 0] == 1
-    assert planeNodeIDs[0, 10] == 11
-    assert planeNodeIDs[10, 0] == 1211
+    assert planeNodeIDs[0, 10] == 1211
+    assert planeNodeIDs[10, 0] == 11
     assert planeNodeIDs[10, 10] == 1221
 
     planeNodeIDs = extractPlane(snic, axes, [1, 1.0])
     assert planeNodeIDs.shape == (11, 11)
     assert planeNodeIDs[0, 0] == 111
-    assert planeNodeIDs[0, 10] == 121
-    assert planeNodeIDs[10, 0] == 1321
+    assert planeNodeIDs[0, 10] == 1321
+    assert planeNodeIDs[10, 0] == 121
     assert planeNodeIDs[10, 10] == 1331
 
     planeNodeIDs = extractPlane(snic, axes, [2, -1.0])
     assert planeNodeIDs.shape == (11, 11)
     assert planeNodeIDs[0, 0] == 1
-    assert planeNodeIDs[0, 10] == 11
-    assert planeNodeIDs[10, 0] == 111
+    assert planeNodeIDs[0, 10] == 111
+    assert planeNodeIDs[10, 0] == 11
     assert planeNodeIDs[10, 10] == 121
 
     planeNodeIDs = extractPlane(snic, axes, [2, 0.0])
     assert planeNodeIDs.shape == (11, 11)
     assert planeNodeIDs[0, 0] == 1211
-    assert planeNodeIDs[0, 10] == 1221
-    assert planeNodeIDs[10, 0] == 1321
+    assert planeNodeIDs[0, 10] == 1321
+    assert planeNodeIDs[10, 0] == 1221
     assert planeNodeIDs[10, 10] == 1331
 
