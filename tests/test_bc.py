@@ -34,6 +34,24 @@ def test_assign_node_constraints(nodeIDcoords):
     assert bcdict[1] == '5,5,5,5,5,5'
 
 
+def test_assign_edge_sym_constraints(nodeIDcoords):
+    from fem_mesh import SortNodeIDs
+    from bc import assign_edge_sym_constraints
+    [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
+    bcdict = {}
+    edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+    pml_elems = ((3, 0), (0, 1), (2, 3))
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints,
+                                         pml_elems)
+
+    for nodeID in (737, 616, 495, 374):
+        assert bcdict[nodeID] == "1,1,0,1,1,1\n"
+
+    # test for node IDs excluded based on zmin/zmax PML elems
+    for nodeID in (1221, 1100, 979, 858, 253, 132, 11):
+        assert nodeID not in bcdict.keys()
+
+
 def test_assign_pml_elems(sorted_elems):
     from bc import assign_pml_elems
 

@@ -13,38 +13,33 @@
 
 def main():
     """apply prescribed boundary conditions to nodes/face segments
-
-    TODO: THIS IS WAY TOO COMPLEX
     """
 
-    import fem_mesh
+    import fem_mesh as fm
     from sys import argv
 
     fem_mesh.check_version()
 
     opts = read_cli()
-    nodefile = opts.nodefile
-    elefile = opts.elefile
-    pmlfile = opts.pmlfile
-    pml_elems = opts.pml_elems
-    pml_partID = opts.pml_partID
-    nonreflect_faces = opts.nonreflect_faces
-    face_constraints = opts.face_constraints
 
-    nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
-    [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
-    [elems] = fem_mesh.load_elems(elefile)
-    [sorted_elems] = fem_mesh.SortElemIDs(elems, axes)
-    axdiff = axis_spacing(axes)
+    nodeIDcoords = fm.load_nodeIDs_coords(opts.nodefile)
+    [snic, axes] = fm.SortNodeIDs(nodeIDcoords)
+    [elems] = fm.load_elems(opts.elefile)
+    [sorted_elems] = fm.SortElemIDs(elems, axes)
 
     if pml_elems:
-        sorted_pml_elems = assign_pml_elems(sorted_elems, pml_elems)
-        write_pml_elems(sorted_pml_elems, pmlfile)
+        sorted_pml_elems = assign_pml_elems(sorted_elems,
+                                            opts.pml_elems,
+                                            opts.pml_partID)
+        write_pml_elems(sorted_pml_elems, opts.pmlfile)
     elif nonreflect_faces:
-        write_nonreflecting(BCFILE, segID)
+        pass
+        # write_nonreflecting(BCFILE, segID)
 
-    bcdict = assign_node_constraints(snic, axes, node_constraints)
-    write_bc(bcdict, bcfile)
+    bcdict = assign_node_constraints(snic, axes, opts.face_constraints)
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes,
+                                         opts.edge_constraints)
+    write_bc(bcdict, opts.bcfile)
 
     # TODO: Change input syntax to something like:
     # qsym_edge = [[0, 1], [1, 0], [0, 0]]
@@ -226,7 +221,8 @@ def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
     """assign PML elements in the sorted element matrix
 
     :param sorted_elems: sorted element matrix
-    :param pml_elems: list of tuples of # PML elems on each axis edge ([[xmin, max], [ymin, ymax], ...)
+    :param pml_elems: list of tuples of # PML elems on each axis edge
+                      ([[xmin, max], [ymin, ymax], ...)
     :param pml_partID: default = 2
     :return: sorted_pml_elems (to be written to new file)
     """
@@ -243,12 +239,14 @@ def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
 def assign_node_constraints(snic, axes, face_constraints):
     """assign node constraints to prescribed node planes
 
-    Nodes shared on multiple faces have
+    Nodes shared on multiple faces have are assigned with the following order
+    of precedence: z, y, x
+
     :param snic: sorted node IDs and coordinates from nodes.dyn
     :param axes: mesh axes [x, y, z]
     :param face_constraints: list of DOF strings ordered by
                              ((xmin, max), (ymin, ...)
-                             (e.g., (('1, 1, 1, 1, 1, 1' , '0, 1, 0, 0, 1, 0'),...)
+                             (e.g., (('1,1,1,1,1,1' , '0,1,0,0,1,0'),...)
     :return: bcdict - dictionary of node BC to be written to bc.dyn
     """
     from fem_mesh import extractPlane
@@ -263,10 +261,58 @@ def assign_node_constraints(snic, axes, face_constraints):
                 axis_limit = axes[axis].max()
             planeNodeIDs = extractPlane(snic, axes, (axis, axis_limit))
             for i, id in ndenumerate(planeNodeIDs['id']):
-                bcdict[id] = node_constraints[axis][axlim]
+                bcdict[id] = face_constraints[axis][axlim]
 
     return bcdict
 
+
+def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems):
+    """modify/create node BCs for quarter-symmetry edge
+
+    :param bcdict: dict of nodal BCs
+    :param snic: sorted node IDs and coordinates
+    :param axes: spatial axis vectors
+    :param edge_constraints: list with vector indicating edge & constraint
+                             (e.g., to specify the edge shared by the xmax
+                             and ymin faces to allow just z translation:
+                             (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+    :param pml_elems: list of tuples of # PML elems on each axis edge
+                      ([[xmin, max], [ymin, ymax], ...)
+    :return: bcdict (updated from face assignment)
+    """
+    from warnings import warn
+    from fem_mesh import extractPlane
+    from numpy import ndenumerate
+
+    # look for edge shared with an x face
+    axis = 0
+    if edge_constraints[0][axis][0]:
+        axis_limit = axes[axis].min()
+    elif edge_constraints[0][axis][1]:
+        axis_limit = axes[axis].max()
+    else:
+        warn('Symmetry edge not shared by an x-face specified;'
+             'no edge BCs defined')
+        return 1
+    planeNodeIDs = extractPlane(snic, axes, (axis, axis_limit))
+
+    # restrict nodes to those on specified edge
+    ortho_axis = 1
+    if edge_constraints[0][ortho_axis][0]:
+        edge_nodes = planeNodeIDs['id'][:,0]
+    elif edge_constraints[0][ortho_axis][1]:
+        edge_nodes = planeNodeIDs['id'][:,-1]
+    else:
+        warn('Orthogonal plane to x-face is not a y-face; no edge BCs defined')
+        return 1
+
+    # do not assign BCs to nodes associated with PMLs on zmin/zmax faces
+    zaxis = 2
+    edge_nodes = edge_nodes[pml_elems[zaxis][0]+1:-(pml_elems[zaxis][1]+1)]
+    for i in edge_nodes:
+        bcdict[i] = "%s\n" % edge_constraints[1]
+
+    return bcdict
 
 def write_pml_elems(sorted_pml_elems, pmlfile="elems_pml.dyn"):
     """Create a new elements file that the PML elements.
