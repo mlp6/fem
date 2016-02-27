@@ -43,15 +43,15 @@ def test_sortnodeids(nodeIDcoords):
     assert axes[1][-1] == 1.0
     assert axes[2][-1] == 0.0
 
-    assert snic[0][0][0][0] == 1
-    assert snic[0][0][0][1] == -1.0
-    assert snic[0][0][0][2] == 0.0
-    assert snic[0][0][0][3] == -1.0
+    assert snic['id'][0][0][0] == 1
+    assert snic['x'][0][0][0] == -1.0
+    assert snic['y'][0][0][0] == 0.0
+    assert snic['z'][0][0][0] == -1.0
 
-    assert snic[-1][-1][-1][0] == 1331
-    assert snic[-1][-1][-1][1] == 0.0
-    assert snic[-1][-1][-1][2] == 1.0
-    assert snic[-1][-1][-1][3] == 0.0
+    assert snic['id'][-1][-1][-1] == 1331
+    assert snic['x'][-1][-1][-1] == 0.0
+    assert snic['y'][-1][-1][-1] == 1.0
+    assert snic['z'][-1][-1][-1] == 0.0
 
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=True)
 
@@ -62,15 +62,15 @@ def test_sortnodeids(nodeIDcoords):
     assert axes[1][-1] == 1.0
     assert axes[2][-1] == 0.0
 
-    assert snic[0][0][0][0] == 1
-    assert snic[0][0][0][1] == -1.0
-    assert snic[0][0][0][2] == 0.0
-    assert snic[0][0][0][3] == -1.0
+    assert snic['id'][0][0][0] == 1
+    assert snic['x'][0][0][0] == -1.0
+    assert snic['y'][0][0][0] == 0.0
+    assert snic['z'][0][0][0] == -1.0
 
-    assert snic[-1][-1][-1][0] == 1331
-    assert snic[-1][-1][-1][1] == 0.0
-    assert snic[-1][-1][-1][2] == 1.0
-    assert snic[-1][-1][-1][3] == 0.0
+    assert snic['id'][-1][-1][-1] == 1331
+    assert snic['x'][-1][-1][-1] == 0.0
+    assert snic['y'][-1][-1][-1] == 1.0
+    assert snic['z'][-1][-1][-1] == 0.0
 
 
 def test_SortElems(sorted_elems):
