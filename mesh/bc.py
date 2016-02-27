@@ -29,7 +29,7 @@ def main():
     pml_elems = opts.pml_elems
     pml_partID = opts.pml_partID
     nonreflect_faces = opts.nonreflect_faces
-    node_constraints = opts.node_constraints
+    face_constraints = opts.face_constraints
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -40,14 +40,13 @@ def main():
     if pml_elems:
         sorted_pml_elems = assign_pml_elems(sorted_elems, pml_elems)
         write_pml_elems(sorted_pml_elems, pmlfile)
-        write_bc()
     elif nonreflect_faces:
         write_nonreflecting(BCFILE, segID)
-        write_bc()
+
+    bcdict = assign_node_constraints(snic, axes, node_constraints)
+    write_bc(bcdict, bcfile)
 
     # TODO: Change input syntax to something like:
-    # nodeBC = [[(1, 1, 1, 1, 1, 1), (0, 1, 0, 1, 1, 1)], ...] ordered by [xmin,
-    # xmax, ymin, ymax, ...]
     # qsym_edge = [[0, 1], [1, 0], [0, 0]]
 
 """
@@ -240,6 +239,35 @@ def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
 
     return sorted_elems
 
+
+def assign_node_constraints(snic, axes, face_constraints):
+    """assign node constraints to prescribed node planes
+
+    Nodes shared on multiple faces have
+    :param snic: sorted node IDs and coordinates from nodes.dyn
+    :param axes: mesh axes [x, y, z]
+    :param face_constraints: list of DOF strings ordered by
+                             ((xmin, max), (ymin, ...)
+                             (e.g., (('1, 1, 1, 1, 1, 1' , '0, 1, 0, 0, 1, 0'),...)
+    :return: bcdict - dictionary of node BC to be written to bc.dyn
+    """
+    from fem_mesh import extractPlane
+    from numpy import ndenumerate
+
+    bcdict = {}
+    for axis in range(0, 3):
+        for axlim in range(0, 2):
+            if axlim == 0:
+                axis_limit = axes[axis].min()
+            else:
+                axis_limit = axes[axis].max()
+            planeNodeIDs = extractPlane(snic, axes, (axis, axis_limit))
+            for i, id in ndenumerate(planeNodeIDs['id']):
+                bcdict[id] = node_constraints[axis][axlim]
+
+    return bcdict
+
+
 def write_pml_elems(sorted_pml_elems, pmlfile="elems_pml.dyn"):
     """Create a new elements file that the PML elements.
 
@@ -254,10 +282,10 @@ def write_pml_elems(sorted_pml_elems, pmlfile="elems_pml.dyn"):
     pml.write('*ELEMENT_SOLID\n')
     for i, e in ndenumerate(sorted_pml_elems):
         pml.write('%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n' % (e['id'], e['pid'],
-                                                     e['n1'], e['n2'],
-                                                     e['n3'], e['n4'],
-                                                     e['n5'], e['n6'],
-                                                     e['n7'], e['n8']))
+                                                       e['n1'], e['n2'],
+                                                       e['n3'], e['n4'],
+                                                       e['n5'], e['n6'],
+                                                       e['n7'], e['n8']))
     pml.write('*END\n')
     pml.close()
 

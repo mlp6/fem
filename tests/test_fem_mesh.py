@@ -30,14 +30,10 @@ def test_loadelems():
     assert elems[-1][-1] == 1330
 
 
-def test_sortnodeids():
+def test_sortnodeids(nodeIDcoords):
     """test node ID sorting by both order and coordinate locations
     """
-    from fem_mesh import load_nodeIDs_coords
     from fem_mesh import SortNodeIDs
-    nodefile = '%s/nodes.dyn' % myPath
-
-    nodeIDcoords = load_nodeIDs_coords(nodefile)
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
 
     assert axes[0][0] == -1.0
@@ -87,16 +83,12 @@ def test_SortElems(sorted_elems):
     assert sorted_elems['n8'][-1][-1][-1] == 1330
 
 
-def test_extractPlane():
+def test_extractPlane(nodeIDcoords):
     """test all that all 6 planes are extracted as expected
     """
-    from fem_mesh import load_nodeIDs_coords
     from fem_mesh import SortNodeIDs
     from fem_mesh import extractPlane
 
-    nodefile = '%s/nodes.dyn' % myPath
-
-    nodeIDcoords = load_nodeIDs_coords(nodefile)
     [snic, axes] = SortNodeIDs(nodeIDcoords)
 
     planeNodeIDs = extractPlane(snic, axes, [0, -1.0])

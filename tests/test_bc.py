@@ -22,6 +22,18 @@ def test_write_pml_elems(tmpdir, sorted_elems):
     assert lines[-1] == "*END\n"
 
 
+def test_assign_node_constraints(nodeIDcoords):
+    from fem_mesh import SortNodeIDs
+    from bc import assign_node_constraints
+    [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
+    node_constraints = (('1,1,1,1,1,1', '2,2,2,2,2,2'),
+                        ('3,3,3,3,3,3', '4,4,4,4,4,4'),
+                        ('5,5,5,5,5,5', '6,6,6,6,6,6'))
+    bcdict = assign_node_constraints(snic, axes, node_constraints)
+
+    assert bcdict[1] == '5,5,5,5,5,5'
+
+
 def test_assign_pml_elems(sorted_elems):
     from bc import assign_pml_elems
 
@@ -63,6 +75,7 @@ def test_assign_pml_elems(sorted_elems):
     assert sorted_pml_elems[sorted_pml_elems['id']==10]['pid'] == 2
     assert sorted_pml_elems[sorted_pml_elems['id']==110]['pid'] == 2
     assert sorted_pml_elems[sorted_pml_elems['id']==210]['pid'] == 1
+
 
 def test_write_bc(tmpdir):
     from bc import write_bc
