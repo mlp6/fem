@@ -226,12 +226,12 @@ def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
     :param pml_partID: default = 2
     :return: sorted_pml_elems (to be written to new file)
     """
-    sorted_elems['pid'][:, :, 0:pml_elems[0][0]] = pml_partID
-    sorted_elems['pid'][:, :, -1:-pml_elems[0][1]-1:-1] = pml_partID
+    sorted_elems['pid'][0:pml_elems[0][0], :, :] = pml_partID
+    sorted_elems['pid'][-1:-pml_elems[0][1]-1:-1, :, :] = pml_partID
     sorted_elems['pid'][:, 0:pml_elems[1][0], :] = pml_partID
     sorted_elems['pid'][:, -1:-pml_elems[1][1]-1:-1, :] = pml_partID
-    sorted_elems['pid'][0:pml_elems[2][0], :, :] = pml_partID
-    sorted_elems['pid'][-1:-pml_elems[2][1]-1:-1, :, :] = pml_partID
+    sorted_elems['pid'][:, :, 0:pml_elems[2][0]] = pml_partID
+    sorted_elems['pid'][:, :, -1:-pml_elems[2][1]-1:-1] = pml_partID
 
     return sorted_elems
 
@@ -299,9 +299,9 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
     # restrict nodes to those on specified edge
     ortho_axis = 1
     if edge_constraints[0][ortho_axis][0]:
-        edge_nodes = planeNodeIDs[:,0]
+        edge_nodes = planeNodeIDs[0,:]
     elif edge_constraints[0][ortho_axis][1]:
-        edge_nodes = planeNodeIDs[:,-1]
+        edge_nodes = planeNodeIDs[-1,:]
     else:
         warn('Orthogonal plane to x-face is not a y-face; no edge BCs defined')
         return 1
