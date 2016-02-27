@@ -2,7 +2,6 @@
 """
 
 import sys
-
 import os
 
 myPath = os.path.dirname(os.path.abspath(__file__))
@@ -78,19 +77,7 @@ def test_sortnodeids():
     assert snic[-1][-1][-1][3] == 0.0
 
 
-def test_SortElems():
-    from fem_mesh import load_nodeIDs_coords
-    from fem_mesh import load_elems
-    from fem_mesh import SortNodeIDs
-    from fem_mesh import SortElems
-
-    nodefile = '%s/nodes.dyn' % myPath
-    elefile = '%s/elems.dyn' % myPath
-
-    nodeIDcoords = load_nodeIDs_coords(nodefile)
-    [snic, axes] = SortNodeIDs(nodeIDcoords)
-    elems = load_elems(elefile)
-    sorted_elems = SortElems(elems, axes)
+def test_SortElems(sorted_elems):
 
     assert sorted_elems['id'][0][0][0] ==  1
     assert sorted_elems['n1'][0][0][0] ==  1

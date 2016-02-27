@@ -9,27 +9,8 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../mesh/')
 
 
-@pytest.fixture
-def get_sorted_elems():
-    from fem_mesh import load_nodeIDs_coords
-    from fem_mesh import load_elems
-    from fem_mesh import SortNodeIDs
-    from fem_mesh import SortElems
-
-    nodefile = '%s/nodes.dyn' % myPath
-    elefile = '%s/elems.dyn' % myPath
-
-    nodeIDcoords = load_nodeIDs_coords(nodefile)
-    [snic, axes] = SortNodeIDs(nodeIDcoords)
-    elems = load_elems(elefile)
-    sorted_elems = SortElems(elems, axes)
-
-    return sorted_elems
-
-
-def test_write_pml_elems(tmpdir):
+def test_write_pml_elems(tmpdir, sorted_elems):
     from bc import write_pml_elems
-    sorted_elems = get_sorted_elems()
 
     f = tmpdir.join("elems_pml.dyn")
     write_pml_elems(sorted_elems, pmlfile=f.strpath)
@@ -40,9 +21,9 @@ def test_write_pml_elems(tmpdir):
     assert lines[-2] == "1000,1,1198,1199,1210,1209,1319,1320,1331,1330\n"
     assert lines[-1] == "*END\n"
 
-def test_assign_pml_elems():
+
+def test_assign_pml_elems(sorted_elems):
     from bc import assign_pml_elems
-    sorted_elems = get_sorted_elems()
 
     pml_elems = ((3, 0), (0, 1), (2, 3))
 
