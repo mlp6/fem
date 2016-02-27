@@ -88,16 +88,15 @@ def extractPlane(snic, axes, plane):
     :example: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
     """
     from sys import exit
+    from numpy import where
 
-    print(snic.shape)
-    plane_axis_index = axes[plane[0]] == plane[1]
-    print(plane_axis_index)
+    plane_axis_index = where(axes[plane[0]] == plane[1])
     if plane[0] == 0:
-        planeNodeIDs = snic['id'][:, :, plane_axis_index]
+        planeNodeIDs = snic['id'][plane_axis_index[0], :, :]
     elif plane[0] == 1:
-        planeNodeIDs = snic['id'][:, plane_axis_index, :]
+        planeNodeIDs = snic['id'][:, plane_axis_index[0], :]
     elif plane[0] == 2:
-        planeNodeIDs = snic['id'][plane_axis_index, :, :]
+        planeNodeIDs = snic['id'][:, :, plane_axis_index[0]]
     else:
         exit("ERROR: Specified plane index to extract does not exist")
 
@@ -141,10 +140,10 @@ def SortElems(elems, axes):
     :param axes: lists of x, y, z axis positions
     :returns: sorted_elems
     """
-
     sorted_elems = elems.reshape((axes[0].size-1,
                                   axes[1].size-1,
-                                  axes[2].size-1))
+                                  axes[2].size-1),
+                                 order='F')
 
     return sorted_elems
 
