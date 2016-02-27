@@ -9,6 +9,30 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../mesh/')
 
 
+def test_write_pml_elems(tmpdir):
+    from bc import write_pml_elems
+    from fem_mesh import load_nodeIDs_coords
+    from fem_mesh import load_elems
+    from fem_mesh import SortNodeIDs
+    from fem_mesh import SortElems
+
+    nodefile = '%s/nodes.dyn' % myPath
+    elefile = '%s/elems.dyn' % myPath
+
+    nodeIDcoords = load_nodeIDs_coords(nodefile)
+    [snic, axes] = SortNodeIDs(nodeIDcoords)
+    elems = load_elems(elefile)
+    sorted_elems = SortElems(elems, axes)
+
+    f = tmpdir.join("elems_pml.dyn")
+    write_pml_elems(sorted_elems, pmlfile=f.strpath)
+    lines = f.readlines()
+    assert lines[0][0] == "$"
+    assert lines[1] == "*ELEMENT_SOLID\n"
+    assert lines[2] == "1,1,1,2,13,12,122,123,134,133\n"
+    assert lines[-2] == "1000,1,1198,1199,1210,1209,1319,1320,1331,1330\n"
+    assert lines[-1] == "*END\n"
+
 def test_assign_pml_elems():
     from bc import assign_pml_elems
 
