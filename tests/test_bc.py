@@ -26,10 +26,10 @@ def test_assign_node_constraints(nodeIDcoords):
     from fem_mesh import SortNodeIDs
     from bc import assign_node_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
-    node_constraints = (('1,1,1,1,1,1', '2,2,2,2,2,2'),
+    face_constraints = (('1,1,1,1,1,1', '2,2,2,2,2,2'),
                         ('3,3,3,3,3,3', '4,4,4,4,4,4'),
                         ('5,5,5,5,5,5', '6,6,6,6,6,6'))
-    bcdict = assign_node_constraints(snic, axes, node_constraints)
+    bcdict = assign_node_constraints(snic, axes, face_constraints)
 
     assert bcdict[1] == '5,5,5,5,5,5'
 

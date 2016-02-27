@@ -24,8 +24,8 @@ def main():
 
     nodeIDcoords = fm.load_nodeIDs_coords(opts.nodefile)
     [snic, axes] = fm.SortNodeIDs(nodeIDcoords)
-    [elems] = fm.load_elems(opts.elefile)
-    [sorted_elems] = fm.SortElemIDs(elems, axes)
+    elems = fm.load_elems(opts.elefile)
+    sorted_elems = fm.SortElems(elems, axes)
 
     if pml_elems:
         sorted_pml_elems = assign_pml_elems(sorted_elems,
@@ -145,7 +145,7 @@ def write_bc(bcdict, bcfile="bc.dyn"):
     """write node BCs bcfile
 
     :param bcdict: dict of node BCs, with DOF values
-    :param bcfile: boundary conditiona filename (bc.dyn)
+    :param bcfile: boundary conditions filename (bc.dyn)
     """
 
     bcfile = open(bcfile, 'w')
@@ -260,7 +260,7 @@ def assign_node_constraints(snic, axes, face_constraints):
             else:
                 axis_limit = axes[axis].max()
             planeNodeIDs = extractPlane(snic, axes, (axis, axis_limit))
-            for i, id in ndenumerate(planeNodeIDs['id']):
+            for i, id in ndenumerate(planeNodeIDs):
                 bcdict[id] = face_constraints[axis][axlim]
 
     return bcdict
@@ -299,9 +299,9 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
     # restrict nodes to those on specified edge
     ortho_axis = 1
     if edge_constraints[0][ortho_axis][0]:
-        edge_nodes = planeNodeIDs['id'][:,0]
+        edge_nodes = planeNodeIDs[:,0]
     elif edge_constraints[0][ortho_axis][1]:
-        edge_nodes = planeNodeIDs['id'][:,-1]
+        edge_nodes = planeNodeIDs[:,-1]
     else:
         warn('Orthogonal plane to x-face is not a y-face; no edge BCs defined')
         return 1

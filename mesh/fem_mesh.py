@@ -89,12 +89,15 @@ def extractPlane(snic, axes, plane):
     """
     from sys import exit
 
+    print(snic.shape)
+    plane_axis_index = axes[plane[0]] == plane[1]
+    print(plane_axis_index)
     if plane[0] == 0:
-        planeNodeIDs = snic[:, :, axes[plane[0]] == plane[1]]
+        planeNodeIDs = snic['id'][:, :, plane_axis_index]
     elif plane[0] == 1:
-        planeNodeIDs = snic[:, axes[plane[0]] == plane[1], :]
+        planeNodeIDs = snic['id'][:, plane_axis_index, :]
     elif plane[0] == 2:
-        planeNodeIDs = snic[axes[plane[0]] == plane[1], :, :]
+        planeNodeIDs = snic['id'][plane_axis_index, :, :]
     else:
         exit("ERROR: Specified plane index to extract does not exist")
 
