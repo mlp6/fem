@@ -40,10 +40,10 @@ def main():
     if pml_elems:
         sorted_pml_elems = assign_pml_elems(sorted_elems, pml_elems)
         write_pml_elems(sorted_pml_elems, pmlfile)
-        write_bc_file()
+        write_bc()
     elif nonreflect_faces:
         write_nonreflecting(BCFILE, segID)
-        write_bc_file()
+        write_bc()
 
     # TODO: Change input syntax to something like:
     # nodeBC = [[(1, 1, 1, 1, 1, 1), (0, 1, 0, 1, 1, 1)], ...] ordered by [xmin,
@@ -147,28 +147,23 @@ def writeSeg(BCFILE, title, segID, planeNodeIDs):
     return segID
 
 
-def write_bc_file(planeNodeIDs, dofs, bcfile="bc.dyn"):
-    """write BC keywords to BC file
+def write_bc(bcdict, bcfile="bc.dyn"):
+    """write node BCs bcfile
 
-    :param planeNodeIDs: 2D array
-    :param str dofs: degrees of freedom
+    :param bcdict: dict of node BCs, with DOF values
     :param bcfile: boundary conditiona filename (bc.dyn)
     """
 
-    BCFILE = open(bcfile, 'w')
-    BCFILE.write("$ Generated using %s with the following options:\n" %
-                 cmdline)
-    # TODO: replace w/ explicit variable value prints
-    BCFILE.write("$ %s\n" % opts)
-    BCFILE.write('*BOUNDARY_SPC_NODE\n')
+    bcfile = open(bcfile, 'w')
+    bcfile.write("$ Generated using bc.py\n")
+    bcfile.write('*BOUNDARY_SPC_NODE\n')
+    for i in bcdict:
+        bcfile.write('%i,' % i)
+        bcfile.write('%s\n' % bcdict[i])
+    bcfile.write('*END\n')
+    bcfile.close()
 
-    # TODO: replace with printing node BC dict
-    for i in planeNodeIDs:
-        for j in i:
-            BCFILE.write("%i,0,%s\n" % (j[0], dofs))
-
-    BCFILE.write('*END\n')
-    BCFILE.close()
+    return 0
 
 def read_cli():
     """read command line arguments

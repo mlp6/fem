@@ -64,3 +64,15 @@ def test_assign_pml_elems(sorted_elems):
     assert sorted_pml_elems[sorted_pml_elems['id']==110]['pid'] == 2
     assert sorted_pml_elems[sorted_pml_elems['id']==210]['pid'] == 1
 
+def test_write_bc(tmpdir):
+    from bc import write_bc
+    bcdict = {1: '1,1,1,0,0,0', 2: '0,1,0,0,1,0'}
+    f = tmpdir.join("bc.dyn")
+    write_bc(bcdict, bcfile=f.strpath)
+    lines = f.readlines()
+    assert lines[1] == "*BOUNDARY_SPC_NODE\n"
+    assert lines[2] == "1,1,1,1,0,0,0\n"
+    assert lines[3] == "2,0,1,0,0,1,0\n"
+    assert lines[-1] == "*END\n"
+
+    return 0
