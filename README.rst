@@ -1,5 +1,5 @@
-Acoustic Radiatio Force FEM Tools
-=================================
+Acoustic Radiation Force FEM Tools
+==================================
 
 Finite Element Method (FEM) tools to simulate acoustic radiation force
 excitations and resultant shear wave propagation.
