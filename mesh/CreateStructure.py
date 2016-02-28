@@ -1,27 +1,15 @@
 """
-CreateStructure.py
+:mod:`CreateStructe` -- define structures in meshes
+===================================================
 
-Create "simple" structures in the FE meshes (e.g., spheres, layers).
+.. module:: CreateStructure
+   :synopsis: define structures in meshes
+   :license: Apache v2.0, see LICENSE for details
+   :copyright: Copyright 2016 Mark Palmeri
 
-Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
+.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
 """
-from __future__ import absolute_import
-
-__author__ = "Mark Palmeri"
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
 
 
 def main():
@@ -110,15 +98,11 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
     import fem_mesh
 
     header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
-    nodeIDcoords = n.loadtxt(nodefile,
-                             delimiter=',',
-                             skiprows=header_comment_skips,
-                             comments='*',
-                             dtype=[('id', 'i4'), ('x', 'f4'),
-                                    ('y', 'f4'), ('z', 'f4')])
+    nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
 
     structNodeIDs = {}
 
+    # TODO: replace sopts approach; figure out something more robust
     if struct_type is 'sphere':
         """
         sopts is assumed to be a 4 element tuple with the following items:
@@ -133,22 +117,22 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
                 structNodeIDs[i[0]] = True
 
     elif struct_type is 'layer':
-        '''
+        """
         sopts is assumed to be a 3 element tuple with the following items:
         dimension for normal to layer (x = 1, y = 2, z = 3)
         layer bounds (min,max)
-        '''
+        """
         for i in nodeIDcoords:
             if i[sopts[0]] > sopts[1] and i[sopts[0]] < sopts[2]:
                 structNodeIDs[i[0]] = True
 
     elif struct_type is 'ellipsoid':
-        '''
+        """
         sopts is assumed to be a 9 element tuple with the following items:
         ellipsoid center coordinates (x,y,z)
         ellipsoid half-axis lengths (a,b,c)
         ellipsoid euler angles (phi,theta,psi) in DEGREES
-        '''
+        """
         cph = m.cos(m.radians(sopts[6]))    # cos(phi)
         sph = m.sin(m.radians(sopts[6]))    # sin(phi)
         cth = m.cos(m.radians(sopts[7]))    # cos(theta)
@@ -179,11 +163,11 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
                 structNodeIDs[i[0]] = True
 
     elif struct_type is 'cube':
-        '''
+        """
         sopts is assumed to be a 6 element tuple with the following items:
         Location of most-negative corner (x,y,z) Respective cube dimensions
         (x,y,z)
-        '''
+        """
         for i in nodeIDcoords:
             if i[1] >= sopts[0] and \
                 i[1] <= (sopts[0] + sopts[3]) and \
@@ -204,36 +188,27 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
 
 def findStructElemIDs(elefile, structNodeIDs):
     """find elements that contain nodes in structNodeIDs
+
     :param str elefile: element filename
     :param structNodeIDs: numpy array
     :returns: (elems, structElemIds)
-
     """
-    import sys
-    import numpy as n
-    import fem_mesh
+    from fem_mesh import load_elems
 
-    header_comment_skips = fem_mesh.count_header_comment_skips(elefile)
-    elems = n.loadtxt(elefile,
-                      delimiter=',',
-                      comments='*',
-                      skiprows=header_comment_skips,
-                      dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
-                             ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
-                             ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
-                             ('n8', 'i4')])
+    elems = fem_mesh.load_elems(elefile)
 
     structElemIDs = {}
 
     for i in elems:
-        # I hate this hard-coded syntax, but this works (for now)
+        # TODO: optimize this mess of nested loops
         j = i.tolist()
         insideStruct = any(x in structNodeIDs for x in j[2:10])
         if insideStruct:
             structElemIDs[i[0]] = True
 
     if len(structElemIDs) == 0:
-        sys.exit('ERROR: no structure elements were found')
+        from sys import exit
+        exit('ERROR: no structure elements were found')
 
     return (elems, structElemIDs)
 
