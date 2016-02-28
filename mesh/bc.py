@@ -37,8 +37,10 @@ def main():
         # write_nonreflecting(BCFILE, segID)
 
     bcdict = assign_node_constraints(snic, axes, opts.face_constraints)
+    bcdict = constrain_sym_pml_nodes(bcdict, snic, axes, opts.pml_elems,
+                                     opts.edge_constraints)
     bcdict = assign_edge_sym_constraints(bcdict, snic, axes,
-                                         opts.edge_constraints)
+                                         opts.edge_constraints, opts.pml_elems)
     write_bc(bcdict, opts.bcfile)
 
     # TODO: Change input syntax to something like:
@@ -141,21 +143,21 @@ def writeSeg(BCFILE, title, segID, planeNodeIDs):
     return segID
 
 
-def write_bc(bcdict, bcfile="bc.dyn"):
-    """write node BCs bcfile
+def write_bc(bcdict, bc="bc.dyn"):
+    """write node BCs bc
 
     :param bcdict: dict of node BCs, with DOF values
     :param bcfile: boundary conditions filename (bc.dyn)
     """
 
-    bcfile = open(bcfile, 'w')
-    bcfile.write("$ Generated using bc.py\n")
-    bcfile.write('*BOUNDARY_SPC_NODE\n')
+    bcf = open(bc, 'w')
+    bcf.write("$ Generated using bc.py\n")
+    bcf.write('*BOUNDARY_SPC_NODE\n')
     for i in bcdict:
-        bcfile.write('%i,' % i)
-        bcfile.write('%s\n' % bcdict[i])
-    bcfile.write('*END\n')
-    bcfile.close()
+        bcf.write('%i,0,' % i)
+        bcf.write('%s\n' % bcdict[i])
+    bcf.write('*END\n')
+    bcf.close()
 
     return 0
 
@@ -266,6 +268,39 @@ def assign_node_constraints(snic, axes, face_constraints):
     return bcdict
 
 
+def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
+    """make sure that all "side" nodes for the PML elements are fully
+    constrained, instead of being assigned the symmetry constraints
+
+    :param bcdict:
+    :param snic:
+    :param axes:
+    :param pml_elems:
+    :param edge_constraints:
+    :return: bcdict
+    """
+    from fem_mesh import extractPlane
+    from numpy import ndenumerate
+
+    # look for x symmetry face
+    for axis in range(0, 2):
+        if edge_constraints[0][axis][0]:
+            axis_limit = axes[axis].min()
+        elif edge_constraints[0][axis][1]:
+            axis_limit = axes[axis].max()
+        if axis_limit is not None:
+            planeNodeIDs = extractPlane(snic, axes, (axis, axis_limit))
+            pml_node_ids_zmin = planeNodeIDs[:, 0:(pml_elems[2][0]+1)]
+            pml_node_ids_zmax = planeNodeIDs[:, -(pml_elems[2][1]+1):]
+            for i, id in ndenumerate(pml_node_ids_zmin):
+                bcdict[id] = "%s" % '1,1,1,1,1,1'
+            for i, id in ndenumerate(pml_node_ids_zmax):
+                bcdict[id] = "%s" % '1,1,1,1,1,1'
+        axis_limit = None
+
+    return bcdict
+
+
 def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems):
     """modify/create node BCs for quarter-symmetry edge
 
@@ -282,7 +317,6 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
     """
     from warnings import warn
     from fem_mesh import extractPlane
-    from numpy import ndenumerate
 
     # look for edge shared with an x face
     axis = 0
@@ -310,7 +344,7 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
     zaxis = 2
     edge_nodes = edge_nodes[pml_elems[zaxis][0]+1:-(pml_elems[zaxis][1]+1)]
     for i in edge_nodes:
-        bcdict[i] = "%s\n" % edge_constraints[1]
+        bcdict[i] = "%s" % edge_constraints[1]
 
     return bcdict
 

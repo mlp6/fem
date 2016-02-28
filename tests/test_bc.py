@@ -44,13 +44,34 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
     bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints,
                                          pml_elems)
 
-    print(bcdict)
     for nodeID in (737, 616, 495, 374):
-        assert bcdict[nodeID] == "1,1,0,1,1,1\n"
+        assert bcdict[nodeID] == "1,1,0,1,1,1"
 
     # test for node IDs excluded based on zmin/zmax PML elems
     for nodeID in (1221, 1100, 979, 858, 253, 132, 11):
         assert nodeID not in bcdict.keys()
+
+
+def test_constrain_sym_pml_nodes(nodeIDcoords):
+    from fem_mesh import SortNodeIDs
+    from bc import constrain_sym_pml_nodes
+    [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
+    bcdict = {}
+    edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+    pml_elems = ((3, 0), (0, 1), (2, 3))
+    bcdict =  constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems,
+                                      edge_constraints)
+    # check x sym face
+    for start_node in (11, 132, 253, 858, 979, 1100, 1221):
+        for nodeID in range(start_node, start_node+111, 11):
+            assert bcdict[nodeID] == '1,1,1,1,1,1'
+    for not_in_bc in (374, 495, 616, 737):
+        assert not_in_bc not in bcdict.keys()
+    # check y sym face
+    for start_node in (1, 122, 243, 848, 969, 1090, 1211):
+        for nodeID in range(start_node, start_node+11):
+            assert bcdict[nodeID] == '1,1,1,1,1,1'
+
 
 
 def test_assign_pml_elems(sorted_elems):
@@ -100,11 +121,11 @@ def test_write_bc(tmpdir):
     from bc import write_bc
     bcdict = {1: '1,1,1,0,0,0', 2: '0,1,0,0,1,0'}
     f = tmpdir.join("bc.dyn")
-    write_bc(bcdict, bcfile=f.strpath)
+    write_bc(bcdict, bc=f.strpath)
     lines = f.readlines()
     assert lines[1] == "*BOUNDARY_SPC_NODE\n"
-    assert lines[2] == "1,1,1,1,0,0,0\n"
-    assert lines[3] == "2,0,1,0,0,1,0\n"
-    assert lines[-1] == "*END\n"
+    assert lines[2] == "1,0,1,1,1,0,0,0\n"
+    assert lines[3] == "2,0,0,1,0,0,1,0\n"
+    assert lines[4] == "*END\n"
 
     return 0
