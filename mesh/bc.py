@@ -272,6 +272,8 @@ def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
     """make sure that all "side" nodes for the PML elements are fully
     constrained, instead of being assigned the symmetry constraints
 
+    THIS FUNCTION IS NOT NEEDED!!
+
     :param bcdict:
     :param snic:
     :param axes:

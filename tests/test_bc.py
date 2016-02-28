@@ -53,6 +53,8 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
 
 
 def test_constrain_sym_pml_nodes(nodeIDcoords):
+    """THIS FUNCTION IS NOT NEEDED!!
+    """
     from fem_mesh import SortNodeIDs
     from bc import constrain_sym_pml_nodes
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
