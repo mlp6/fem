@@ -340,9 +340,8 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
         warn('Orthogonal plane to x-face is not a y-face; no edge BCs defined')
         return 1
 
-    # do not assign BCs to nodes associated with PMLs on zmin/zmax faces
-    zaxis = 2
-    edge_nodes = edge_nodes[pml_elems[zaxis][0]+1:-(pml_elems[zaxis][1]+1)]
+    # do not assign BCs to nodes associated with zmin/zmax faces
+    edge_nodes = edge_nodes[1:-1]
     for i in edge_nodes:
         bcdict[i] = "%s" % edge_constraints[1]
 

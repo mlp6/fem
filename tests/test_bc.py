@@ -48,7 +48,7 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
         assert bcdict[nodeID] == "1,1,0,1,1,1"
 
     # test for node IDs excluded based on zmin/zmax PML elems
-    for nodeID in (1221, 1100, 979, 858, 253, 132, 11):
+    for nodeID in (1221, 11):
         assert nodeID not in bcdict.keys()
 
 
