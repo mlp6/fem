@@ -21,6 +21,7 @@ def create_vtk(args, nodout):
     """create VTK files to load into Paraview
     this uses the StructuredGrid VTK XML format outlined here:
     http://vtk.org/VTK/img/file-formats.pdf (pages 11-15)
+
     :param args: CLI input arguments
     :param nodout: nodout filename
     """
@@ -166,10 +167,11 @@ def create_vtk(args, nodout):
     remove('disp_temp.txt')
     remove('pos_temp.txt')
 
+    return 0
+
 
 def parse_cli():
-    """
-    parse command-line interface arguments
+    """ parse command-line interface arguments
     """
     import argparse
 
@@ -189,10 +191,17 @@ def parse_cli():
 
 
 def createVTKFile(args, x, y, z, numNodes, timestep):
-    """
-    creates .vts file for visualizing the displacement data during a single
-    timestep in Paraview.
-    """
+   """creates .vts file for visualizing single timestep displacement data
+
+   :param args:
+   :param x:
+   :param y:
+   :param z:
+   :param numNodes:
+   :param timestep:
+   :return:
+   """
+
     from os import path, makedirs
     # quick check to make sure file extension is correct
     fileName = set_filename(args.vtkout)
@@ -240,11 +249,14 @@ def createVTKFile(args, x, y, z, numNodes, timestep):
 
     vtkout.close()
 
+    return 0
+
 
 def createPVDFile(args, timestep_values):
     """creates .pvd file that encompasses displacement for all timesteps.
     The .pvd file can be loaded into Paraview, and the timesteps can be scrolled
     through using the time slider bar.
+
     :param args: CLI input arguments
     :param timestep_values: vector of timesteps to process
     """
@@ -265,12 +277,14 @@ def createPVDFile(args, timestep_values):
     vtkout.write('\t</Collection>\n')
     vtkout.write('</VTKFile>\n')
 
+    return 0
 
 def set_filename(vtkout):
     """set filename from args.vtkout
     strip file extension if exists
+
     :param vtkout: input arg-specified VTK filename
-    :return fileName: filename with extension
+    :return: fileName (with extension)
     """
     if '.' in vtkout:
         fileName = vtkout[:vtkout.find('.')]
