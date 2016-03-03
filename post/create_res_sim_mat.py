@@ -11,42 +11,54 @@
 
 
 def main():
-    import os
-    import sys
-    myPath = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, myPath + '/../mesh/')
-    import fem_mesh
+    from fem.mesh import fem_mesh
 
     args = read_cli()
-
     if args.legacynodes:
         legacynodes = True
     else:
         legacynodes = False
+    nodedyn = args.nodedyn
+    dispout = args.dispout
+    dynadeck = args.dynadeck
 
-    node_id_coords = fem_mesh.load_nodeIDs_coords(args.nodedyn)
+    run(dynadeck, nodedyn, dispout)
+
+    return 0
+
+
+def run(dynadeck, nodedyn="nodes.dyn", dispout="disp.dat"):
+    """
+
+    :param dynadeck: main dyna input deck
+    :param nodedyn: default = "nodes.dyn"
+    :param dispout: default = "disp.dat"
+    :return: 0
+    """
+    node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
     image_plane = extract_image_plane(snic, axes, ele_pos=0.0)
 
-    header = read_header(args.dispout)
-    dt = extract_dt(args.dynadeck)
+    header = read_header(dispout)
+    dt = extract_dt(dynadeck)
     t = [float(x)*dt for x in range(0, header['num_timesteps'])]
 
-    arfidata = extract_arfi_data(args.dispout, header, image_plane,
-                                 legacynodes)
+    arfidata = extract_arfi_data(dispout, header, image_plane, legacynodes)
 
     save_res_mat(args.ressim, arfidata, axes, t)
 
+    return 0
 
-def extract_arfi_data(dispout, header, image_plane, legacynodes):
+
+def extract_arfi_data(dispout, header, image_plane, legacynodes=False):
     """ extract ARFI data from disp.dat
 
     :param dispout: name of disp.dat file
     :param header: num_nodes, num_dims, num_timesteps
     :param image_plane: matrix of image plane node IDs spatially sorted
-    :param legacynodes: boolean flag to use legacy disp.dat format with node
-                        IDs repeated every timestep
+    :param legacynodes: Boolean flag to use legacy disp.dat format with node
+                        IDs repeated every timestep (default = False)
     :returns: arfidata matrix
 
     """

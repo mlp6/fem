@@ -18,19 +18,32 @@ def main():
 
     # read in CLI arguments
     args = parse_cli()
+    xyz = args.xyz
+    numElem = args.numElem
+    nodefile = args.nodefile
+    partid = args.partid
+    elefile = args.elefile
 
-    # generate node & element output files
-    out_file_header = ("$ Generated using %s:\n$ %s\n$" %
-                       (sys.argv[0], args))
+    run(xyz, numElem, nodefile, elefile, partid)
 
-    pos = calc_node_pos(args.xyz, args.numElem)
+    return 0
 
-    # check to make sure nodes fall at (x, y) = (0, 0)
-    check_x0_y0(pos)
 
-    writeNodes(pos, args.nodefile, out_file_header)
+def run(xyz, numElem, nodefile="nodes.dyn", elefile="elems.dyn", partid=1):
+    """
 
-    writeElems(args.numElem, args.partid, args.elefile, out_file_header)
+    :param xyz:
+    :param numElem:
+    :param nodefile: default = "nodes.dyn"
+    :param elefile: default = "elems.dyn"
+    :param partid: default = 1
+    :return: 0
+    """
+    pos = calc_node_pos(xyz, numElem)
+
+    writeNodes(pos, nodefile)
+
+    writeElems(numElem, partid, elefile)
 
 
 def parse_cli():
@@ -105,6 +118,9 @@ def calc_node_pos(xyz=(-1.0, 0.0, -1.0, 1.0, -4.0, 0.0), numElem=(20, 20, 20)):
             minpos, maxpos = maxpos, minpos
         ptemp = n.linspace(minpos, maxpos, numElem[i] + 1)
         pos.append(ptemp.tolist())
+
+    # check to make sure nodes fall at (x, y) = (0, 0)
+    check_x0_y0(pos)
 
     return pos
 

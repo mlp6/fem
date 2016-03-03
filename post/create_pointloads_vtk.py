@@ -49,11 +49,6 @@ python create_disp_dat.py --nodefile nodes.dyn
 
 
 def main():
-    import sys
-
-    if sys.version_info[:2] < (2, 7):
-        sys.exit("ERROR: Requires Python >= 2.7")
-
     # let's read in some command-line arguments
     args = parse_cli()
 
@@ -71,51 +66,53 @@ def main():
         create_vtu(args)
 
 def parse_cli():
-    '''
-    parse command-line interface arguments
-    '''
-    import argparse
+    """ parse command-line interface arguments
+    """
+    from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-    parser = argparse.ArgumentParser(description="Generate .vts "
-                                     "file from nodes and PointLoads files.",
-                                     formatter_class=
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodefile",
-                        help="name of ASCII file containing node IDs and positions.",
-                        default="nodes.dyn")
-    parser.add_argument("--elefile",
-                        help="name of ASCII file containing element IDs, part IDs, "
-                        "and node components. If this argument is given, then "
-                        "an unstructured grid VTK file (.vtu) will be created "
-                        "instead of a structured grid VTK file (.vts).",
-                        default=None)
-    parser.add_argument("--loadfile", help="name of PointLoads file. Loads will "
-                        "not be written to VTK file if load file is not given.",
-                        default=None)
-    parser.add_argument("--nonlinear", help="use this flag if mesh is nonlinear ",
-                        default=None, action='store_true')
-    parser.add_argument("--loadout", help="name of output .vts file.",
-                        default="nodeLoads.vts")
-    parser.add_argument("--numElem", help="number of elements (ints) in each dimension "
-                        "(x, y, z)", type=int, nargs='+', default=(None, None, None))
-    args = parser.parse_args()
+    p = ArgumentParser(description="Generate .vts "
+                       "file from nodes and PointLoads files.",
+                       formatter_class=
+                       ArgumentDefaultsHelpFormatter)
+    p.add_argument("--nodefile",
+                   help="name of ASCII file containing node IDs and positions.",
+                   default="nodes.dyn")
+    p.add_argument("--elefile",
+                   help="name of ASCII file containing element IDs, part IDs, "
+                   "and node components. If this argument is given, then "
+                   "an unstructured grid VTK file (.vtu) will be created "
+                   "instead of a structured grid VTK file (.vts).",
+                   default=None)
+    p.add_argument("--loadfile", help="name of PointLoads file. Loads will "
+                   "not be written to VTK file if load file is not given.",
+                   default="loads.dyn")
+    p.add_argument("--nonlinear", help="use this flag if mesh is nonlinear ",
+                   default=None, action='store_true')
+    p.add_argument("--loadout", help="name of output .vts file.",
+                   default="nodeLoads.vts")
+    p.add_argument("--numElem", help="number of elements (ints) in each dimension "
+                   "(x, y, z)", type=int, nargs='+', default=(None, None, None))
+    args = p.parse_args()
 
     return args
 
-def create_vts(args):
-    '''
+def create_vts(loadout="nodeLoads.dyn", args):
+    """write structured grid VTS file
+
     Writes .vts file from node and load files. StructuredGrid format assumes
     a linear mesh, so if your mesh is actually nonlinear, this script should be run
     using with an elements file.
-    '''
+
+    :param str loadout: default = "loads.dyn"
+    """
 
     # writing .vts file header
     # making sure file extension is correct
-    if '.' in args.loadout and not args.loadout.endswith('.vts'):
-        args.loadout = args.loadout[:args.loadout.find('.')]
-        args.loadout = args.loadout + '.vts'
+    if '.' in loadout and not loadout.endswith('.vts'):
+        loadout = loadout[:loadout.find('.')]
+        loadout = loadout + '.vts'
 
-    loadout = open(args.loadout, 'w')
+    loadout = open(loadout, 'w')
     loadout.write('<VTKFile type="StructuredGrid" version="0.1" byte_order="LittleEndian">\n')
 
     # writing opening tags and node position data to .vts file
@@ -133,7 +130,15 @@ def create_vts(args):
     loadout.write('</VTKFile>')
     loadout.close()
 
+    return 0
+
+
 def create_vtu(args):
+    """
+
+    :param args:
+    :return:
+    """
     # making sure file extension is correct
     if '.' in args.loadout and not args.loadout.endswith('.vtu'):
         args.loadout = args.loadout[:args.loadout.find('.')]
@@ -168,35 +173,46 @@ def create_vtu(args):
     loadout.write('</VTKFile>')
     loadout.close()
 
-def writeNodePositions(loadout, args, filetype):
-    '''
+    return 0
+
+
+def writeNodePositions(loadout, numElem=None, nodefile="nodes.dyn", elefile="elems.dyn", nonlinear=False, filetype="vts"):
+    """
     writes opening tags as well as node positions to
     loadout file. returns array containing number of
     nodes (index = 0) and number of elements (index = 1).
-    '''
+
+    :param loadout: loadout file being written to
+    :param int numElem: number of elements in each dimension (default = None)
+    :param str nodefile: default = "nodes.dyn"
+    :param str elefile: default = "elems.dyn"
+    :param Boolean nonlinear: unstructured grid (default = False)
+    :param str filetype: vts/vtu filetype being written (default = "vts")
+    :returns: (numNodes, numElems)
+    """
     print('Writing node positions')
-    nodes = open(args.nodefile, 'r')
+    nodes = open(nodefile, 'r')
 
     headerWritten = False
 
     for line in nodes:
         # if nonlinear flag not given, then check nodes header for
         # nonlinearity
-        if args.nonlinear == None:
+        if nonlinear == None:
             if line.startswith('\n'):
-                args.nonlinear = True
+                nonlinear = True
             else:
-                args.nonlinear = False
+                nonlinear = False
         # getting number of elements in x, y, z dimensions
         # as well as total number of nodes (for node ID)
         # when number of elements are defined in node file header.
 
         # cannot get dimension data from nodefile header or nodes are nonlinear
         if not headerWritten:
-            if args.nonlinear:
+            if nonlinear:
                 # get max node ID and coordinates of padding node
                 numNodes = 0
-                nodeCount = open(args.nodefile, 'r')
+                nodeCount = open(nodefile, 'r')
                 for line in nodeCount:
                     if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
                         raw_data = line.split(',')
@@ -211,9 +227,10 @@ def writeNodePositions(loadout, args, filetype):
 
                 # count number of elements
                 numElems = 0
-                elemCount = open(args.elefile, 'r')
+                elemCount = open(elefile, 'r')
                 for line in elemCount:
-                    if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
+                    if not line.startswith('$') and not line.startswith('*') and\
+                            not line.startswith('\n'):
                         numElems += 1
 
                 # initialize currentNode variable, which will be
@@ -234,32 +251,32 @@ def writeNodePositions(loadout, args, filetype):
                     dimensionsEnd = line.find(']')
                     dimensions = line[dimensionsStart+1:dimensionsEnd].split(', ')
                     dimensions = [int(x) for x in dimensions]
-		else:
-		    if args.numElem[0] == None:
-			import sys
-		    	print("Info about # of elements in each dimension not found in node file header.")
-		        print("Re-run this script with input argument --numElem to give me this info.")
-	                sys.exit("ERROR: # of elements in each dimension could not be found. Use --numElem.")
-		    else:
-		    	dimensions = args.numElem
+        else:
+            if numElem[0] == None:
+                from sys import exit
+                print("Info about # of elements in each dimension not found in node file header.")
+                print("Re-run this script with input argument --numElem to give me this info.")
+                    exit("ERROR: # of elements in each dimension could not be found. Use --numElem.")
+            else:
+                dimensions = numElem
 
-		numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
-                numElems = dimensions[0]*dimensions[1]*dimensions[2]
+        numNodes = (dimensions[0]+1)*(dimensions[1]+1)*(dimensions[2]+1)
+        numElems = dimensions[0]*dimensions[1]*dimensions[2]
 
-                # writing volume dimensions to .vts file, and finishing up header
-                if filetype is 'vts':
-                    loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' \
-                                      % (dimensions[0], dimensions[1], dimensions[2]))
-                    loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
-                                      % (dimensions[0], dimensions[1], dimensions[2]))
-                if filetype is 'vtu':
-                    loadout.write('\t<UnstructuredGrid>\n')
-                    loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
-                                              % (numNodes, numElems))
+        # writing volume dimensions to .vts file, and finishing up header
+        if filetype=='vts':
+            loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 %d 0 %d">\n' \
+                              % (dimensions[0], dimensions[1], dimensions[2]))
+            loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n' \
+                              % (dimensions[0], dimensions[1], dimensions[2]))
+        if filetype=='vtu':
+            loadout.write('\t<UnstructuredGrid>\n')
+            loadout.write('\t\t<Piece NumberOfPoints="%d" NumberOfCells="%d">\n' \
+                                      % (numNodes, numElems))
 
-                loadout.write('\t\t\t<Points>\n')
-                loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
-                headerWritten = True
+        loadout.write('\t\t\t<Points>\n')
+        loadout.write('\t\t\t\t<DataArray type="Float32" Name="Array" NumberOfComponents="3" format="ascii">\n')
+        headerWritten = True
 
         # reading node position data from nodefile
         if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
@@ -280,12 +297,16 @@ def writeNodePositions(loadout, args, filetype):
     loadout.write('\t\t\t</Points>\n')
     nodes.close()
 
-    return numNodes, numElems
+    return (numNodes, numElems)
 
-def writeNodeIDs(loadout, args, numNodes):
-    '''
-    writes node IDs to loadout file
-    '''
+
+def writeNodeIDs(loadout, numNodes):
+    """ writes node IDs to loadout file
+
+    :param loadout:
+    :param numNodes:
+    :return:
+    """
 
     print('Writing node IDs')
     loadout.write('\t\t\t\t<DataArray type="Float32" Name="node_id" format="ascii">\n')
@@ -293,10 +314,17 @@ def writeNodeIDs(loadout, args, numNodes):
         loadout.write('\t\t\t\t\t%.1f\n' % i)
     loadout.write('\t\t\t\t</DataArray>\n')
 
-def writePointLoads(loadout, args, numNodes):
-    '''
-    writes point loads to loadout file
-    '''
+     return 0
+
+
+def writePointLoads(loadout, numNodes):
+    """ writes point loads to loadout file
+
+    :param loadout:
+    :param numNodes:
+    :return:
+    """
+
     print('Writing point loads')
     loadout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" Name="loads" format="ascii">\n')
 
@@ -322,10 +350,17 @@ def writePointLoads(loadout, args, numNodes):
 
     loadout.write('\t\t\t\t</DataArray>\n')
 
-def writeCells(loadout, args):
-    '''
-    writes cell connectivity and types to loadout file
-    '''
+    return 0
+
+
+def writeCells(loadout, elefile="elems.dyn"):
+    """ writes cell connectivity and types to loadout file
+
+    :param loadout:
+    :param elefile:
+    :return:
+    """
+
     print('Writing cells')
     loadout.write('\t\t\t<Cells>\n')
 
@@ -335,7 +370,7 @@ def writeCells(loadout, args):
 
     # write cell connectivity array
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="connectivity" Format="ascii">\n')
-    elems = open(args.elefile, 'r')
+    elems = open(elefile, 'r')
     for line in elems:
         if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
@@ -351,7 +386,7 @@ def writeCells(loadout, args):
 
     # write cell offsets
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="offsets" Format="ascii">\n')
-    elems = open(args.elefile, 'r')
+    elems = open(elefile, 'r')
     offset = 0
     for line in elems:
         if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
@@ -365,7 +400,7 @@ def writeCells(loadout, args):
     # reference figures 2+3 on pages 9-10 for more info on types:
     # http://www.vtk.org/VTK/img/file-formats.pdf
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="types" Format="ascii">\n')
-    elems = open(args.elefile, 'r')
+    elems = open(elefile, 'r')
     for line in elems:
         if not line.startswith('$') and not line.startswith('*') and not line.startswith('\n'):
             raw_data = line.split(',')
@@ -377,11 +412,17 @@ def writeCells(loadout, args):
     loadout.write('\t\t\t\t</DataArray>\n')
     loadout.write('\t\t\t</Cells>\n')
 
+    return 0
 
-def writeCellData(loadout, args):
-    '''
-    writes cell part IDs
-    '''
+
+def writeCellData(loadout, elefile="elems.dyn"):
+    """ writes cell part IDs
+
+    :param loadout:
+    :param elefile:
+    :return:
+    """
+
     print('Writing cell data')
 
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="part id" Format="ascii">\n')
@@ -392,6 +433,9 @@ def writeCellData(loadout, args):
             loadout.write('\t\t\t\t\t%s\n' % raw_data[1])
     elems.close()
     loadout.write('\t\t\t\t</DataArray>\n')
+
+    return 0
+
 
 if __name__ == "__main__":
     main()
