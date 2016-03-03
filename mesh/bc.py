@@ -251,7 +251,7 @@ def assign_node_constraints(snic, axes, face_constraints):
                              (e.g., (('1,1,1,1,1,1' , '0,1,0,0,1,0'),...)
     :return: bcdict - dictionary of node BC to be written to bc.dyn
     """
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
     from numpy import ndenumerate
 
     bcdict = {}
@@ -318,7 +318,7 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
     :return: bcdict (updated from face assignment)
     """
     from warnings import warn
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
 
     # look for edge shared with an x face
     axis = 0
