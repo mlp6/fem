@@ -13,22 +13,21 @@
 
 def main():
     args = parse_cli()
-    nodout = open(args.nodout, 'r')
-    create_dat(args, nodout)
+    create_dat(args.nodout, args.dispout, args.legacynodes)
 
 
-def create_dat(args, nodout):
+def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     """create binary data file
 
-    :param args: CLI args
-    :param str nodout: nodout file create my ls-dyna
-
+    :param str nodout: nodout file create my ls-dyna (default = "nodout")
+    :param str dispout: default = "disp.dat"
+    :param boolean legacynodes: are node definitions written every timestep (default = False)
     """
     global writenode
     import sys
 
-    # open dispout for binary writing
-    dispout = open(args.dispout, 'wb')
+    nodout = open(nodout, 'r')
+    dispout = open(dispout, 'wb')
 
     header_written = False
     timestep_read = False
@@ -54,7 +53,7 @@ def create_dat(args, nodout):
                     header = generate_header(data, nodout)
                     write_headers(dispout, header)
                     header_written = True
-                if timestep_count > 1 and not args.legacynodes:
+                if timestep_count > 1 and not legacynodes:
                     writenode = False
                 process_timestep_data(data, dispout, writenode)
             else:
@@ -69,6 +68,8 @@ def create_dat(args, nodout):
     # close all open files
     dispout.close()
     nodout.close()
+
+    return 0
 
 
 def parse_cli():

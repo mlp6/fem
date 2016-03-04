@@ -14,37 +14,50 @@
 def main():
     """apply prescribed boundary conditions to nodes/face segments
     """
-
-    import fem_mesh as fm
-    from sys import argv
-
-    fem_mesh.check_version()
-
     opts = read_cli()
 
-    nodeIDcoords = fm.load_nodeIDs_coords(opts.nodefile)
-    [snic, axes] = fm.SortNodeIDs(nodeIDcoords)
-    elems = fm.load_elems(opts.elefile)
-    sorted_elems = fm.SortElems(elems, axes)
-
     if pml_elems:
-        sorted_pml_elems = assign_pml_elems(sorted_elems,
-                                            opts.pml_elems,
-                                            opts.pml_partID)
-        write_pml_elems(sorted_pml_elems, opts.pmlfile)
+        apply_pml(opts.pml_elems, opts.face_constraints, opts.edge_constraints,
+                  opts.nodefile, opts.elefile, opts.pmlfile, opts.bcfile, opts.pml_partID)
     elif nonreflect_faces:
         pass
         # write_nonreflecting(BCFILE, segID)
 
-    bcdict = assign_node_constraints(snic, axes, opts.face_constraints)
-    bcdict = constrain_sym_pml_nodes(bcdict, snic, axes, opts.pml_elems,
-                                     opts.edge_constraints)
-    bcdict = assign_edge_sym_constraints(bcdict, snic, axes,
-                                         opts.edge_constraints, opts.pml_elems)
-    write_bc(bcdict, opts.bcfile)
+    return 0
 
-    # TODO: Change input syntax to something like:
-    # qsym_edge = [[0, 1], [1, 0], [0, 0]]
+
+def apply_pml(pml_elems, face_constraints, edge_constraints,
+              nodefile="nodes.dyn", elefile="elems.dyn", pmlfile="elems_pml.dyn",
+              bcfile="bc.dyn", pml_partID=1):
+    """
+
+    :param pml_elems:
+    :param face_constraints:
+    :param edge_constraints:
+    :param nodefile:
+    :param elefile:
+    :param pmlfile:
+    :param bcfile:
+    :param pml_partID:
+    :return:
+    """
+    from fem.mesh import fem_mesh
+
+    nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
+    [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
+    elems = fem_mesh.load_elems(elefile)
+    sorted_elems = fem_mesh.SortElems(elems, axes)
+
+    sorted_pml_elems = assign_pml_elems(sorted_elems, pml_elems, pml_partID)
+    write_pml_elems(sorted_pml_elems, pmlfile)
+
+    bcdict = assign_node_constraints(snic, axes, face_constraints)
+    bcdict = constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints)
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
+    write_bc(bcdict, bcfile)
+
+    return 0
+
 
 """
     segID = 1
@@ -251,7 +264,7 @@ def assign_node_constraints(snic, axes, face_constraints):
                              (e.g., (('1,1,1,1,1,1' , '0,1,0,0,1,0'),...)
     :return: bcdict - dictionary of node BC to be written to bc.dyn
     """
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
     from numpy import ndenumerate
 
     bcdict = {}
@@ -281,7 +294,7 @@ def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
     :param edge_constraints:
     :return: bcdict
     """
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
     from numpy import ndenumerate
 
     # look for x symmetry face
@@ -318,7 +331,7 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
     :return: bcdict (updated from face assignment)
     """
     from warnings import warn
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
 
     # look for edge shared with an x face
     axis = 0

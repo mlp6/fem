@@ -70,7 +70,7 @@ def test_write_load_file(tmpdir):
 
     f = tmpdir.join("loads.dyn")
     load_nodeID_amp = [(1, 2.0), (3, 4.0)]
-    write_load_file(f.strpath, load_nodeID_amp, sigma, center, amp)
+    write_load_file(f.strpath, load_nodeID_amp)
 
     lines = f.readlines()
     assert lines[0][0] == "$"
