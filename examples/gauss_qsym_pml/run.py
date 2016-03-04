@@ -21,7 +21,7 @@ NTASKS = environ.get('SLURM_NTASKS', '8')
 
 xyz = (-1.5, 0.0, 0.0, 1.5, -3.0, 0.0)
 numElem = (75, 75, 150)
-GenMesh.run(xyz, numElem)
+#GenMesh.run(xyz, numElem)
 
 # setup quarter symmetry condition
 pml_elems = ((5, 0), (0, 5), (5, 5))
@@ -37,7 +37,7 @@ system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 
 create_disp_dat()
 
-create_res_sim_mat()
+create_res_sim_mat('gauss_qsym_pml.dyn')
 
 #if [ -e res_sim.mat ];
 #    then rm d3* nodout;

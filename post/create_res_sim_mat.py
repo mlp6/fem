@@ -22,12 +22,12 @@ def main():
     dispout = args.dispout
     dynadeck = args.dynadeck
 
-    run(dynadeck, nodedyn, dispout)
+    run(dynadeck, nodedyn, dispout, legacynodes)
 
     return 0
 
 
-def run(dynadeck, nodedyn="nodes.dyn", dispout="disp.dat"):
+def run(dynadeck, nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
     """
 
     :param dynadeck: main dyna input deck
@@ -35,6 +35,8 @@ def run(dynadeck, nodedyn="nodes.dyn", dispout="disp.dat"):
     :param dispout: default = "disp.dat"
     :return: 0
     """
+    from fem.mesh import fem_mesh
+
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
