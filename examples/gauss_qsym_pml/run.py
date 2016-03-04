@@ -21,7 +21,7 @@ NTASKS = environ.get('SLURM_NTASKS', '8')
 
 xyz = (-1.5, 0.0, 0.0, 1.5, -3.0, 0.0)
 numElem = (75, 75, 150)
-#GenMesh.run(xyz, numElem)
+GenMesh.run(xyz, numElem)
 
 # setup quarter symmetry condition
 pml_elems = ((5, 0), (0, 5), (5, 5))
