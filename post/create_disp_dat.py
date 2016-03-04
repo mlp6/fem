@@ -167,16 +167,22 @@ def process_timestep_data(data, outfile, writenode):
 
 
 def correct_Enot(raw_data):
-    """
+    """correct dropped 'E' in -??? scientific notation
+
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
+
+    :param raw_data: strict of split raw string data
+    :return: raw_data with corrected -??? -> -E100
     """
-    import re
+    from re import sub
+
     for i in range(len(raw_data)):
-        raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]',
-                             'E-100',
-                             raw_data[i])
+        raw_data[i] = sub(r'(?<!E)\-[1-9][0-9][0-9]',
+                          'E-100',
+                          raw_data[i])
+
     return raw_data
 
 
