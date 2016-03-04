@@ -18,19 +18,17 @@ def main():
         legacynodes = True
     else:
         legacynodes = False
-    nodedyn = args.nodedyn
-    dispout = args.dispout
-    dynadeck = args.dynadeck
 
-    run(dynadeck, nodedyn, dispout, legacynodes)
+    run(args.dynadeck, args.ressim, args.nodedyn, args.dispout, legacynodes)
 
     return 0
 
 
-def run(dynadeck, nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
+def run(dynadeck, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
     """
 
     :param dynadeck: main dyna input deck
+    :param ressim: default = "res_sim.mat"
     :param nodedyn: default = "nodes.dyn"
     :param dispout: default = "disp.dat"
     :return: 0
@@ -48,7 +46,7 @@ def run(dynadeck, nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
 
     arfidata = extract_arfi_data(dispout, header, image_plane, legacynodes)
 
-    save_res_mat(args.ressim, arfidata, axes, t)
+    save_res_mat(ressim, arfidata, axes, t)
 
     return 0
 
