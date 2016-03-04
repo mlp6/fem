@@ -24,7 +24,6 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     :param boolean legacynodes: are node definitions written every timestep (default = False)
     """
     global writenode
-    import sys
 
     nodout = open(nodout, 'r')
     dispout = open(dispout, 'wb')
@@ -38,10 +37,8 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
             timestep_read = True
             timestep_count += 1
             if timestep_count == 1:
-                sys.stdout.write('Time Step: ')
-                sys.stdout.flush()
-            sys.stdout.write('%i ' % timestep_count)
-            sys.stdout.flush()
+                print('Time Step: ', flush=True)
+            print("%i " % timestep_count, flush=True)
             data = []
             continue
         if timestep_read is True:
@@ -75,22 +72,21 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
 def parse_cli():
     """parse command-line interface arguments
     """
-    import argparse
+    from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-    parser = argparse.ArgumentParser(description="Generate disp.dat "
-                                     "data from an ls-dyna nodout file.",
-                                     formatter_class=
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodout",
-                        help="ASCII file containing nodout data",
-                        default="nodout")
-    parser.add_argument("--dispout",
-                        help="name of the binary displacement output file",
-                        default="disp.dat")
-    parser.add_argument("--legacynodes",
-                        help="repeat saving node IDs for each timestep",
-                        action="store_true")
-    args = parser.parse_args()
+    p = ArgumentParser(description="Generate disp.dat "
+                       "data from an ls-dyna nodout file.",
+                       formatter_class=ArgumentDefaultsHelpFormatter)
+    p.add_argument("--nodout",
+                   help="ASCII file containing nodout data",
+                   default="nodout")
+    p.add_argument("--dispout",
+                   help="name of the binary displacement output file",
+                   default="disp.dat")
+    p.add_argument("--legacynodes",
+                   help="repeat saving node IDs for each timestep",
+                   action="store_true")
+    args = p.parse_args()
 
     return args
 
@@ -139,12 +135,13 @@ def write_headers(outfile, header):
     :returns: None
 
     """
-    import struct
-    outfile.write(struct.pack('fff',
-                              header['numnodes'],
-                              header['numdims'],
-                              header['numtimesteps']
-                              )
+    from struct import pack
+
+    outfile.write(pack('fff',
+                       header['numnodes'],
+                       header['numdims'],
+                       header['numtimesteps']
+                       )
                   )
 
 
@@ -158,7 +155,7 @@ def process_timestep_data(data, outfile, writenode):
     :returns: None
 
     """
-    import struct
+    from struct import pack
 
     # columns are node ID, x-disp, y-disp, z-disp
     if writenode:
@@ -166,7 +163,7 @@ def process_timestep_data(data, outfile, writenode):
     else:
         cols2write = [1, 2, 3]
 
-    [outfile.write(struct.pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
+    [outfile.write(pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
 
 
 def correct_Enot(raw_data):
