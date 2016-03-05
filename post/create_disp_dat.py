@@ -24,7 +24,6 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     :param boolean legacynodes: are node definitions written every timestep (default = False)
     """
     global writenode
-    import sys
 
     nodout = open(nodout, 'r')
     dispout = open(dispout, 'wb')
@@ -38,10 +37,8 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
             timestep_read = True
             timestep_count += 1
             if timestep_count == 1:
-                sys.stdout.write('Time Step: ')
-                sys.stdout.flush()
-            sys.stdout.write('%i ' % timestep_count)
-            sys.stdout.flush()
+                print('Time Step: ', flush=True)
+            print("%i " % timestep_count, flush=True)
             data = []
             continue
         if timestep_read is True:
@@ -57,12 +54,7 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
                     writenode = False
                 process_timestep_data(data, dispout, writenode)
             else:
-                raw_data = line.split()
-                try:
-                    raw_data = [float(x) for x in raw_data]
-                except ValueError:
-                    raw_data = correct_Enot(raw_data)
-                    raw_data = [float(x) for x in raw_data]
+                raw_data = parse_line(line)
                 data.append(list(raw_data))
 
     # close all open files
@@ -72,25 +64,42 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     return 0
 
 
+def parse_line(line):
+    """parse raw data line into vector of floats
+
+    :param str line: raw data line from nodout
+    :return: raw_data (vector of floats)
+    """
+    try:
+        raw_data = line.split()
+        raw_data = [float(x) for x in raw_data]
+    except ValueError:
+        line = correct_neg(line)
+        line = correct_Enot(line)
+        raw_data = line.split()
+        raw_data = [float(x) for x in raw_data]
+
+    return raw_data
+
+
 def parse_cli():
     """parse command-line interface arguments
     """
-    import argparse
+    from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-    parser = argparse.ArgumentParser(description="Generate disp.dat "
-                                     "data from an ls-dyna nodout file.",
-                                     formatter_class=
-                                     argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("--nodout",
-                        help="ASCII file containing nodout data",
-                        default="nodout")
-    parser.add_argument("--dispout",
-                        help="name of the binary displacement output file",
-                        default="disp.dat")
-    parser.add_argument("--legacynodes",
-                        help="repeat saving node IDs for each timestep",
-                        action="store_true")
-    args = parser.parse_args()
+    p = ArgumentParser(description="Generate disp.dat "
+                       "data from an ls-dyna nodout file.",
+                       formatter_class=ArgumentDefaultsHelpFormatter)
+    p.add_argument("--nodout",
+                   help="ASCII file containing nodout data",
+                   default="nodout")
+    p.add_argument("--dispout",
+                   help="name of the binary displacement output file",
+                   default="disp.dat")
+    p.add_argument("--legacynodes",
+                   help="repeat saving node IDs for each timestep",
+                   action="store_true")
+    args = p.parse_args()
 
     return args
 
@@ -139,12 +148,13 @@ def write_headers(outfile, header):
     :returns: None
 
     """
-    import struct
-    outfile.write(struct.pack('fff',
-                              header['numnodes'],
-                              header['numdims'],
-                              header['numtimesteps']
-                              )
+    from struct import pack
+
+    outfile.write(pack('fff',
+                       header['numnodes'],
+                       header['numdims'],
+                       header['numtimesteps']
+                       )
                   )
 
 
@@ -158,7 +168,7 @@ def process_timestep_data(data, outfile, writenode):
     :returns: None
 
     """
-    import struct
+    from struct import pack
 
     # columns are node ID, x-disp, y-disp, z-disp
     if writenode:
@@ -166,21 +176,38 @@ def process_timestep_data(data, outfile, writenode):
     else:
         cols2write = [1, 2, 3]
 
-    [outfile.write(struct.pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
+    [outfile.write(pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
 
 
-def correct_Enot(raw_data):
-    """
+def correct_Enot(line):
+    """correct dropped 'E' in -??? scientific notation
+
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
+
+    :param str line: strict of split raw string data
+    :return: line with corrected -??? -> -E100
     """
     import re
-    for i in range(len(raw_data)):
-        raw_data[i] = re.sub(r'(?<!E)\-[1-9][0-9][0-9]',
-                             'E-100',
-                             raw_data[i])
-    return raw_data
+    reEnnn = re.compile(r'(?<!E)\-[1-9][0-9][0-9]')
+
+    line = re.sub(reEnnn, 'E-100', line)
+
+    return line
+
+
+def correct_neg(line):
+    """add space before negative coefficient numbers
+
+    :param str line:
+    :return: line with space(s) added before negative coefficients
+    """
+    import re
+    rneg = re.compile(r'(-[1-9]\.)')
+    line = re.sub(rneg, r' \1', line)
+
+    return line
 
 
 if __name__ == "__main__":
