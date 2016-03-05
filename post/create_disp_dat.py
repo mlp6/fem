@@ -54,12 +54,7 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
                     writenode = False
                 process_timestep_data(data, dispout, writenode)
             else:
-                raw_data = line.split()
-                try:
-                    raw_data = [float(x) for x in raw_data]
-                except ValueError:
-                    raw_data = correct_Enot(raw_data)
-                    raw_data = [float(x) for x in raw_data]
+                raw_data = parse_line(line)
                 data.append(list(raw_data))
 
     # close all open files
@@ -67,6 +62,22 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     nodout.close()
 
     return 0
+
+
+def parse_line(line):
+    """
+
+    :param line:
+    :return: raw_data
+    """
+    raw_data = line.split()
+    try:
+        raw_data = [float(x) for x in raw_data]
+    except ValueError:
+        raw_data = correct_Enot(raw_data)
+        raw_data = [float(x) for x in raw_data]
+
+    return raw_data
 
 
 def parse_cli():
