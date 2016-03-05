@@ -74,6 +74,7 @@ def parse_line(line):
         raw_data = line.split()
         raw_data = [float(x) for x in raw_data]
     except ValueError:
+        line = correct_neg(line)
         line = correct_Enot(line)
         raw_data = line.split()
         raw_data = [float(x) for x in raw_data]
@@ -185,13 +186,26 @@ def correct_Enot(line):
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
 
-    :param raw_data: strict of split raw string data
-    :return: raw_data with corrected -??? -> -E100
+    :param str line: strict of split raw string data
+    :return: line with corrected -??? -> -E100
     """
     import re
     reEnnn = re.compile(r'(?<!E)\-[1-9][0-9][0-9]')
 
     line = re.sub(reEnnn, 'E-100', line)
+
+    return line
+
+
+def correct_neg(line):
+    """add space before negative coefficient numbers
+
+    :param str line:
+    :return: line with space(s) added before negative coefficients
+    """
+    import re
+    rneg = re.compile(r'(-[1-9]\.)')
+    line = re.sub(rneg, r' \1', line)
 
     return line
 
