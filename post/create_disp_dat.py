@@ -65,10 +65,10 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
 
 
 def parse_line(line):
-    """
+    """parse raw data line into vector of floats
 
-    :param line:
-    :return: raw_data
+    :param str line: raw data line from nodout
+    :return: raw_data (vector of floats)
     """
     try:
         raw_data = line.split()
