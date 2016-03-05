@@ -70,11 +70,12 @@ def parse_line(line):
     :param line:
     :return: raw_data
     """
-    raw_data = line.split()
     try:
+        raw_data = line.split()
         raw_data = [float(x) for x in raw_data]
     except ValueError:
-        raw_data = correct_Enot(raw_data)
+        line = correct_Enot(line)
+        raw_data = line.split()
         raw_data = [float(x) for x in raw_data]
 
     return raw_data
@@ -177,7 +178,7 @@ def process_timestep_data(data, outfile, writenode):
     [outfile.write(pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
 
 
-def correct_Enot(raw_data):
+def correct_Enot(line):
     """correct dropped 'E' in -??? scientific notation
 
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
@@ -187,14 +188,12 @@ def correct_Enot(raw_data):
     :param raw_data: strict of split raw string data
     :return: raw_data with corrected -??? -> -E100
     """
-    from re import sub
+    import re
+    reEnnn = re.compile(r'(?<!E)\-[1-9][0-9][0-9]')
 
-    for i in range(len(raw_data)):
-        raw_data[i] = sub(r'(?<!E)\-[1-9][0-9][0-9]',
-                          'E-100',
-                          raw_data[i])
+    line = re.sub(reEnnn, 'E-100', line)
 
-    return raw_data
+    return line
 
 
 if __name__ == "__main__":
