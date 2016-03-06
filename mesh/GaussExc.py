@@ -85,12 +85,12 @@ def write_load_file(loadfilename, load_nodeID_amp, direction=-3, header_comment=
     """
     from numpy import sign, abs
     d = abs(direction)
-    dsign = '-' if sign(direction) == -1 else ''
+    dsign = sign(direction)
 
     lfile = open(loadfilename, 'w')
     lfile.write(header_comment)
     lfile.write("*LOAD_NODE_POINT\n")
-    [lfile.write("%i,%i,1,%s%.4f\n" % (i, d, dsign, j)) for i, j in load_nodeID_amp]
+    [lfile.write("%i,%i,1,%.4f\n" % (i, d, dsign*j)) for i, j in load_nodeID_amp]
     lfile.write("*END\n")
     lfile.close()
 
