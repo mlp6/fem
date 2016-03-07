@@ -34,7 +34,7 @@ def main():
 
 
 def generate_loads(sigma, center, amp=1.0, amp_cut=0.05, sym="qsym",
-                   direction="-3", loadfilename="loads.dyn",
+                   direction=-3, loadfilename="loads.dyn",
                    nodefile="nodes.dyn"):
     """TODO
     """
