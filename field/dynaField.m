@@ -80,20 +80,17 @@ tic;
 
 numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
 progressPoints = 0:10000:numNodes;
+tic;
 for i=1:numNodes,
     if ~isempty(intersect(i, progressPoints)),
         disp(sprintf('Processed %.1f%%', i * 100 / numNodes));
-    end
-    if i == 1
-        tic;
     end
     % include the lens correction (axial shift)
     [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4));
     intensity(i) = sum(pressure.*pressure);
 end
 
-CalcTime = toc; % s
-ActualRunTime = CalcTime/60; % min
+ActualRunTime = toc/60; % min
 disp(sprintf('Actual Run Time = %.3f m\n', ActualRunTime));
 
 field_end;
