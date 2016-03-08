@@ -48,7 +48,8 @@ FIELD_PARAMS.Th_data = xdc_get(Th, 'rect');
 
 % figure out the axial shift (m) that will need to be applied to the scatterers
 % to accomodate the mathematical element shift due to the lens
-FIELD_PARAMS.lens_correction_m = correct_axial_lens(FIELD_PARAMS.Th_data);
+lens_correction_m = correct_axial_lens(FIELD_PARAMS.Th_data);
+FIELD_PARAMS.measurementPointsandNodes(:, 4) = FIELD_PARAMS.measurementPointsandNodes(:, 4) + lens_correction_m;
 
 % define the impulse response
 xdc_impulse(Th, impulseResponse);
@@ -87,7 +88,7 @@ for i=1:numNodes,
         tic;
     end
     % include the lens correction (axial shift)
-    [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4)+FIELD_PARAMS.lens_correction_m);
+    [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4));
     intensity(i) = sum(pressure.*pressure);
 end
 
