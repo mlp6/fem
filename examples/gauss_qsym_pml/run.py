@@ -37,7 +37,7 @@ system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 
 create_disp_dat()
 
-create_res_sim_mat('gauss_qsym_pml.dyn')
+create_res_sim_mat(DYNADECK)
 
 #if [ -e res_sim.mat ];
 #    then rm d3* nodout;
