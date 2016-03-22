@@ -113,6 +113,8 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes=False):
     print('done!')
     fid.close()
 
+    arfidata = np.flipud(arfidata)
+
     return arfidata
 
 
