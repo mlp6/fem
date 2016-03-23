@@ -5,9 +5,10 @@
 #SBATCH --mail-user=mlp6@duke.edu
 #SBATCH --mail-type=END
 
-from time import ctime
 from os import environ, system
 from socket import gethostname
+from time import ctime
+
 from fem.mesh import GenMesh, bc
 from fem.mesh.GaussExc import generate_loads
 from fem.post.create_disp_dat import create_dat as create_disp_dat
@@ -39,10 +40,8 @@ create_disp_dat()
 
 create_res_sim_mat(DYNADECK)
 
-#if [ -e res_sim.mat ];
-#    then rm d3* nodout;
-#fi
-
-#xz -v disp.dat
+if os.path.exists('res_sim.mat'):
+    os.system("rm d3* nodout")
+    os.system("xz -v disp.dat")
 
 print('FINISHED: %s' % ctime())
