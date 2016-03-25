@@ -28,7 +28,7 @@ def main():
 
 def apply_pml(pml_elems, face_constraints, edge_constraints,
               nodefile="nodes.dyn", elefile="elems.dyn", pmlfile="elems_pml.dyn",
-              bcfile="bc.dyn", pml_partID=1):
+              bcfile="bc.dyn", pml_partID=2):
     """
 
     :param pml_elems:
