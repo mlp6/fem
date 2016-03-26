@@ -11,8 +11,6 @@
 
 
 def main():
-    from fem.mesh import fem_mesh
-
     args = read_cli()
     if args.legacynodes:
         legacynodes = True
@@ -252,7 +250,7 @@ def extract_dt(dyn_file):
                 else:
                     dt = float(line_items[0])
                     break
-            elif '*DATABASE_BINARY_D3PLOT' in dyn_line:
+            elif '*DATABASE_NODOUT' in dyn_line:
                 found_database = True
 
     return dt
