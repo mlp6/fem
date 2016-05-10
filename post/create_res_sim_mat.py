@@ -49,12 +49,13 @@ def run(dynadeck, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat",
     return 0
 
 
-def extract_arfi_data(dispout, header, image_plane, legacynodes=False):
+def extract_arfi_data(dispout, header, image_plane, disp_comp=2, legacynodes=False):
     """ extract ARFI data from disp.dat
 
     :param dispout: name of disp.dat file
     :param header: num_nodes, num_dims, num_timesteps
     :param image_plane: matrix of image plane node IDs spatially sorted
+    :param disp_comp: displacement component index to extract (0, 1, 2 [default])
     :param legacynodes: Boolean flag to use legacy disp.dat format with node
                         IDs repeated every timestep (default = False)
     :returns: arfidata matrix
@@ -86,9 +87,9 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes=False):
                                     header['num_dims']), order='F')
             # extract the nodcount()e IDs on the image plane and save
             nodeidlist = disp_slice[:, 0].squeeze()
-            # just work with the z-disp (index 3)
             zdisp = np.zeros((nodeidlist.max()+1, 1))
-            zdisp = create_zdisp(nodeidlist, disp_slice[:, 3].squeeze(), zdisp)
+            # disp_comp + 1 to take into account node IDs in first timestep
+            zdisp = create_zdisp(nodeidlist, disp_slice[:, (disp_comp+1)].squeeze(), zdisp)
 
         # node IDs are _not_ saved after the first timestep in latest disp.dat
         # files (flagged by legacynodes boolean)
@@ -101,8 +102,7 @@ def extract_arfi_data(dispout, header, image_plane, legacynodes=False):
             disp_slice = np.reshape(disp_slice, (header['num_nodes'],
                                                  (header['num_dims']-1)),
                                     order='F')
-            # just work with the z-disp (index 2)
-            zdisp = create_zdisp(nodeidlist, disp_slice[:, 2].squeeze(), zdisp)
+            zdisp = create_zdisp(nodeidlist, disp_slice[:, disp_comp].squeeze(), zdisp)
 
         # TODO: this should have some optimized form (list comprehension?)
         for (i, j), nodeid in np.ndenumerate(image_plane):
