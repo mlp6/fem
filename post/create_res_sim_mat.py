@@ -22,10 +22,12 @@ def main():
     return 0
 
 
-def run(dynadeck, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
+def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
     """
 
     :param dynadeck: main dyna input deck
+    :param disp_comp=2: component of displacement to extract
+    :param disp_scale=-1e4: displacement scaling
     :param ressim: default = "res_sim.mat"
     :param nodedyn: default = "nodes.dyn"
     :param dispout: default = "disp.dat"
@@ -42,7 +44,7 @@ def run(dynadeck, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat",
     dt = extract_dt(dynadeck)
     t = [float(x)*dt for x in range(0, header['num_timesteps'])]
 
-    arfidata = extract_arfi_data(dispout, header, image_plane, legacynodes)
+    arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp, disp_scale, legacynodes)
 
     save_res_mat(ressim, arfidata, axes, t)
 
