@@ -49,13 +49,13 @@ def run(dynadeck, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat",
     return 0
 
 
-def extract_arfi_data(dispout, header, image_plane, disp_comp=2, legacynodes=False):
+def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4, legacynodes=False):
     """ extract ARFI data from disp.dat
 
     :param dispout: name of disp.dat file
     :param header: num_nodes, num_dims, num_timesteps
     :param image_plane: matrix of image plane node IDs spatially sorted
-    :param disp_comp: displacement component index to extract (0, 1, 2 [default])
+    :param disp_comp: displacement component index to extract (0, 1, 2 [default, z])
     :param legacynodes: Boolean flag to use legacy disp.dat format with node
                         IDs repeated every timestep (default = False)
     :returns: arfidata matrix
@@ -106,7 +106,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, legacynodes=Fal
 
         # TODO: this should have some optimized form (list comprehension?)
         for (i, j), nodeid in np.ndenumerate(image_plane):
-            arfidata[j, i, t-1] = -1e4*zdisp[nodeid]
+            arfidata[j, i, t-1] = disp_scale*zdisp[nodeid]
 
     print('done!')
     fid.close()
