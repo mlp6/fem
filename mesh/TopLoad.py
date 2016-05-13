@@ -31,9 +31,7 @@ def main():
 
     import sys
     import numpy as n
-    import fem_mesh
-
-    fem_mesh.check_version()
+    from fem.mesh import fem_mesh
 
     opts = read_cli()
     loadtype = opts.loadtype
