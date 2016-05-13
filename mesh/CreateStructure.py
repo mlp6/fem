@@ -13,10 +13,6 @@
 
 
 def main():
-    import fem_mesh
-
-    fem_mesh.check_version()
-
     args = parse_cli()
 
     struct_type = define_struct_type(args)
@@ -95,7 +91,7 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
     import sys
     import numpy as n
     import math as m
-    import fem_mesh
+    from fem.mesh import fem_mesh
 
     header_comment_skips = fem_mesh.count_header_comment_skips(nodefile)
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
@@ -193,9 +189,9 @@ def findStructElemIDs(elefile, structNodeIDs):
     :param structNodeIDs: numpy array
     :returns: (elems, structElemIds)
     """
-    from fem_mesh import load_elems
+    from fem.mesh import load_elems
 
-    elems = fem_mesh.load_elems(elefile)
+    elems = load_elems(elefile)
 
     structElemIDs = {}
 
