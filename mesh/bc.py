@@ -4,8 +4,8 @@
 
 .. module:: bc
    :synopsis: apply boundary conditions to rectangular solid meshes
-   :license: Apache v2.0, see LICENSE for details
-   :copyright: Copyright 2015 Mark Palmeri
+   :license: Apache v2.0 (see LICENSE for details)
+   :copyright: Copyright 2015--2016 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 
@@ -20,8 +20,8 @@ def main():
         apply_pml(opts.pml_elems, opts.face_constraints, opts.edge_constraints,
                   opts.nodefile, opts.elefile, opts.pmlfile, opts.bcfile, opts.pml_partID)
     elif nonreflect_faces:
-        pass
-        # write_nonreflecting(BCFILE, segID)
+        apply_nonreflect(opts.face_constraints, opts.edge_constraints, opts.nodefile,
+                         opts.elefile, opts.bcfile, opts.segfile)
 
     return 0
 
@@ -30,6 +30,7 @@ def apply_pml(pml_elems, face_constraints, edge_constraints,
               nodefile="nodes.dyn", elefile="elems.dyn", pmlfile="elems_pml.dyn",
               bcfile="bc.dyn", pml_partID=2):
     """
+    driver function to apply PML boundary conditions
 
     :param pml_elems:
     :param face_constraints:
@@ -53,83 +54,49 @@ def apply_pml(pml_elems, face_constraints, edge_constraints,
 
     bcdict = assign_node_constraints(snic, axes, face_constraints)
     bcdict = constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints)
-    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
     write_bc(bcdict, bcfile)
 
     return 0
 
-
-"""
-    segID = 1
-
-    # BACK
-    axis = 0
-    axis_limit = axes[0].min()
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if nonreflect:
-        segID = writeSeg(BCFILE, 'BACK', segID, planeNodeIDs)
-    elif pml:
-
-    # FRONT
-    axis = 0
-    axis_limit = axes[0].max()
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if (sym == 'q') or (sym == 'h'):
-        # no top / bottom rows (those will be defined in the
-        # top/bottom defs)
-        writeNodeBC(BCFILE, planeNodeIDs[1:-1], '1,0,0,0,1,1')
-    else:
-        if nonreflect:
-            segID = writeSeg(BCFILE, 'FRONT', segID, planeNodeIDs)
-        elif pml:
-
-    # LEFT (push side; non-reflecting or symmetry)
-    axis = 1
-    axis_limit = axes[1].min()
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    # if quarter-symmetry, then apply BCs, in addition to a
-    # modified edge; and don't deal w/ top/bottom
-    if sym == 'q':
-        writeNodeBC(BCFILE, planeNodeIDs[1:-1], '0,1,0,1,0,1')
-    # else make it a non-reflecting boundary
-    else:
-        if nonreflect:
-            segID = writeSeg(BCFILE, 'LEFT', segID, planeNodeIDs)
-        elif pml:
-
-    # RIGHT (non-reflecting)
-    axis = 1
-    axis_limit = axes[1].max()
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if nonreflect:
-        segID = writeSeg(BCFILE, 'RIGHT', segID, planeNodeIDs)
-    elif pml:
-
-    # BOTTOM
-    axis = 2
-    axis_limit = axes[2].min()
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if nonreflect:
-        segID = writeSeg(BCFILE, 'BOTTOM', segID, planeNodeIDs)
-        if bottom == 'full':
-            writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-        elif bottom == 'inplane':
-            writeNodeBC(BCFILE, planeNodeIDs, '0,0,1,1,1,0')
-    elif pml:
-
-    # TOP (transducer face)
-    axis = 2
-    axis_limit = axes[2].max()
-    planeNodeIDs = fem_mesh.extractPlane(snic, axes, (axis, axis_limit))
-    if nonreflect:
-        segID = writeSeg(BCFILE, 'TOP', segID, planeNodeIDs)
-        if top:
-            writeNodeBC(BCFILE, planeNodeIDs, '1,1,1,1,1,1')
-    elif pml:
-
-
-    # TODO: write_bc_file()
+def apply_nonreflect(face_constraints, edge_constraints, nodefile="nodes.dyn",
+                     elefile="elems.dyn", bcfile="bc.dyn", segfile="nonreflect_segs.dyn"):
     """
+    driver function to generate non-reflecting boundaries
+
+    :param face_constraints: vector of face constraints, ordered from xmin to zmax
+    :param edge_constraints: vector of edge constraints, ordered from xmin to zmax
+    :param nodefile: default - 'nodes.dyn'
+    :param elefile: default - 'elems.dyn'
+    :param bcfile: default - 'bc.dyn'
+    :param segfile: default - 'nonreflect_segs.dyn'
+    :return: 0 on success
+    """
+    from fem.mesh import fem_mesh
+
+    nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
+    [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
+
+    segID = 1
+    seg_names = [['XMIN', 'XMAX'], ['YMIN', 'YMAX'], ['ZMIN', 'ZMAX']]
+    SEGBCFILE = open(segfile, 'w')
+    for a in range(0, 3):
+        for m in range(0, 2):
+            if face_constraints[a][m] == '1,1,1,1,1,1':
+                if m == 0:
+                    axis_limit = axes[a][0]
+                else:
+                    axis_limit = axes[a][-1]
+                planeNodeIDs = fem_mesh.extractPlane(snic, axes, (a, axis_limit))
+                segID = writeSeg(SEGBCFILE, seg_names[a][m], segID, planeNodeIDs)
+    write_nonreflecting(SEGBCFILE, segID)
+    SEGBCFILE.close()
+
+    bcdict = assign_node_constraints(snic, axes, face_constraints)
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
+    write_bc(bcdict, bcfile)
+
+    return 0
 
 
 def writeSeg(BCFILE, title, segID, planeNodeIDs):
@@ -147,10 +114,10 @@ def writeSeg(BCFILE, title, segID, planeNodeIDs):
     for i in range(0, (len(planeNodeIDs) - 1)):
         (a, b) = planeNodeIDs.shape
         for j in range(0, (b - 1)):
-            BCFILE.write("%i,%i,%i,%i\n" % (planeNodeIDs[i, j][0],
-                                            planeNodeIDs[i + 1, j][0],
-                                            planeNodeIDs[i + 1, j + 1][0],
-                                            planeNodeIDs[i, j + 1][0]))
+            BCFILE.write("%i,%i,%i,%i\n" % (planeNodeIDs[i, j],
+                                            planeNodeIDs[i + 1, j],
+                                            planeNodeIDs[i + 1, j + 1],
+                                            planeNodeIDs[i, j + 1]))
     segID = segID + 1
 
     return segID
@@ -188,6 +155,9 @@ def read_cli():
     p.add_argument("--bcfile",
                    help="boundary condition output file",
                    default="bc.dyn")
+    p.add_argument("--segfile",
+                   help="non-reflected segments boundary condition output file",
+                   default="nonreflect_segs.dyn")
     p.add_argument("--nodefile",
                    help="node defintion input file",
                    default="nodes.dyn")
@@ -220,16 +190,17 @@ def read_cli():
     return opts
 
 
-# TODO: consolidate this when writing the bc file
 def write_nonreflecting(BCFILE, segID):
-    """write non-reflecting boundaries (set segments)
+    """write non-reflecting boundaries (set segments); does not terminate with *END
 
+    ASSUMES THAT write_bc() will be called after this function at some point to
     :param BCFILE: file IO object
-    :param int segID: segment ID #
+    :param int segID: maximum segment ID #, assuming started at 1
     """
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
     for i in range(1, segID):
         BCFILE.write('%i,0.0,0.0\n' % i)
+    BCFILE.write('*END\n')
 
 
 def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
@@ -316,7 +287,7 @@ def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
     return bcdict
 
 
-def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems):
+def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints):
     """modify/create node BCs for quarter-symmetry edge
 
     :param bcdict: dict of nodal BCs
@@ -326,8 +297,6 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints, pml_elems)
                              (e.g., to specify the edge shared by the xmax
                              and ymin faces to allow just z translation:
                              (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
-    :param pml_elems: list of tuples of # PML elems on each axis edge
-                      ([[xmin, max], [ymin, ymax], ...)
     :return: bcdict (updated from face assignment)
     """
     from warnings import warn
