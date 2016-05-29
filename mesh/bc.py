@@ -32,14 +32,14 @@ def apply_pml(pml_elems, face_constraints, edge_constraints,
     """
     driver function to apply PML boundary conditions
 
-    :param pml_elems:
-    :param face_constraints:
-    :param edge_constraints:
-    :param nodefile:
-    :param elefile:
-    :param pmlfile:
-    :param bcfile:
-    :param pml_partID:
+    :param pml_elems: 3x2 array of ints specifying thickness of PML elements (5--10) on each PML layer
+    :param face_constraints: 3x2 array of strings, specifying the BCs on each face (3), min/max (2)
+    :param edge_constraints: 1x6 vector of BCs on each edge
+    :param nodefile: default - 'nodes.dyn'
+    :param elefile: default - 'elems.dyn'
+    :param pmlfile: default - 'elems_pml.dyn'
+    :param bcfile: 'defauly - 'bc.dyn'
+    :param pml_partID: default - 2
     :return:
     """
     from fem.mesh import fem_mesh
@@ -124,7 +124,7 @@ def writeSeg(BCFILE, title, segID, planeNodeIDs):
 
 
 def write_bc(bcdict, bc="bc.dyn"):
-    """write node BCs bc
+    """write node BCs
 
     :param bcdict: dict of node BCs, with DOF values
     :param bcfile: boundary conditions filename (bc.dyn)
@@ -191,17 +191,20 @@ def read_cli():
 
 
 def write_nonreflecting(BCFILE, segID):
-    """write non-reflecting boundaries (set segments); does not terminate with *END
+    """write non-reflecting boundaries (set segments) to input file with segments
 
-    ASSUMES THAT write_bc() will be called after this function at some point to
+    ASSUMES THAT SEGMENT FILE HAS ALREADY BEEN WRITTEN TO AND NOT TERMINATED WITH *END
+
     :param BCFILE: file IO object
     :param int segID: maximum segment ID #, assuming started at 1
+    :returns: 0 on success
     """
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
     for i in range(1, segID):
         BCFILE.write('%i,0.0,0.0\n' % i)
     BCFILE.write('*END\n')
 
+    return 0
 
 def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
     """assign PML elements in the sorted element matrix
