@@ -30,7 +30,7 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 
 % figure out where this function exists to link probes submod
 functionDir = fileparts(which(mfilename));
-probesPath = fullfile(functionDir, '../probes/fem');
+probesPath = fullfile(functionDir, '..', '..', 'probes', 'fem');
 check_add_probes(probesPath);
 
 % check that Field II is in the Matlab search path, and initialize
