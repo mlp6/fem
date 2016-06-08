@@ -1,2 +1,5 @@
 test:
-    script: export PYTHONPATH=../; py.test -v
+    script: 
+    - pip install -r requirements.txt  
+    - export PYTHONPATH=../
+    - pytest -v
