@@ -36,9 +36,6 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
         if 'nodal' in line:
             timestep_read = True
             timestep_count += 1
-            if timestep_count == 1:
-                print('Time Step: ', flush=True)
-            print("%i " % timestep_count, flush=True)
             data = []
             continue
         if timestep_read is True:
@@ -50,8 +47,10 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
                     header = generate_header(data, nodout)
                     write_headers(dispout, header)
                     header_written = True
+                    print('Time Step: ', end="", flush=True)
                 if timestep_count > 1 and not legacynodes:
                     writenode = False
+                print("%i " % timestep_count, end="", flush=True)
                 process_timestep_data(data, dispout, writenode)
             else:
                 raw_data = parse_line(line)
@@ -130,11 +129,21 @@ def count_timesteps(outfile):
     :returns: ts_count
 
     """
-    ts_count = -1  # start at -1 (one extra instance of 'time' in nodout)
-    with open(outfile, 'r') as f:
-        for line in f:
-            if 'time' in line:
-                ts_count += 1
+    from sys import platform
+
+    if platform == "linux":
+        from subprocess import PIPE, Popen
+        p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
+        ts_count = int(p.communicate()[0].strip().decode())
+    else:
+        print("Non-linux OS detected -> using slower python implementation", flush=True)
+        ts_count = 0
+        with open(outfile, 'r') as f:
+            for line in f:
+                if 'time' in line:
+                    ts_count += 1
+
+    print('Number of Time Steps: %i' % ts_count, flush=True)
     return ts_count
 
 
