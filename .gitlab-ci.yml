@@ -2,4 +2,4 @@ test:
     script: 
     - pip install -r requirements.txt  
     - export PYTHONPATH=../
-    - pytest -v
+    - py.test -v
