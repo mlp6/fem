@@ -29,7 +29,6 @@ The latest documentation is automatically generated using Sphinx and can be
 built in ``docs/``.  The same documentation is also built and rendered
 automatically at http://fem.readthedocs.org/.
 
-
 Issues
 ======
 
