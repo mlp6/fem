@@ -1,2 +1,2 @@
 test:
-    script: pytest
+    script: py.test
