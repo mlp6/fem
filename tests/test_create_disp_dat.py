@@ -10,7 +10,7 @@ def test_parse_nodoutR61():
 
     assert raw_data[0] == 6
     assert raw_data[1] == 0.0
-    assert raw_data[10] == -1.5
+    assert raw_data[3] == -1.5
 
 
 def test_parse_nodoutR8():
@@ -25,7 +25,7 @@ def test_parse_nodoutR8():
 
     assert raw_data[0] == 8
     assert raw_data[1] == 0.0
-    assert raw_data[10] == -1.5
+    assert raw_data[3] == -1.5
 
 
 def test_correct_Enot():
@@ -39,4 +39,4 @@ def test_correct_Enot():
 
     raw_data = parse_line(line)
 
-    assert raw_data[10] == -1.5e-100
+    assert raw_data[3] == 0.0

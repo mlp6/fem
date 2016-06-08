@@ -66,8 +66,31 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
 def parse_line(line):
     """parse raw data line into vector of floats
 
+    The REGEX approach is just too slow for large nodout files, so I'm leveraging some a priori knowledge
+    about the output format:
+    Node ID - 10 characters (int)
+    X,Y,Z-Disp are the next 3 columns, each are 12 characters: [-]#.#####E[+/-]##
+
     :param str line: raw data line from nodout
     :return: raw_data (vector of floats)
+    """
+
+    nodeID = float(line[0:9])
+    try:
+        xdisp = float(line[10:21])
+    except ValueError:
+        xdisp = 0.0
+    try:
+        ydisp = float(line[22:33])
+    except ValueError:
+        ydisp = 0.0
+    try:
+        zdisp = float(line[34:45])
+    except ValueError:
+        zdisp = 0.0
+
+    raw_data = [nodeID, xdisp, ydisp, zdisp]
+
     """
     try:
         raw_data = line.split()
@@ -77,6 +100,7 @@ def parse_line(line):
         line = correct_Enot(line)
         raw_data = line.split()
         raw_data = [float(x) for x in raw_data]
+    """
 
     return raw_data
 
