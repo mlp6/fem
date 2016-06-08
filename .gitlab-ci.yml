@@ -1,2 +1,2 @@
 test:
-    script: python -m pytest -v tests/
+    script: export PYTHONPATH=../; py.test -v
