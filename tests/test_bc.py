@@ -41,8 +41,8 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
     bcdict = {}
     edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
     pml_elems = ((3, 0), (0, 1), (2, 3))
-    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints,
-                                         pml_elems)
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
+
 
     for nodeID in (737, 616, 495, 374):
         assert bcdict[nodeID] == "1,1,0,1,1,1"
