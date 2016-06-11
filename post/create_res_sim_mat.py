@@ -76,7 +76,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
     trange = [x for x in range(1, header['num_timesteps']+1)]
     arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
                          len(trange)), dtype=np.float32)
-    print(('Working on time step: '), end=' ')
+    print(('Time step:'), end=' ')
     for t in trange:
         # extract the disp values for the appropriate time step
         if (t == 1) or legacynodes:
@@ -96,7 +96,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
         # node IDs are _not_ saved after the first timestep in latest disp.dat
         # files (flagged by legacynodes boolean)
         else:
-            print(('%i ' % t), end=' ', flush=True)
+            print(('%i' % t), end=' ', flush=True)
             fmt = 'f'*int(timestep_bytes/word_size)
             fid.seek(header_bytes + first_timestep_bytes +
                      timestep_bytes*(t-2), 0)
