@@ -147,10 +147,11 @@ def generate_header(data, outfile):
 def count_timesteps(outfile):
     """count timesteps written to nodout
 
-    searches for 'time' in lines
+    searches for 'time' in lines, and then removes 1 extra entry that occurs
+    for t = 0
 
-    :param outfile:
-    :returns: ts_count
+    :param outfile: usually 'nodout'
+    :returns: int ts_count
 
     """
     from sys import platform
@@ -166,6 +167,9 @@ def count_timesteps(outfile):
             for line in f:
                 if 'time' in line:
                     ts_count += 1
+
+    # rm first 'time' entry
+    ts_count -= 1
 
     print('Number of Time Steps: %i' % ts_count, flush=True)
     return ts_count
