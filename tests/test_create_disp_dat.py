@@ -40,3 +40,13 @@ def test_correct_Enot():
     raw_data = parse_line(line)
 
     assert raw_data[3] == 0.0
+
+
+def test_count_timesteps():
+    """test counting time steps in nodout
+    """
+    from fem.post.create_disp_dat import count_timesteps
+
+    ts_count = count_timesteps("tests/nodout")
+
+    assert ts_count == 2
