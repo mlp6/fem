@@ -156,17 +156,17 @@ def count_timesteps(outfile):
     """
     from sys import platform
 
-    if platform == "linux":
-        from subprocess import PIPE, Popen
-        p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
-        ts_count = int(p.communicate()[0].strip().decode())
-    else:
-        print("Non-linux OS detected -> using slower python implementation", flush=True)
-        ts_count = 0
-        with open(outfile, 'r') as f:
-            for line in f:
-                if 'time' in line:
-                    ts_count += 1
+    #if platform == "linux":
+    #    from subprocess import PIPE, Popen
+    #    p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
+    #    ts_count = int(p.communicate()[0].strip().decode())
+    #else:
+    #    print("Non-linux OS detected -> using slower python implementation", flush=True)
+    ts_count = 0
+    with open(outfile, 'r') as f:
+        for line in f:
+            if 'time' in line:
+                ts_count += 1
 
     # rm first 'time' entry
     ts_count -= 1
