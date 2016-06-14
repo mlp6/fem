@@ -75,23 +75,24 @@ def parse_line(line):
     :return: raw_data (vector of floats)
     """
 
-    nodeID = float(line[0:9])
+    nodeID = float(line[0:10])
     try:
-        xdisp = float(line[10:21])
+        xdisp = float(line[10:22])
     except ValueError:
         xdisp = 0.0
     try:
-        ydisp = float(line[22:33])
+        ydisp = float(line[22:34])
     except ValueError:
         ydisp = 0.0
     try:
-        zdisp = float(line[34:45])
+        zdisp = float(line[34:46])
     except ValueError:
         zdisp = 0.0
 
     raw_data = [nodeID, xdisp, ydisp, zdisp]
 
     """
+    # THIS REGEX APPROACH WORKS, BUT IS VERY SLOW
     try:
         raw_data = line.split()
         raw_data = [float(x) for x in raw_data]
@@ -99,7 +100,7 @@ def parse_line(line):
         line = correct_neg(line)
         line = correct_Enot(line)
         raw_data = line.split()
-        raw_data = [float(x) for x in raw_data]
+        raw_data = [float(x) for x in raw_data[0:4]]
     """
 
     return raw_data
