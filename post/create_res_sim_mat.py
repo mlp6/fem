@@ -113,6 +113,8 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
     print('done!')
     fid.close()
 
+    # ndenumerate only iterates in C-ordering, so flip this over to match the
+    # F-ordering of Matlab-like code
     arfidata = np.flipud(arfidata)
 
     return arfidata
