@@ -1,11 +1,10 @@
-#!/usr/local/bin/python2.7
 '''
 TopLoad.py - Generate compression conditions for the top surface of the
 specified mesh.  Search through the provided node file, extract the top layer of
 nodes and write out point loads for each matching node. Nodes are written in
 spatially-sorted order.
 
-Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
+Copyright 2015-2016 Mark L. Palmeri (mlp6@duke.edu)
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License.  You may obtain a copy of the
@@ -33,6 +32,7 @@ def main():
     import numpy as n
     from fem.mesh import fem_mesh
 
+    # TODO: compliment with a modular import approach
     opts = read_cli()
     loadtype = opts.loadtype
     direction = int(opts.direction)
@@ -40,6 +40,7 @@ def main():
     lcid = int(opts.lcid)
 
     # open the top load file to write
+    # TODO: create stand-along write method
     LOADFILE = open(opts.loadfile, 'w')
     if loadtype == 'disp' or loadtype == 'vel' or loadtype == 'accel':
         LOADFILE.write("*BOUNDARY_PRESCRIBED_MOTION_NODE\n")
@@ -54,6 +55,7 @@ def main():
     LOADFILE.write("$ %s\n" % opts)
 
     # load in all of the node data, excluding '*' lines
+    # TODO: replace with fem_mesh method
     header_comment_skips = fem_mesh.count_header_comment_skips(opts.nodefile)
     nodeIDcoords = n.loadtxt(opts.nodefile,
                              delimiter=',',
