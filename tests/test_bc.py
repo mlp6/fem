@@ -131,3 +131,31 @@ def test_write_bc(tmpdir):
     assert lines[4] == "*END\n"
 
     return 0
+
+
+def test_read_cli():
+    from bc import read_cli
+    import sys
+
+    sys.argv = ['bc.py', '--nonreflect']
+    opts = read_cli()
+
+    assert opts.nonreflect is True
+    assert opts.pml is False
+
+    sys.argv = ['bc.py', '--pml']
+    opts = read_cli()
+
+    assert opts.nonreflect is False
+    assert opts.pml is True
+    assert opts.num_pml_elems == 5
+    assert opts.nodefile == "nodes.dyn"
+    assert opts.elefile == "elems.dyn"
+    assert opts.bcfile == "bc.dyn"
+    assert opts.sym == "q"
+    assert opts.pml_partID == 2
+
+    sys.argv = ['bc.py', '--pml', '--num_pml_elems', '8']
+    opts = read_cli()
+    assert opts.num_pml_elems == 8
+    assert opts.num_pml_elems != 5
