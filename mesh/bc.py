@@ -174,6 +174,13 @@ def read_cli():
                    type=int,
                    help="number of elements in PML (5-10)",
                    default=5)
+    p.add_argument("--face_constraints",
+                   help="constrain face DOFs")
+    p.add_argument("--edge_constraints",
+                   help="constrain edge DOFs")
+    p.add_argument("--pmlfile",
+                    help="PML element output filename",
+                    default="elems_pml.dyn")
     s = p.add_mutually_exclusive_group(required=True)
     s.add_argument("--nonreflect",
                    help="apply non-reflection boundaries",
@@ -183,7 +190,6 @@ def read_cli():
                    help="apply perfect matching layers",
                    dest='pml',
                    action='store_true')
-
     opts = p.parse_args()
 
     return opts
