@@ -183,7 +183,6 @@ def read_cli():
                    help="apply perfect matching layers",
                    dest='pml',
                    action='store_true')
-    s.set_defaults(nonreflect=False, pml=True)
 
     opts = p.parse_args()
 
