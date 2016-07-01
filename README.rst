@@ -45,3 +45,4 @@ Contributors
 - David Bradway (david.bradway@duke.edu)
 - Nick Bottenus (nbb5@duke.edu)
 - Brian Bigler (brian.bigler@duke.edu)
+- Carl Herickhoff (cdh14@duke.edu)
