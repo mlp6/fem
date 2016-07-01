@@ -22,7 +22,7 @@ def main():
     return 0
 
 
-def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
+def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat.xz", legacynodes=False):
     """
 
     :param dynadeck: main dyna input deck
@@ -72,7 +72,12 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
     first_timestep_bytes = header['num_nodes']*header['num_dims']*word_size
     timestep_bytes = header['num_nodes']*(header['num_dims']-1)*word_size
 
-    fid = open(dispout, 'rb')
+    if dispout.endswith('.xz'):
+        import lzma
+        fid = lzma.open(dispout, 'rb')
+    else:
+        fid = open(dispout, 'rb')
+
     trange = [x for x in range(1, header['num_timesteps']+1)]
     arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
                          len(trange)), dtype=np.float32)
