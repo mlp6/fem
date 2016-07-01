@@ -16,7 +16,7 @@ def main():
     create_dat(args.nodout, args.dispout, args.legacynodes)
 
 
-def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
+def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
     """create binary data file
 
     :param str nodout: nodout file create my ls-dyna (default = "nodout")
@@ -25,8 +25,14 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     """
     global writenode
 
+
     nodout = open(nodout, 'r')
-    dispout = open(dispout, 'wb')
+
+    if dispout.endswith('.xz'):
+        import lzma
+        dispout = lzma.open(dispout, 'wb')
+    else:
+        dispout = open(dispout, 'wb')
 
     header_written = False
     timestep_read = False
