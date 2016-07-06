@@ -229,7 +229,11 @@ def read_header(dispout):
     import struct
 
     word_size = 4  # bytes
-    d = open(dispout, 'rb')
+    if dispout.endswith('.xz'):
+        import lzma
+        d = lzma.open(dispout, 'rb')
+    else:
+        d = open(dispout, 'rb')
     num_nodes = struct.unpack('f', d.read(word_size))
     num_dims = struct.unpack('f', d.read(word_size))
     num_timesteps = struct.unpack('f', d.read(word_size))
