@@ -30,7 +30,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="n
     :param disp_scale=-1e4: displacement scaling
     :param ressim: default = "res_sim.mat"
     :param nodedyn: default = "nodes.dyn"
-    :param dispout: default = "disp.dat"
+    :param dispout: default = "disp.dat.xz"
     :return: 0
     """
     from fem.mesh import fem_mesh
