@@ -185,7 +185,7 @@ def extract_image_plane(snic, axes, ele_pos):
     """
     import numpy as np
 
-    ele0 = min(np.where(axes[0] >= ele_pos))
+    ele0 = np.min(np.where(axes[0] >= ele_pos))
     image_plane = np.squeeze(snic[ele0, :, :]).astype(int)
 
     return image_plane
