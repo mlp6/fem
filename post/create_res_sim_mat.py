@@ -79,13 +79,22 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
         fid = open(dispout, 'rb')
 
     trange = [x for x in range(1, header['num_timesteps']+1)]
-    arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
-                         len(trange)), dtype=np.float32)
+
+    # pre-allocate arfidata ndarray
+    if image_plane.ndim == 2:
+        arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
+                             len(trange)), dtype=np.float32)
+    elif image_plane.ndim == 3:
+        arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
+                             image_plane.shape[0], len(trange)), dtype=np.float32)
+    else:
+        print("image_plane has an unaccounted for number of dimensions")
+
     print(('Time step:'), end=' ')
     for t in trange:
         # extract the disp values for the appropriate time step
         if (t == 1) or legacynodes:
-            print(('%i ' % t), end=' ', flush=True)
+            print(('%i' % t), end=' ', flush=True)
             fmt = 'f'*int(first_timestep_words)
             fid.seek(header_bytes + first_timestep_bytes*(t-1), 0)
             disp_slice = np.asarray(struct.unpack(fmt,
@@ -111,9 +120,15 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
                                     order='F')
             zdisp = create_zdisp(nodeidlist, disp_slice[:, disp_comp].squeeze(), zdisp)
 
-        # TODO: this should have some optimized form (list comprehension?)
-        for (i, j), nodeid in np.ndenumerate(image_plane):
-            arfidata[j, i, t-1] = disp_scale*zdisp[nodeid]
+        if arfidata.ndim == 3:
+            for (i, j), nodeid in np.ndenumerate(image_plane):
+                arfidata[j, i, t-1] = disp_scale*zdisp[nodeid]
+        elif arfidata.ndim == 4:
+            for (k, i, j), nodeid in np.ndenumerate(image_plane):
+                arfidata[j, i, k, t-1] = disp_scale*zdisp[nodeid]
+        else:
+            print("arfidata has an unaccounted for number of dimensions")
+
 
     print('done!')
     fid.close()
