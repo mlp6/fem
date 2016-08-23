@@ -207,14 +207,14 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     from scipy.io import savemat
 
     # scale axes
-    if len(arfidata.shape) == 4:
+    if arfidata.ndim == 4:
         elev = axis_scale[0]*axes[0]
     lat = axis_scale[1]*axes[1]
     axial = axis_scale[2]*axes[2]
     if axis_scale[2] < 1:
         axial = axial[::-1]
 
-    if len(arfidata.shape) == 4:
+    if arfidata.ndim == 4:
         savemat(resfile,
                 {'arfidata': arfidata,
                  'lat': lat,
