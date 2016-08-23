@@ -2,7 +2,6 @@ def extract3Darfidata(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.ma
 
     from fem.mesh import fem_mesh
     import fem.post.create_res_sim_mat as crsm
-    from scipy.io import savemat
     import numpy as np
 
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
@@ -12,18 +11,8 @@ def extract3Darfidata(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.ma
     dt = crsm.extract_dt(dynadeck)
     t = [float(x) * dt for x in range(0, header['num_timesteps'])]
 
-    arfidata = np.empty([len(axes[2]), len(axes[1]), len(t), len(axes[0])])
-    for i, e in enumerate(axes[0]):
-        image_plane = crsm.extract_image_plane(snic, axes, ele_pos=e)
-        arfidata[:, :, :, i] = crsm.extract_arfi_data(dispout, header, image_plane, disp_comp, disp_scale, legacynodes=False)
+    arfidata = crsm.extract_arfi_data(dispout, header, snic['id'], disp_comp,
+                                      disp_scale, legacynodes=False)
 
-    axial = -10*axes[2]
-    savemat(ressim,
-            {'arfidata': arfidata,
-             'lat': 10*axes[1],
-             'axial': axial[::-1],
-             'elev': -axes[0],
-             't': t},
-            do_compression=True
-            )
+    crsm.save_res_mat(ressim, arfidata, axes, t)
 
