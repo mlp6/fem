@@ -191,32 +191,48 @@ def extract_image_plane(snic, axes, ele_pos):
     return image_plane
 
 
-def save_res_mat(resfile, arfidata, axes, t):
+def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     """ save res_sim.mat file using variables scanner-generated data
 
     data are saved as float32 to save space
 
     :param resfile: res_sim.mat filename
-    :param arfidata: arfidata matrix
+    :param arfidata: arfidata matrix (3D or 4D (added elev dim, axes[0]))
     :param axes: ele, lat, axial (mesh units)
     :param t: time
-    :returns: None
+    :param axis_scale: scale sign and magnitude of axes [default: [-10, 10, -10]]
+    :returns: 0
 
     """
     from scipy.io import savemat
 
-    # convert to mm
-    axial = -10*axes[2]
-    axial = axial[::-1]
-    lat = 10*axes[1]
+    # scale axes
+    if len(arfidata.shape) == 4:
+        elev = axis_scale[0]*axes[0]
+    lat = axis_scale[1]*axes[1]
+    axial = axis_scale[2]*axes[2]
+    if axis_scale[2] < 1:
+        axial = axial[::-1]
 
-    savemat(resfile,
-            {'arfidata': arfidata,
-             'lat': lat,
-             'axial': axial,
-             't': t},
-            do_compression=True
-            )
+    if len(arfidata.shape) == 4:
+        savemat(resfile,
+                {'arfidata': arfidata,
+                 'lat': lat,
+                 'axial': axial,
+                 'elev': elev,
+                 't': t},
+                do_compression=True
+                )
+    else:
+        savemat(resfile,
+                {'arfidata': arfidata,
+                 'lat': lat,
+                 'axial': axial,
+                 't': t},
+                do_compression=True
+                )
+
+    return 0
 
 
 def read_header(dispout):
