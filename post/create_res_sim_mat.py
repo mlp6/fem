@@ -79,6 +79,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
         fid = open(dispout, 'rb')
 
     trange = [x for x in range(1, header['num_timesteps']+1)]
+    trange = range(1, 5)
 
     # pre-allocate arfidata ndarray
     if image_plane.ndim == 2:
@@ -229,23 +230,38 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     if axis_scale[2] < 1:
         axial = axial[::-1]
 
-    if arfidata.ndim == 4:
-        savemat(resfile,
-                {'arfidata': arfidata,
-                 'lat': lat,
-                 'axial': axial,
-                 'elev': elev,
-                 't': t},
-                do_compression=True
-                )
+    if resfile.endswith('.h5'):
+        import h5py
+        r = h5py.File(resfile, 'w')
+        r.create_dataset(data=arfidata, name="arfidata",
+                         compression="gzip", compression_opts=9)
+        r.create_dataset(data=lat, name="lat",
+                         compression="gzip", compression_opts=9)
+        r.create_dataset(data=axial, name="axial",
+                         compression="gzip", compression_opts=9)
+        if arfidata.ndim == 4:
+            r.create_dataset(data=elev, name="elev",
+                             compression="gzip", compression_opts=9)
+    elif resfile.endwith('.mat'):
+        if arfidata.ndim == 4:
+            savemat(resfile,
+                    {'arfidata': arfidata,
+                     'lat': lat,
+                     'axial': axial,
+                     'elev': elev,
+                     't': t},
+                    do_compression=True
+                    )
+        else:
+            savemat(resfile,
+                    {'arfidata': arfidata,
+                     'lat': lat,
+                     'axial': axial,
+                     't': t},
+                    do_compression=True
+                    )
     else:
-        savemat(resfile,
-                {'arfidata': arfidata,
-                 'lat': lat,
-                 'axial': axial,
-                 't': t},
-                do_compression=True
-                )
+        print("resfile filetype not recognized")
 
     return 0
 
