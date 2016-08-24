@@ -243,7 +243,7 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
                              compression="gzip", compression_opts=9)
         r.create_dataset(data=t, name="t",
                          compression="gzip", compression_opts=9)
-    elif resfile.endwith('.mat'):
+    elif resfile.endswith('.mat'):
         if arfidata.ndim == 4:
             savemat(resfile,
                     {'arfidata': arfidata,
