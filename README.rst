@@ -1,5 +1,3 @@
-<a href="http://gitlab.oit.duke.edu/mlp6/fem/commits/master"><img alt="build status" src="http://gitlab.oit.duke.edu/mlp6/fem/badges/master/build.svg" /></a>
-
 Acoustic Radiation Force FEM Tools
 ==================================
 
