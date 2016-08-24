@@ -65,6 +65,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
     """
     import numpy as np
     import struct
+    from warnings import warn
 
     word_size = 4
     header_bytes = 3*word_size
@@ -88,7 +89,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
         arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
                              image_plane.shape[0], len(trange)), dtype=np.float32)
     else:
-        print("image_plane has an unaccounted for number of dimensions")
+        warn("unexpected number of dimensions in sorted nodes")
 
     print(('Time step:'), end=' ')
     for t in trange:
@@ -127,7 +128,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
             for (k, i, j), nodeid in np.ndenumerate(image_plane):
                 arfidata[j, i, k, t-1] = disp_scale*zdisp[nodeid]
         else:
-            print("arfidata has an unaccounted for number of dimensions")
+            warn("unexpected number of dimensions for arfidata")
 
 
     print('done!')
@@ -220,6 +221,11 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
 
     """
     from scipy.io import savemat
+    from warnings import warn
+
+    if arfidata.nbytes > 4e9 and resfile.endswith('.mat'):
+        warn('arfidata exceeds 4 GB and cannot be written to MATLAB v5 format\n'
+             'you must use HDF5 (*.h5)')
 
     # scale axes
     if arfidata.ndim == 4:
@@ -262,7 +268,7 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
                     do_compression=True
                     )
     else:
-        print("resfile filetype not recognized")
+        warn("resfile filetype not recognized")
 
     return 0
 
