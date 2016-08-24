@@ -79,7 +79,6 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
         fid = open(dispout, 'rb')
 
     trange = [x for x in range(1, header['num_timesteps']+1)]
-    trange = range(1, 5)
 
     # pre-allocate arfidata ndarray
     if image_plane.ndim == 2:
