@@ -1,6 +1,8 @@
 Acoustic Radiation Force FEM Tools
 ==================================
 
+https://zenodo.org/badge/72387361.svg
+
 Finite Element Method (FEM) tools to simulate acoustic radiation force
 excitations and resultant shear wave propagation.
 
