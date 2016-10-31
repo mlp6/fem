@@ -1,4 +1,4 @@
-[ZenodoDOI](https://zenodo.org/badge/72387361.svg)
+![ZenodoDOI](https://zenodo.org/badge/72387361.svg)
 
 Acoustic Radiation Force FEM Tools
 ==================================
