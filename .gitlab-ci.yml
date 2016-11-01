@@ -1,8 +1,8 @@
-#image: python:3.5
-image: mlp6/fem
+image: python:3.5
+#image: mlp6/fem
 
 test:
     script: 
-    #- pip install -r requirements.txt  
+    - pip install -r requirements.txt  
     - export PYTHONPATH=../
     - py.test -v --cov
