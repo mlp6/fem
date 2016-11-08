@@ -1,6 +1,6 @@
-#image: python:3.5
+image: python:3.6
 #image: mlp6/fem
-image: continuumio/anaconda3
+#image: continuumio/anaconda3
 
 test:
     script: 
