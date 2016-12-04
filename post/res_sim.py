@@ -1,4 +1,4 @@
-class res_sim:
+class ResSim:
     """plot and animate res_sim.mat simulation data
     """
     def __init__(self):
@@ -22,8 +22,9 @@ class res_sim:
         from scipy.io import loadmat
 
         self.res = loadmat(filename)
+        print(self.res.keys())
 
-        return 0
+        return
 
 
     def plot(self, timestep):
@@ -33,12 +34,12 @@ class res_sim:
         """
         import matplotlib.pyplot as plt
 
-        plt.pcolormesh([self.res['lat'], self.res['axial'].transpose, self.res['arfidata'][:, :, timestep])
+        plt.pcolormesh(self.res['lat'], self.res['axial'].transpose(), self.res['arfidata'][:, :, timestep])
         plt.axes().set_aspect('equal')
         plt.xlabel('Lateral (mm)')
         plt.ylabel('Axial (mm)')
-        plt.title('Displacement (t = {res[t]} ms)'.format(res=res)
-
+        plt.title('t = {:.2f} ms'.format(self.res['t'][0, timestep]*1e3))
+        plt.gca().invert_yaxis()
         plt.show()
 
-        return 0
+        return
