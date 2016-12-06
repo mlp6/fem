@@ -1,4 +1,4 @@
-class Res:
+class ResSim:
     """plot and animate res_sim.mat simulation data
     """
     def __init__(self, filename="res_sim.mat"):
