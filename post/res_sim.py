@@ -37,3 +37,33 @@ class Res:
         plt.show()
 
         return
+
+
+    def play(self, timerange):
+        """play an animation
+
+        :param timerange: generator of time steps to animate
+        """
+        import matplotlib.pyplot as plt
+        import matplotlib.animation as animation
+
+        fig = plt.figure()
+
+        plt.hold(True)
+
+        plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, 0])
+
+        anim = animation.FuncAnimation(fig, self.animate, frames=timerange, blit=False)
+
+        plt.show()
+        plt.hold(False)
+
+
+    def animate(self, i):
+        import matplotlib.pyplot as plt
+        plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, i])
+        plt.axes().set_aspect('equal')
+        plt.xlabel('Lateral (mm)')
+        plt.ylabel('Axial (mm)')
+        plt.title('t = {:.2f} ms'.format(self.t[0, i]*1e3))
+        plt.gca().invert_yaxis()
