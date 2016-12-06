@@ -1,4 +1,4 @@
-class Res:
+class ResSim:
     """plot and animate res_sim.mat simulation data
     """
     def __init__(self, filename="res_sim.mat"):
@@ -37,3 +37,35 @@ class Res:
         plt.show()
 
         return
+
+
+    def play(self, timerange):
+        """play an animation
+
+        Strongly recommend not stepping though each timesteps; use some skips!
+
+        :param timerange: range generator of time steps to animate
+        """
+        import matplotlib.pyplot as plt
+        import matplotlib.animation as animation
+
+        fig = plt.figure()
+
+        plt.hold(True)
+
+        plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, 0])
+        plt.axes().set_aspect('equal')
+        plt.gca().invert_yaxis()
+        plt.xlabel('Lateral (mm)')
+        plt.ylabel('Axial (mm)')
+
+        anim = animation.FuncAnimation(fig, self.animate, frames=timerange, blit=False)
+
+        plt.show()
+        plt.hold(False)
+
+
+    def animate(self, i):
+        import matplotlib.pyplot as plt
+        plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, i])
+        plt.title('t = {:.2f} ms'.format(self.t[0, i]*1e3))
