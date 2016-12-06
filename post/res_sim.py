@@ -42,7 +42,9 @@ class Res:
     def play(self, timerange):
         """play an animation
 
-        :param timerange: generator of time steps to animate
+        Strongly recommend not stepping though each timesteps; use some skips!
+
+        :param timerange: range generator of time steps to animate
         """
         import matplotlib.pyplot as plt
         import matplotlib.animation as animation
