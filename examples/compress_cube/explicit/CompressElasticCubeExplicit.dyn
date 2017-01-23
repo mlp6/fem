@@ -1,0 +1,37 @@
+*KEYWORD 
+*TITLE
+BME790 - EXPLICIT ELASTIC CUBE FEM MODEL
+$ Mark Palmeri (mlp6@duke.edu)
+$ Department of Biomedical Engineering
+$ Pratt School of Engineering
+$ Duke University
+$ 2013-01-10
+*CONTROL_TERMINATION
+3.0,0,0.0,0.0,0.0
+*CONTROL_TIMESTEP
+1.0000E-06,0.02,0,0.0,0.0,0,0,0
+*DAMPING_GLOBAL
+0,50.0
+*DATABASE_BINARY_D3PLOT
+0.5,0,0,0
+*INCLUDE
+./nodes.dyn
+*MAT_ELASTIC
+1,1.0,100.0,0.48,0.0,0.0,0.0
+*PART
+                                                                                
+1,1,1,0,0,0,0
+*SECTION_SOLID
+1,2
+*INCLUDE
+./elems.dyn
+*INCLUDE
+./bc.dyn
+*INCLUDE
+./topload.dyn
+*DEFINE_CURVE
+1,0,1.0,1
+0.0,0.0
+1,1.0
+3,1.0
+*END
