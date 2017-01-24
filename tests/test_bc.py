@@ -3,7 +3,6 @@
 
 import sys
 import os
-import pytest
 
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + '/../mesh/')
@@ -40,7 +39,6 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
     edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
-    pml_elems = ((3, 0), (0, 1), (2, 3))
     bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
 
 
