@@ -20,7 +20,7 @@ def test_extract_top_plane_nodes():
 
 def test_writeNodeLoads_disp(tmpdir):
     from TopLoad import writeNodeLoads
-    f = tmpdir.join("top_load.dyn")
+    f = tmpdir.join("topload.dyn")
     writeNodeLoads(loadfile=f.strpath, planeNodeIDs=[[1, 2 ,3], [4, 5, 6]], loadtype='disp', direction=3,
                    amplitude=-1.0, lcid=1)
     lines = f.readlines()
@@ -30,7 +30,7 @@ def test_writeNodeLoads_disp(tmpdir):
 
 def test_writeNodeLoads_force(tmpdir):
     from TopLoad import writeNodeLoads
-    f = tmpdir.join("top_load.dyn")
+    f = tmpdir.join("topload.dyn")
     writeNodeLoads(loadfile=f.strpath, planeNodeIDs=[[1, 2 ,3], [4, 5, 6]], loadtype='force', direction=3,
                    amplitude=-1.0, lcid=1)
     lines = f.readlines()
