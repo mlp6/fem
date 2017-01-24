@@ -31,7 +31,7 @@ def main():
     generate_loads(loadtype=opts.loadtype, amplitude=opts.amplitude, lcid=opts.lcid, nodefile=opts.nodefile,
                    top_face=(0, 0, 0, 0, 0, 1))
 
-def generate_loads(loadtype='disp', amplitude=-1.0, loadfile='top_load.dyn', nodefile='nodes.dyn',
+def generate_loads(loadtype='disp', amplitude=-1.0, loadfile='topload.dyn', nodefile='nodes.dyn',
                    top_face =(0, 0, 0, 0, 0, 1), lcid=1):
     """ apply loads to
 
