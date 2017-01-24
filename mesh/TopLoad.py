@@ -28,10 +28,10 @@ def main():
     """
 
     opts = read_cli()
-    generate_loads(loadtype=opts.loadtype, amplitude=opts.amplitude, lcid=opts.lcid, nodefile=opts.nodefile,
-                   top_face=(0, 0, 0, 0, 0, 1))
+    generate_loads(loadtype=opts.loadtype, direction=opts.direction, amplitude=opts.amplitude,
+                   lcid=opts.lcid, nodefile=opts.nodefile, top_face=(0, 0, 0, 0, 0, 1))
 
-def generate_loads(loadtype='disp', amplitude=-1.0, loadfile='topload.dyn', nodefile='nodes.dyn',
+def generate_loads(loadtype='disp', direction=2, amplitude=-1.0, loadfile='topload.dyn', nodefile='nodes.dyn',
                    top_face =(0, 0, 0, 0, 0, 1), lcid=1):
     """ apply loads to
 
@@ -45,7 +45,7 @@ def generate_loads(loadtype='disp', amplitude=-1.0, loadfile='topload.dyn', node
     :return:
     """
 
-    (direction, planeNodeIDs) = extract_top_plane_nodes(nodefile=nodefile, top_face=top_face)
+    planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile, top_face=top_face)
     writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid)
 
 
@@ -54,7 +54,7 @@ def extract_top_plane_nodes(nodefile, top_face):
 
     :param nodefile:
     :param top_face:
-    :return: direction, planeNodeIDs
+    :return: planeNodeIDs
     """
     import numpy as np
     from fem.mesh import fem_mesh
@@ -72,9 +72,8 @@ def extract_top_plane_nodes(nodefile, top_face):
         plane = (axis, axes[axis].min())
 
     planeNodeIDs = fem_mesh.extractPlane(snic, axes, plane)
-    direction = axis+1
 
-    return (direction, planeNodeIDs)
+    return planeNodeIDs
 
 
 def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid):
@@ -83,12 +82,15 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid)
     :param loadfile: load filename
     :param planeNodeIDS: array of node IDs
     :param loadtype [str]: disp, vel, accel, force
-    :param direction: 1, 2, 3
+    :param direction: [0-2]
     :param amplitude:
     :param lcid: LCID
     :returns: None
     """
     import sys
+
+    # shift 0-2 -> 1-3
+    direction += 1
 
     LOADFILE = open(loadfile, 'w')
 
@@ -138,6 +140,10 @@ def read_cli():
                      help="amplitude of load",
                      type=float,
                      default=1.0)
+    par.add_argument("--direction",
+                     help="direction of load (0 - x, 1 - y, 2 - z)",
+                     type=int,
+                     default=2)
     par.add_argument("--top_face",
                      help="array with 1 indicating top face (xmin, xmax, ymin, ymax, zmin, zmax)",
                      nargs="+",
