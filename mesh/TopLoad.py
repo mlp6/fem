@@ -28,10 +28,10 @@ def main():
     """
 
     opts = read_cli()
-    generate_loads(loadtype=opts.loadtype, direction=opts.direction, amplitude=opts.amplitude, lcid=opts.lcid,
-                   nodefile=opts.nodefile, top_face=(0, 0, 0, 0, 0, 1))
+    generate_loads(loadtype=opts.loadtype, amplitude=opts.amplitude, lcid=opts.lcid, nodefile=opts.nodefile,
+                   top_face=(0, 0, 0, 0, 0, 1))
 
-def generate_loads(loadtype='disp', direction=2, amplitude=-1.0, loadfile='top_load.dyn', nodefile='nodes.dyn',
+def generate_loads(loadtype='disp', amplitude=-1.0, loadfile='top_load.dyn', nodefile='nodes.dyn',
                    top_face =(0, 0, 0, 0, 0, 1), lcid=1):
     """ apply loads to
 
@@ -46,7 +46,7 @@ def generate_loads(loadtype='disp', direction=2, amplitude=-1.0, loadfile='top_l
     """
 
     (direction, planeNodeIDs) = extract_top_plane_nodes(nodefile=nodefile, top_face=top_face)
-    writeNodeLoads(LOADFILE, planeNodeIDs, loadtype, direction, amplitude, lcid)
+    writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid)
 
 
 def extract_top_plane_nodes(nodefile, top_face):
@@ -56,9 +56,10 @@ def extract_top_plane_nodes(nodefile, top_face):
     :param top_face:
     :return: direction, planeNodeIDs
     """
-
     import numpy as np
     from fem.mesh import fem_mesh
+
+    top_face = np.array(top_face)
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -76,7 +77,7 @@ def extract_top_plane_nodes(nodefile, top_face):
     return (direction, planeNodeIDs)
 
 
-def writeNodeLoads(loadfile="topload.dyn", planeNodeIDs, loadtype, direction, amplitude, lcid):
+def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid):
     """write load keyword file
 
     :param loadfile: load filename
@@ -110,7 +111,7 @@ def writeNodeLoads(loadfile="topload.dyn", planeNodeIDs, loadtype, direction, am
 
     for i in planeNodeIDs:
         for j in i:
-            LOADFILE.write("%i,%s\n" % (j[0], dofs))
+            LOADFILE.write("%i,%s\n" % (j, dofs))
 
     LOADFILE.write("*END\n")
     LOADFILE.close()
@@ -121,10 +122,8 @@ def read_cli():
     """
     import argparse as argp
 
-    par = argp.ArgumentParser(description="Generate loading conditions "
-                              "for the top surface of the specified mesh.",
-                              formatter_class=
-                              argp.ArgumentDefaultsHelpFormatter)
+    par = argp.ArgumentParser(description="Generate loading conditions for the top surface of the specified mesh.",
+                              formatter_class=argp.ArgumentDefaultsHelpFormatter)
     par.add_argument("--loadfile",
                      help="compression load defintion output file",
                      default="topload.dyn")
@@ -136,7 +135,9 @@ def read_cli():
                      "loads (force), velocity (vel) or acceleration (accel)",
                      default="disp")
     par.add_argument("--amplitude",
-                     help="amplitude of load", default=1.0)
+                     help="amplitude of load",
+                     type=float,
+                     default=1.0)
     par.add_argument("--top_face",
                      help="array with 1 indicating top face (xmin, xmax, ymin, ymax, zmin, zmax)",
                      nargs="+",
