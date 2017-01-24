@@ -26,6 +26,27 @@ def main():
     return 0
 
 
+def apply_face_bc_only(face_constraints, nodefile="nodes.dyn", bcfile="bc.dyn"):
+    """driver function to apply node BCs just to faces
+
+    :param face_constraints: 3x2 array of strings, specifying the BCs on each face (3), min/max (2)
+    :param nodefile: default - 'nodes.dyn'
+    :param bcfile: 'defauly - 'bc.dyn'
+    :return:
+    """
+
+    from fem.mesh import fem_mesh
+
+    nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
+    [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
+
+    bcdict = assign_node_constraints(snic, axes, face_constraints)
+
+    write_bc(bcdict, bcfile)
+
+    return 0
+
+
 def apply_pml(pml_elems, face_constraints, edge_constraints,
               nodefile="nodes.dyn", elefile="elems.dyn", pmlfile="elems_pml.dyn",
               bcfile="bc.dyn", pml_partID=2):
