@@ -5,4 +5,11 @@
 scale_disp_dat
 _build
 .cache
-.converage
+.coverage
+lspost.*
+nodes.dyn
+elems.dyn
+bc.dyn
+d3*
+nodout
+
