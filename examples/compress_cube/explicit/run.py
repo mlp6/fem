@@ -20,17 +20,19 @@ print('HOST: %s' % gethostname())
 DYNADECK='CompressElasticCubeExplicit.dyn'
 NTASKS = environ.get('SLURM_NTASKS', '8')
 
-xyz = (-1.0, 0.0, 0.0, 1.0, -1.1, 0.1)
+xyz = (-1.0, 0.0, 0.0, 1.0, -1.1, -0.1)
 numElem = (10, 10, 10)
 GenMesh.run(xyz, numElem)
 
-# setup 1/4 symmetry boundary conditions
+# restrict penetration of the zmin face
 face_constraints = (('0,0,0,0,0,0', '0,0,0,0,0,0'),
                     ('0,0,0,0,0,0', '0,0,0,0,0,0'),
-                    ('0,0,1,1,1,1', '0,0,0,0,0,0'))
+                    ('0,0,1,1,1,0', '0,0,0,0,0,0'))
 bc.apply_face_bc_only(face_constraints)
 
-generate_loads(loadtype='disp', direction=2, amplitude=-0.1, top_face=(0, 0, 0, 0, 0, 1), lcid=1)
+# apply displacement condition to the zmax face
+generate_loads(loadtype='disp', direction=2, amplitude=-0.1,
+               top_face=(0, 0, 0, 0, 0, 1), lcid=1)
 
 system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 
