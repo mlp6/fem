@@ -53,7 +53,7 @@ FIELD_PARAMS.Impulse = Impulse;
 
 % below are hard-coded constants (transducer independent)
 FIELD_PARAMS.soundSpeed=1540;
-FIELD_PARAMS.samplingFrequency = 200e6;
+FIELD_PARAMS.samplingFrequency = 100e6;
 
 % perform the field calculation
 [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
