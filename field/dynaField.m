@@ -1,5 +1,5 @@
-function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
-% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
+function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads)
+% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads)
 %
 % Generate intensity values at the nodal locations for conversion to force and
 % input into the dyna deck.
@@ -19,6 +19,7 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 %       based on the defined fractional bandwidth and center
 %       frequency, or use the experimentally-measured impulse
 %       response
+%   threads (int) - number of parallel threads to use [default = numCores]
 %
 % OUTPUT:
 %   intensity - intensity values at all of the node locations
@@ -39,6 +40,12 @@ check_start_Field_II;
 % define transducer-independent parameters
 set_field('c', FIELD_PARAMS.soundSpeed);
 set_field('fs', FIELD_PARAMS.samplingFrequency);
+
+if (nargin < 2),
+    threads = feature('numCores');
+end
+set_field('threads', threads);
+disp(sprintf('PARALLEL THREADS: %d', threads));
 
 % define transducer-dependent parameters
 eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
@@ -72,25 +79,7 @@ set_field('use_att', 1);
  
 % compute Ispta at each location for a single tx pulse
 % optimizing by computing only relevant nodes... will assume others are zero
-StartTime = fix(clock);
-% disp(sprintf('Start Time: %i:%2.0i',StartTime(4),StartTime(5)));
-Time = datestr(StartTime, 'HH:MM:SS PM');
-disp(sprintf('Start Time: %s', Time))
-tic;
-
-numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
-progressPoints = 0:10000:numNodes;
-tic;
-for i=1:numNodes,
-    if ~isempty(intersect(i, progressPoints)),
-        disp(sprintf('Processed %.1f%%', i * 100 / numNodes));
-    end
-    % include the lens correction (axial shift)
-    [pressure, startTime] = calc_hp(Th, FIELD_PARAMS.measurementPointsandNodes(i,2:4));
-    intensity(i) = sum(pressure.*pressure);
-end
-
-ActualRunTime = toc/60; % min
-disp(sprintf('Actual Run Time = %.3f m\n', ActualRunTime));
+[pressure, startTime] = calc_hp(Th, squeeze(double(FIELD_PARAMS.measurementPointsandNodes(:,2:4))));
+intensity = sum(pressure.*pressure);
 
 field_end;
