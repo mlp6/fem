@@ -79,7 +79,8 @@ set_field('use_att', 1);
  
 % compute Ispta at each location for a single tx pulse
 % optimizing by computing only relevant nodes... will assume others are zero
-[pressure, startTime] = calc_hp(Th, squeeze(double(FIELD_PARAMS.measurementPointsandNodes(:,2:4))));
-intensity = sum(pressure.*pressure);
+[intensity, startTime] = calc_hp(Th, squeeze(double(FIELD_PARAMS.measurementPointsandNodes(:,2:4))));
+intensity = single(intensity);
+intensity = sum(intensity.*intensity);
 
 field_end;
