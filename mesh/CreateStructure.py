@@ -189,7 +189,7 @@ def findStructElemIDs(elefile, structNodeIDs):
     :param structNodeIDs: numpy array
     :returns: (elems, structElemIds)
     """
-    from fem.mesh import load_elems
+    from fem.mesh.fem_mesh import load_elems
 
     elems = load_elems(elefile)
 
