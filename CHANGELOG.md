@@ -9,3 +9,7 @@ v6.5.0
 * Update ``TopLoad`` from CLI script to python module
 * Update ``examples/compress_cube/explicit/`` for latest tools
 * Allow BCs to be applied to nodes/faces without imposing non-reflecting / PML faces
+
+v6.5.3
+======
+* Fix CreateStructure load_elems import error
