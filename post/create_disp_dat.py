@@ -19,9 +19,9 @@ def main():
 def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
     """create binary data file
 
-    :param str nodout: nodout file create my ls-dyna (default = "nodout")
-    :param str dispout: default = "disp.dat"
-    :param boolean legacynodes: are node definitions written every timestep (default = False)
+    :param str nodout: nodout file created by ls-dyna (default = "nodout")
+    :param str dispout: default = "disp.dat.xz"
+    :param boolean legacynodes: node IDs written every timestep (default = False)
     """
     global writenode
 
