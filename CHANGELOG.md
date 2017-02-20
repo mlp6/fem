@@ -13,3 +13,7 @@ v6.5.0
 v6.5.3
 ======
 * Fix CreateStructure load_elems import error
+
+v6.x.x
+======
+* Update post/create_disp_dat.create_dat docstring
