@@ -18,6 +18,7 @@ print('STARTED: %s' % ctime())
 print('HOST: %s' % gethostname())
 
 DYNADECK='CompressElasticCubeExplicit.dyn'
+#DYNADECK='CompressElasticCubeImplicit.dyn'
 NTASKS = environ.get('SLURM_NTASKS', '8')
 
 xyz = (-1.0, 0.0, 0.0, 1.0, -1.1, -0.1)
