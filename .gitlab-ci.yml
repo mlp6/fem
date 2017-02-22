@@ -5,6 +5,13 @@ test:python35:
     - export PYTHONPATH=../
     - py.test -v --cov
 
+test:python36:
+    image: python:3.6
+    script: 
+    - pip install -r requirements.txt  
+    - export PYTHONPATH=../
+    - py.test -v --cov
+
 test:anaconda3:
     image: continuumio/anaconda3
     script: 
