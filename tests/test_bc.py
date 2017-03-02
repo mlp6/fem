@@ -38,7 +38,7 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
     from bc import assign_edge_sym_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
-    edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+    edge_constraints = (((0,1), (1,0), (0,0)), '1,1,0,1,1,1')
     bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
 
     for nodeID in (737, 616, 495, 374):
