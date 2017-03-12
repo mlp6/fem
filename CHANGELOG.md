@@ -14,8 +14,10 @@ v6.5.3
 ======
 * Fix CreateStructure load_elems import error
 
-v6.x.x
+v6.6.0
 ======
 * Update post/create_disp_dat.create_dat docstring
 * Re-arrange the example directory structure and add READMEs
 * Add create_disp_dat unit tests and accelerations
+* Add create_res_sim_mat unit tests and accelerations
+* Improve relative import paths for unit testing, making OS-agnostic
