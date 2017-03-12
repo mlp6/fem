@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='Acoustic Radiation Force FEM Tools',
-    version='6.5.3',
+    version='6.6.0',
     packages=['fem',],
     license='Apache v2.0',
     author='Mark Palmeri',
