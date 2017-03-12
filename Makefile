@@ -1,5 +1,5 @@
 test: clean
-	py.test -v --cov
+	py.test -v --cov --pep8
 
 clean:
 	find . -name '*.pyc' -exec rm {} +
