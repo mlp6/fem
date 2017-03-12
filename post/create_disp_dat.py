@@ -146,28 +146,31 @@ def count_timesteps(outfile):
     searches for 'time' in lines, and then removes 1 extra entry that occurs
     for t = 0
 
+    grep will be used on linux systems (way faster)
+
     :param outfile: usually 'nodout'
     :returns: int ts_count
 
     """
     from sys import platform
 
-    #if platform == "linux":
-    #    from subprocess import PIPE, Popen
-    #    p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
-    #    ts_count = int(p.communicate()[0].strip().decode())
-    #else:
-    #    print("Non-linux OS detected -> using slower python implementation", flush=True)
-    ts_count = 0
-    with open(outfile, 'r') as f:
-        for line in f:
-            if 'time' in line:
-                ts_count += 1
+    print("Reading number of time steps... ", end="", flush=True)
+    if platform == "linux":
+        from subprocess import PIPE, Popen
+        p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
+        ts_count = int(p.communicate()[0].strip().decode())
+    else:
+        print("Non-linux OS detected -> using slower python implementation", flush=True)
+        ts_count = 0
+        with open(outfile, 'r') as f:
+            for line in f:
+                if 'time' in line:
+                    ts_count += 1
 
-    # rm first 'time' entry
-    ts_count -= 1
+    ts_count -= 1 # rm extra time count
 
-    print('Number of Time Steps: %i' % ts_count, flush=True)
+    print('there are {}.'.format(ts_count), flush=True)
+
     return ts_count
 
 
