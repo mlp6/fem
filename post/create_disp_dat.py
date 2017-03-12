@@ -28,11 +28,7 @@ def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
 
     nodout = open(nodout, 'r')
 
-    if dispout.endswith('.xz'):
-        import lzma
-        dispout = lzma.open(dispout, 'wb')
-    else:
-        dispout = open(dispout, 'wb')
+    dispout = open_dispout(dispout)
 
     header_written = False
     timestep_read = False
@@ -45,7 +41,7 @@ def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
             data = []
             continue
         if timestep_read is True:
-            if line.startswith('\n'):  # done reading the time step
+            if line[0:2] == '\n':  # done reading the time step
                 timestep_read = False
                 # if this was the first time, everything needed to be read to
                 # get node count for header
@@ -216,11 +212,9 @@ def process_timestep_data(data, outfile, writenode):
 
     # columns are node ID, x-disp, y-disp, z-disp
     if writenode:
-        cols2write = [0, 1, 2, 3]
+        [outfile.write(pack('ffff', *data[j][0:4])) for j in range(len(data))]
     else:
-        cols2write = [1, 2, 3]
-
-    [outfile.write(pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
+        [outfile.write(pack('fff', *data[j][1:4])) for j in range(len(data))]
 
 
 def correct_Enot(line):
@@ -252,6 +246,21 @@ def correct_neg(line):
     line = re.sub(rneg, r' \1', line)
 
     return line
+
+
+def open_dispout(dispout):
+    """open dispout file for writing
+
+    :param dispout: (str) dispout filename (disp.dat.xz)
+    :return: dispout file object
+    """
+    if dispout.endswith('.xz'):
+        import lzma
+        dispout = lzma.open(dispout, 'wb')
+    else:
+        dispout = open(dispout, 'wb')
+
+    return dispout
 
 
 if __name__ == "__main__":
