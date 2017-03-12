@@ -41,8 +41,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="n
     image_plane = extract_image_plane(snic, axes, ele_pos=0.0)
 
     header = read_header(dispout)
-    dt = extract_dt(dynadeck)
-    t = [float(x)*dt for x in range(0, header['num_timesteps'])]
+    t = gen_t(extract_dt(dynadeck), header['num_timesteps'])
 
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp, disp_scale, legacynodes)
 
@@ -73,23 +72,11 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
     first_timestep_bytes = header['num_nodes']*header['num_dims']*word_size
     timestep_bytes = header['num_nodes']*(header['num_dims']-1)*word_size
 
-    if dispout.endswith('.xz'):
-        import lzma
-        fid = lzma.open(dispout, 'rb')
-    else:
-        fid = open(dispout, 'rb')
+    fid = open_dispout(dispout)
 
     trange = [x for x in range(1, header['num_timesteps']+1)]
 
-    # pre-allocate arfidata ndarray
-    if image_plane.ndim == 2:
-        arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
-                             len(trange)), dtype=np.float32)
-    elif image_plane.ndim == 3:
-        arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
-                             image_plane.shape[0], len(trange)), dtype=np.float32)
-    else:
-        warn("unexpected number of dimensions in sorted nodes")
+    arfidata = preallocate_arfidata(image_plane, header['num_timesteps'])
 
     print(('Time step:'), end=' ')
     for t in trange:
@@ -322,6 +309,56 @@ def extract_dt(dyn_file):
 
     return dt
 
+
+def open_dispout(dispout):
+    """open dispout file for reading
+
+    :param dispout: (str) dispout filename (disp.dat)
+    :return: dispout file object
+    """
+    if dispout.endswith('.xz'):
+        import lzma
+        dispout = lzma.open(dispout, 'rb')
+    else:
+        dispout = open(dispout, 'rb')
+
+    return dispout
+
+
+def preallocate_arfidata(image_plane, num_timesteps):
+    """ pre-allocate arfidata array
+
+    :param image_plane: sorted node IDs on selected imaging plane
+    :param num_timesteps: number of timesteps to extract
+    :return: arfidata
+    """
+    import numpy as np
+    from warnings import warn
+
+    num_timesteps = int(num_timesteps)
+
+    if image_plane.ndim == 2:
+        arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
+                             num_timesteps), dtype=np.float32)
+    elif image_plane.ndim == 3:
+        arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
+                             image_plane.shape[0], num_timesteps), dtype=np.float32)
+    else:
+        warn("unexpected number of dimensions in sorted nodes")
+
+    return arfidata
+
+
+def gen_t(dt, num_timesteps):
+    """generate time vector, starting at 0
+
+    :param dt: time between saved timesteps
+    :param num_timesteps: number of total timesteps
+    :return: t
+    """
+    t = [float(x)*dt for x in range(0, num_timesteps)]
+
+    return t
 
 if __name__ == "__main__":
     main()
