@@ -77,15 +77,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
 
     trange = [x for x in range(1, header['num_timesteps']+1)]
 
-    # pre-allocate arfidata ndarray
-    if image_plane.ndim == 2:
-        arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
-                             len(trange)), dtype=np.float32)
-    elif image_plane.ndim == 3:
-        arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
-                             image_plane.shape[0], len(trange)), dtype=np.float32)
-    else:
-        warn("unexpected number of dimensions in sorted nodes")
+    arfidata = preallocate_arfidata(image_plane)
 
     print(('Time step:'), end=' ')
     for t in trange:
@@ -332,6 +324,28 @@ def open_dispout(dispout):
         dispout = open(dispout, 'rb')
 
     return dispout
+
+
+def preallocate_arfidata(image_plane):
+    """ pre-allocate arfidata array
+
+    :param image_plane:
+    :return: arfidata
+    """
+    import numpy as np
+    from warnings import warn
+
+    if image_plane.ndim == 2:
+        arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
+                             len(trange)), dtype=np.float32)
+    elif image_plane.ndim == 3:
+        arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
+                             image_plane.shape[0], len(trange)), dtype=np.float32)
+    else:
+        warn("unexpected number of dimensions in sorted nodes")
+
+    return arfidata
+
 
 if __name__ == "__main__":
     main()

@@ -39,3 +39,27 @@ def sorted_elems(nodeIDcoords):
 
     return sorted_elems
 
+
+@pytest.fixture
+def sorted_nodes(nodeIDcoords):
+    """create sorted nodes numpy array from nodes.dyn & elems.dyn
+
+    :returns: sorted_nodes
+    """
+    from fem_mesh import SortNodeIDs
+    [sorted_nodes, axes] = SortNodeIDs(nodeIDcoords, sort=False)
+
+    return sorted_nodes
+
+
+@pytest.fixture
+def axes(nodeIDcoords):
+    """create axes numpy array from nodes.dyn & elems.dyn
+
+    :returns: axes
+    """
+    from fem_mesh import SortNodeIDs
+    elefile = '%s/elems.dyn' % myPath
+    [sorted_nodes, axes] = SortNodeIDs(nodeIDcoords, sort=False)
+
+    return axes
