@@ -73,11 +73,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
     first_timestep_bytes = header['num_nodes']*header['num_dims']*word_size
     timestep_bytes = header['num_nodes']*(header['num_dims']-1)*word_size
 
-    if dispout.endswith('.xz'):
-        import lzma
-        fid = lzma.open(dispout, 'rb')
-    else:
-        fid = open(dispout, 'rb')
+    fid = open_dispout(dispout)
 
     trange = [x for x in range(1, header['num_timesteps']+1)]
 
@@ -322,6 +318,20 @@ def extract_dt(dyn_file):
 
     return dt
 
+
+def open_dispout(dispout):
+    """open dispout file for reading
+
+    :param dispout: (str) dispout filename (disp.dat)
+    :return: dispout file object
+    """
+    if dispout.endswith('.xz'):
+        import lzma
+        dispout = lzma.open(dispout, 'rb')
+    else:
+        dispout = open(dispout, 'rb')
+
+    return dispout
 
 if __name__ == "__main__":
     main()
