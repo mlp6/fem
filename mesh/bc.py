@@ -360,6 +360,7 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints):
 
     return bcdict
 
+
 def write_pml_elems(sorted_pml_elems, pmlfile="elems_pml.dyn"):
     """Create a new elements file that the PML elements.
 
