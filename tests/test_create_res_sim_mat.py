@@ -1,7 +1,12 @@
-def test_preallocate_arfidata(sorted_nodes, axes):
-    from fem.post.create_res_sim_mat import preallocate_arfidata
+import os
+import sys
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath + '/../post/')
 
-    from fem.post.create_res_sim_mat import extract_image_plane
+def test_preallocate_arfidata(sorted_nodes, axes):
+    from create_res_sim_mat import preallocate_arfidata
+
+    from create_res_sim_mat import extract_image_plane
     image_plane = extract_image_plane(sorted_nodes, axes, 0.0)
 
     arfidata = preallocate_arfidata(image_plane, 3)
@@ -10,7 +15,7 @@ def test_preallocate_arfidata(sorted_nodes, axes):
 
 
 def test_extract_image_plane(sorted_nodes, axes):
-    from fem.post.create_res_sim_mat import extract_image_plane
+    from create_res_sim_mat import extract_image_plane
 
     image_plane = extract_image_plane(sorted_nodes, axes, 0.0)
 
@@ -21,4 +26,13 @@ def test_extract_image_plane(sorted_nodes, axes):
     assert image_plane[-1][-1] == 1331
 
 
+def test_get_t():
+    """test generation of time vector
+    """
+    from create_res_sim_mat import gen_t
 
+    t = gen_t(0.1, 10)
+
+    assert len(t) == 10
+    assert t[0] == 0.0
+    assert t[9] == 0.9

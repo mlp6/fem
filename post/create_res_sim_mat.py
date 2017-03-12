@@ -41,8 +41,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="n
     image_plane = extract_image_plane(snic, axes, ele_pos=0.0)
 
     header = read_header(dispout)
-    dt = extract_dt(dynadeck)
-    t = [float(x)*dt for x in range(0, header['num_timesteps'])]
+    t = gen_t(extract_dt(dynadeck), header['num_timesteps'])
 
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp, disp_scale, legacynodes)
 
@@ -349,6 +348,17 @@ def preallocate_arfidata(image_plane, num_timesteps):
 
     return arfidata
 
+
+def gen_t(dt, num_timesteps):
+    """generate time vector, starting at 0
+
+    :param dt: time between saved timesteps
+    :param num_timesteps: number of total timesteps
+    :return: t
+    """
+    t = [float(x)*dt for x in range(0, num_timesteps)]
+
+    return t
 
 if __name__ == "__main__":
     main()
