@@ -28,11 +28,7 @@ def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
 
     nodout = open(nodout, 'r')
 
-    if dispout.endswith('.xz'):
-        import lzma
-        dispout = lzma.open(dispout, 'wb')
-    else:
-        dispout = open(dispout, 'wb')
+    dispout = open_dispout(dispout)
 
     header_written = False
     timestep_read = False
@@ -250,6 +246,21 @@ def correct_neg(line):
     line = re.sub(rneg, r' \1', line)
 
     return line
+
+
+def open_dispout(dispout):
+    """open dispout file for writing
+
+    :param dispout: (str) dispout filename (disp.dat.xz)
+    :return: dispout file object
+    """
+    if dispout.endswith('.xz'):
+        import lzma
+        dispout = lzma.open(dispout, 'wb')
+    else:
+        dispout = open(dispout, 'wb')
+
+    return dispout
 
 
 if __name__ == "__main__":

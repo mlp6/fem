@@ -52,6 +52,26 @@ def test_count_timesteps():
     assert ts_count == 2
 
 
-def test_write_dat():
-    """test writing disp.dat
+def test_write_header():
+    """test writing disp.dat header
     """
+    from fem.post.create_disp_dat import open_dispout
+    from fem.post.create_disp_dat import write_headers
+    import struct
+
+    header = {'numnodes': 4,
+              'numdims': 3,
+              'numtimesteps': 2
+              }
+
+    fname = 'test.dat'
+    dispout = open_dispout(fname)
+    write_headers(dispout, header)
+    dispout.close()
+
+    dispout = open(fname, 'rb')
+    header = struct.unpack('fff', dispout.read(4*3))
+   
+    assert header[0] == 4.0
+    assert header[1] == 3.0
+    assert header[2] == 2.0
