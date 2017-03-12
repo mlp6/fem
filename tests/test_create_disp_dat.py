@@ -64,7 +64,7 @@ def test_write_header():
               'numtimesteps': 2
               }
 
-    fname = 'test.dat'
+    fname = '/tmp/test.dat'
     dispout = open_dispout(fname)
     write_headers(dispout, header)
     dispout.close()
