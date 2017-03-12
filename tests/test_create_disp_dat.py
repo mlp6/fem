@@ -50,3 +50,51 @@ def test_count_timesteps():
     ts_count = count_timesteps("tests/nodout")
 
     assert ts_count == 2
+
+
+def test_write_header():
+    """test writing disp.dat header
+    """
+    from fem.post.create_disp_dat import open_dispout
+    from fem.post.create_disp_dat import write_headers
+    import struct
+
+    header = {'numnodes': 4,
+              'numdims': 3,
+              'numtimesteps': 2
+              }
+
+    fname = '/tmp/test.dat'
+    dispout = open_dispout(fname)
+    write_headers(dispout, header)
+    dispout.close()
+
+    with open(fname, 'rb') as dispout:
+        h = struct.unpack('fff', dispout.read(4*3))
+
+    assert h[0] == 4.0
+    assert h[1] == 3.0
+    assert h[2] == 2.0
+
+
+def test_write_data():
+    """test writing data to disp.dat
+    """
+    from fem.post.create_disp_dat import open_dispout
+    from fem.post.create_disp_dat import process_timestep_data
+    import struct
+
+    fname = '/tmp/test.dat'
+    dispout = open_dispout(fname)
+    data = []
+    data.append([0.0, 0.1, 0.2, 0.3])
+    data.append([1.0, 1.1, 1.2, 1.3])
+    process_timestep_data(data, dispout, writenode=False)
+    dispout.close()
+
+    with open(fname, 'rb') as f:
+        d = struct.unpack(8*'f', f.read(4*8))
+
+    assert d[0] == 0.0
+    assert d[4] == 1.0
+    assert d[7] == 1.3
