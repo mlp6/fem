@@ -64,7 +64,7 @@ def test_write_header():
               'numtimesteps': 2
               }
 
-    fname = '/tmp/test.dat'
+    fname = '/tmp/testheader.dat'
     dispout = open_dispout(fname)
     write_headers(dispout, header)
     dispout.close()
@@ -83,20 +83,21 @@ def test_write_data():
     from fem.post.create_disp_dat import open_dispout
     from fem.post.create_disp_dat import process_timestep_data
     import struct
+    from pytest import approx
 
-    fname = '/tmp/test.dat'
+    fname = '/tmp/testdata.dat'
     dispout = open_dispout(fname)
     data = []
-    data.append([0.0, 0.1, 0.2, 0.3])
-    data.append([1.0, 1.1, 1.2, 1.3])
-    process_timestep_data(data, dispout, writenode=False)
+    data.append([float(0.0), float(0.1), float(0.2), float(0.3)])
+    data.append([float(1.0), float(1.1), float(1.2), float(1.3)])
+    process_timestep_data(data, dispout, writenode=True)
     dispout.close()
 
     with open(fname, 'rb') as f:
         d = struct.unpack(8*'f', f.read(4*8))
 
     assert d[0] == 0.0
-    assert d[4] == 1.0
-    assert d[7] == 1.3
-
-
+    assert d[1] == 1.0
+    assert d[2] == approx(0.1)
+    assert d[3] == approx(1.1)
+    assert d[7] == approx(1.3)
