@@ -15,7 +15,7 @@ def main():
     create_dat(args.nodout, args.dispout, args.legacynodes)
 
 
-def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
+def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     """create binary data file
 
     :param str nodout: nodout file created by ls-dyna (default = "nodout")
