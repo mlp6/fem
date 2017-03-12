@@ -1,12 +1,11 @@
 """test_TopLoad.py
 """
 
-import os
 import sys
-
+import os
+import pytest
 myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../mesh/')
-
+sys.path.insert(0, os.path.join(myPath, '/../mesh/'))
 
 def test_extract_top_plane_nodes():
     from TopLoad import extract_top_plane_nodes

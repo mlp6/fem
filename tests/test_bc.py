@@ -3,10 +3,9 @@
 
 import sys
 import os
-
+import pytest
 myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../mesh/')
-
+sys.path.insert(0, os.path.join(myPath, '/../mesh/'))
 
 def test_write_pml_elems(tmpdir, sorted_elems):
     from bc import write_pml_elems

@@ -35,7 +35,7 @@ def apply_face_bc_only(face_constraints, nodefile="nodes.dyn", bcfile="bc.dyn"):
     :return:
     """
 
-    from fem.mesh import fem_mesh
+    import fem_mesh
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -63,7 +63,7 @@ def apply_pml(pml_elems, face_constraints, edge_constraints,
     :param pml_partID: default - 2
     :return:
     """
-    from fem.mesh import fem_mesh
+    import fem_mesh
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -93,7 +93,7 @@ def apply_nonreflect(face_constraints, edge_constraints, nodefile="nodes.dyn",
     :param segfile: default - 'nonreflect_segs.dyn'
     :return: 0 on success
     """
-    from fem.mesh import fem_mesh
+    import fem_mesh
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -264,7 +264,7 @@ def assign_node_constraints(snic, axes, face_constraints):
                              (e.g., (('1,1,1,1,1,1' , '0,1,0,0,1,0'),...)
     :return: bcdict - dictionary of node BC to be written to bc.dyn
     """
-    from fem.mesh.fem_mesh import extractPlane
+    from fem_mesh import extractPlane
     from numpy import ndenumerate
 
     bcdict = {}
@@ -294,7 +294,7 @@ def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
     :param edge_constraints:
     :return: bcdict
     """
-    from fem.mesh.fem_mesh import extractPlane
+    from fem_mesh import extractPlane
     from numpy import ndenumerate
 
     # look for x symmetry face
@@ -329,7 +329,7 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints):
     :return: bcdict (updated from face assignment)
     """
     from warnings import warn
-    from fem.mesh.fem_mesh import extractPlane
+    from fem_mesh import extractPlane
 
     # look for edge shared with an x face
     axis = 0

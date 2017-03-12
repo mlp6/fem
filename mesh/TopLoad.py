@@ -57,7 +57,7 @@ def extract_top_plane_nodes(nodefile, top_face):
     :return: planeNodeIDs
     """
     import numpy as np
-    from fem.mesh import fem_mesh
+    import fem_mesh
 
     top_face = np.array(top_face)
 
