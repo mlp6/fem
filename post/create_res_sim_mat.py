@@ -77,7 +77,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
 
     trange = [x for x in range(1, header['num_timesteps']+1)]
 
-    arfidata = preallocate_arfidata(image_plane)
+    arfidata = preallocate_arfidata(image_plane, trange)
 
     print(('Time step:'), end=' ')
     for t in trange:
@@ -326,10 +326,11 @@ def open_dispout(dispout):
     return dispout
 
 
-def preallocate_arfidata(image_plane):
+def preallocate_arfidata(image_plane, trange):
     """ pre-allocate arfidata array
 
     :param image_plane:
+    :param trange:
     :return: arfidata
     """
     import numpy as np

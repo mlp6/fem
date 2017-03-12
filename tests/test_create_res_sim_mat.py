@@ -1,8 +1,13 @@
-def test_preallocate_arfidata():
+def test_preallocate_arfidata(sorted_nodes, axes):
     from fem.post.create_res_sim_mat import preallocate_arfidata
-    arfidata = preallocate_arfidata(image_plane)
 
-    pass
+    from fem.post.create_res_sim_mat import extract_image_plane
+    image_plane = extract_image_plane(sorted_nodes, axes, 0.0)
+
+    arfidata = preallocate_arfidata(image_plane, [1, 2, 3])
+
+    assert arfidata.shape == (11, 11, 3)
+
 
 def test_extract_image_plane(sorted_nodes, axes):
     from fem.post.create_res_sim_mat import extract_image_plane
