@@ -1,11 +1,10 @@
-#!/bin/env python
 """
 :mod:`create_disp_dat` -- generate disp.dat binary from nodout ASCII
 
 .. module:: create_disp_dat
    :synopsis: generate disp.dat binary from nodout ASCII
    :license: Apache v2.0, see LICENSE for details
-   :copyright: Copyright 2016 Mark Palmeri
+   :copyright: Copyright 2016--2017 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """
@@ -16,55 +15,45 @@ def main():
     create_dat(args.nodout, args.dispout, args.legacynodes)
 
 
-def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
+def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     """create binary data file
 
     :param str nodout: nodout file created by ls-dyna (default = "nodout")
     :param str dispout: default = "disp.dat.xz"
     :param boolean legacynodes: node IDs written every timestep (default = False)
     """
-    global writenode
-
-
-    nodout = open(nodout, 'r')
-
-    if dispout.endswith('.xz'):
-        import lzma
-        dispout = lzma.open(dispout, 'wb')
-    else:
-        dispout = open(dispout, 'wb')
-
     header_written = False
     timestep_read = False
     timestep_count = 0
     writenode = True
-    for line in nodout:
-        if 'nodal' in line:
-            timestep_read = True
-            timestep_count += 1
-            data = []
-            continue
-        if timestep_read is True:
-            if line.startswith('\n'):  # done reading the time step
-                timestep_read = False
-                # if this was the first time, everything needed to be read to
-                # get node count for header
-                if not header_written:
-                    header = generate_header(data, nodout)
-                    write_headers(dispout, header)
-                    header_written = True
-                    print('Time Step: ', end="", flush=True)
-                if timestep_count > 1 and not legacynodes:
-                    writenode = False
-                print("%i " % timestep_count, end="", flush=True)
-                process_timestep_data(data, dispout, writenode)
-            else:
-                raw_data = parse_line(line)
-                data.append(list(raw_data))
 
-    # close all open files
-    dispout.close()
-    nodout.close()
+    with open(nodout, 'r') as nodout:
+        with open_dispout(dispout) as dispout:
+            for line in nodout:
+                if 'nodal' in line:
+                    timestep_read = True
+                    timestep_count += 1
+                    data = []
+                    continue
+                if timestep_read is True:
+                    if line[0:2] == '\n':  # done reading the time step
+                        timestep_read = False
+                        # if this was the first time, everything needed to be read to
+                        # get node count for header
+                        if not header_written:
+                            header = generate_header(data, nodout)
+                            write_headers(dispout, header)
+                            header_written = True
+                            print('Time Step: ', end="", flush=True)
+                        if timestep_count > 1 and not legacynodes:
+                            writenode = False
+                        print("%i, " % timestep_count, end="", flush=True)
+                        process_timestep_data(data, dispout, writenode)
+                    else:
+                        raw_data = parse_line(line)
+                        data.append(list(raw_data))
+
+    print("done.", flush=True)
 
     return 0
 
@@ -80,7 +69,6 @@ def parse_line(line):
     :param str line: raw data line from nodout
     :return: raw_data (vector of floats)
     """
-
     nodeID = float(line[0:10])
     try:
         xdisp = float(line[10:22])
@@ -157,28 +145,31 @@ def count_timesteps(outfile):
     searches for 'time' in lines, and then removes 1 extra entry that occurs
     for t = 0
 
+    grep will be used on linux systems (way faster)
+
     :param outfile: usually 'nodout'
     :returns: int ts_count
 
     """
     from sys import platform
 
-    #if platform == "linux":
-    #    from subprocess import PIPE, Popen
-    #    p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
-    #    ts_count = int(p.communicate()[0].strip().decode())
-    #else:
-    #    print("Non-linux OS detected -> using slower python implementation", flush=True)
-    ts_count = 0
-    with open(outfile, 'r') as f:
-        for line in f:
-            if 'time' in line:
-                ts_count += 1
+    print("Reading number of time steps... ", end="", flush=True)
+    if platform == "linux":
+        from subprocess import PIPE, Popen
+        p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
+        ts_count = int(p.communicate()[0].strip().decode())
+    else:
+        print("Non-linux OS detected -> using slower python implementation", flush=True)
+        ts_count = 0
+        with open(outfile, 'r') as f:
+            for line in f:
+                if 'time' in line:
+                    ts_count += 1
 
-    # rm first 'time' entry
-    ts_count -= 1
+    ts_count -= 1 # rm extra time count
 
-    print('Number of Time Steps: %i' % ts_count, flush=True)
+    print('there are {}.'.format(ts_count), flush=True)
+
     return ts_count
 
 
@@ -252,6 +243,21 @@ def correct_neg(line):
     line = re.sub(rneg, r' \1', line)
 
     return line
+
+
+def open_dispout(dispout):
+    """open dispout file for writing
+
+    :param dispout: (str) dispout filename (disp.dat.xz)
+    :return: dispout file object
+    """
+    if dispout.endswith('.xz'):
+        import lzma
+        dispout = lzma.open(dispout, 'wb')
+    else:
+        dispout = open(dispout, 'wb')
+
+    return dispout
 
 
 if __name__ == "__main__":

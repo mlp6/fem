@@ -3,10 +3,9 @@
 
 import sys
 import os
-
+import pytest
 myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../mesh/')
-
+sys.path.insert(0, os.path.join(myPath, '/../mesh/'))
 
 def test_write_pml_elems(tmpdir, sorted_elems):
     from bc import write_pml_elems
@@ -38,14 +37,21 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
     from bc import assign_edge_sym_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
-    edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+    edge_constraints = (((0,1), (1,0), (0,0)), '1,1,0,1,1,1')
     bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
-
 
     for nodeID in (737, 616, 495, 374):
         assert bcdict[nodeID] == "1,1,0,1,1,1"
 
-    # test for node IDs excluded based on zmin/zmax PML elems
+
+def test_exclude_zminmax_edge_sym_constraints(nodeIDcoords):
+    from fem_mesh import SortNodeIDs
+    from bc import assign_edge_sym_constraints
+    [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
+    bcdict = {}
+    edge_constraints = (((0,1), (1,0), (0,0)), '1,1,0,1,1,1')
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
+
     for nodeID in (1221, 11):
         assert nodeID not in bcdict.keys()
 
