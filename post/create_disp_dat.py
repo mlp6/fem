@@ -24,43 +24,40 @@ def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
     :param boolean legacynodes: node IDs written every timestep (default = False)
     """
     global writenode
-
-
-    nodout = open(nodout, 'r')
-
-    dispout = open_dispout(dispout)
-
     header_written = False
     timestep_read = False
     timestep_count = 0
     writenode = True
-    for line in nodout:
-        if 'nodal' in line:
-            timestep_read = True
-            timestep_count += 1
-            data = []
-            continue
-        if timestep_read is True:
-            if line[0:2] == '\n':  # done reading the time step
-                timestep_read = False
-                # if this was the first time, everything needed to be read to
-                # get node count for header
-                if not header_written:
-                    header = generate_header(data, nodout)
-                    write_headers(dispout, header)
-                    header_written = True
-                    print('Time Step: ', end="", flush=True)
-                if timestep_count > 1 and not legacynodes:
-                    writenode = False
-                print("%i " % timestep_count, end="", flush=True)
-                process_timestep_data(data, dispout, writenode)
-            else:
-                raw_data = parse_line(line)
-                data.append(list(raw_data))
 
-    # close all open files
-    dispout.close()
-    nodout.close()
+    with open(nodout, 'r') as nodout:
+        dispout = open_dispout(dispout)
+
+        for line in nodout:
+            if 'nodal' in line:
+                timestep_read = True
+                timestep_count += 1
+                data = []
+                continue
+            if timestep_read is True:
+                if line[0:2] == '\n':  # done reading the time step
+                    timestep_read = False
+                    # if this was the first time, everything needed to be read to
+                    # get node count for header
+                    if not header_written:
+                        header = generate_header(data, nodout)
+                        write_headers(dispout, header)
+                        header_written = True
+                        print('Time Step: ', end="", flush=True)
+                    if timestep_count > 1 and not legacynodes:
+                        writenode = False
+                    print("%i " % timestep_count, end="", flush=True)
+                    process_timestep_data(data, dispout, writenode)
+                else:
+                    raw_data = parse_line(line)
+                    data.append(list(raw_data))
+
+        # close all open files
+        dispout.close()
 
     return 0
 
