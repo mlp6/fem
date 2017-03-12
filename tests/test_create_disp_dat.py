@@ -69,9 +69,9 @@ def test_write_header():
     write_headers(dispout, header)
     dispout.close()
 
-    dispout = open(fname, 'rb')
-    header = struct.unpack('fff', dispout.read(4*3))
-   
+    with open(fname, 'rb') as dispout:
+        header = struct.unpack('fff', dispout.read(4*3))
+
     assert header[0] == 4.0
     assert header[1] == 3.0
     assert header[2] == 2.0
