@@ -1,11 +1,10 @@
-#!/bin/env python
 """
 :mod:`create_disp_dat` -- generate disp.dat binary from nodout ASCII
 
 .. module:: create_disp_dat
    :synopsis: generate disp.dat binary from nodout ASCII
    :license: Apache v2.0, see LICENSE for details
-   :copyright: Copyright 2016 Mark Palmeri
+   :copyright: Copyright 2016--2017 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """
@@ -23,7 +22,6 @@ def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
     :param str dispout: default = "disp.dat.xz"
     :param boolean legacynodes: node IDs written every timestep (default = False)
     """
-    global writenode
     header_written = False
     timestep_read = False
     timestep_count = 0
@@ -49,11 +47,13 @@ def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
                             print('Time Step: ', end="", flush=True)
                         if timestep_count > 1 and not legacynodes:
                             writenode = False
-                        print("%i " % timestep_count, end="", flush=True)
+                        print("%i, " % timestep_count, end="", flush=True)
                         process_timestep_data(data, dispout, writenode)
                     else:
                         raw_data = parse_line(line)
                         data.append(list(raw_data))
+
+    print("done.", flush=True)
 
     return 0
 
@@ -69,7 +69,6 @@ def parse_line(line):
     :param str line: raw data line from nodout
     :return: raw_data (vector of floats)
     """
-
     nodeID = float(line[0:10])
     try:
         xdisp = float(line[10:22])
