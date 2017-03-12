@@ -216,11 +216,9 @@ def process_timestep_data(data, outfile, writenode):
 
     # columns are node ID, x-disp, y-disp, z-disp
     if writenode:
-        cols2write = [0, 1, 2, 3]
+        [outfile.write(pack('ffff', *data[j][0:4])) for j in range(len(data))]
     else:
-        cols2write = [1, 2, 3]
-
-    [outfile.write(pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
+        [outfile.write(pack('fff', *data[j][1:4])) for j in range(len(data))]
 
 
 def correct_Enot(line):

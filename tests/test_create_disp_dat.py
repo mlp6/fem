@@ -50,3 +50,8 @@ def test_count_timesteps():
     ts_count = count_timesteps("tests/nodout")
 
     assert ts_count == 2
+
+
+def test_write_dat():
+    """test writing disp.dat
+    """
