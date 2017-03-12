@@ -45,7 +45,7 @@ def create_dat(nodout="nodout", dispout="disp.dat.xz", legacynodes=False):
             data = []
             continue
         if timestep_read is True:
-            if line.startswith('\n'):  # done reading the time step
+            if line[0:2] == '\n':  # done reading the time step
                 timestep_read = False
                 # if this was the first time, everything needed to be read to
                 # get node count for header
