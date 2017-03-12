@@ -18,3 +18,4 @@ v6.x.x
 ======
 * Update post/create_disp_dat.create_dat docstring
 * Re-arrange the example directory structure and add READMEs
+* Add create_disp_dat unit tests and accelerations
