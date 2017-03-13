@@ -1,7 +1,7 @@
 import sys
 import os
 myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(myPath, '/../post/'))
+sys.path.insert(0, os.path.join(myPath, '../post/'))
 
 
 def test_parse_nodoutR61():
