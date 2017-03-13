@@ -8,6 +8,6 @@ test:python36:
 test:anaconda3:
     image: continuumio/anaconda3
     script: 
-    - conda install -y pytest-cov
+    - conda install --yes --file requirements.txt
     - export PYTHONPATH=../
     - py.test -v --cov --pep8
