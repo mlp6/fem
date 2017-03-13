@@ -17,7 +17,7 @@ from fem.post.create_res_sim_mat import run as create_res_sim_mat
 print('STARTED: %s' % ctime())
 print('HOST: %s' % gethostname())
 
-DYNADECK='gauss_qsym_pml.dyn'
+DYNADECK = 'gauss_qsym_pml.dyn'
 NTASKS = environ.get('SLURM_NTASKS', '8')
 
 xyz = (-1.5, 0.0, 0.0, 1.5, -3.0, 0.0)
@@ -29,10 +29,10 @@ pml_elems = ((5, 0), (0, 5), (5, 5))
 face_constraints = (('1,1,1,1,1,1', '1,0,0,0,1,1'),
                     ('0,1,0,1,0,1', '1,1,1,1,1,1'),
                     ('1,1,1,1,1,1', '1,1,1,1,1,1'))
-edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
 bc.apply_pml(pml_elems, face_constraints, edge_constraints)
 
-generate_loads([0.25,0.25,0.75], [0.0,0.0,-1.5])
+generate_loads([0.25, 0.25, 0.75], [0.0, 0.0, -1.5])
 
 #system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 

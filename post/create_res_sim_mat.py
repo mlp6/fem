@@ -22,7 +22,8 @@ def main():
     return 0
 
 
-def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
+def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
     """
 
     :param dynadeck: main dyna input deck
@@ -43,20 +44,22 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat", nodedyn="n
     header = read_header(dispout)
     t = gen_t(extract_dt(dynadeck), header['num_timesteps'])
 
-    arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp, disp_scale, legacynodes)
+    arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
+                                 disp_scale, legacynodes)
 
     save_res_mat(ressim, arfidata, axes, t)
 
     return 0
 
 
-def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4, legacynodes=False):
+def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
+                      disp_scale=-1e4, legacynodes=False):
     """ extract ARFI data from disp.dat
 
     :param dispout: name of disp.dat file
     :param header: num_nodes, num_dims, num_timesteps
     :param image_plane: matrix of image plane node IDs spatially sorted
-    :param disp_comp: displacement component index to extract (0, 1, 2 [default, z])
+    :param disp_comp: disp component index to extract (0, 1, 2 [default, z])
     :param legacynodes: Boolean flag to use legacy disp.dat format with node
                         IDs repeated every timestep (default = False)
     :returns: arfidata matrix
@@ -67,14 +70,14 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
     from warnings import warn
 
     word_size = 4
-    header_bytes = 3*word_size
-    first_timestep_words = header['num_nodes']*header['num_dims']
-    first_timestep_bytes = header['num_nodes']*header['num_dims']*word_size
-    timestep_bytes = header['num_nodes']*(header['num_dims']-1)*word_size
+    header_bytes = 3 * word_size
+    first_timestep_words = header['num_nodes'] * header['num_dims']
+    first_timestep_bytes = header['num_nodes'] * header['num_dims'] * word_size
+    timestep_bytes = header['num_nodes'] * (header['num_dims'] - 1) * word_size
 
     fid = open_dispout(dispout)
 
-    trange = [x for x in range(1, header['num_timesteps']+1)]
+    trange = [x for x in range(1, header['num_timesteps'] + 1)]
 
     arfidata = preallocate_arfidata(image_plane, header['num_timesteps'])
 
@@ -83,40 +86,43 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2, disp_scale=-1e4
         # extract the disp values for the appropriate time step
         if (t == 1) or legacynodes:
             print(('%i' % t), end=' ', flush=True)
-            fmt = 'f'*int(first_timestep_words)
-            fid.seek(header_bytes + first_timestep_bytes*(t-1), 0)
+            fmt = 'f' * int(first_timestep_words)
+            fid.seek(header_bytes + first_timestep_bytes * (t - 1), 0)
             disp_slice = np.asarray(struct.unpack(fmt,
                                     fid.read(first_timestep_bytes)), int)
             disp_slice = np.reshape(disp_slice, (header['num_nodes'],
                                     header['num_dims']), order='F')
             # extract the nodcount()e IDs on the image plane and save
             nodeidlist = disp_slice[:, 0].squeeze()
-            zdisp = np.zeros((nodeidlist.max()+1, 1))
+            zdisp = np.zeros((nodeidlist.max() + 1, 1))
             # disp_comp + 1 to take into account node IDs in first timestep
-            zdisp = create_zdisp(nodeidlist, disp_slice[:, (disp_comp+1)].squeeze(), zdisp)
+            zdisp = create_zdisp(nodeidlist,
+                                 disp_slice[:, (disp_comp + 1)].squeeze(),
+                                 zdisp)
 
         # node IDs are _not_ saved after the first timestep in latest disp.dat
         # files (flagged by legacynodes boolean)
         else:
             print(('%i' % t), end=' ', flush=True)
-            fmt = 'f'*int(timestep_bytes/word_size)
+            fmt = 'f' * int(timestep_bytes / word_size)
             fid.seek(header_bytes + first_timestep_bytes +
-                     timestep_bytes*(t-2), 0)
+                     timestep_bytes * (t - 2), 0)
             disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
             disp_slice = np.reshape(disp_slice, (header['num_nodes'],
-                                                 (header['num_dims']-1)),
+                                                 (header['num_dims'] - 1)),
                                     order='F')
-            zdisp = create_zdisp(nodeidlist, disp_slice[:, disp_comp].squeeze(), zdisp)
+            zdisp = create_zdisp(nodeidlist,
+                                 disp_slice[:, disp_comp].squeeze(),
+                                 zdisp)
 
         if arfidata.ndim == 3:
             for (i, j), nodeid in np.ndenumerate(image_plane):
-                arfidata[j, i, t-1] = disp_scale*zdisp[nodeid]
+                arfidata[j, i, t - 1] = disp_scale * zdisp[nodeid]
         elif arfidata.ndim == 4:
             for (k, i, j), nodeid in np.ndenumerate(image_plane):
-                arfidata[j, i, k, t-1] = disp_scale*zdisp[nodeid]
+                arfidata[j, i, k, t - 1] = disp_scale * zdisp[nodeid]
         else:
             warn("unexpected number of dimensions for arfidata")
-
 
     print('done!')
     fid.close()
@@ -203,7 +209,7 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     :param arfidata: arfidata matrix (3D or 4D (added elev dim, axes[0]))
     :param axes: ele, lat, axial (mesh units)
     :param t: time
-    :param axis_scale: scale sign and magnitude of axes [default: [-10, 10, -10]]
+    :param axis_scale: scale axes sign & mag [default: [-10, 10, -10]]
     :returns: 0
 
     """
@@ -211,14 +217,14 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     from warnings import warn
 
     if arfidata.nbytes > 4e9 and resfile.endswith('.mat'):
-        warn('arfidata exceeds 4 GB and cannot be written to MATLAB v5 format\n'
-             'you must use HDF5 (*.h5)')
+        warn('arfidata exceeds 4 GB and cannot be written to MATLAB v5\n'
+             'format; you must use HDF5 (*.h5)')
 
     # scale axes
     if arfidata.ndim == 4:
-        elev = axis_scale[0]*axes[0]
-    lat = axis_scale[1]*axes[1]
-    axial = axis_scale[2]*axes[2]
+        elev = axis_scale[0] * axes[0]
+    lat = axis_scale[1] * axes[1]
+    axial = axis_scale[2] * axes[2]
     if axis_scale[2] < 1:
         axial = axial[::-1]
 
@@ -342,7 +348,8 @@ def preallocate_arfidata(image_plane, num_timesteps):
                              num_timesteps), dtype=np.float32)
     elif image_plane.ndim == 3:
         arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
-                             image_plane.shape[0], num_timesteps), dtype=np.float32)
+                             image_plane.shape[0], num_timesteps),
+                            dtype=np.float32)
     else:
         warn("unexpected number of dimensions in sorted nodes")
 
@@ -356,7 +363,7 @@ def gen_t(dt, num_timesteps):
     :param num_timesteps: number of total timesteps
     :return: t
     """
-    t = [float(x)*dt for x in range(0, num_timesteps)]
+    t = [float(x) * dt for x in range(0, num_timesteps)]
 
     return t
 

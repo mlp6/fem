@@ -18,9 +18,9 @@ def main():
 def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     """create binary data file
 
-    :param str nodout: nodout file created by ls-dyna (default = "nodout")
-    :param str dispout: default = "disp.dat.xz"
-    :param boolean legacynodes: node IDs written every timestep (default = False)
+    :param str nodout: nodout file created by ls-dyna (default="nodout")
+    :param str dispout: default = "disp.dat"
+    :param boolean legacynodes: node IDs written every timestep (default=False)
     """
     header_written = False
     timestep_read = False
@@ -38,8 +38,8 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
                 if timestep_read is True:
                     if line[0:2] == '\n':  # done reading the time step
                         timestep_read = False
-                        # if this was the first time, everything needed to be read to
-                        # get node count for header
+                        # if this was the first time, everything needed to
+                        # be read to # get node count for header
                         if not header_written:
                             header = generate_header(data, nodout)
                             write_headers(dispout, header)
@@ -61,10 +61,11 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
 def parse_line(line):
     """parse raw data line into vector of floats
 
-    The REGEX approach is just too slow for large nodout files, so I'm leveraging some a priori knowledge
-    about the output format:
+    The REGEX approach is just too slow for large nodout files, so I'm
+     leveraging some a priori knowledge about the output format:
     Node ID - 10 characters (int)
-    X,Y,Z-Disp are the next 3 columns, each are 12 characters: [-]#.#####E[+/-]##
+    X,Y,Z-Disp are the next 3 columns, each are 12 characters:
+     [-]#.#####E[+/-]##
 
     :param str line: raw data line from nodout
     :return: raw_data (vector of floats)
@@ -159,14 +160,15 @@ def count_timesteps(outfile):
         p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
         ts_count = int(p.communicate()[0].strip().decode())
     else:
-        print("Non-linux OS detected -> using slower python implementation", flush=True)
+        print("Non-linux OS detected -> using slower python implementation",
+              flush=True)
         ts_count = 0
         with open(outfile, 'r') as f:
             for line in f:
                 if 'time' in line:
                     ts_count += 1
 
-    ts_count -= 1 # rm extra time count
+    ts_count -= 1  # rm extra time count
 
     print('there are {}.'.format(ts_count), flush=True)
 
@@ -211,7 +213,8 @@ def process_timestep_data(data, outfile, writenode):
     else:
         cols2write = [1, 2, 3]
 
-    [outfile.write(pack('f', data[j][i])) for i in cols2write for j in range(len(data))]
+    [outfile.write(pack('f', data[j][i])) for i in cols2write
+     for j in range(len(data))]
 
 
 def correct_Enot(line):

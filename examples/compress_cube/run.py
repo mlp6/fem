@@ -17,8 +17,8 @@ from fem.post.create_res_sim_mat import run as create_res_sim_mat
 print('STARTED: %s' % ctime())
 print('HOST: %s' % gethostname())
 
-DYNADECK='CompressElasticCubeExplicit.dyn'
-#DYNADECK='CompressElasticCubeImplicit.dyn'
+DYNADECK = 'CompressElasticCubeExplicit.dyn'
+#DYNADECK = 'CompressElasticCubeImplicit.dyn'
 NTASKS = environ.get('SLURM_NTASKS', '8')
 
 xyz = (-1.0, 0.0, 0.0, 1.0, -1.1, -0.1)

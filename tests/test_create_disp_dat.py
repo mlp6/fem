@@ -3,6 +3,7 @@ import os
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(myPath, '/../post/'))
 
+
 def test_parse_nodoutR61():
     """correctly parse data from R6.1 nodout files
     """
@@ -75,7 +76,7 @@ def test_write_header(tmpdir):
     dispout.close()
 
     with open(fname, 'rb') as dispout:
-        h = struct.unpack('fff', dispout.read(4*3))
+        h = struct.unpack('fff', dispout.read(4 * 3))
 
     assert h[0] == 4.0
     assert h[1] == 3.0
@@ -99,7 +100,7 @@ def test_write_data(tmpdir):
     dispout.close()
 
     with open(fname, 'rb') as f:
-        d = struct.unpack(8*'f', f.read(4*8))
+        d = struct.unpack(8 * 'f', f.read(4 * 8))
 
     assert d[0] == 0.0
     assert d[1] == 1.0

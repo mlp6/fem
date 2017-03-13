@@ -75,9 +75,9 @@ def test_sortnodeids(nodeIDcoords):
 
 def test_SortElems(sorted_elems):
 
-    assert sorted_elems['id'][0][0][0] ==  1
-    assert sorted_elems['n1'][0][0][0] ==  1
-    assert sorted_elems['n8'][0][0][0] ==  133
+    assert sorted_elems['id'][0][0][0] == 1
+    assert sorted_elems['n1'][0][0][0] == 1
+    assert sorted_elems['n8'][0][0][0] == 133
     assert sorted_elems['id'][0][0][9] == 901
     assert sorted_elems['id'][9][0][9] == 910
     assert sorted_elems['id'][0][9][9] == 991
@@ -136,4 +136,3 @@ def test_extractPlane(nodeIDcoords):
     assert planeNodeIDs[0, 10] == 1321
     assert planeNodeIDs[10, 0] == 1221
     assert planeNodeIDs[10, 10] == 1331
-

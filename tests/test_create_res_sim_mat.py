@@ -1,7 +1,8 @@
 import os
 import sys
 myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../post/')
+sys.path.insert(0, os.path.join(myPath, '/../post/'))
+
 
 def test_preallocate_arfidata(sorted_nodes, axes):
     from create_res_sim_mat import preallocate_arfidata

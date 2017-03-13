@@ -7,6 +7,7 @@ import pytest
 myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(myPath, '/../mesh/'))
 
+
 def test_write_pml_elems(tmpdir, sorted_elems):
     from bc import write_pml_elems
 
@@ -37,7 +38,7 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
     from bc import assign_edge_sym_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
-    edge_constraints = (((0,1), (1,0), (0,0)), '1,1,0,1,1,1')
+    edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
     bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
 
     for nodeID in (737, 616, 495, 374):
@@ -49,7 +50,7 @@ def test_exclude_zminmax_edge_sym_constraints(nodeIDcoords):
     from bc import assign_edge_sym_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
-    edge_constraints = (((0,1), (1,0), (0,0)), '1,1,0,1,1,1')
+    edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
     bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
 
     for nodeID in (1221, 11):
@@ -63,21 +64,20 @@ def test_constrain_sym_pml_nodes(nodeIDcoords):
     from bc import constrain_sym_pml_nodes
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
-    edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+    edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
     pml_elems = ((3, 0), (0, 1), (2, 3))
-    bcdict =  constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems,
-                                      edge_constraints)
+    bcdict = constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems,
+                                     edge_constraints)
     # check x sym face
     for start_node in (11, 132, 253, 858, 979, 1100, 1221):
-        for nodeID in range(start_node, start_node+111, 11):
+        for nodeID in range(start_node, start_node + 111, 11):
             assert bcdict[nodeID] == '1,1,1,1,1,1'
     for not_in_bc in (374, 495, 616, 737):
         assert not_in_bc not in bcdict.keys()
     # check y sym face
     for start_node in (1, 122, 243, 848, 969, 1090, 1211):
-        for nodeID in range(start_node, start_node+11):
+        for nodeID in range(start_node, start_node + 11):
             assert bcdict[nodeID] == '1,1,1,1,1,1'
-
 
 
 def test_assign_pml_elems(sorted_elems):
@@ -88,39 +88,39 @@ def test_assign_pml_elems(sorted_elems):
     sorted_pml_elems = assign_pml_elems(sorted_elems, pml_elems)
 
     # check the xmin face
-    assert sorted_pml_elems[sorted_pml_elems['id']==1]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==2]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==3]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==4]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==91]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==92]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==93]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==94]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==901]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==902]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==903]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==904]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==991]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==992]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==993]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==994]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 1]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 2]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 3]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 4]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 91]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 92]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 93]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 94]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 901]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 902]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 903]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 904]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 991]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 992]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 993]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 994]['pid'] == 2
 
     # check the ymax face
-    assert sorted_pml_elems[sorted_pml_elems['id']==95]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==100]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==995]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==1000]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 95]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 100]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 995]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 1000]['pid'] == 2
 
     # check the zmax face
-    assert sorted_pml_elems[sorted_pml_elems['id']==910]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==810]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==710]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==610]['pid'] == 1
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 910]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 810]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 710]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 610]['pid'] == 1
 
     # check the zmin face
-    assert sorted_pml_elems[sorted_pml_elems['id']==10]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==110]['pid'] == 2
-    assert sorted_pml_elems[sorted_pml_elems['id']==210]['pid'] == 1
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 10]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 110]['pid'] == 2
+    assert sorted_pml_elems[sorted_pml_elems['id'] == 210]['pid'] == 1
 
 
 def test_write_bc(tmpdir):

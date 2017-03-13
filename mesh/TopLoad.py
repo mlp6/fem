@@ -1,8 +1,8 @@
 '''
 TopLoad.py - Generate compression conditions for the top surface of the
-specified mesh.  Search through the provided node file, extract the top layer of
-nodes and write out point loads for each matching node. Nodes are written in
-spatially-sorted order.
+specified mesh.  Search through the provided node file, extract the top
+ layer of nodes and write out point loads for each matching node. Nodes
+  are written in spatially-sorted order.
 
 Copyright 2015-2017 Mark L. Palmeri (mlp6@duke.edu)
 
@@ -28,11 +28,14 @@ def main():
     """
 
     opts = read_cli()
-    generate_loads(loadtype=opts.loadtype, direction=opts.direction, amplitude=opts.amplitude,
-                   lcid=opts.lcid, nodefile=opts.nodefile, top_face=(0, 0, 0, 0, 0, 1))
+    generate_loads(loadtype=opts.loadtype, direction=opts.direction,
+                   amplitude=opts.amplitude, lcid=opts.lcid,
+                   nodefile=opts.nodefile, top_face=(0, 0, 0, 0, 0, 1))
 
-def generate_loads(loadtype='disp', direction=2, amplitude=-1.0, loadfile='topload.dyn', nodefile='nodes.dyn',
-                   top_face =(0, 0, 0, 0, 0, 1), lcid=1):
+
+def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
+                   loadfile='topload.dyn', nodefile='nodes.dyn',
+                   top_face=(0, 0, 0, 0, 0, 1), lcid=1):
     """ apply loads to
 
     :param loadtype: 'disp', 'vel', 'accel', 'force'
@@ -45,8 +48,10 @@ def generate_loads(loadtype='disp', direction=2, amplitude=-1.0, loadfile='toplo
     :return:
     """
 
-    planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile, top_face=top_face)
-    writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid)
+    planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile,
+                                           top_face=top_face)
+    writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
+                   amplitude, lcid)
 
 
 def extract_top_plane_nodes(nodefile, top_face):
@@ -65,7 +70,7 @@ def extract_top_plane_nodes(nodefile, top_face):
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
 
     # extract spatially-sorted node IDs on a the top z plane
-    axis = int(np.floor(np.divide(top_face.nonzero(),2)))
+    axis = int(np.floor(np.divide(top_face.nonzero(), 2)))
     if np.mod(top_face.nonzero(), 2) == 1:
         plane = (axis, axes[axis].max())
     else:
@@ -76,7 +81,8 @@ def extract_top_plane_nodes(nodefile, top_face):
     return planeNodeIDs
 
 
-def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid):
+def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
+                   amplitude, lcid):
     """write load keyword file
 
     :param loadfile: load filename
@@ -103,9 +109,9 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid)
                  'force, vel or accel)')
 
     if loadtype == 'disp':
-        dofs =  '%i,2,%i,%f' % (direction, lcid, amplitude)
+        dofs = '%i,2,%i,%f' % (direction, lcid, amplitude)
     elif loadtype == 'vel':
-        dofs =  '%i,0,%i,%f' % (direction, lcid, amplitude)
+        dofs = '%i,0,%i,%f' % (direction, lcid, amplitude)
     elif loadtype == 'accel':
         dofs = '%i,1,%i,%f' % (direction, lcid, amplitude)
     elif loadtype == 'force':
@@ -122,10 +128,12 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid)
 def read_cli():
     """read CLI args
     """
-    import argparse as argp
+    import argparse as ap
 
-    par = argp.ArgumentParser(description="Generate loading conditions for the top surface of the specified mesh.",
-                              formatter_class=argp.ArgumentDefaultsHelpFormatter)
+    par = ap.ArgumentParser(description="Generate loading conditions for"
+                                        "the top surface of the specified"
+                                        " mesh.",
+                            formatter_class=ap.ArgumentDefaultsHelpFormatter)
     par.add_argument("--loadfile",
                      help="compression load defintion output file",
                      default="topload.dyn")
@@ -145,7 +153,8 @@ def read_cli():
                      type=int,
                      default=2)
     par.add_argument("--top_face",
-                     help="array with 1 indicating top face (xmin, xmax, ymin, ymax, zmin, zmax)",
+                     help="array with 1 indicating top face"
+                          "(xmin, xmax, ymin, ymax, zmin, zmax)",
                      nargs="+",
                      type=int,
                      default=(0, 0, 0, 0, 0, 1)

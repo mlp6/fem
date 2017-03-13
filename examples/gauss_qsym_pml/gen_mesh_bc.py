@@ -11,7 +11,7 @@ def main():
     face_constraints = (('1,1,1,1,1,1', '1,0,0,0,1,1'),
                         ('0,1,0,1,0,1', '1,1,1,1,1,1'),
                         ('1,1,1,1,1,1', '1,1,1,1,1,1'))
-    edge_constraints = (((0,1),(1,0),(0,0)),'1,1,0,1,1,1')
+    edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
 
     bc.apply_pml(pml_elems, face_constraints, edge_constraints)
 

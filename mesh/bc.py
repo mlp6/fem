@@ -11,6 +11,7 @@
 
 """
 
+
 def main():
     """apply prescribed boundary conditions to nodes/face segments
     """
@@ -18,18 +19,21 @@ def main():
 
     if pml_elems:
         apply_pml(opts.pml_elems, opts.face_constraints, opts.edge_constraints,
-                  opts.nodefile, opts.elefile, opts.pmlfile, opts.bcfile, opts.pml_partID)
+                  opts.nodefile, opts.elefile, opts.pmlfile, opts.bcfile,
+                  opts.pml_partID)
     elif nonreflect_faces:
-        apply_nonreflect(opts.face_constraints, opts.edge_constraints, opts.nodefile,
-                         opts.elefile, opts.bcfile, opts.segfile)
+        apply_nonreflect(opts.face_constraints, opts.edge_constraints,
+                         opts.nodefile, opts.elefile, opts.bcfile,
+                         opts.segfile)
 
     return 0
 
 
-def apply_face_bc_only(face_constraints, nodefile="nodes.dyn", bcfile="bc.dyn"):
+def apply_face_bc_only(face_constraints, nodefile="nodes.dyn",
+                       bcfile="bc.dyn"):
     """driver function to apply node BCs just to faces
 
-    :param face_constraints: 3x2 array of strings, specifying the BCs on each face (3), min/max (2)
+    :param face_constraints: 3x2 array of strings, face BCs (3), min/max (2)
     :param nodefile: default - 'nodes.dyn'
     :param bcfile: 'defauly - 'bc.dyn'
     :return:
@@ -48,13 +52,15 @@ def apply_face_bc_only(face_constraints, nodefile="nodes.dyn", bcfile="bc.dyn"):
 
 
 def apply_pml(pml_elems, face_constraints, edge_constraints,
-              nodefile="nodes.dyn", elefile="elems.dyn", pmlfile="elems_pml.dyn",
-              bcfile="bc.dyn", pml_partID=2):
+              nodefile="nodes.dyn", elefile="elems.dyn",
+              pmlfile="elems_pml.dyn", bcfile="bc.dyn", pml_partID=2):
     """
     driver function to apply PML boundary conditions
 
-    :param pml_elems: 3x2 array of ints specifying thickness of PML elements (5--10) on each PML layer
-    :param face_constraints: 3x2 array of strings, specifying the BCs on each face (3), min/max (2)
+    :param pml_elems: 3x2 array of ints specifying thickness of
+     PML elements (5--10) on each PML layer
+    :param face_constraints: 3x2 array of strings, specifying the BCs on each
+     face (3), min/max (2)
     :param edge_constraints: 1x6 vector of BCs on each edge
     :param nodefile: default - 'nodes.dyn'
     :param elefile: default - 'elems.dyn'
@@ -74,19 +80,23 @@ def apply_pml(pml_elems, face_constraints, edge_constraints,
     write_pml_elems(sorted_pml_elems, pmlfile)
 
     bcdict = assign_node_constraints(snic, axes, face_constraints)
-    bcdict = constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints)
-    bcdict = assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints)
+    bcdict = constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems,
+                                     edge_constraints)
+    bcdict = assign_edge_sym_constraints(bcdict, snic, axes,
+                                         edge_constraints)
     write_bc(bcdict, bcfile)
 
     return 0
 
-def apply_nonreflect(face_constraints, edge_constraints, nodefile="nodes.dyn",
-                     elefile="elems.dyn", bcfile="bc.dyn", segfile="nonreflect_segs.dyn"):
+
+def apply_nonreflect(face_constraints, edge_constraints,
+                     nodefile="nodes.dyn", elefile="elems.dyn",
+                     bcfile="bc.dyn", segfile="nonreflect_segs.dyn"):
     """
     driver function to generate non-reflecting boundaries
 
-    :param face_constraints: vector of face constraints, ordered from xmin to zmax
-    :param edge_constraints: vector of edge constraints, ordered from xmin to zmax
+    :param face_constraints: vector of face constraints, ordered xmin to zmax
+    :param edge_constraints: vector of edge constraints, ordered xmin to zmax
     :param nodefile: default - 'nodes.dyn'
     :param elefile: default - 'elems.dyn'
     :param bcfile: default - 'bc.dyn'
@@ -108,8 +118,10 @@ def apply_nonreflect(face_constraints, edge_constraints, nodefile="nodes.dyn",
                     axis_limit = axes[a][0]
                 else:
                     axis_limit = axes[a][-1]
-                planeNodeIDs = fem_mesh.extractPlane(snic, axes, (a, axis_limit))
-                segID = writeSeg(SEGBCFILE, seg_names[a][m], segID, planeNodeIDs)
+                planeNodeIDs = fem_mesh.extractPlane(snic, axes,
+                                                     (a, axis_limit))
+                segID = writeSeg(SEGBCFILE, seg_names[a][m], segID,
+                                 planeNodeIDs)
     write_nonreflecting(SEGBCFILE, segID)
     SEGBCFILE.close()
 
@@ -162,6 +174,7 @@ def write_bc(bcdict, bc="bc.dyn"):
 
     return 0
 
+
 def read_cli():
     """read command line arguments
 
@@ -177,7 +190,7 @@ def read_cli():
                    help="boundary condition output file",
                    default="bc.dyn")
     p.add_argument("--segfile",
-                   help="non-reflected segments boundary condition output file",
+                   help="non-reflected segments BC output file",
                    default="nonreflect_segs.dyn")
     p.add_argument("--nodefile",
                    help="node defintion input file",
@@ -200,8 +213,8 @@ def read_cli():
     p.add_argument("--edge_constraints",
                    help="constrain edge DOFs")
     p.add_argument("--pmlfile",
-                    help="PML element output filename",
-                    default="elems_pml.dyn")
+                   help="PML element output filename",
+                   default="elems_pml.dyn")
     s = p.add_mutually_exclusive_group(required=True)
     s.add_argument("--nonreflect",
                    help="apply non-reflection boundaries",
@@ -219,7 +232,8 @@ def read_cli():
 def write_nonreflecting(BCFILE, segID):
     """write non-reflecting boundaries (set segments) to input file with segments
 
-    ASSUMES THAT SEGMENT FILE HAS ALREADY BEEN WRITTEN TO AND NOT TERMINATED WITH *END
+    ASSUMES THAT SEGMENT FILE HAS ALREADY BEEN WRITTEN TO AND NOT TERMINATED
+     WITH *END
 
     :param BCFILE: file IO object
     :param int segID: maximum segment ID #, assuming started at 1
@@ -232,6 +246,7 @@ def write_nonreflecting(BCFILE, segID):
 
     return 0
 
+
 def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
     """assign PML elements in the sorted element matrix
 
@@ -242,11 +257,11 @@ def assign_pml_elems(sorted_elems, pml_elems, pml_partID='2'):
     :return: sorted_pml_elems (to be written to new file)
     """
     sorted_elems['pid'][0:pml_elems[0][0], :, :] = pml_partID
-    sorted_elems['pid'][-1:-pml_elems[0][1]-1:-1, :, :] = pml_partID
+    sorted_elems['pid'][-1:-pml_elems[0][1] - 1:-1, :, :] = pml_partID
     sorted_elems['pid'][:, 0:pml_elems[1][0], :] = pml_partID
-    sorted_elems['pid'][:, -1:-pml_elems[1][1]-1:-1, :] = pml_partID
+    sorted_elems['pid'][:, -1:-pml_elems[1][1] - 1:-1, :] = pml_partID
     sorted_elems['pid'][:, :, 0:pml_elems[2][0]] = pml_partID
-    sorted_elems['pid'][:, :, -1:-pml_elems[2][1]-1:-1] = pml_partID
+    sorted_elems['pid'][:, :, -1:-pml_elems[2][1] - 1:-1] = pml_partID
 
     return sorted_elems
 
@@ -305,8 +320,8 @@ def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
             axis_limit = axes[axis].max()
         if axis_limit is not None:
             planeNodeIDs = extractPlane(snic, axes, (axis, axis_limit))
-            pml_node_ids_zmin = planeNodeIDs[:, 0:(pml_elems[2][0]+1)]
-            pml_node_ids_zmax = planeNodeIDs[:, -(pml_elems[2][1]+1):]
+            pml_node_ids_zmin = planeNodeIDs[:, 0:(pml_elems[2][0] + 1)]
+            pml_node_ids_zmax = planeNodeIDs[:, -(pml_elems[2][1] + 1):]
             for i, id in ndenumerate(pml_node_ids_zmin):
                 bcdict[id] = "%s" % '1,1,1,1,1,1'
             for i, id in ndenumerate(pml_node_ids_zmax):
@@ -346,9 +361,9 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints):
     # restrict nodes to those on specified edge
     ortho_axis = 1
     if edge_constraints[0][ortho_axis][0]:
-        edge_nodes = planeNodeIDs[0,:]
+        edge_nodes = planeNodeIDs[0, :]
     elif edge_constraints[0][ortho_axis][1]:
-        edge_nodes = planeNodeIDs[-1,:]
+        edge_nodes = planeNodeIDs[-1, :]
     else:
         warn('Orthogonal plane to x-face is not a y-face; no edge BCs defined')
         return 1

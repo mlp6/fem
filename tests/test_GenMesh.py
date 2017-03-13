@@ -15,9 +15,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import sys, os
+import sys
+import os
 myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../mesh/')
+sys.path.insert(0, os.path.join(myPath, '/../post/'))
 
 xyz = (0, 2, 3, 5, 6, 8)
 numElem = (2, 2, 2)
@@ -53,7 +54,7 @@ def test_writeNodes(tmpdir):
     f = tmpdir.join(nodefile)
     writeNodes(pos, f.strpath, header_comment)
     lines = f.readlines()
-    assert lines[0] == header_comment+"\n"
+    assert lines[0] == header_comment + "\n"
     assert lines[1] == "*NODE\n"
     assert lines[2] == "1,0.000000,3.000000,6.000000\n"
     assert lines[-1] == "*END\n"
@@ -69,7 +70,7 @@ def test_writeElems(tmpdir):
     f = tmpdir.join(elefile)
     writeElems(numElem, partid, f.strpath, header_comment)
     lines = f.readlines()
-    assert lines[0] == header_comment+"\n"
+    assert lines[0] == header_comment + "\n"
     assert lines[1] == "*ELEMENT_SOLID\n"
     assert lines[2] == "1,1,1,2,5,4,10,11,14,13\n"
     assert lines[-1] == "*END\n"

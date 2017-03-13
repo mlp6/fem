@@ -1,4 +1,8 @@
-def extract3Darfidata(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.h5", nodedyn="nodes.dyn", dispout="disp.dat.xz"):
+
+
+def extract3Darfidata(dynadeck, disp_comp=2, disp_scale=-1e4,
+                      ressim="res_sim.h5", nodedyn="nodes.dyn",
+                      dispout="disp.dat.xz"):
 
     from fem.mesh import fem_mesh
     import fem.post.create_res_sim_mat as crsm
@@ -15,4 +19,3 @@ def extract3Darfidata(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.h5
                                       disp_scale, legacynodes=False)
 
     crsm.save_res_mat(ressim, arfidata, axes, t)
-

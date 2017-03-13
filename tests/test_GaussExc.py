@@ -30,7 +30,7 @@ def test_calc_gauss_amp():
     assert round(calc_gauss_amp(node_xyz, center, sigma, amp, sym="hsym") -
                  0.36787944117144233, 5) == 0
     assert round(calc_gauss_amp(node_xyz, center, sigma, amp, sym="qsym") -
-                 0.36787944117144233/2, 5) == 0
+                 0.36787944117144233 / 2, 5) == 0
 
 
 def test_sym_scale_amp():

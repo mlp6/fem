@@ -126,9 +126,11 @@ def SortNodeIDs(nic, sort=False):
     if sort:
         I = nic.argsort(order=('x', 'y', 'z'))
         snic = nic[I]
-        snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size), order='F')
+        snic = snic.reshape((axes[0].size, axes[1].size, axes[2].size),
+                            order='F')
     else:
-        snic = nic.reshape((axes[0].size, axes[1].size, axes[2].size), order='F')
+        snic = nic.reshape((axes[0].size, axes[1].size, axes[2].size),
+                           order='F')
 
     return [snic, axes]
 
@@ -140,9 +142,9 @@ def SortElems(elems, axes):
     :param axes: lists of x, y, z axis positions
     :returns: sorted_elems
     """
-    sorted_elems = elems.reshape((axes[0].size-1,
-                                  axes[1].size-1,
-                                  axes[2].size-1),
+    sorted_elems = elems.reshape((axes[0].size - 1,
+                                  axes[1].size - 1,
+                                  axes[2].size - 1),
                                  order='F')
 
     return sorted_elems
