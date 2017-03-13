@@ -2,12 +2,12 @@ test:python36:
     image: python:3.6
     script: 
     - pip install -r requirements.txt  
-    - export PYTHONPATH=../
+    - export PYTHONPATH='./mesh:./post'
     - py.test -v --cov --pep8
 
 test:anaconda3:
     image: continuumio/anaconda3
     script: 
     - conda install --yes --file requirements.txt
-    - export PYTHONPATH=../
+    - export PYTHONPATH='./mesh:./post'
     - py.test -v --cov --pep8
