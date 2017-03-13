@@ -21,3 +21,8 @@ v6.6.0
 * Add create_disp_dat unit tests and accelerations
 * Add create_res_sim_mat unit tests and accelerations
 * Improve relative import paths for unit testing, making OS-agnostic
+
+v6.6.1
+======
+* PEP8 compliance for all active modules (added to unit tests)
+* Fixed relative import paths for unit testing across all platforms

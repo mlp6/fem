@@ -7,7 +7,7 @@ if sys.version_info.major != 3 or (sys.version_info.major == 3 and
 
 setup(
     name='Acoustic Radiation Force FEM Tools',
-    version='6.6.0',
+    version='6.6.1',
     packages=['fem', ],
     license='Apache v2.0',
     author='Mark Palmeri',
