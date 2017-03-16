@@ -1,5 +1,5 @@
-function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads)
-% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads)
+function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, low-n-slow)
+% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, low-n-slow)
 %
 % Generate intensity values at the nodal locations for conversion to force and
 % input into the dyna deck.
@@ -20,6 +20,7 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads)
 %       frequency, or use the experimentally-measured impulse
 %       response
 %   threads (int) - number of parallel threads to use [default = numCores]
+%   low-n-slow (bool) - low RAM footprint, but much slower
 %
 % OUTPUT:
 %   intensity - intensity values at all of the node locations
@@ -79,8 +80,23 @@ set_field('use_att', 1);
  
 % compute Ispta at each location for a single tx pulse
 % optimizing by computing only relevant nodes... will assume others are zero
-[intensity, startTime] = calc_hp(Th, squeeze(double(FIELD_PARAMS.measurementPointsandNodes(:,2:4))));
+if (nargin < 3),
+    low-n-slow = true;
+end;
+
+if low-n-slow,
+    disp('Running low-n-slow... ')
+    numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
+    for i in 1:numNodes,
+        [pressure, startTime] = calc_hp(Th, squeeze(double(FIELD_PARAMS.measurementPointsandNodes(:,2:4))));
+        intensity(i) = sum(pressure.*pressure);
+    end
+else,
+    disp('Running high-n-fast... ')
+    [intensity, startTime] = calc_hp(Th, squeeze(double(FIELD_PARAMS.measurementPointsandNodes(:,2:4))));
+    intensity = sum(intensity.*intensity);
+end
+
 intensity = single(intensity);
-intensity = sum(intensity.*intensity);
 
 field_end;
