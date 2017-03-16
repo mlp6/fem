@@ -87,7 +87,7 @@ end;
 if lownslow,
     disp('Running low-n-slow... ')
     numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
-    for i in 1:numNodes,
+    for i = 1:numNodes,
         [pressure, startTime] = calc_hp(Th, squeeze(double(FIELD_PARAMS.measurementPointsandNodes(:,2:4))));
         intensity(i) = sum(pressure.*pressure);
     end
