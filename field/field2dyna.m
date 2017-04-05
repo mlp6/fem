@@ -1,5 +1,5 @@
-function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, ElemName, ForceNonlinear)
-% function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, ElemName, ForceNonlinear)
+function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, threads, lownslow, ElemName, ForceNonlinear)
+% function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, threads, lownslow, ElemName, ForceNonlinear)
 %
 % INPUT:
 %   NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
@@ -11,6 +11,8 @@ function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transd
 %   Frequency - excitation frequency (MHz)
 %   Transducer (string) - 'vf105','vf73'
 %   Impulse (string) - 'gaussian','exp'
+%   threads (int) - number of parallel threads to use for Field II Pro
+%   lownslow (bool) - low memory footprint, or faster parallel (high RAM) [default = 0]
 %   ElemName (string) - file name to read elements from (default: elems.dyn);
 %                       like node file, needs to be comma-delimited.
 %   ForceNonlinear(int) - optional input argument. Set as 1 if you want to
@@ -55,8 +57,17 @@ FIELD_PARAMS.Impulse = Impulse;
 FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 100e6;
 
+% setup some input argument defaults
+if (nargin < 7),
+    threads = 1;
+end;
+
+if (nargin < 8),
+    lownslow = true;
+end;
+
 % perform the field calculation
-[intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
+[intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, threads, lownslow);
 
 % save intensity file
 dynaImat = sprintf('dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat', Frequency, Fnum, focus(3), alpha);
@@ -64,13 +75,13 @@ save(dynaImat, 'intensity', 'FIELD_PARAMS');
 
 % check if non-uniform force scaling must be done
 isUniform = checkUniform(measurementPointsandNodes(:,2:4));
-if (nargin < 9)
+if (nargin < 11)
     ForceNonlinear = 0;
 end
 if (~isUniform || ForceNonlinear == 1)
     % should run calcNodeVol.py
     fprintf('This is a non-linear mesh. Generating node volume file.\n')
-    if (nargin < 9)
+    if (nargin < 11)
         warning('This is a non-linear mesh, but elements file was not given as an input argument. Skipping node volume file generation.')
     else
         NodeVolumeFilename = ['NodeVolume_' NodeName '_' ElemName '.txt'];
