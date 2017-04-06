@@ -11,6 +11,8 @@
 
 """
 
+myPath = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, myPath)
 
 def main():
     """apply prescribed boundary conditions to nodes/face segments
