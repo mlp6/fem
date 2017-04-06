@@ -185,6 +185,35 @@ def calc_gauss_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0, 1.0),
     return nodeGaussAmp
 
 
+def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
+                   tukey_length=1.0, tukey_rolloff=0.25, amp=1.0,
+                   amp_cut=0.05, sym="qsym"):
+    """calculated the Gaussian amplitude at the node
+    
+    :param node_xyz: list of x,y,z node coordinates
+    :param center: list of x,y,z for excitation center
+    :param sigma: list of x,y Guassian width
+    :param tukey_length: length of axial extent, centered at center
+    :param tukey_alpha: percentage of rolloff (see scipy documentation)
+    :param amp: peak Gaussian source amplitude
+    :param amp_cut: lower threshold (pct of max) for amplitude creating a
+                    point load
+    :param qsym: mesh symemetry (qsym, hsym, none)
+    :returns: nodeGaussAmp - point load amplitude at the specified node
+    """
+    from math import pow, exp
+    from scipy.signal import tukey
+    exp1 = pow((node_xyz[1] - center[0]) / sigma[0], 2)
+    exp2 = pow((node_xyz[2] - center[1]) / sigma[1], 2)
+    nodeGaussAmp = amp * exp(-(exp1 + exp2))
+
+    if (nodeGaussAmp / amp) < amp_cut:
+        nodeGaussAmp = None
+    else:
+        nodeGaussAmp = sym_scale_amp(node_xyz, nodeGaussAmp, sym)
+
+    return nodeGaussAmp
+
 def read_cli():
     """ read CLI arguments
     """
