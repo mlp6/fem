@@ -186,7 +186,7 @@ def calc_gauss_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0, 1.0),
 
 
 def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
-                   tukey_length=1.0, tukey_rolloff=0.25, amp=1.0,
+                   tukey_length=1.0, tukey_alpha=0.25, amp=1.0,
                    amp_cut=0.05, sym="qsym"):
     """calculated the Gaussian amplitude at the node
     
@@ -202,10 +202,13 @@ def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
     :returns: nodeGaussAmp - point load amplitude at the specified node
     """
     from math import pow, exp
-    from scipy.signal import tukey
+
     exp1 = pow((node_xyz[1] - center[0]) / sigma[0], 2)
     exp2 = pow((node_xyz[2] - center[1]) / sigma[1], 2)
-    nodeGaussAmp = amp * exp(-(exp1 + exp2))
+
+    z_scale = tukey_z_scale(node_xyz[3], center[2], tukey_length, tukey_alpha)
+
+    nodeGaussAmp = amp * exp(-(exp1 + exp2)) * z_scale
 
     if (nodeGaussAmp / amp) < amp_cut:
         nodeGaussAmp = None
@@ -213,6 +216,33 @@ def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
         nodeGaussAmp = sym_scale_amp(node_xyz, nodeGaussAmp, sym)
 
     return nodeGaussAmp
+
+
+def tukey_z_scale(z, center, length, alpha=0.25, points=101):
+    """
+    
+    :param z: z-coordinate
+    :param center: center of Tukey window
+    :param length: length of Tukey window
+    :param alpha: rolloff (percentage of window)
+    :param points: number of points in Tukey window
+    :return: z_scale (scale, relative to 1.0)
+    """
+    import numpy as np
+    from scipy.signal import tukey
+
+    z = np.abs(z)
+    zmin = np.abs(center) - length/2
+    zmax = np.abs(center) + length/2
+    z_tukey_win = np.linspace(zmin, zmax, points)
+    z_tukey_amp = tukey(points, alpha)
+    if z < zmin or z > zmax:
+        z_scale = 0.0
+    else:
+        z_scale = z_tukey_amp[np.min(np.where(z_tukey_win >= z))]
+
+    return z_scale
+
 
 def read_cli():
     """ read CLI arguments
