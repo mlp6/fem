@@ -189,7 +189,7 @@ def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
                    tukey_length=1.0, tukey_alpha=0.25, amp=1.0,
                    amp_cut=0.05, sym="qsym"):
     """calculated the Gaussian amplitude at the node
-    
+
     :param node_xyz: list of x,y,z node coordinates
     :param center: list of x,y,z for excitation center
     :param sigma: list of x,y Guassian width
@@ -220,7 +220,7 @@ def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
 
 def tukey_z_scale(z, center, length, alpha=0.25, points=101):
     """
-    
+
     :param z: z-coordinate
     :param center: center of Tukey window
     :param length: length of Tukey window
@@ -232,8 +232,8 @@ def tukey_z_scale(z, center, length, alpha=0.25, points=101):
     from scipy.signal import tukey
 
     z = np.abs(z)
-    zmin = np.abs(center) - length/2
-    zmax = np.abs(center) + length/2
+    zmin = np.abs(center) - length / 2
+    zmax = np.abs(center) + length / 2
     z_tukey_win = np.linspace(zmin, zmax, points)
     z_tukey_amp = tukey(points, alpha)
     if z < zmin or z > zmax:
