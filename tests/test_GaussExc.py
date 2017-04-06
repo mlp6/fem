@@ -33,6 +33,44 @@ def test_calc_gauss_amp():
                  0.36787944117144233 / 2, 5) == 0
 
 
+def test_calc_tukey_amp():
+    """test node assignment of Tukey amplitude under all symmetry conditions
+    """
+    from GaussExc import calc_tukey_amp
+
+    node_xyz = [1, 0.0, 0.0, -2.0]
+
+    assert calc_tukey_amp(node_xyz, center, sigma, 1.0, 0.25, amp,
+                          sym="none") == 1.0
+    assert calc_tukey_amp(node_xyz, center, sigma, 1.0, 0.25, amp,
+                          sym="hsym") == 0.5
+    assert calc_tukey_amp(node_xyz, center, sigma, 1.0, 0.25, amp,
+                          sym="qsym") == 0.25
+
+    node_xyz = [1, 0.25, 0.0, -2.0]
+
+    assert round(calc_tukey_amp(node_xyz, center, sigma, 1.0, 0.25, amp,
+                                sym="none") - 0.36787944117144233, 5) == 0
+    assert round(calc_tukey_amp(node_xyz, center, sigma, 1.0, 0.25, amp,
+                                sym="hsym") - 0.36787944117144233, 5) == 0
+    assert round(calc_tukey_amp(node_xyz, center, sigma, 1.0, 0.25, amp,
+                                sym="qsym") - 0.36787944117144233 / 2, 5) == 0
+
+
+def test_tukey_z_scale():
+    from GaussExc import tukey_z_scale
+
+    z_scale = tukey_z_scale(z=2.0, center=2.0, length=1.0, alpha=0.25,
+                            points=101)
+
+    assert z_scale == 1.0
+
+    z_scale = tukey_z_scale(z=1.0, center=2.0, length=1.0, alpha=0.25,
+                            points=101)
+
+    assert z_scale == 0.0
+
+
 def test_sym_scale_amp():
     """test symmetry scaling of point load
     """
