@@ -26,3 +26,8 @@ v6.6.1
 ======
 * PEP8 compliance for all active modules (added to unit tests)
 * Fixed relative import paths for unit testing across all platforms
+
+v6.7.0
+======
+* Add thread and memory options for field2dyna.
+* Add Tukey depth weighting for Gaussian excitations.
