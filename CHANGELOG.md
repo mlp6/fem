@@ -26,3 +26,8 @@ v6.6.1
 ======
 * PEP8 compliance for all active modules (added to unit tests)
 * Fixed relative import paths for unit testing across all platforms
+
+v6.7.0
+======
+* Add Tukey axial weighting of Guassian excitations to achieve more cylindrical shear wave fronts.
+* Add more control of parallel threads and memory usage in field2dyna.
