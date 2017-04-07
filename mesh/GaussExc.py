@@ -67,7 +67,7 @@ def read_process_nodes(sigma, center, sym="qsym", amp=1.0, amp_cut=0.05,
             fields = read_node_positions(i)
 
             if fields:
-                if tukey_length != 0.0:
+                if tukey_length == 0.0:
                     nodeGaussAmp = calc_gauss_amp(fields, center, sigma, amp,
                                                   amp_cut, sym)
                 else:
