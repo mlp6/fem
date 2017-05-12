@@ -10,9 +10,6 @@
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """
 
-from __future__ import absolute_import
-from __future__ import print_function
-
 
 def main():
     from fem_mesh import check_version

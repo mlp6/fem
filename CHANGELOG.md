@@ -29,5 +29,5 @@ v6.6.1
 
 v6.7.0
 ======
-* Add thread and memory options for field2dyna.
-* Add Tukey depth weighting for Gaussian excitations.
+* Add Tukey axial weighting of Guassian excitations to achieve more cylindrical shear wave fronts.
+* Add more control of parallel threads and memory usage in field2dyna.
