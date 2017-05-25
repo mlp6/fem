@@ -52,12 +52,11 @@ class ResSim:
         plt.plot(t, self.arfidata[axInd, latInd, :])
         plt.xlabel('Time (ms)')
         plt.ylabel('Displacement (\mum)')
-        plt.title('Axial = {:.2f} mm, Lateral = {:.2f} mm'.format(self.axial[axInd],
-                                                                  self.lat[latInd]))
+        plt.title('Axial = {:.1f} mm, Lateral = {:.1f} mm'.
+                format(self.axial[axInd][0], self.lat[latInd][0]))
         plt.show()
     
         return
-
 
     def play(self, timerange):
         """play an animation
