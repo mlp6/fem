@@ -37,6 +37,27 @@ class ResSim:
 
         return
 
+    def timeplot(self, axial, lat):
+        """plot arfidata through time at specified ax and lat position (mm)
+
+        :param axial: axial depth (mm)
+        :param lat: lateral position (mm)
+        """
+        import matplotlib.pyplot as plt
+        import numpy as np
+
+        axInd = np.min(np.where(self.axial >= axial)[0])
+        latInd = np.min(np.where(self.lat >= lat)[0])
+        t = self.t.transpose()*1e3  # convert from s -> ms
+        plt.plot(t, self.arfidata[axInd, latInd, :])
+        plt.xlabel('Time (ms)')
+        plt.ylabel('Displacement (\mum)')
+        plt.title('Axial = {:.1f} mm, Lateral = {:.1f} mm'.
+                format(self.axial[axInd][0], self.lat[latInd][0]))
+        plt.show()
+    
+        return
+
     def play(self, timerange):
         """play an animation
 
