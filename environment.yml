@@ -1,0 +1,7 @@
+name: fem
+dependencies:
+  - numpy
+  - scipy
+  - pytest
+  - pytest-pep8
+  - pytest-cov
