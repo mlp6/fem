@@ -5,3 +5,4 @@ pytest-cov
 pytest-pep8
 h5py
 matplotlib
+ipython
