@@ -5,3 +5,5 @@ dependencies:
   - pytest
   - pytest-pep8
   - pytest-cov
+  - h5py
+  - matplotlib

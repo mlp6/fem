@@ -3,3 +3,5 @@ scipy
 pytest
 pytest-cov
 pytest-pep8
+h5py
+matplotlib
