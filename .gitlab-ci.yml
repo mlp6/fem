@@ -4,8 +4,8 @@ test:python36:
     - pip install -r requirements.txt  
     - py.test -v --cov --pep8
 
-test:anaconda3:
-    image: continuumio/anaconda3
+test:miniconda3:
+    image: continuumio/miniconda3
     script: 
-    - conda install --yes --file requirements.txt
+    - conda env create -f environment.yml
     - py.test -v --cov --pep8

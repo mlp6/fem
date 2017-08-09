@@ -1,6 +1,6 @@
-FROM python:3.5
+FROM python:3.6
 
 MAINTAINER Mark Palmeri <mlp6@duke.edu>
 
 RUN apt-get update \
-    && pip install numpy scipy pytest pytest-cov
+    && pip install -r requirements.txt
