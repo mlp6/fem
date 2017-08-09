@@ -8,4 +8,5 @@ test:miniconda3:
     image: continuumio/miniconda3
     script: 
     - conda env create -f environment.yml
+    - source activate fem
     - py.test -v --cov --pep8
