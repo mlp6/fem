@@ -1,0 +1,45 @@
+/* create_disp_dat.i */
+%module create_disp_dat
+
+%include "typemaps.i"
+
+%typemap(in) (int argc, char **argv) {
+int i;
+	if (!PyList_Check($input)) {
+		PyErr_SetString(PyExc_ValueError, "Expecting a list");
+		return NULL;
+		}
+	$1 = PyList_Size($input);
+	printf("size is %d\n", $1);
+	$2 = (char **) malloc(($1+1)*sizeof(char *));
+	for (i = 0; i < $1; i++) {
+		PyObject *s = PyList_GetItem($input,i);
+		if (!PyString_Check(s)) {
+			printf("i is %d\n", i);
+			free($2);
+			PyErr_SetString(PyExc_ValueError, "List items must be strings");
+			return NULL;
+			}
+		$2[i] = PyString_AsString(s);
+		}
+	$2[i] = 0;
+}
+
+%typemap(freearg) (int argc, char **argv) {
+	if ($2) free($2);
+	}
+
+%{
+/* Put header files here or function declarations like below */
+extern char *inFileName, *outFileName;
+extern int create_disp_dat(int argc, char **argv);
+extern int correctE(char *disp);
+extern int countNodeIDs(FILE *inFilePtr, int *nodes);
+extern int writeNodeIDs(FILE *ptr, int num);
+%}
+
+extern char *inFileName, *outFileName;
+extern int create_disp_dat(int argc, char **argv);
+extern int correctE(char *disp);
+extern int countNodeIDs(FILE *inFilePtr, int *nodes);
+extern int writeNodeIDs(FILE *ptr, int num);
