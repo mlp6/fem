@@ -1,6 +1,9 @@
 language: python
 python:
       - "3.6"
+addons:
+      apt_packages:
+              - swig
 install: "pip install -r requirements.txt"
 script: 
       - pytest -v --cov --pep8
