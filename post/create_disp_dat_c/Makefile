@@ -1,4 +1,5 @@
-ANACONDA3  = $(HOME)/miniconda3
+PYTHON36  = /usr
+#PYTHON36  = $(HOME)/miniconda3/envs/fem
 CC         = gcc
 CFLAGS     = -c -fpic
 LD         = ld -shared
@@ -7,8 +8,8 @@ SRCS       = create_disp_dat.c create_disp_dat_wrap.c
 INTERFACE  = create_disp_dat.i
 OBJS       = create_disp_dat.o create_disp_dat_wrap.o
 TARGET     = _create_disp_dat.so
-PYTHON_INCLUDE    = -I$(ANACONDA3)/envs/fem/include/python3.6m
-PYTHON_LIB = -L$(ANACONDA3)/lib -lpython3.6m
+PYTHON_INCLUDE    = -I$(PYTHON36)/include/python3.6m
+PYTHON_LIB = -L$(PYTHON36)/lib -lpython3.6m
 SWIG       = swig
 
 SWIGOPT     = -python
