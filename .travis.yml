@@ -1,12 +1,14 @@
 language: python
 python:
-      - "3.4"
-      - "3.5"
       - "3.6"
-      - "3.6-dev"
-      - "3.7-dev"
-      - "nightly"
+addons:
+      apt_packages:
+              - swig
+              - python-dev
 install:
       - pip install -r requirements.txt
 script: 
       - pytest -v --cov --pep8
+      - cd post/create_disp_dat_c
+      - make
+      - make test

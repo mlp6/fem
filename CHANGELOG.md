@@ -16,10 +16,10 @@ v6.5.3
 
 v6.6.0
 ======
-* Update post/create_disp_dat.create_dat docstring
+* Update `post/create_disp_dat.create_dat` docstring
 * Re-arrange the example directory structure and add READMEs
-* Add create_disp_dat unit tests and accelerations
-* Add create_res_sim_mat unit tests and accelerations
+* Add `create_disp_dat` unit tests and accelerations
+* Add `create_res_sim_mat` unit tests and accelerations
 * Improve relative import paths for unit testing, making OS-agnostic
 
 v6.6.1
@@ -30,4 +30,9 @@ v6.6.1
 v6.7.0
 ======
 * Add Tukey axial weighting of Guassian excitations to achieve more cylindrical shear wave fronts.
-* Add more control of parallel threads and memory usage in field2dyna.
+* Add more control of parallel threads and memory usage in `field2dyna`.
+
+v6.8.0
+======
+* Add conda `environment.yml` configuration file to create virtualenv (can use pip or conda).
+* Add C/SWIG accessible `post/create_disp_dat_c/create_disp_dat` tool (~8x speedup on large `nodout` files).
