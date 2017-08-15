@@ -2,6 +2,7 @@ ANACONDA3  = $(HOME)/miniconda3
 CC         = gcc
 CFLAGS     = -c -fpic
 LD         = ld -shared
+SRC       = create_disp_dat.c
 SRCS       = create_disp_dat.c create_disp_dat_wrap.c
 INTERFACE  = create_disp_dat.i
 OBJS       = create_disp_dat.o create_disp_dat_wrap.o
@@ -14,7 +15,7 @@ SWIGOPT     = -python
 
 all: create_disp_dat _create_disp_dat.so
 
-_create_disp_dat.so: $(SRCS) $(INTERFACE)
+_create_disp_dat.so: $(SRC) $(INTERFACE)
 	$(SWIG) $(SWIGOPT) $(INTERFACE)
 	$(CC) $(CFLAGS) $(PYTHON_INCLUDE) $(SRCS)
 	$(LD) $(OBJS) -o $(TARGET)
