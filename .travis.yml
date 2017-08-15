@@ -4,3 +4,6 @@ python:
 install: "pip install -r requirements.txt"
 script: 
       - pytest -v --cov --pep8
+      - cd post/create_disp_dat_c
+      - make
+      - make test
