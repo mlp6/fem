@@ -1,6 +1,12 @@
 language: python
 python:
+      - "3.4"
+      - "3.5"
       - "3.6"
-install: "pip install -r requirements.txt"
+      - "3.6-dev"
+      - "3.7-dev"
+      - "nightly"
+install:
+      - pip install -r requirements.txt
 script: 
       - pytest -v --cov --pep8
