@@ -2,7 +2,8 @@
 #SBATCH --mem=4G
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=8
-#SBATCH --mail-user=mlp6@duke.edu
+#SBATCH --partition=ultrasound
+#SBATCH --mail-user=netid@duke.edu
 #SBATCH --mail-type=END
 
 from os import environ, system
@@ -34,11 +35,11 @@ bc.apply_pml(pml_elems, face_constraints, edge_constraints)
 
 generate_loads([0.25, 0.25, 0.75], [0.0, 0.0, -1.5])
 
-#system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
+system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 
-#create_disp_dat()
+create_disp_dat()
 
-#create_res_sim_mat(DYNADECK)
+create_res_sim_mat(DYNADECK)
 
 #if os.path.exists('res_sim.mat'):
 #    os.system("rm d3* nodout")
