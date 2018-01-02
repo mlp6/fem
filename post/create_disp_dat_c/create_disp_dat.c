@@ -384,7 +384,7 @@ float node;
 
 	for (node = 1; node <= num; node++)
 		if (fwrite(&node, sizeof(float), 1, ptr) != 1) {
-			fprintf(stderr, "failed to write node ID %d\n", node);
+			fprintf(stderr, "failed to write node ID %d\n", (int) node);
 			exit(EXIT_FAILURE);
 			}
 }
