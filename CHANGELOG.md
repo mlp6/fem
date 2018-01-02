@@ -36,3 +36,11 @@ v6.8.0
 ======
 * Add conda `environment.yml` configuration file to create virtualenv (can use pip or conda).
 * Add C/SWIG accessible `post/create_disp_dat_c/create_disp_dat` tool (~8x speedup on large `nodout` files).
+
+v6.8.1
+======
+* Update `setup.py` and `setup.cfg` for PyPI upload.
+
+v6.8.2
+======
+* Fix float -> int formatting for `fprint`.
