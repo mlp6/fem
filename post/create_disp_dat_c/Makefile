@@ -1,4 +1,4 @@
-PYTHON36  = $(HOME)/virtualenv/python3.6.2/
+PYTHON36  = $(HOME)/virtualenv/python3.6.3/
 #PYTHON36  = $(HOME)/miniconda3/envs/fem
 CC         = gcc
 CFLAGS     = -c -fpic
