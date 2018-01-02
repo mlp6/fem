@@ -6,12 +6,16 @@ if sys.version_info.major != 3 or (sys.version_info.major == 3 and
     sys.exit('You must use python >=3.6')
 
 setup(
-    name='Acoustic Radiation Force FEM Tools',
-    version='6.6.1',
-    packages=['fem', ],
-    license='Apache v2.0',
-    author='Mark Palmeri',
-    author_email='mlp6@duke.edu',
-    long_description=open('README.md').read(),
-    url='https://github.com/mlp6/fem'
+    name = 'arfi_fem',
+    packages = ['arfi_fem', ],
+    version = '6.8.1',
+    license = 'Apache v2.0',
+    author = 'Mark Palmeri',
+    author_email = 'mlp6@duke.edu',
+    description = 'Acoustic Radiation Force FEM Tools',
+    keywords = ['arfi', 'swei', 'fem'],
+    long_description = open('README.md').read(),
+    url = 'https://github.com/mlp6/fem',
+    download_url ='https://github.com/mlp6/fem/archive/v6.8.1.tar.gz',
+    classifiers = [],
 )
