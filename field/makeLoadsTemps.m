@@ -1,5 +1,5 @@
-function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym,LCID);
-%function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym,LCID);
+function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym,LCID, angle_deg);
+%function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVolume,sym,LCID,angle_deg);
 %
 % INPUTS:
 % InputName (string) - dyna*.mat file to process
@@ -13,6 +13,7 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 %                'q' -> quarter symmetry
 %                'h' -> half symmetry
 % LCID - load curve ID for the point loads
+% angle_def - angle to direct the point loads, in degrees
 % 
 % OUTPUTS:
 % InitTemps_a*_PD*_cv.dyn is written to the CWD
@@ -20,11 +21,19 @@ function makeLoadsTemps(InputName,NormName,IsppaNorm,PulseDuration,cv,ElementVol
 %
 % Example:
 % makeLoadsTemps('dyna_ispta_att0.5.mat','/emfd/mlp6/field/VF10-5/
-% F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6,'q',1);
+% F1p3_foc20mm/dyna_ispta_att0.5.mat',5357,168,4.2,8e-6,'q',1, 0);
 %
 % Mark 06/15/07
+%
+% CHANGELOG
+% * 2018-01-03: add angle_deg input (mlp6)
+%
 
 DEBUG = 0;
+
+if ~exist('angle_deg', 'var'),
+    angle_deg = 0;
+end
 
 % node tolerance to search for center line in the lateral
 % dimension
@@ -179,7 +188,8 @@ for x=1:length(mpn),
             %%%%%fprintf(fout,'%i,%.4f\n',NodeID,InitTemp);
             % write point load data (negative to point in 
             % -z direction in the dyna model)
-            fprintf(foutload,'%d,3,%d,%0.2e,0 \n',NodeID,LCID,-PointLoad);
+            fprintf(foutload,'%d,3,%d,%0.2e,0 \n',NodeID,LCID,-PointLoad*cosd(angle_deg));
+            fprintf(foutload,'%d,2,%d,%0.2e,0 \n',NodeID,LCID,PointLoad*sind(angle_deg));
             if(abs(PointLoad) > MaxLoad),
                 MaxLoad = abs(PointLoad);
             end;
