@@ -44,3 +44,7 @@ v6.8.1
 v6.8.2
 ======
 * Fix float -> int formatting for `fprint`.
+
+v6.9.0a
+=======
+* Add angled point loads (for phased excitations).
