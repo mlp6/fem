@@ -47,4 +47,5 @@ v6.8.2
 
 v6.9.0a
 =======
-* Add angled point loads (for phased excitations).
+* Add angled point loads (for phased excitations)
+* Fix issue #21: `create_res_sim_mat.py` image plane extraction
