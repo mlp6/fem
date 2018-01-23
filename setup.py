@@ -6,8 +6,8 @@ if sys.version_info.major != 3 or (sys.version_info.major == 3 and
     sys.exit('You must use python >=3.6')
 
 setup(
-    name='arfi_fem',
-    packages=['arfi_fem', ],
+    name='fem',
+    packages=['fem', ],
     version='6.8.2',
     license='Apache v2.0',
     author='Mark Palmeri',
