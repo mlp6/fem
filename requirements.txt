@@ -6,3 +6,5 @@ pytest-pep8
 h5py
 matplotlib
 ipython
+pudb
+jupyter
