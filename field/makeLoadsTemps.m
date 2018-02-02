@@ -177,8 +177,8 @@ for x=1:length(mpn),
                         PointLoad = PointLoad / 2;
                     end;
                 case 'h'
-                    % if the load is on the symmetry face (x=0), then divide by 2
-                    if(abs(xcoord) < 1e-4),
+                    % if the load is on the symmetry face (y=0), then divide by 2
+                    if(abs(ycoord) < 1e-4),
                         PointLoad = PointLoad / 2;
                     end;
                 otherwise
@@ -188,8 +188,13 @@ for x=1:length(mpn),
             %%%%%fprintf(fout,'%i,%.4f\n',NodeID,InitTemp);
             % write point load data (negative to point in 
             % -z direction in the dyna model)
-            fprintf(foutload,'%d,3,%d,%0.2e,0 \n',NodeID,LCID,-PointLoad*cosd(angle_deg));
-            fprintf(foutload,'%d,2,%d,%0.2e,0 \n',NodeID,LCID,PointLoad*sind(angle_deg));
+            if (angle_deg == 0),
+                fprintf(foutload,'%d,3,%d,%0.2e,0 \n',NodeID,LCID,-PointLoad);
+            else,
+                fprintf(foutload,'%d,3,%d,%0.2e,0 \n',NodeID,LCID,-PointLoad*cosd(angle_deg));
+                fprintf(foutload,'%d,2,%d,%0.2e,0 \n',NodeID,LCID,PointLoad*sind(angle_deg));
+            end
+
             if(abs(PointLoad) > MaxLoad),
                 MaxLoad = abs(PointLoad);
             end;
