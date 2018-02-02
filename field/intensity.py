@@ -36,7 +36,6 @@ class Intensity:
         plt.imshow(np.flipud(image_plane_intensity.transpose()))
         plt.show()
 
-
     def gen_pt_loads(self, node_search_tol_cm=1e-3):
         """generate ls-dyna point loads input file
         """
