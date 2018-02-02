@@ -27,10 +27,14 @@ class PointLoads:
 
         # -1 on next to move to 0 start indexing
         planeNodeIDs = fem_mesh.extractPlane(self.snic, self.axes,
-                                             (0, ele_coord)) - 1
+                                             (0, ele_coord))
 
-        # TODO: This needs to be adapted to work with the sparse point loads file
-        image_plane_loads = np.take(self.point_loads['NID'], planeNodeIDs)
+        image_plane_loads = np.zeros(planeNodeIDs.shape)
+        for m, a in enumerate(planeNodeIDs):
+            for n, nid in enumerate(a):
+                b = np.where(self.point_loads['NID'] == nid)
+                if b:
+                    image_plane_loads[m][n] = self.point_loads['Magnitude'][b]
 
         plt.imshow(np.flipud(image_plane_loads.transpose()))
         plt.show()
