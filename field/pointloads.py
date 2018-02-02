@@ -7,7 +7,7 @@ class PointLoads:
         self.load_sorted_nodes()
 
     def load_loads(self):
-        from numpy import np
+        import numpy as np
 
         self.point_loads = np.loadtxt('PointLoads-f1.80-F1.0-FD0.120-a0.50.dyn', comments=['$', '*'],
                                  delimiter=',', dtype={'names': ('NID', 'Direction', 'LCID',
@@ -33,8 +33,10 @@ class PointLoads:
         for m, a in enumerate(planeNodeIDs):
             for n, nid in enumerate(a):
                 b = np.where(self.point_loads['NID'] == nid)
-                if b:
-                    image_plane_loads[m][n] = self.point_loads['Magnitude'][b]
+                try:
+                    image_plane_loads[m][n] = self.point_loads['Magnitude'][b[0]]
+                except:
+                    pass
 
         plt.imshow(np.flipud(image_plane_loads.transpose()))
         plt.show()
