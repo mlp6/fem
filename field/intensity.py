@@ -14,7 +14,7 @@ class Intensity:
         field_intensities = loadmat(self.dynamat)
         self.intensity = field_intensities['intensity']
         self.FIELD_PARAMS = field_intensities['FIELD_PARAMS']
-        self.focal_depth_cm = self.FIELD_PARAMS['focus'][2] * 100
+        # self.focal_depth_cm = self.FIELD_PARAMS['focus'][2] * 100
 
     def load_sorted_nodes(self):
         from fem.mesh import fem_mesh
