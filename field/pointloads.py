@@ -9,10 +9,13 @@ class PointLoads:
     def load_loads(self):
         import numpy as np
 
-        self.point_loads = np.loadtxt('PointLoads-f1.80-F1.0-FD0.120-a0.50.dyn', comments=['$', '*'],
-                                 delimiter=',', dtype={'names': ('NID', 'Direction', 'LCID',
-                                                                 'Magnitude', 'None'),
-                                                       'formats': ('i4', 'i4', 'i4', 'f4', 'i4')})
+        self.pt_loads = np.loadtxt('PointLoads-f1.80-F1.0-FD0.120-a0.50.dyn',
+                                   comments=['$', '*'],
+                                   delimiter=',',
+                                   dtype={'names': ('NID', 'Direction', 'LCID',
+                                                    'Magnitude', 'None'),
+                                          'formats': ('i4', 'i4', 'i4',
+                                                      'f4', 'i4')})
 
     def load_sorted_nodes(self):
         from fem.mesh import fem_mesh
@@ -32,9 +35,9 @@ class PointLoads:
         image_plane_loads = np.zeros(planeNodeIDs.shape)
         for m, a in enumerate(planeNodeIDs):
             for n, nid in enumerate(a):
-                b = np.where(self.point_loads['NID'] == nid)
+                b = np.where(self.pt_loads['NID'] == nid)
                 try:
-                    image_plane_loads[m][n] = self.point_loads['Magnitude'][b[0]]
+                    image_plane_loads[m][n] = self.pt_loads['Magnitude'][b[0]]
                 except:
                     pass
 
