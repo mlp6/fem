@@ -19,8 +19,6 @@ def main():
 
     run(args.dynadeck, args.ressim, args.nodedyn, args.dispout, legacynodes)
 
-    return 0
-
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
@@ -75,57 +73,55 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
     first_timestep_bytes = header['num_nodes'] * header['num_dims'] * word_size
     timestep_bytes = header['num_nodes'] * (header['num_dims'] - 1) * word_size
 
-    fid = open_dispout(dispout)
+    with open_dispout(dispout) as fid:
+        trange = [x for x in range(1, header['num_timesteps'] + 1)]
 
-    trange = [x for x in range(1, header['num_timesteps'] + 1)]
+        arfidata = preallocate_arfidata(image_plane, header['num_timesteps'])
 
-    arfidata = preallocate_arfidata(image_plane, header['num_timesteps'])
+        print('Total Timesteps: {}'.format(header['num_timesteps']))
+        print('Extracting timestep:', end=' ')
 
-    print(('Time step:'), end=' ')
-    for t in trange:
-        # extract the disp values for the appropriate time step
-        if (t == 1) or legacynodes:
+        for t in trange:
             print(('%i' % t), end=' ', flush=True)
-            fmt = 'f' * int(first_timestep_words)
-            fid.seek(header_bytes + first_timestep_bytes * (t - 1), 0)
-            disp_slice = np.asarray(struct.unpack(fmt,
-                                    fid.read(first_timestep_bytes)), int)
-            disp_slice = np.reshape(disp_slice, (header['num_nodes'],
-                                    header['num_dims']), order='F')
-            # extract the nodcount()e IDs on the image plane and save
-            nodeidlist = disp_slice[:, 0].squeeze()
-            zdisp = np.zeros((nodeidlist.max() + 1, 1))
-            # disp_comp + 1 to take into account node IDs in first timestep
-            zdisp = create_zdisp(nodeidlist,
-                                 disp_slice[:, (disp_comp + 1)].squeeze(),
-                                 zdisp)
+            if (t == 1) or legacynodes:
+                fmt = 'f' * int(first_timestep_words)
+                fid.seek(header_bytes + first_timestep_bytes * (t - 1), 0)
+                disp_slice = np.asarray(struct.unpack(fmt,
+                                        fid.read(first_timestep_bytes)), int)
+                disp_slice = np.reshape(disp_slice, (header['num_nodes'],
+                                        header['num_dims']), order='F')
+                # extract the nodcount()e IDs on the image plane and save
+                nodeidlist = disp_slice[:, 0].squeeze()
+                zdisp = np.zeros((nodeidlist.max() + 1, 1))
+                # disp_comp + 1 to take into account node IDs in first timestep
+                zdisp = create_zdisp(nodeidlist,
+                                     disp_slice[:, (disp_comp + 1)].squeeze(),
+                                     zdisp)
 
-        # node IDs are _not_ saved after the first timestep in latest disp.dat
-        # files (flagged by legacynodes boolean)
-        else:
-            print(('%i' % t), end=' ', flush=True)
-            fmt = 'f' * int(timestep_bytes / word_size)
-            fid.seek(header_bytes + first_timestep_bytes +
-                     timestep_bytes * (t - 2), 0)
-            disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
-            disp_slice = np.reshape(disp_slice, (header['num_nodes'],
-                                                 (header['num_dims'] - 1)),
-                                    order='F')
-            zdisp = create_zdisp(nodeidlist,
-                                 disp_slice[:, disp_comp].squeeze(),
-                                 zdisp)
+            # node IDs are not saved after the first timestep in latest disp.dat
+            # files (flagged by legacynodes boolean)
+            else:
+                fmt = 'f' * int(timestep_bytes / word_size)
+                fid.seek(header_bytes + first_timestep_bytes +
+                         timestep_bytes * (t - 2), 0)
+                disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
+                disp_slice = np.reshape(disp_slice, (header['num_nodes'],
+                                                     (header['num_dims'] - 1)),
+                                        order='F')
+                zdisp = create_zdisp(nodeidlist,
+                                     disp_slice[:, disp_comp].squeeze(),
+                                     zdisp)
 
-        if arfidata.ndim == 3:
-            for (i, j), nodeid in np.ndenumerate(image_plane):
-                arfidata[j, i, t - 1] = disp_scale * zdisp[nodeid]
-        elif arfidata.ndim == 4:
-            for (k, i, j), nodeid in np.ndenumerate(image_plane):
-                arfidata[j, i, k, t - 1] = disp_scale * zdisp[nodeid]
-        else:
-            warn("unexpected number of dimensions for arfidata")
+            if arfidata.ndim == 3:
+                for (i, j), nodeid in np.ndenumerate(image_plane):
+                    arfidata[j, i, t - 1] = disp_scale * zdisp[nodeid]
+            elif arfidata.ndim == 4:
+                for (k, i, j), nodeid in np.ndenumerate(image_plane):
+                    arfidata[j, i, k, t - 1] = disp_scale * zdisp[nodeid]
+            else:
+                warn("unexpected number of dimensions for arfidata")
 
-    print('done!')
-    fid.close()
+        print('\nDone extracting all timesteps.')
 
     # ndenumerate only iterates in C-ordering, so flip this over to match the
     # F-ordering of Matlab-like code
@@ -228,20 +224,31 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     if axis_scale[2] < 1:
         axial = axial[::-1]
 
+    print('Saving data to: {}'.format(resfile), flush=True)
     if resfile.endswith('.h5'):
         import h5py
         r = h5py.File(resfile, 'w')
-        r.create_dataset(data=arfidata, name="arfidata",
-                         compression="gzip", compression_opts=9)
-        r.create_dataset(data=lat, name="lat",
-                         compression="gzip", compression_opts=9)
-        r.create_dataset(data=axial, name="axial",
-                         compression="gzip", compression_opts=9)
+        r.create_dataset(data=arfidata,
+                         name="arfidata",
+                         compression="gzip",
+                         compression_opts=9)
+        r.create_dataset(data=lat,
+                         name="lat",
+                         compression="gzip",
+                         compression_opts=9)
+        r.create_dataset(data=axial,
+                         name="axial",
+                         compression="gzip",
+                         compression_opts=9)
         if arfidata.ndim == 4:
-            r.create_dataset(data=elev, name="elev",
-                             compression="gzip", compression_opts=9)
-        r.create_dataset(data=t, name="t",
-                         compression="gzip", compression_opts=9)
+            r.create_dataset(data=elev,
+                             name="elev",
+                             compression="gzip",
+                             compression_opts=9)
+        r.create_dataset(data=t,
+                         name="t",
+                         compression="gzip",
+                         compression_opts=9)
     elif resfile.endswith('.mat'):
         if arfidata.ndim == 4:
             savemat(resfile,
@@ -276,11 +283,7 @@ def read_header(dispout):
     import struct
 
     word_size = 4  # bytes
-    if dispout.endswith('.xz'):
-        import lzma
-        d = lzma.open(dispout, 'rb')
-    else:
-        d = open(dispout, 'rb')
+    d = open_dispout(dispout)
     num_nodes = struct.unpack('f', d.read(word_size))
     num_dims = struct.unpack('f', d.read(word_size))
     num_timesteps = struct.unpack('f', d.read(word_size))
@@ -366,6 +369,38 @@ def gen_t(dt, num_timesteps):
     t = [float(x) * dt for x in range(0, num_timesteps)]
 
     return t
+
+
+def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
+                      ressim="res_sim.h5", nodedyn="nodes.dyn",
+                      dispout="disp.dat.xz"):
+    """extract 3D volume of specified displacement component
+
+    :param dynadeck: LS-DYNA3D input deck (used to get dt)
+    :param disp_comp=2: displacement component to extract (0, 1, 2)
+    :param disp_scale=1e4: displacement scaling factor (cm -> um)
+    :param ressim="res_sim.h5": output file name (can be MAT or HDF5)
+    :param nodedyn="nodes.dyn": node input file
+    :param dispout="disp.dat.xz": binary displacement data
+    """
+
+    from fem.mesh import fem_mesh
+    import fem.post.create_res_sim_mat as create_res_sim
+    import numpy as np
+
+    node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
+    [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
+
+    header = create_res_sim.read_header(dispout)
+    dt = create_res_sim.extract_dt(dynadeck)
+    t = [float(x) * dt for x in range(0, header['num_timesteps'])]
+
+    arfidata = create_res_sim.extract_arfi_data(dispout, header, snic['id'],
+                                                disp_comp, disp_scale,
+                                                legacynodes=False)
+
+    create_res_sim.save_res_mat(ressim, arfidata, axes, t)
+
 
 if __name__ == "__main__":
     main()
