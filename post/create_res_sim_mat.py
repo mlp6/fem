@@ -98,7 +98,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
                                      disp_slice[:, (disp_comp + 1)].squeeze(),
                                      zdisp)
 
-            # node IDs are _not_ saved after the first timestep in latest disp.dat
+            # node IDs are not saved after the first timestep in latest disp.dat
             # files (flagged by legacynodes boolean)
             else:
                 fmt = 'f' * int(timestep_bytes / word_size)
