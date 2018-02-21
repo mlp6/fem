@@ -1,10 +1,11 @@
+h5py
+ipython
+jupyter
+matplotlib
 numpy
-scipy
 pytest
 pytest-cov
 pytest-pep8
-h5py
-matplotlib
-ipython
+scipy
+pyevtk
 pudb
-jupyter
