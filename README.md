@@ -37,8 +37,8 @@ automatically at http://fem.readthedocs.org/.
 Issues
 ======
 
-Please file any bug reports, features requests, etc. using the GitLab Issue
-Tracker: https://gitlab.oit.duke.edu/mlp6/fem/issues
+Please file any bug reports, features requests, etc. using the GitHub Issue
+tracker: https://github.com/mlp6/fem/issues
 
 Contributors
 ============
