@@ -1,5 +1,7 @@
 [![DOI](https://zenodo.org/badge/72387361.svg)](https://zenodo.org/badge/latestdoi/72387361)
 <a href="https://travis-ci.org/mlp6/fem"><img src="https://travis-ci.org/mlp6/fem.svg?branch=master" /></a>
+[![Documentation Status](https://readthedocs.org/projects/fem/badge/?version=latest)](http://fem.readthedocs.io/en/latest/?badge=latest)
+
 
 Acoustic Radiation Force FEM Tools
 ==================================
