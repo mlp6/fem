@@ -19,7 +19,6 @@ class SaveVTK:
         """
         import numpy as np
 
-        # TODO: create a data object
         if isinstance(data, np.ndarray):
             self.data = data
         elif isinstance(data, tuple):
@@ -46,7 +45,7 @@ class SaveVTK:
             vtkfile.write("DATASET STRUCTURED_POINTS\n")
             vtkfile.write("DIMENSIONS    {:d}   {:d}   {:d}\n\n".format(*self.data.shape))
             vtkfile.write("ORIGIN    {:.2f}   {:.2f}   {:.2f}\n".format(*self.origin))
-            vtkfile.write("SPACING    {:.3f}   {.3f}   {.3f}\n\n".format(*self.spacing))
+            vtkfile.write("SPACING    {:.3f}   {:.3f}   {:.3f}\n\n".format(*self.spacing))
             vtkfile.write("POINT_DATA   {:d}\n".format(np.prod(self.data.shape)))
             vtkfile.write("SCALARS scalars float\n")
             vtkfile.write("LOOKUP_TABLE default\n\n")
