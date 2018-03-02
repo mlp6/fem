@@ -12,12 +12,20 @@ class SaveVTK:
     def __init__(self, data, origin, spacing):
         """ initialize the object
 
-        :param float data: 3D numpy array [scalar]
-                           3D numpy array object (X, Y, Z attributes) [vector]
+        :param float data: [scalar] 3D numpy array
+                           [vector] tuple of 3D numpy arrays (X, Y, Z)
         :param float origin: mesh origin tuple (x, y, z)
         :param float spacing: node spacing tuple (x, y, z)
         """
-        self.data = data
+        import numpy as np
+
+        # TODO: create a data object
+        if isinstance(data, np.ndarray):
+            self.data = data
+        elif isinstance(data, tuple):
+            self.data.X = data[0]
+            self.data.Y = data[1]
+            self.data.Z = data[2]
         self.origin = origin
         self.spacing = spacing
 
