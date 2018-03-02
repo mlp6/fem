@@ -30,23 +30,22 @@ class SaveVTK:
         """
         import numpy as np
 
-        vtkfile = open(filename, 'w')
-        vtkfile.write("# vtk DataFile Version 2.0\n")
-        if header_comment:
-            vtkfile.write("%s\n" % (header_comment))
-        vtkfile.write("ASCII\n\n")
-        vtkfile.write("DATASET STRUCTURED_POINTS\n")
-        vtkfile.write("DIMENSIONS    %d   %d   %d\n\n" % (self.data.shape))
-        vtkfile.write("ORIGIN    %.2f   %.2f   %.2f\n" % (self.origin))
-        vtkfile.write("SPACING    %.3f   %.3f   %.3f\n\n" % (self.spacing))
-        vtkfile.write("POINT_DATA   %d\n" % (np.prod(self.data.shape)))
-        vtkfile.write("SCALARS %s float\n" % data_name)
-        vtkfile.write("LOOKUP_TABLE default\n\n")
-        for x in range(0, self.data.shape[0]):
-            for y in range(0, self.data.shape[1]):
-                for z in range(0, self.data.shape[2]):
-                    vtkfile.write("%.6e " % self.data[x, y, z])
-                vtkfile.write(" \n")
-        vtkfile.close()
+        with open(filename, 'w') as vtkfile:
+            vtkfile.write("# vtk DataFile Version 2.0\n")
+            if header_comment:
+                vtkfile.write("%s\n" % (header_comment))
+            vtkfile.write("ASCII\n\n")
+            vtkfile.write("DATASET STRUCTURED_POINTS\n")
+            vtkfile.write("DIMENSIONS    %d   %d   %d\n\n" % (self.data.shape))
+            vtkfile.write("ORIGIN    %.2f   %.2f   %.2f\n" % (self.origin))
+            vtkfile.write("SPACING    %.3f   %.3f   %.3f\n\n" % (self.spacing))
+            vtkfile.write("POINT_DATA   %d\n" % (np.prod(self.data.shape)))
+            vtkfile.write("SCALARS %s float\n" % data_name)
+            vtkfile.write("LOOKUP_TABLE default\n\n")
+            for x in range(0, self.data.shape[0]):
+                for y in range(0, self.data.shape[1]):
+                    for z in range(0, self.data.shape[2]):
+                        vtkfile.write("%.6e " % self.data[x, y, z])
+                    vtkfile.write(" \n")
 
         return 0
