@@ -23,7 +23,7 @@ Also please cite the following manuscript if you use `Field II <http://field-ii.
 `J.A. Jensen and N. B. Svendsen: Calculation of pressure fields from
 arbitrarily shaped, apodized, and excited ultrasound transducers, IEEE
 Trans. Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
-1992. <http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123>`__
+1992. <http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123>`
 
 ## Documentation
 
