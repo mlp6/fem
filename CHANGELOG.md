@@ -45,7 +45,9 @@ v6.8.2
 ======
 * Fix float -> int formatting for `fprint`.
 
-v6.9.0a
+v6.9.0
 =======
 * Add angled point loads (for phased excitations)
 * Fix issue #21: `create_res_sim_mat.py` image plane extraction
+* Fix `py.test` issues with `tmpdir` fixtures
+* Add ASCII VTK scalar and vector file generation
