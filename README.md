@@ -1,6 +1,5 @@
 [![DOI](https://zenodo.org/badge/72387361.svg)](https://zenodo.org/badge/latestdoi/72387361)
 <a href="https://travis-ci.org/mlp6/fem"><img src="https://travis-ci.org/mlp6/fem.svg?branch=master" /></a>
-[![Documentation Status](https://readthedocs.org/projects/fem/badge/?version=latest)](http://fem.readthedocs.io/en/latest/?badge=latest)
 
 # Acoustic Radiation Force FEM Tools
 
@@ -13,23 +12,23 @@ license, as detailed in the LICENSE file.
 If you are using the FEM simulation tools in work that you publish, then
 please consider citing the following manuscript:
 
-`Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR. "A
+[Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR. "A
 Finite-Element Method Model of Soft Tissue Response to Impulsive
 Acoustic Radiation Force," IEEE UFFC, 52(10): 1699-1712,
-2005. <http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/>`
+2005](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/)
 
 Also please cite the following manuscript if you use `Field II <http://field-ii.dk>`:
 
-`J.A. Jensen and N. B. Svendsen: Calculation of pressure fields from
+[J.A. Jensen and N. B. Svendsen: Calculation of pressure fields from
 arbitrarily shaped, apodized, and excited ultrasound transducers, IEEE
 Trans. Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
-1992. <http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123>`
+1992.](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123)
 
 ## Documentation
 
 The latest documentation is automatically generated using Sphinx and can be
 built in ``docs/``.  The same documentation is also built and rendered
-automatically at http://fem.readthedocs.org/.
+automatically at https://mlp6.github.io/fem/.
 
 ## Issues
 
