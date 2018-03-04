@@ -1,9 +1,7 @@
 *.pyc
 .ipynb_checkpoints
 *.bak
-.idea
 scale_disp_dat
-_build
 .cache
 .coverage
 lspost.*
