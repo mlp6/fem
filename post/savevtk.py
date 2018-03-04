@@ -7,6 +7,7 @@ mlp6@duke.edu
 2016-04-24
 """
 
+
 class SaveVTK:
 
     def __init__(self, data, origin, spacing):
@@ -33,7 +34,8 @@ class SaveVTK:
             self.__data = data
         elif isinstance(data, tuple):
 
-            if ((data[0].shape != data[1].shape) | (data[0].shape != data[2].shape)):
+            if ((data[0].shape != data[1].shape) |
+                    (data[0].shape != data[2].shape)):
                 raise IndexError('The shape of the ndarrays must be the same.')
 
             self.__data = {}
@@ -41,8 +43,8 @@ class SaveVTK:
             self.__data['y'] = data[1]
             self.__data['z'] = data[2]
 
-
-    def save_scalar(self, filename, dataname="scalars", header_comment=None):
+    def save_scalar(self, filename, dataname="scalars",
+                    header_comment=None):
         """save 3D scalar data in VTK structure points format
 
         :param string filename: output filename
@@ -57,10 +59,14 @@ class SaveVTK:
                 vtkfile.write("%s\n" % (header_comment))
             vtkfile.write("ASCII\n\n")
             vtkfile.write("DATASET STRUCTURED_POINTS\n")
-            vtkfile.write("DIMENSIONS    {:d}   {:d}   {:d}\n\n".format(*self.data.shape))
-            vtkfile.write("ORIGIN    {:.2f}   {:.2f}   {:.2f}\n".format(*self.origin))
-            vtkfile.write("SPACING    {:.3f}   {:.3f}   {:.3f}\n\n".format(*self.spacing))
-            vtkfile.write("POINT_DATA   {:d}\n".format(np.prod(self.data.shape)))
+            vtkfile.write("DIMENSIONS    {:d}   {:d}   {:d}\n\n"
+                          .format(*self.data.shape))
+            vtkfile.write("ORIGIN    {:.2f}   {:.2f}   {:.2f}\n"
+                          .format(*self.origin))
+            vtkfile.write("SPACING    {:.3f}   {:.3f}   {:.3f}\n\n"
+                          .format(*self.spacing))
+            vtkfile.write("POINT_DATA   {:d}\n"
+                          .format(np.prod(self.data.shape)))
             vtkfile.write("SCALARS {} float\n".format(dataname))
             vtkfile.write("LOOKUP_TABLE default\n\n")
             for x in range(0, self.data.shape[0]):
@@ -68,7 +74,6 @@ class SaveVTK:
                     for z in range(0, self.data.shape[2]):
                         vtkfile.write("{:.6e} ".format(self.data[x, y, z]))
                     vtkfile.write(" \n")
-
 
     def save_vector(self, filename, dataname="vectors", header_comment=None):
         """save 3D vector array in VTK structure points format
@@ -86,12 +91,16 @@ class SaveVTK:
             vtkfile.write('ASCII\n')
             vtkfile.write('\n')
             vtkfile.write('DATASET STRUCTURED_POINTS\n')
-            vtkfile.write('DIMENSIONS    {:d}   {:d}   {:d}\n'.format(*self.data['x'].shape))
-            vtkfile.write('\n');
-            vtkfile.write("ORIGIN    {:.2f}   {:.2f}   {:.2f}\n".format(*self.origin))
-            vtkfile.write("SPACING   {:.3f}   {:.3f}   {:.3f}\n".format(*self.spacing))
+            vtkfile.write('DIMENSIONS    {:d}   {:d}   {:d}\n'
+                          .format(*self.data['x'].shape))
             vtkfile.write('\n')
-            vtkfile.write('POINT_DATA   {:d}\n'.format(np.prod(self.data['x'].shape)))
+            vtkfile.write("ORIGIN    {:.2f}   {:.2f}   {:.2f}\n"
+                          .format(*self.origin))
+            vtkfile.write("SPACING   {:.3f}   {:.3f}   {:.3f}\n"
+                          .format(*self.spacing))
+            vtkfile.write('\n')
+            vtkfile.write('POINT_DATA   {:d}\n'
+                          .format(np.prod(self.data['x'].shape)))
             vtkfile.write('VECTORS {} float\n'.format(dataname))
             vtkfile.write('\n')
             for a in range(0, self.data['x'].shape[0]):
