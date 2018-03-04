@@ -32,6 +32,10 @@ class SaveVTK:
         if isinstance(data, np.ndarray):
             self.__data = data
         elif isinstance(data, tuple):
+
+            if ((data[0].shape != data[1].shape) | (data[0].shape != data[2].shape)):
+                raise IndexError('The shape of the ndarrays must be the same.')
+
             self.__data = {}
             self.__data['x'] = data[0]
             self.__data['y'] = data[1]
@@ -74,11 +78,6 @@ class SaveVTK:
         :param string header_comment: default = None
         """
         import numpy as np
-
-        # TODO: move this check when initializing the data object
-        if ((size(X) != size(Y)) | (size(X) != size(Z))):
-            fprint('Error: velocity arrays of unequal size\n'); return;
-        end
 
         with open(filename, 'w') as vtkfile:
             vtkfile.write('# vtk DataFile Version 2.0\n')
