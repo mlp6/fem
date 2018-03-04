@@ -144,7 +144,7 @@ def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
     Args:
       nodeidlist: first column of disp_slice with node IDs in row order
       disp_slice_z_only: squeezed disp_slice of just zisp
-      zdisp: 
+      zdisp:
 
     Returns:
       zdisp -- array of z-disp in rows corresponding to node ID
@@ -189,7 +189,7 @@ def read_cli():
 
 def extract_image_plane(snic, axes, ele_pos):
     """extract 2D imaging plane node IDs
-    
+
     Extract a 2D matrix of the imaging plane node IDs based on the
     elevation position (mesh coordinates).
 
@@ -212,7 +212,7 @@ def extract_image_plane(snic, axes, ele_pos):
 
 def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     """save res_sim.mat file using variables scanner-generated data
-    
+
     data are saved as float32 to save space
 
     Args:
@@ -221,8 +221,8 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
       axes: ele, lat, axial (mesh units)
       t: time
       axis_scale: scale axes sign & mag [default: [-10, 10, -10]]
-      10: 
-      -10: 
+      10:
+      -10:
 
     Returns:
       0
@@ -317,7 +317,7 @@ def read_header(dispout):
 
 def extract_dt(dyn_file):
     """extract time step (dt) from dyna input deck
-    
+
     assumes that input deck is comma-delimited
 
     Args:
@@ -411,18 +411,15 @@ def gen_t(dt, num_timesteps):
 def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
                       ressim="res_sim.h5", nodedyn="nodes.dyn",
                       dispout="disp.dat.xz"):
-    """extract 3D volume of specified displacement component
+    """Extract 3D volume of specified displacement component.
 
     Args:
-      dynadeck: LS-DYNA3D input deck (used to get dt) (Default value = None)
-      disp_comp: 2: displacement component to extract (0, 1, 2) (Default value = 2)
-      disp_scale: 1e4: displacement scaling factor (cm -> um) (Default value = -1e4)
-      ressim: res_sim.h5": output file name (can be MAT or HDF5) (Default value = "res_sim.h5")
-      nodedyn: nodes.dyn": node input file (Default value = "nodes.dyn")
-      dispout: disp.dat.xz": binary displacement data (Default value = "disp.dat.xz")
-
-    Returns:
-
+        dynadeck (str): LS-DYNA3D input deck (used to get dt)
+        disp_comp (int): displacement component to extract (0, 1, 2)
+        disp_scale (float): displacement scaling factor (cm -> um)
+        ressim (str): output file name (can be MAT or HDF5)
+        nodedyn (str): node input file
+        dispout (str): binary displacement data
     """
 
     from fem.mesh import fem_mesh

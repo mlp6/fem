@@ -69,7 +69,7 @@ def parse_line(line):
 
     Args:
       str: line: raw data line from nodout
-      line: 
+      line:
 
     Returns:
       float: raw_data
@@ -136,7 +136,7 @@ def generate_header(data, outfile):
     Args:
       data: data
       str: outfile: output filename to count times from
-      outfile: 
+      outfile:
 
     Returns:
       header
@@ -153,10 +153,10 @@ def generate_header(data, outfile):
 
 def count_timesteps(outfile):
     """count timesteps written to nodout
-    
+
     searches for 'time' in lines, and then removes 1 extra entry that occurs
     for t = 0
-    
+
     grep will be used on linux systems (way faster)
 
     Args:
@@ -191,13 +191,13 @@ def count_timesteps(outfile):
 
 def write_headers(outfile, header):
     """write binary header
-    
+
     write binary header information to reformat things on read downstream
 
     Args:
       str: outfile: output file object
       header: dictcontaining the necessary information
-      outfile: 
+      outfile:
 
     Returns:
       None
@@ -220,7 +220,7 @@ def process_timestep_data(data, outfile, writenode):
       data: param outfile: output file object
       writenode: Boolean if the node IDs should be written to save
     ~25% of the disp.dat file size
-      outfile: 
+      outfile:
 
     Returns:
       None
@@ -240,14 +240,14 @@ def process_timestep_data(data, outfile, writenode):
 
 def correct_Enot(line):
     """correct dropped 'E' in -??? scientific notation
-    
+
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
 
     Args:
       str: line: strict of split raw string data
-      line: 
+      line:
 
     Returns:
       line with corrected -??? -> -E100
@@ -266,7 +266,7 @@ def correct_neg(line):
 
     Args:
       str: line:
-      line: 
+      line:
 
     Returns:
       line with space(s) added before negative coefficients

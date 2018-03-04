@@ -70,7 +70,7 @@ class ResSim:
 
     def play(self, timerange):
         """play an animation
-        
+
         Strongly recommend not stepping though each timesteps; use some skips!
 
         Args:
@@ -96,14 +96,6 @@ class ResSim:
         plt.show()
 
     def animate(self, i):
-        """
-
-        Args:
-          i: 
-
-        Returns:
-
-        """
         import matplotlib.pyplot as plt
         plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, i])
         plt.title('t = {:.2f} ms'.format(self.t[i]))

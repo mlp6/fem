@@ -21,7 +21,7 @@ limitations under the License.
 
 def check_version():
     """check at least python2.7
-    
+
     Needed for argparse compatibility
 
     Args:
@@ -54,7 +54,7 @@ def strip_comments(nodefile):
 
 def count_header_comment_skips(nodefile):
     """count file head comments lines
-    
+
     ..synopsis:: count comments lines to skip before the first keyword (*)
 
     Args:
@@ -78,7 +78,7 @@ def rm_tmp_file(nodefile_nocmt):
     """
 
     Args:
-      nodefile_nocmt: 
+      nodefile_nocmt:
 
     Returns:
 
@@ -92,7 +92,7 @@ def rm_tmp_file(nodefile_nocmt):
 
 def extractPlane(snic, axes, plane):
     """extract plane node IDs
-    
+
     Extract the node IDs on a specified plane from a sorted node ID &
     coordinate 3D array.
 
@@ -102,7 +102,7 @@ def extractPlane(snic, axes, plane):
       list: plane:
     + index - index of the plane to extract (x=0, y=1, z=2)
     + coord - coordinate of the plane (must exist in axes list)
-      plane: 
+      plane:
 
     Returns:
       planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
@@ -130,11 +130,12 @@ def SortNodeIDs(nic, sort=False):
     """spatially sort node IDs into 3D matrix
 
     Args:
-      nic: nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
-      sort: False (assume node ordering); True (spatially sort) (Default value = False)
+        nic (ndarray): nodeIDcoords [# nodes x 4, dtype = i4,f4,f4,f4]
+        sort (Boolean): False (assume node ordering)
+                      True (spatially sort)
 
     Returns:
-      SortedNodeIDs - n matrix (x,y,z), axes]
+        SortedNodeIDs (ndarray): n matrix (x,y,z), axes
 
     """
     from sys import exit
@@ -182,7 +183,7 @@ def SortElems(elems, axes):
 
 def load_nodeIDs_coords(nodefile="nodes.dyn"):
     """load in node IDs and coordinates
-    
+
     Exclude '*' keyword lines
 
     Args:

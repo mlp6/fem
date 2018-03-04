@@ -76,7 +76,7 @@ def parse_cli():
 
 def findStructNodeIDs(nodefile, struct_type, sopts):
     """find nodes in given geometry
-    
+
     Find node IDs that fall within a specified geometry (sphere, layer, cube,
     ellipsoid).
 
@@ -84,8 +84,8 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
       str: nodefile: (default: nodes.dyn)
       str: struct_type: sphere, layer, ellipsoid, cube
       sopts: struct-specific parameters
-      nodefile: 
-      struct_type: 
+      nodefile:
+      struct_type:
 
     Returns:
       structNodeIDs (dict)
@@ -191,8 +191,8 @@ def findStructElemIDs(elefile, structNodeIDs):
     Args:
       str: elefile: element filename
       ndarray: structNodeIDs:
-      elefile: 
-      structNodeIDs: 
+      elefile:
+      structNodeIDs:
 
     Returns:
       elems, structElemIds)
@@ -220,17 +220,17 @@ def findStructElemIDs(elefile, structNodeIDs):
 
 def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
     """Write new elements files with structure elements assigned a new part ID.
-    
+
     Write new elements files with structure elements assigned a new part ID.
 
     Args:
       str: nefile: new element file
       int: partid: new Part ID
       structNodeIDs: param structElemIDs:
-      nefile: 
-      partid: 
-      elems: 
-      structElemIDs: 
+      nefile:
+      partid:
+      elems:
+      structElemIDs:
 
     Returns:
       None

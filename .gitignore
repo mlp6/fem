@@ -1,4 +1,5 @@
 _build/
+.buildinfo
 *.pyc
 .ipynb_checkpoints
 *.bak

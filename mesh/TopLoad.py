@@ -1,17 +1,5 @@
+"""Generate compression loads on top surface.
 """
-:mod:`TopLoad` -- generate top load compression
-
-.. module:: TopLoad
-   :synopsis: Generate compression conditions for the top surface.
-
-.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
-"""
-
-
-
-__author__ = "Mark Palmeri "
-__email__ = "mlp6@duke.edu"
-__license__ = "Apache v2.0"
 
 
 def main():
@@ -36,8 +24,8 @@ def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
       nodefile: nodes.dyn' (Default value = 'nodes.dyn')
       top_face: 0, 0, 0, 0, 0, 1] (Default value = (0)
       lcid: load curve ID
-      0: 
-      1: 
+      0:
+      1:
 
     Returns:
 
@@ -54,7 +42,7 @@ def extract_top_plane_nodes(nodefile, top_face):
 
     Args:
       nodefile: param top_face:
-      top_face: 
+      top_face:
 
     Returns:
       planeNodeIDs
@@ -90,8 +78,8 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
       loadtype: str]: disp, vel, accel, force
       direction: 0-2]
       amplitude: param lcid: LCID
-      planeNodeIDs: 
-      lcid: 
+      planeNodeIDs:
+      lcid:
 
     Returns:
       None

@@ -29,7 +29,7 @@ def main():
 
 def apply_face_bc_only(face_constraints, nodefile="nodes.dyn",
                        bcfile="bc.dyn"):
-    """driver function to apply node BCs just to faces
+    """Driver function to apply node BCs just to faces.
 
     Args:
       face_constraints (tuple): 3x2 tuple of strings
@@ -39,7 +39,6 @@ def apply_face_bc_only(face_constraints, nodefile="nodes.dyn",
         Specify face BCs as ((xmin, xmax), (ymin, ymax), (zmin, zmax))
       nodefile (str): input file for node definitions (*NODE)
       bcfile (str): output file for boundary conditions (*BOUNDARY_SPC_NODE)
-
     """
 
     import fem_mesh
@@ -247,16 +246,15 @@ def read_cli():
 def write_nonreflecting(BCFILE, segID):
     """write non-reflecting boundaries (set segments) to input file with segments
 
-    .. warnings also:: ASSUMES THAT SEGMENT FILE HAS ALREADY BEEN WRITTEN TO AND NOT TERMINATED
-     WITH *END
+    This function assumes that segment file has already been written to and not
+    terminated with *END.
 
     Args:
-      BCFILE: file IO object
-      int: segID: maximum segment ID #, assuming started at 1
-      segID:
+        BCFILE: file IO object
+        segID (int): maximum segment ID #, assuming started at 1
 
     Returns:
-      0 on success
+        0 on success
 
     """
     BCFILE.write('*BOUNDARY_NON_REFLECTING\n')
