@@ -6,9 +6,9 @@ if sys.version_info.major != 3 or (sys.version_info.major == 3 and
     sys.exit('You must use python >=3.5')
 
 setup(
-    name='fem',
-    packages=['fem', ],
-    version='6.9.1',
+    name='FEM',
+    packages=['fem'],
+    version=fem.__version__,
     license='Apache v2.0',
     author='Mark Palmeri',
     author_email='mlp6@duke.edu',
