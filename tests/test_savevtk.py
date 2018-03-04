@@ -22,6 +22,7 @@ def test_savevtk_data_nparray_attribute(savevtk_data):
 
     assert vtkobj.data.all() == savevtk_data.all()
 
+
 def test_savevtk_data_origin(savevtk_data):
     from savevtk import SaveVTK
 
@@ -70,7 +71,8 @@ def test_write_scalar(savevtk_data, tmpdir):
 
     vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
 
-    vtkobj.save_scalar(fname.strpath, dataname="scalars", header_comment="unit test")
+    vtkobj.save_scalar(fname.strpath, dataname="scalars",
+                       header_comment="unit test")
 
     with open(fname.strpath, 'r') as written_file:
         text = written_file.readlines()
@@ -94,7 +96,8 @@ def test_write_vector(savevtk_data, tmpdir):
 
     vtkobj = SaveVTK(data3d, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
 
-    vtkobj.save_vector(fname.strpath, dataname="vectors", header_comment="vector unit test")
+    vtkobj.save_vector(fname.strpath, dataname="vectors",
+                       header_comment="vector unit test")
 
     with open(fname.strpath, 'r') as written_file:
         text = written_file.readlines()
@@ -107,4 +110,3 @@ def test_write_vector(savevtk_data, tmpdir):
     assert text[10].split()[1] == '120'
     assert text[29].split()[17] == '8.000000'
     assert text[32].split()[17] == '20.000000'
-
