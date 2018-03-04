@@ -2,8 +2,8 @@ from distutils.core import setup
 import sys
 
 if sys.version_info.major != 3 or (sys.version_info.major == 3 and
-                                   sys.version_info.minor < 6):
-    sys.exit('You must use python >=3.6')
+                                   sys.version_info.minor < 5):
+    sys.exit('You must use python >=3.5')
 
 setup(
     name='fem',
