@@ -3,7 +3,8 @@
 *.bak
 .idea
 scale_disp_dat
-_build
+_build/
+build/
 .cache
 .coverage
 lspost.*
