@@ -7,7 +7,8 @@ if sys.version_info.major != 3 or (sys.version_info.major == 3 and
 
 setup(
     name='fem',
-    packages=['.', 'field', 'mesh', 'post'],
+    packages=['fem'],
+    package_dir={'fem': '.'},
     version='6.9.1',
     license='Apache v2.0',
     author='Mark Palmeri',
