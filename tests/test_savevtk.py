@@ -1,3 +1,4 @@
+import pytest
 import os
 import sys
 myPath = os.path.dirname(os.path.abspath(__file__))
@@ -51,3 +52,13 @@ def test_savevtk_data_3D_tuple(savevtk_data):
     assert vtkobj.data['x'].all() == savevtk_data.all()
     assert vtkobj.data['y'].all() == savevtk_data.all()
     assert vtkobj.data['z'].all() == savevtk_data.all()
+
+
+def test_savevtk_raise_3D_exception(savevtk_data):
+    from savevtk import SaveVTK
+
+    data3d = (savevtk_data, savevtk_data, savevtk_data[:, :, 0:2])
+
+    with pytest.raises(IndexError):
+        vtkobj = SaveVTK(data3d, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
+
