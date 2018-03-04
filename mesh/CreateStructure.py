@@ -11,6 +11,7 @@
 
 
 def main():
+    """ """
     args = parse_cli()
 
     struct_type = define_struct_type(args)
@@ -24,8 +25,7 @@ def main():
 
 
 def parse_cli():
-    """read in CLI arguments
-    """
+    """read in CLI arguments"""
     import argparse
 
     par = argparse.ArgumentParser(
@@ -76,14 +76,19 @@ def parse_cli():
 
 def findStructNodeIDs(nodefile, struct_type, sopts):
     """find nodes in given geometry
-
+    
     Find node IDs that fall within a specified geometry (sphere, layer, cube,
     ellipsoid).
 
-    :param str nodefile: (default: nodes.dyn)
-    :param str struct_type: sphere, layer, ellipsoid, cube
-    :param sopts: struct-specific parameters
-    :returns: structNodeIDs (dict)
+    Args:
+      str: nodefile: (default: nodes.dyn)
+      str: struct_type: sphere, layer, ellipsoid, cube
+      sopts: struct-specific parameters
+      nodefile: 
+      struct_type: 
+
+    Returns:
+      structNodeIDs (dict)
 
     """
     import sys
@@ -183,9 +188,15 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
 def findStructElemIDs(elefile, structNodeIDs):
     """find elements that contain nodes in structNodeIDs
 
-    :param str elefile: element filename
-    :param ndarray structNodeIDs:
-    :returns: (elems, structElemIds)
+    Args:
+      str: elefile: element filename
+      ndarray: structNodeIDs:
+      elefile: 
+      structNodeIDs: 
+
+    Returns:
+      elems, structElemIds)
+
     """
     from fem.mesh.fem_mesh import load_elems
 
@@ -209,14 +220,20 @@ def findStructElemIDs(elefile, structNodeIDs):
 
 def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
     """Write new elements files with structure elements assigned a new part ID.
-
+    
     Write new elements files with structure elements assigned a new part ID.
 
-    :param str nefile: new element file
-    :param int partid: new Part ID
-    :param structNodeIDs:
-    :param structElemIDs:
-    :returns: None
+    Args:
+      str: nefile: new element file
+      int: partid: new Part ID
+      structNodeIDs: param structElemIDs:
+      nefile: 
+      partid: 
+      elems: 
+      structElemIDs: 
+
+    Returns:
+      None
 
     """
     NEFILE = open(nefile, 'w')
@@ -233,12 +250,14 @@ def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
 
 
 def define_struct_type(args):
-    """
-    Determine the type of structure being defined from the Boolean input
+    """Determine the type of structure being defined from the Boolean input
     arguments
 
-    :param args: type of geometry
-    :returns: struct_type
+    Args:
+      args: type of geometry
+
+    Returns:
+      struct_type
 
     """
     import sys

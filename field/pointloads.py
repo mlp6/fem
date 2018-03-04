@@ -1,4 +1,5 @@
 class PointLoads:
+    """ """
     def __init__(self, loadfile, nodefile='nodes.dyn'):
         self.loadfile = loadfile
         self.nodefile = nodefile
@@ -7,6 +8,7 @@ class PointLoads:
         self.load_sorted_nodes()
 
     def load_loads(self):
+        """ """
         import numpy as np
 
         self.pt_loads = np.loadtxt('PointLoads-f1.80-F1.0-FD0.120-a0.50.dyn',
@@ -18,12 +20,21 @@ class PointLoads:
                                                       'f4', 'i4')})
 
     def load_sorted_nodes(self):
+        """ """
         from fem.mesh import fem_mesh
 
         nic = fem_mesh.load_nodeIDs_coords(nodefile=self.nodefile)
         [self.snic, self.axes] = fem_mesh.SortNodeIDs(nic)
 
     def show_image_plane(self, ele_coord=0):
+        """
+
+        Args:
+          ele_coord:  (Default value = 0)
+
+        Returns:
+
+        """
         from fem.mesh import fem_mesh
         import numpy as np
         import matplotlib.pyplot as plt

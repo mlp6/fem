@@ -9,6 +9,7 @@
 
 
 def main():
+    """ """
     args = parse_cli()
     create_dat(args.nodout, args.dispout, args.legacynodes)
 
@@ -16,9 +17,16 @@ def main():
 def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
     """create binary data file
 
-    :param str nodout: nodout file created by ls-dyna (default="nodout")
-    :param str dispout: default = "disp.dat"
-    :param boolean legacynodes: node IDs written every timestep (default=False)
+    Args:
+      str: nodout: nodout file created by ls-dyna (default="nodout")
+      str: dispout: default = "disp.dat"
+      boolean: legacynodes: node IDs written every timestep (default=False)
+      nodout:  (Default value = "nodout")
+      dispout:  (Default value = "disp.dat")
+      legacynodes:  (Default value = False)
+
+    Returns:
+
     """
     header_written = False
     timestep_read = False
@@ -59,9 +67,13 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
 def parse_line(line):
     """parse raw data line into vector of floats
 
-    :param str line: raw data line from nodout
-    :return: raw_data
-    :rtype: float
+    Args:
+      str: line: raw data line from nodout
+      line: 
+
+    Returns:
+      float: raw_data
+
     """
     # first 10 characters (int)
     nodeID = float(line[0:10])
@@ -98,8 +110,7 @@ def parse_line(line):
 
 
 def parse_cli():
-    """parse command-line interface arguments
-    """
+    """parse command-line interface arguments"""
     from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
     p = ArgumentParser(description="Generate disp.dat "
@@ -122,9 +133,13 @@ def parse_cli():
 def generate_header(data, outfile):
     """generate headers from data matrix of first time step
 
-    :param data: data
-    :param str outfile: output filename to count times from
-    :returns: header
+    Args:
+      data: data
+      str: outfile: output filename to count times from
+      outfile: 
+
+    Returns:
+      header
 
     """
     ts_count = count_timesteps(outfile.name)
@@ -138,14 +153,17 @@ def generate_header(data, outfile):
 
 def count_timesteps(outfile):
     """count timesteps written to nodout
-
+    
     searches for 'time' in lines, and then removes 1 extra entry that occurs
     for t = 0
-
+    
     grep will be used on linux systems (way faster)
 
-    :param outfile: usually 'nodout'
-    :returns: int ts_count
+    Args:
+      outfile: usually 'nodout'
+
+    Returns:
+      int ts_count
 
     """
     from sys import platform
@@ -173,12 +191,16 @@ def count_timesteps(outfile):
 
 def write_headers(outfile, header):
     """write binary header
-
+    
     write binary header information to reformat things on read downstream
 
-    :param str outfile: output file object
-    :param header: dictcontaining the necessary information
-    :returns: None
+    Args:
+      str: outfile: output file object
+      header: dictcontaining the necessary information
+      outfile: 
+
+    Returns:
+      None
 
     """
     from struct import pack
@@ -194,11 +216,14 @@ def write_headers(outfile, header):
 def process_timestep_data(data, outfile, writenode):
     """write data for the entire timestep to outfile
 
-    :param data:
-    :param outfile: output file object
-    :param writenode: Boolean if the node IDs should be written to save
-                      ~25% of the disp.dat file size
-    :returns: None
+    Args:
+      data: param outfile: output file object
+      writenode: Boolean if the node IDs should be written to save
+    ~25% of the disp.dat file size
+      outfile: 
+
+    Returns:
+      None
 
     """
     from struct import pack
@@ -215,13 +240,18 @@ def process_timestep_data(data, outfile, writenode):
 
 def correct_Enot(line):
     """correct dropped 'E' in -??? scientific notation
-
+    
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
 
-    :param str line: strict of split raw string data
-    :return: line with corrected -??? -> -E100
+    Args:
+      str: line: strict of split raw string data
+      line: 
+
+    Returns:
+      line with corrected -??? -> -E100
+
     """
     import re
     reEnnn = re.compile(r'(?<!E)\-[1-9][0-9][0-9]')
@@ -234,8 +264,13 @@ def correct_Enot(line):
 def correct_neg(line):
     """add space before negative coefficient numbers
 
-    :param str line:
-    :return: line with space(s) added before negative coefficients
+    Args:
+      str: line:
+      line: 
+
+    Returns:
+      line with space(s) added before negative coefficients
+
     """
     import re
     rneg = re.compile(r'(-[1-9]\.)')
@@ -247,8 +282,12 @@ def correct_neg(line):
 def open_dispout(dispout):
     """open dispout file for writing
 
-    :param dispout: (str) dispout filename (disp.dat.xz)
-    :return: dispout file object
+    Args:
+      dispout: str) dispout filename (disp.dat.xz)
+
+    Returns:
+      dispout file object
+
     """
     if dispout.endswith('.xz'):
         import lzma

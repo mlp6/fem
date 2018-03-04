@@ -15,8 +15,7 @@ __license__ = "Apache v2.0"
 
 
 def main():
-    """way too complicated for now
-    """
+    """way too complicated for now"""
 
     opts = read_cli()
     generate_loads(loadtype=opts.loadtype, direction=opts.direction,
@@ -27,16 +26,21 @@ def main():
 def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
                    loadfile='topload.dyn', nodefile='nodes.dyn',
                    top_face=(0, 0, 0, 0, 0, 1), lcid=1):
-    """ apply loads to
+    """apply loads to
 
-    :param loadtype: 'disp', 'vel', 'accel', 'force'
-    :param direction: 0 - x, 1 - y, 2 - z
-    :param amplitude: scalar of load type
-    :param loadfile: written loadfile name
-    :param nodefile: 'nodes.dyn'
-    :param top_face: [0, 0, 0, 0, 0, 1]
-    :param lcid: load curve ID
-    :return:
+    Args:
+      loadtype: disp', 'vel', 'accel', 'force' (Default value = 'disp')
+      direction: 0 - x, 1 - y, 2 - z (Default value = 2)
+      amplitude: scalar of load type (Default value = -1.0)
+      loadfile: written loadfile name (Default value = 'topload.dyn')
+      nodefile: nodes.dyn' (Default value = 'nodes.dyn')
+      top_face: 0, 0, 0, 0, 0, 1] (Default value = (0)
+      lcid: load curve ID
+      0: 
+      1: 
+
+    Returns:
+
     """
 
     planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile,
@@ -48,9 +52,13 @@ def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
 def extract_top_plane_nodes(nodefile, top_face):
     """
 
-    :param nodefile:
-    :param top_face:
-    :return: planeNodeIDs
+    Args:
+      nodefile: param top_face:
+      top_face: 
+
+    Returns:
+      planeNodeIDs
+
     """
     import numpy as np
     import fem_mesh
@@ -76,13 +84,18 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
                    amplitude, lcid):
     """write load keyword file
 
-    :param loadfile: load filename
-    :param planeNodeIDS: array of node IDs
-    :param loadtype [str]: disp, vel, accel, force
-    :param direction: [0-2]
-    :param amplitude:
-    :param lcid: LCID
-    :returns: None
+    Args:
+      loadfile: load filename
+      planeNodeIDS: array of node IDs
+      loadtype: str]: disp, vel, accel, force
+      direction: 0-2]
+      amplitude: param lcid: LCID
+      planeNodeIDs: 
+      lcid: 
+
+    Returns:
+      None
+
     """
     import sys
 
@@ -117,8 +130,7 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
 
 
 def read_cli():
-    """read CLI args
-    """
+    """read CLI args"""
     import argparse as ap
 
     par = ap.ArgumentParser(description="Generate loading conditions for"

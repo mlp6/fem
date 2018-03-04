@@ -1,4 +1,5 @@
 class Intensity:
+    """ """
     def __init__(self, dynamat, nodefile='nodes.dyn'):
         self.dynamat = dynamat
         self.nodefile = nodefile
@@ -9,6 +10,7 @@ class Intensity:
         self.load_sorted_nodes()
 
     def load_intensity(self):
+        """ """
         from scipy.io import loadmat
 
         field_intensities = loadmat(self.dynamat)
@@ -17,12 +19,21 @@ class Intensity:
         # self.focal_depth_cm = self.FIELD_PARAMS['focus'][2] * 100
 
     def load_sorted_nodes(self):
+        """ """
         from fem.mesh import fem_mesh
 
         nic = fem_mesh.load_nodeIDs_coords(nodefile=self.nodefile)
         [self.snic, self.axes] = fem_mesh.SortNodeIDs(nic)
 
     def show_image_plane(self, ele_coord=0):
+        """
+
+        Args:
+          ele_coord:  (Default value = 0)
+
+        Returns:
+
+        """
         from fem.mesh import fem_mesh
         import numpy as np
         import matplotlib.pyplot as plt
@@ -38,5 +49,11 @@ class Intensity:
 
     def gen_pt_loads(self, node_search_tol_cm=1e-3):
         """generate ls-dyna point loads input file
+
+        Args:
+          node_search_tol_cm:  (Default value = 1e-3)
+
+        Returns:
+
         """
         pass

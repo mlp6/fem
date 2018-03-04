@@ -34,6 +34,7 @@ the mesh.
 
 
 def main():
+    """ """
     import sys
 
     if sys.version_info[:2] < (2, 7):
@@ -57,9 +58,7 @@ def main():
 
 
 def parse_cli():
-    '''
-    parse command-line interface arguments
-    '''
+    """parse command-line interface arguments"""
     import argparse
 
     parser = argparse.ArgumentParser(description="Generate .vts "
@@ -92,11 +91,16 @@ def parse_cli():
 
 
 def create_vts(args):
-    '''
-    Writes .vts file from node and load files. StructuredGrid format assumes a
+    """Writes .vts file from node and load files. StructuredGrid format assumes a
     linear mesh, so if your mesh is actually non-plaid, this script should be
     run using with an elements file.
-    '''
+
+    Args:
+      args: 
+
+    Returns:
+
+    """
 
     # writing .vts file header
     # set the VTS file extension
@@ -123,6 +127,14 @@ def create_vts(args):
 
 
 def create_vtu(args):
+    """
+
+    Args:
+      args: 
+
+    Returns:
+
+    """
     # set the VTU file extension
     args.loadout = args.loadout + '.vtu'
 
@@ -158,10 +170,17 @@ def create_vtu(args):
 
 
 def writeNodePositions(loadout, args, filetype):
-    '''
-    writes opening tags as well as node positions to loadout file. returns array
+    """writes opening tags as well as node positions to loadout file. returns array
     containing number of nodes (index = 0) and number of elements (index = 1).
-    '''
+
+    Args:
+      loadout: 
+      args: 
+      filetype: 
+
+    Returns:
+
+    """
     print('Writing node positions')
     nodes = open(args.nodefile, 'r')
 
@@ -298,9 +317,16 @@ def writeNodePositions(loadout, args, filetype):
 
 
 def writeNodeIDs(loadout, args, numNodes):
-    '''
-    writes node IDs to loadout file
-    '''
+    """writes node IDs to loadout file
+
+    Args:
+      loadout: 
+      args: 
+      numNodes: 
+
+    Returns:
+
+    """
 
     print('Writing node IDs')
     loadout.write('\t\t\t\t<DataArray type="Float32" Name="node_id" '
@@ -311,9 +337,16 @@ def writeNodeIDs(loadout, args, numNodes):
 
 
 def writePointLoads(loadout, args, numNodes):
-    '''
-    writes point loads to loadout file
-    '''
+    """writes point loads to loadout file
+
+    Args:
+      loadout: 
+      args: 
+      numNodes: 
+
+    Returns:
+
+    """
     print('Writing point loads')
     loadout.write('\t\t\t\t<DataArray NumberOfComponents="3" type="Float32" '
                   'Name="loads" format="ascii">\n')
@@ -343,9 +376,15 @@ def writePointLoads(loadout, args, numNodes):
 
 
 def writeCells(loadout, args):
-    '''
-    writes cell connectivity and types to loadout file
-    '''
+    """writes cell connectivity and types to loadout file
+
+    Args:
+      loadout: 
+      args: 
+
+    Returns:
+
+    """
     print('Writing cells')
     loadout.write('\t\t\t<Cells>\n')
 
@@ -409,9 +448,15 @@ def writeCells(loadout, args):
 
 
 def writeCellData(loadout, args):
-    '''
-    writes cell part IDs
-    '''
+    """writes cell part IDs
+
+    Args:
+      loadout: 
+      args: 
+
+    Returns:
+
+    """
     print('Writing cell data')
 
     loadout.write('\t\t\t\t<DataArray type="Int32" Name="part id" '
