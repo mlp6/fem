@@ -75,7 +75,7 @@ def test_write_header(tmpdir):
     write_headers(dispout, header)
     dispout.close()
 
-    with open(fname, 'rb') as dispout:
+    with open(fname.strpath, 'rb') as dispout:
         h = struct.unpack('fff', dispout.read(4 * 3))
 
     assert h[0] == 4.0
@@ -99,7 +99,7 @@ def test_write_data(tmpdir):
     process_timestep_data(data, dispout, writenode=True)
     dispout.close()
 
-    with open(fname, 'rb') as f:
+    with open(fname.strpath, 'rb') as f:
         d = struct.unpack(8 * 'f', f.read(4 * 8))
 
     assert d[0] == 0.0
