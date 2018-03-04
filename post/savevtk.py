@@ -1,29 +1,24 @@
-""" savevtk.py
-
-methods to save 3D scalar and vector data in ASCII VTK format
-
-Mark Palmeri
-mlp6@duke.edu
-2016-04-24
-"""
-
-
 class SaveVTK:
+    """Methods to save 3D scalar and vector data in legacy ASCII VTK format
+
+    Args:
+        data (ndarray): [scalar] 3D numpy array
+                        [vector] tuple of 3D numpy arrays (X, Y, Z)
+        origin (float): mesh origin tuple (x, y, z)
+        spacing (float): node spacing tuple (x, y, z)
+
+    Raises:
+        IndexError: The shape of the data tuple ndarrays are not equal.
+    """
 
     def __init__(self, data, origin, spacing):
-        """ initialize the object
-
-        :param float data: [scalar] 3D numpy array
-                           [vector] tuple of 3D numpy arrays (X, Y, Z)
-        :param float origin: mesh origin tuple (x, y, z)
-        :param float spacing: node spacing tuple (x, y, z)
-        """
         self.data = data
         self.origin = origin
         self.spacing = spacing
 
     @property
     def data(self):
+        """ """
         return self.__data
 
     @data.setter
@@ -47,9 +42,10 @@ class SaveVTK:
                     header_comment=None):
         """save 3D scalar data in VTK structure points format
 
-        :param string filename: output filename
-        :param string dataname: data name
-        :param string header_comment: default = None
+        Args:
+          filename (str): output filename
+          dataname (str): data name
+          header_comment (str): optional header comment in output file
         """
         import numpy as np
 
@@ -78,9 +74,10 @@ class SaveVTK:
     def save_vector(self, filename, dataname="vectors", header_comment=None):
         """save 3D vector array in VTK structure points format
 
-        :param string filename: output filname
-        :param string dataname: data name
-        :param string header_comment: default = None
+        Args:
+          filename (str): output filename
+          dataname (str): data name
+          header_comment (str): optional header comment in output file
         """
         import numpy as np
 

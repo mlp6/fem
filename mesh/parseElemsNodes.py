@@ -20,6 +20,7 @@ __version__ = "0.1"
 
 
 def main():
+    """ """
     import argparse as ap
 
     # TODO: move argparse to own function

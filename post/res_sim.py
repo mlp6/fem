@@ -1,6 +1,5 @@
 class ResSim:
-    """plot and animate res_sim.mat simulation data
-    """
+    """plot and animate res_sim.mat simulation data"""
 
     def __init__(self, filename="res_sim.mat"):
         self.load(filename)
@@ -8,8 +7,12 @@ class ResSim:
     def load(self, filename):
         """load MATv5 data
 
-        :param filename:
-        :returns: attributes - lat, axial, t, arfidata
+        Args:
+          filename: returns: attributes - lat, axial, t, arfidata
+
+        Returns:
+          attributes - lat, axial, t, arfidata
+
         """
         from scipy.io import loadmat
 
@@ -23,7 +26,11 @@ class ResSim:
     def plot(self, timestep):
         """plot arfidata at specified timestep
 
-        :param timestep: int
+        Args:
+          timestep: int
+
+        Returns:
+
         """
         import matplotlib.pyplot as plt
 
@@ -40,8 +47,12 @@ class ResSim:
     def timeplot(self, axial, lat):
         """plot arfidata through time at specified ax and lat position (mm)
 
-        :param axial: axial depth (mm)
-        :param lat: lateral position (mm)
+        Args:
+          axial: axial depth (mm)
+          lat: lateral position (mm)
+
+        Returns:
+
         """
         import matplotlib.pyplot as plt
         import numpy as np
@@ -59,10 +70,14 @@ class ResSim:
 
     def play(self, timerange):
         """play an animation
-
+        
         Strongly recommend not stepping though each timesteps; use some skips!
 
-        :param timerange: range generator of time steps to animate
+        Args:
+          timerange: range generator of time steps to animate
+
+        Returns:
+
         """
         import matplotlib.pyplot as plt
         import matplotlib.animation as animation
@@ -81,6 +96,14 @@ class ResSim:
         plt.show()
 
     def animate(self, i):
+        """
+
+        Args:
+          i: 
+
+        Returns:
+
+        """
         import matplotlib.pyplot as plt
         plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, i])
         plt.title('t = {:.2f} ms'.format(self.t[i]))

@@ -3,14 +3,13 @@
 
 .. module:: create_res_sim_mat
    :synopsis: create res_sim.mat from disp.dat
-   :license: Apache v2.0, see LICENSE for details
-   :copyright: Copyright 2016 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """
 
 
 def main():
+    """ """
     args = read_cli()
     if args.legacynodes:
         legacynodes = True
@@ -24,13 +23,18 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
     """
 
-    :param dynadeck: main dyna input deck
-    :param disp_comp=2: component of displacement to extract
-    :param disp_scale=-1e4: displacement scaling
-    :param ressim: default = "res_sim.mat"
-    :param nodedyn: default = "nodes.dyn"
-    :param dispout: default = "disp.dat"
-    :return: 0
+    Args:
+      dynadeck: main dyna input deck
+      disp_comp: 2: component of displacement to extract (Default value = 2)
+      disp_scale: 1e4: displacement scaling (Default value = -1e4)
+      ressim: default = "res_sim.mat"
+      nodedyn: default = "nodes.dyn"
+      dispout: default = "disp.dat"
+      legacynodes:  (Default value = False)
+
+    Returns:
+      0
+
     """
     from fem.mesh import fem_mesh
 
@@ -52,15 +56,19 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
 
 def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
                       disp_scale=-1e4, legacynodes=False):
-    """ extract ARFI data from disp.dat
+    """extract ARFI data from disp.dat
 
-    :param dispout: name of disp.dat file
-    :param header: num_nodes, num_dims, num_timesteps
-    :param image_plane: matrix of image plane node IDs spatially sorted
-    :param disp_comp: disp component index to extract (0, 1, 2 [default, z])
-    :param legacynodes: Boolean flag to use legacy disp.dat format with node
-                        IDs repeated every timestep (default = False)
-    :returns: arfidata matrix
+    Args:
+      dispout: name of disp.dat file
+      header: num_nodes, num_dims, num_timesteps
+      image_plane: matrix of image plane node IDs spatially sorted
+      disp_comp: disp component index to extract (0, 1, 2 [default, z])
+      legacynodes: Boolean flag to use legacy disp.dat format with node
+    IDs repeated every timestep (default = False)
+      disp_scale:  (Default value = -1e4)
+
+    Returns:
+      arfidata matrix
 
     """
     import numpy as np
@@ -133,10 +141,14 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
 def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
     """create zdisp array from squeezed disp_slice at appropriate index
 
-    :param nodeidlist: first column of disp_slice with node IDs in row order
-    :param disp_slice_z_only: squeezed disp_slice of just zisp
-    :returns: zdisp -- array of z-disp in rows corresponding to node ID
-                       (for fast read access)
+    Args:
+      nodeidlist: first column of disp_slice with node IDs in row order
+      disp_slice_z_only: squeezed disp_slice of just zisp
+      zdisp: 
+
+    Returns:
+      zdisp -- array of z-disp in rows corresponding to node ID
+      (for fast read access)
 
     """
     import numpy as np
@@ -148,8 +160,7 @@ def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
 
 
 def read_cli():
-    """ read in command line arguments
-    """
+    """read in command line arguments"""
 
     import argparse as ap
 
@@ -178,14 +189,17 @@ def read_cli():
 
 def extract_image_plane(snic, axes, ele_pos):
     """extract 2D imaging plane node IDs
-
+    
     Extract a 2D matrix of the imaging plane node IDs based on the
     elevation position (mesh coordinates).
 
-    :param snic: sorted node IDs and coordinates
-    :param axes: spatial axes
-    :param ele_pos: elevation position for plane of interest
-    :returns: image_plane (node IDs)
+    Args:
+      snic: sorted node IDs and coordinates
+      axes: spatial axes
+      ele_pos: elevation position for plane of interest
+
+    Returns:
+      image_plane (node IDs)
 
     """
     import numpy as np
@@ -197,16 +211,21 @@ def extract_image_plane(snic, axes, ele_pos):
 
 
 def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
-    """ save res_sim.mat file using variables scanner-generated data
-
+    """save res_sim.mat file using variables scanner-generated data
+    
     data are saved as float32 to save space
 
-    :param resfile: res_sim.mat filename
-    :param arfidata: arfidata matrix (3D or 4D (added elev dim, axes[0]))
-    :param axes: ele, lat, axial (mesh units)
-    :param t: time
-    :param axis_scale: scale axes sign & mag [default: [-10, 10, -10]]
-    :returns: 0
+    Args:
+      resfile: res_sim.mat filename
+      arfidata: arfidata matrix (3D or 4D (added elev dim, axes[0]))
+      axes: ele, lat, axial (mesh units)
+      t: time
+      axis_scale: scale axes sign & mag [default: [-10, 10, -10]]
+      10: 
+      -10: 
+
+    Returns:
+      0
 
     """
     from scipy.io import savemat
@@ -274,10 +293,13 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
 
 
 def read_header(dispout):
-    """ Read header (first 3 words) from disp.dat
+    """Read header (first 3 words) from disp.dat
 
-    :param dispout: disp.dat filename
-    :returns: header (num_nodes, num_dims, num_timesteps)
+    Args:
+      dispout: disp.dat filename
+
+    Returns:
+      header (num_nodes, num_dims, num_timesteps)
 
     """
     import struct
@@ -294,12 +316,15 @@ def read_header(dispout):
 
 
 def extract_dt(dyn_file):
-    """ extract time step (dt) from dyna input deck
-
+    """extract time step (dt) from dyna input deck
+    
     assumes that input deck is comma-delimited
 
-    :param dyn_file: input.dyn filename
-    :returns: dt from input.dyn binary data save parameter
+    Args:
+      dyn_file: input.dyn filename
+
+    Returns:
+      dt from input.dyn binary data save parameter
 
     """
     found_database = False
@@ -322,8 +347,12 @@ def extract_dt(dyn_file):
 def open_dispout(dispout):
     """open dispout file for reading
 
-    :param dispout: (str) dispout filename (disp.dat)
-    :return: dispout file object
+    Args:
+      dispout: str) dispout filename (disp.dat)
+
+    Returns:
+      dispout file object
+
     """
     if dispout.endswith('.xz'):
         import lzma
@@ -335,11 +364,15 @@ def open_dispout(dispout):
 
 
 def preallocate_arfidata(image_plane, num_timesteps):
-    """ pre-allocate arfidata array
+    """pre-allocate arfidata array
 
-    :param image_plane: sorted node IDs on selected imaging plane
-    :param num_timesteps: number of timesteps to extract
-    :return: arfidata
+    Args:
+      image_plane: sorted node IDs on selected imaging plane
+      num_timesteps: number of timesteps to extract
+
+    Returns:
+      arfidata
+
     """
     import numpy as np
     from warnings import warn
@@ -362,9 +395,13 @@ def preallocate_arfidata(image_plane, num_timesteps):
 def gen_t(dt, num_timesteps):
     """generate time vector, starting at 0
 
-    :param dt: time between saved timesteps
-    :param num_timesteps: number of total timesteps
-    :return: t
+    Args:
+      dt: time between saved timesteps
+      num_timesteps: number of total timesteps
+
+    Returns:
+      turn: t
+
     """
     t = [float(x) * dt for x in range(0, num_timesteps)]
 
@@ -376,12 +413,16 @@ def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
                       dispout="disp.dat.xz"):
     """extract 3D volume of specified displacement component
 
-    :param dynadeck: LS-DYNA3D input deck (used to get dt)
-    :param disp_comp=2: displacement component to extract (0, 1, 2)
-    :param disp_scale=1e4: displacement scaling factor (cm -> um)
-    :param ressim="res_sim.h5": output file name (can be MAT or HDF5)
-    :param nodedyn="nodes.dyn": node input file
-    :param dispout="disp.dat.xz": binary displacement data
+    Args:
+      dynadeck: LS-DYNA3D input deck (used to get dt) (Default value = None)
+      disp_comp: 2: displacement component to extract (0, 1, 2) (Default value = 2)
+      disp_scale: 1e4: displacement scaling factor (cm -> um) (Default value = -1e4)
+      ressim: res_sim.h5": output file name (can be MAT or HDF5) (Default value = "res_sim.h5")
+      nodedyn: nodes.dyn": node input file (Default value = "nodes.dyn")
+      dispout: disp.dat.xz": binary displacement data (Default value = "disp.dat.xz")
+
+    Returns:
+
     """
 
     from fem.mesh import fem_mesh

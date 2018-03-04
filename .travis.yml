@@ -5,10 +5,14 @@ addons:
       apt_packages:
               - swig
               - python-dev
+cache: pip
+
 install:
       - pip install -r requirements.txt
 script: 
       - pytest -v --pep8
+#     - PYTHONPATH=.. sphinx-build -nWT -b dummy docs/ docs/_build/html
+      - PYTHONPATH=.. sphinx-build -nT -b dummy docs/ docs/_build/html
       - cd post/create_disp_dat_c
       - make
       - make test

@@ -21,8 +21,12 @@ limitations under the License.
 
 def check_version():
     """check at least python2.7
-
+    
     Needed for argparse compatibility
+
+    Args:
+
+    Returns:
 
     """
     from sys import version_info, exit
@@ -35,7 +39,11 @@ def strip_comments(nodefile):
     """strip comments
     string comment lines starting with $
 
-    :param nodefile: keyword filename
+    Args:
+      nodefile: keyword filename
+
+    Returns:
+
     """
     from os import system
     nodefile_nocmt = '%s.tmp' % nodefile
@@ -46,11 +54,13 @@ def strip_comments(nodefile):
 
 def count_header_comment_skips(nodefile):
     """count file head comments lines
+    
+    ..synopsis:: count comments lines to skip before the first keyword (*)
 
-    count the number of file head comments lines to skip before the first
-    keyword (line starting with *)
+    Args:
+      nodefile: node keyword filename
 
-    :param nodefile: node keyword filename
+    Returns:
 
     """
     import re
@@ -65,6 +75,14 @@ def count_header_comment_skips(nodefile):
 
 
 def rm_tmp_file(nodefile_nocmt):
+    """
+
+    Args:
+      nodefile_nocmt: 
+
+    Returns:
+
+    """
     from os import remove
     try:
         remove(nodefile_nocmt)
@@ -74,18 +92,22 @@ def rm_tmp_file(nodefile_nocmt):
 
 def extractPlane(snic, axes, plane):
     """extract plane node IDs
-
+    
     Extract the node IDs on a specified plane from a sorted node ID &
     coordinate 3D array.
 
-    :param snic: sorted node IDs & coordinates array
-    :param axes: list of unique coordinates in the x, y, and z dimensions
-    :param plane: list
-            index - index of the plane to extract (x=0, y=1, z=2)
-            coord - coordinate of the plane to extract (must exist in axes
-                    list)
-    :returns: planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
-    :example: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
+    Args:
+      snic: sorted node IDs & coordinates array
+      axes: list of unique coordinates in the x, y, and z dimensions
+      list: plane:
+    + index - index of the plane to extract (x=0, y=1, z=2)
+    + coord - coordinate of the plane (must exist in axes list)
+      plane: 
+
+    Returns:
+      planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
+      :example: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
+
     """
     from sys import exit
     from numpy import where
@@ -107,9 +129,13 @@ def extractPlane(snic, axes, plane):
 def SortNodeIDs(nic, sort=False):
     """spatially sort node IDs into 3D matrix
 
-    :param nic: nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
-    :param sort: False (assume node ordering); True (spatially sort)
-    :returns: [SortedNodeIDs - n matrix (x,y,z), axes]
+    Args:
+      nic: nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])
+      sort: False (assume node ordering); True (spatially sort) (Default value = False)
+
+    Returns:
+      SortedNodeIDs - n matrix (x,y,z), axes]
+
     """
     from sys import exit
     from numpy import unique
@@ -138,9 +164,13 @@ def SortNodeIDs(nic, sort=False):
 def SortElems(elems, axes):
     """spatially sort node IDs into 3D matrix
 
-    :param elems: element definitions, as read from elems.dyn
-    :param axes: lists of x, y, z axis positions
-    :returns: sorted_elems
+    Args:
+      elems: element definitions, as read from elems.dyn
+      axes: lists of x, y, z axis positions
+
+    Returns:
+      sorted_elems
+
     """
     sorted_elems = elems.reshape((axes[0].size - 1,
                                   axes[1].size - 1,
@@ -152,11 +182,15 @@ def SortElems(elems, axes):
 
 def load_nodeIDs_coords(nodefile="nodes.dyn"):
     """load in node IDs and coordinates
-
+    
     Exclude '*' keyword lines
 
-    :param nodefile: node filename (nodes.dyn)
-    :returns: nodeIDcoords (numpy array)
+    Args:
+      nodefile: node filename (nodes.dyn) (Default value = "nodes.dyn")
+
+    Returns:
+      nodeIDcoords (numpy array)
+
     """
     from numpy import loadtxt
     header_comment_skips = count_header_comment_skips(nodefile)
@@ -172,8 +206,12 @@ def load_nodeIDs_coords(nodefile="nodes.dyn"):
 def load_elems(elefile="elems.dyn"):
     """
 
-    :param elefile: elems.dyn
-    :return: elems
+    Args:
+      elefile: elems.dyn (Default value = "elems.dyn")
+
+    Returns:
+      elems
+
     """
     from numpy import loadtxt
     header_comment_skips = count_header_comment_skips(elefile)

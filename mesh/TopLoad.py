@@ -1,22 +1,13 @@
-'''
-TopLoad.py - Generate compression conditions for the top surface of the
-specified mesh.  Search through the provided node file, extract the top
- layer of nodes and write out point loads for each matching node. Nodes
-  are written in spatially-sorted order.
+"""
+:mod:`TopLoad` -- generate top load compression
 
-Copyright 2015-2017 Mark L. Palmeri (mlp6@duke.edu)
+.. module:: TopLoad
+   :synopsis: Generate compression conditions for the top surface.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License.  You may obtain a copy of the
-License at
+.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
+"""
 
-http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations under the License.
-'''
 
 __author__ = "Mark Palmeri "
 __email__ = "mlp6@duke.edu"
@@ -24,8 +15,7 @@ __license__ = "Apache v2.0"
 
 
 def main():
-    """way too complicated for now
-    """
+    """way too complicated for now"""
 
     opts = read_cli()
     generate_loads(loadtype=opts.loadtype, direction=opts.direction,
@@ -36,16 +26,21 @@ def main():
 def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
                    loadfile='topload.dyn', nodefile='nodes.dyn',
                    top_face=(0, 0, 0, 0, 0, 1), lcid=1):
-    """ apply loads to
+    """apply loads to
 
-    :param loadtype: 'disp', 'vel', 'accel', 'force'
-    :param direction: 0 - x, 1 - y, 2 - z
-    :param amplitude: scalar of load type
-    :param loadfile: written loadfile name
-    :param nodefile: 'nodes.dyn'
-    :param top_face: [0, 0, 0, 0, 0, 1]
-    :param lcid: load curve ID
-    :return:
+    Args:
+      loadtype: disp', 'vel', 'accel', 'force' (Default value = 'disp')
+      direction: 0 - x, 1 - y, 2 - z (Default value = 2)
+      amplitude: scalar of load type (Default value = -1.0)
+      loadfile: written loadfile name (Default value = 'topload.dyn')
+      nodefile: nodes.dyn' (Default value = 'nodes.dyn')
+      top_face: 0, 0, 0, 0, 0, 1] (Default value = (0)
+      lcid: load curve ID
+      0: 
+      1: 
+
+    Returns:
+
     """
 
     planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile,
@@ -57,9 +52,13 @@ def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
 def extract_top_plane_nodes(nodefile, top_face):
     """
 
-    :param nodefile:
-    :param top_face:
-    :return: planeNodeIDs
+    Args:
+      nodefile: param top_face:
+      top_face: 
+
+    Returns:
+      planeNodeIDs
+
     """
     import numpy as np
     import fem_mesh
@@ -85,13 +84,18 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
                    amplitude, lcid):
     """write load keyword file
 
-    :param loadfile: load filename
-    :param planeNodeIDS: array of node IDs
-    :param loadtype [str]: disp, vel, accel, force
-    :param direction: [0-2]
-    :param amplitude:
-    :param lcid: LCID
-    :returns: None
+    Args:
+      loadfile: load filename
+      planeNodeIDS: array of node IDs
+      loadtype: str]: disp, vel, accel, force
+      direction: 0-2]
+      amplitude: param lcid: LCID
+      planeNodeIDs: 
+      lcid: 
+
+    Returns:
+      None
+
     """
     import sys
 
@@ -126,8 +130,7 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
 
 
 def read_cli():
-    """read CLI args
-    """
+    """read CLI args"""
     import argparse as ap
 
     par = ap.ArgumentParser(description="Generate loading conditions for"

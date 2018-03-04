@@ -49,6 +49,7 @@ python create_disp_dat.py --nodefile nodes.dyn
 
 
 def main():
+    """ """
     # let's read in some command-line arguments
     args = parse_cli()
 
@@ -66,8 +67,7 @@ def main():
         create_vtu(args)
 
 def parse_cli():
-    """ parse command-line interface arguments
-    """
+    """parse command-line interface arguments"""
     from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
     p = ArgumentParser(description="Generate .vts "
@@ -98,12 +98,18 @@ def parse_cli():
 
 def create_vts(loadout="nodeLoads.dyn", args):
     """write structured grid VTS file
-
+    
     Writes .vts file from node and load files. StructuredGrid format assumes
     a linear mesh, so if your mesh is actually nonlinear, this script should be run
     using with an elements file.
 
-    :param str loadout: default = "loads.dyn"
+    Args:
+      str: loadout: default = "loads.dyn"
+      loadout:  (Default value = "nodeLoads.dyn")
+      args: 
+
+    Returns:
+
     """
 
     # writing .vts file header
@@ -136,8 +142,11 @@ def create_vts(loadout="nodeLoads.dyn", args):
 def create_vtu(args):
     """
 
-    :param args:
-    :return:
+    Args:
+      args: return:
+
+    Returns:
+
     """
     # making sure file extension is correct
     if '.' in args.loadout and not args.loadout.endswith('.vtu'):
@@ -177,18 +186,26 @@ def create_vtu(args):
 
 
 def writeNodePositions(loadout, numElem=None, nodefile="nodes.dyn", elefile="elems.dyn", nonlinear=False, filetype="vts"):
-    """
-    writes opening tags as well as node positions to
+    """writes opening tags as well as node positions to
     loadout file. returns array containing number of
     nodes (index = 0) and number of elements (index = 1).
 
-    :param loadout: loadout file being written to
-    :param int numElem: number of elements in each dimension (default = None)
-    :param str nodefile: default = "nodes.dyn"
-    :param str elefile: default = "elems.dyn"
-    :param Boolean nonlinear: unstructured grid (default = False)
-    :param str filetype: vts/vtu filetype being written (default = "vts")
-    :returns: (numNodes, numElems)
+    Args:
+      loadout: loadout file being written to
+      int: numElem: number of elements in each dimension (default = None)
+      str: nodefile: default = "nodes.dyn"
+      str: elefile: default = "elems.dyn"
+      Boolean: nonlinear: unstructured grid (default = False)
+      str: filetype: vts/vtu filetype being written (default = "vts")
+      numElem:  (Default value = None)
+      nodefile:  (Default value = "nodes.dyn")
+      elefile:  (Default value = "elems.dyn")
+      nonlinear:  (Default value = False)
+      filetype:  (Default value = "vts")
+
+    Returns:
+      numNodes, numElems)
+
     """
     print('Writing node positions')
     nodes = open(nodefile, 'r')
@@ -301,11 +318,14 @@ def writeNodePositions(loadout, numElem=None, nodefile="nodes.dyn", elefile="ele
 
 
 def writeNodeIDs(loadout, numNodes):
-    """ writes node IDs to loadout file
+    """writes node IDs to loadout file
 
-    :param loadout:
-    :param numNodes:
-    :return:
+    Args:
+      loadout: param numNodes:
+      numNodes: 
+
+    Returns:
+
     """
 
     print('Writing node IDs')
@@ -318,11 +338,14 @@ def writeNodeIDs(loadout, numNodes):
 
 
 def writePointLoads(loadout, numNodes):
-    """ writes point loads to loadout file
+    """writes point loads to loadout file
 
-    :param loadout:
-    :param numNodes:
-    :return:
+    Args:
+      loadout: param numNodes:
+      numNodes: 
+
+    Returns:
+
     """
 
     print('Writing point loads')
@@ -354,11 +377,14 @@ def writePointLoads(loadout, numNodes):
 
 
 def writeCells(loadout, elefile="elems.dyn"):
-    """ writes cell connectivity and types to loadout file
+    """writes cell connectivity and types to loadout file
 
-    :param loadout:
-    :param elefile:
-    :return:
+    Args:
+      loadout: param elefile:
+      elefile:  (Default value = "elems.dyn")
+
+    Returns:
+
     """
 
     print('Writing cells')
@@ -416,11 +442,14 @@ def writeCells(loadout, elefile="elems.dyn"):
 
 
 def writeCellData(loadout, elefile="elems.dyn"):
-    """ writes cell part IDs
+    """writes cell part IDs
 
-    :param loadout:
-    :param elefile:
-    :return:
+    Args:
+      loadout: param elefile:
+      elefile:  (Default value = "elems.dyn")
+
+    Returns:
+
     """
 
     print('Writing cell data')
