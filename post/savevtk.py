@@ -32,9 +32,10 @@ class SaveVTK:
         if isinstance(data, np.ndarray):
             self.__data = data
         elif isinstance(data, tuple):
-            self.__data.X = data[0]
-            self.__data.Y = data[1]
-            self.__data.Z = data[2]
+            self.__data = {}
+            self.__data['x'] = data[0]
+            self.__data['y'] = data[1]
+            self.__data['z'] = data[2]
 
 
     def save_scalar(self, filename, dataname="scalars", header_comment=None):
@@ -86,7 +87,7 @@ class SaveVTK:
             vtkfile.write('ASCII\n')
             vtkfile.write('\n')
             vtkfile.write('DATASET STRUCTURED_POINTS\n')
-            vtkfile.write('DIMENSIONS    {:d}   {:d}   {:d}\n'.format(data.X.shape))
+            vtkfile.write('DIMENSIONS    {:d}   {:d}   {:d}\n'.format(data['x'].shape))
             vtkfile.write('\n');
             vtkfile.write("ORIGIN    {:.2f}   {:.2f}   {:.2f}\n".format(*self.origin))
             vtkfile.write("SPACING   {:.3f}   {:.3f}   {:.3f}\n\n".format(*self.spacing))
@@ -94,10 +95,10 @@ class SaveVTK:
             vtkfile.write('POINT_DATA   {:d}\n'.format(np.prod(dims)))
             vtkfile.write('VECTORS {} float\n'.format(dataname))
             vtkfile.write('\n')
-            for a in range(0, self.data.X.shape[0]):
-                for b in range(0, self.data.X.shape[1]):
-                    for c in range(0, self.data.X.shape[2]):
-                        vtkfile.write('%f ', self.data.X[a, b, c])
-                        vtkfile.write('%f ', self.data.Y[a, b, c])
-                        vtkfile.write('%f ', self.data.Z[a, b, c])
+            for a in range(0, self.data['x'].shape[0]):
+                for b in range(0, self.data['x'].shape[1]):
+                    for c in range(0, self.data['x'].shape[2]):
+                        vtkfile.write('%f ', self.data['x'][a, b, c])
+                        vtkfile.write('%f ', self.data['y'][a, b, c])
+                        vtkfile.write('%f ', self.data['z'][a, b, c])
                     vtkfile.write('\n')

@@ -17,6 +17,37 @@ def test_savevtk_data_nparray(savevtk_data):
 def test_savevtk_data_nparray_attribute(savevtk_data):
     from savevtk import SaveVTK
 
-    vtkobj = SaveVTK(savevtk_data, (0.0, 0.0, 0.0), (0.1, 0.1, 0.1))
+    vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
 
-    assert savevtk_data.all() == vtkobj.data.all()
+    assert vtkobj.data.all() == savevtk_data.all()
+
+def test_savevtk_data_origin(savevtk_data):
+    from savevtk import SaveVTK
+
+    vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
+
+    assert vtkobj.origin[0] == 0.0
+    assert vtkobj.origin[1] == 1.0
+    assert vtkobj.origin[2] == 2.0
+
+
+def test_savevtk_data_origin(savevtk_data):
+    from savevtk import SaveVTK
+
+    vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
+
+    assert vtkobj.spacing[0] == 0.1
+    assert vtkobj.spacing[1] == 0.2
+    assert vtkobj.spacing[2] == 0.3
+
+
+def test_savevtk_data_3D_tuple(savevtk_data):
+    from savevtk import SaveVTK
+
+    data3d = (savevtk_data, savevtk_data, savevtk_data)
+
+    vtkobj = SaveVTK(data3d, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
+
+    assert vtkobj.data['x'].all() == savevtk_data.all()
+    assert vtkobj.data['y'].all() == savevtk_data.all()
+    assert vtkobj.data['z'].all() == savevtk_data.all()
