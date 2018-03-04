@@ -86,18 +86,18 @@ class SaveVTK:
             vtkfile.write('ASCII\n')
             vtkfile.write('\n')
             vtkfile.write('DATASET STRUCTURED_POINTS\n')
-            vtkfile.write('DIMENSIONS    {:d}   {:d}   {:d}\n'.format(data['x'].shape))
+            vtkfile.write('DIMENSIONS    {:d}   {:d}   {:d}\n'.format(*self.data['x'].shape))
             vtkfile.write('\n');
             vtkfile.write("ORIGIN    {:.2f}   {:.2f}   {:.2f}\n".format(*self.origin))
-            vtkfile.write("SPACING   {:.3f}   {:.3f}   {:.3f}\n\n".format(*self.spacing))
+            vtkfile.write("SPACING   {:.3f}   {:.3f}   {:.3f}\n".format(*self.spacing))
             vtkfile.write('\n')
-            vtkfile.write('POINT_DATA   {:d}\n'.format(np.prod(dims)))
+            vtkfile.write('POINT_DATA   {:d}\n'.format(np.prod(self.data['x'].shape)))
             vtkfile.write('VECTORS {} float\n'.format(dataname))
             vtkfile.write('\n')
             for a in range(0, self.data['x'].shape[0]):
                 for b in range(0, self.data['x'].shape[1]):
                     for c in range(0, self.data['x'].shape[2]):
-                        vtkfile.write('%f ', self.data['x'][a, b, c])
-                        vtkfile.write('%f ', self.data['y'][a, b, c])
-                        vtkfile.write('%f ', self.data['z'][a, b, c])
+                        vtkfile.write('{:f} '.format(self.data['x'][a, b, c]))
+                        vtkfile.write('{:f} '.format(self.data['y'][a, b, c]))
+                        vtkfile.write('{:f} '.format(self.data['z'][a, b, c]))
                     vtkfile.write('\n')
