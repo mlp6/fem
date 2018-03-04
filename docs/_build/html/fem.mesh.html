@@ -1,0 +1,1377 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>fem.mesh package &#8212; Acoustic Radiation Force FEM Tools 6.9.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OptiStruct Mesh Conversion" href="optistruct.html" />
+    <link rel="prev" title="Creating Rectilinear Meshes for LS-DYNA" href="create_dyna_mesh.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="fem-mesh-package">
+<h1>fem.mesh package<a class="headerlink" href="#fem-mesh-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-fem.mesh.CreateStructure">
+<span id="fem-mesh-createstructure-module"></span><h2>fem.mesh.CreateStructure module<a class="headerlink" href="#module-fem.mesh.CreateStructure" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-CreateStructure">
+<span id="createstructure-define-structures-in-meshes"></span><h3><a class="reference internal" href="#module-CreateStructure" title="CreateStructure: define structures in meshes"><code class="xref py py-mod docutils literal notranslate"><span class="pre">CreateStructure</span></code></a> – define structures in meshes<a class="headerlink" href="#module-CreateStructure" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="fem.mesh.CreateStructure.define_struct_type">
+<code class="descclassname">fem.mesh.CreateStructure.</code><code class="descname">define_struct_type</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.CreateStructure.define_struct_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the type of structure being defined from the Boolean input
+arguments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – type of geometry</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">struct_type</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.CreateStructure.findStructElemIDs">
+<code class="descclassname">fem.mesh.CreateStructure.</code><code class="descname">findStructElemIDs</code><span class="sig-paren">(</span><em>elefile</em>, <em>structNodeIDs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.CreateStructure.findStructElemIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>find elements that contain nodes in structNodeIDs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>str</strong> – elefile: element filename</li>
+<li><strong>ndarray</strong> – structNodeIDs:</li>
+<li><strong>elefile</strong> – </li>
+<li><strong>structNodeIDs</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">elems, structElemIds)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.CreateStructure.findStructNodeIDs">
+<code class="descclassname">fem.mesh.CreateStructure.</code><code class="descname">findStructNodeIDs</code><span class="sig-paren">(</span><em>nodefile</em>, <em>struct_type</em>, <em>sopts</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.CreateStructure.findStructNodeIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>find nodes in given geometry</p>
+<p>Find node IDs that fall within a specified geometry (sphere, layer, cube,
+ellipsoid).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>str</strong> – nodefile: (default: nodes.dyn)</li>
+<li><strong>str</strong> – struct_type: sphere, layer, ellipsoid, cube</li>
+<li><strong>sopts</strong> – struct-specific parameters</li>
+<li><strong>nodefile</strong> – </li>
+<li><strong>struct_type</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">structNodeIDs (dict)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.CreateStructure.main">
+<code class="descclassname">fem.mesh.CreateStructure.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.CreateStructure.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.CreateStructure.parse_cli">
+<code class="descclassname">fem.mesh.CreateStructure.</code><code class="descname">parse_cli</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.CreateStructure.parse_cli" title="Permalink to this definition">¶</a></dt>
+<dd><p>read in CLI arguments</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.CreateStructure.write_struct_elems">
+<code class="descclassname">fem.mesh.CreateStructure.</code><code class="descname">write_struct_elems</code><span class="sig-paren">(</span><em>nefile</em>, <em>partid</em>, <em>elems</em>, <em>structNodeIDs</em>, <em>structElemIDs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.CreateStructure.write_struct_elems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write new elements files with structure elements assigned a new part ID.</p>
+<p>Write new elements files with structure elements assigned a new part ID.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>str</strong> – nefile: new element file</li>
+<li><strong>int</strong> – partid: new Part ID</li>
+<li><strong>structNodeIDs</strong> – param structElemIDs:</li>
+<li><strong>nefile</strong> – </li>
+<li><strong>partid</strong> – </li>
+<li><strong>elems</strong> – </li>
+<li><strong>structElemIDs</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-fem.mesh.GaussExc">
+<span id="fem-mesh-gaussexc-module"></span><h2>fem.mesh.GaussExc module<a class="headerlink" href="#module-fem.mesh.GaussExc" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-GauseExc">
+<span id="gaussexc-gaussian-excitation"></span><h3><code class="xref py py-mod docutils literal notranslate"><span class="pre">GaussExc</span></code> – Gaussian excitation<a class="headerlink" href="#module-GauseExc" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="fem.mesh.GaussExc.calc_gauss_amp">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">calc_gauss_amp</code><span class="sig-paren">(</span><em>node_xyz</em>, <em>center=(0.0</em>, <em>0.0</em>, <em>-2.0)</em>, <em>sigma=(1.0</em>, <em>1.0</em>, <em>1.0)</em>, <em>amp=1.0</em>, <em>amp_cut=0.05</em>, <em>sym='qsym'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.calc_gauss_amp" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculated the Gaussian amplitude at the node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_xyz</strong> – list of x,y,z node coordinates</li>
+<li><strong>center</strong> – list of x,y,z for Gaussian center (Default value = (0.0)</li>
+<li><strong>sigma</strong> – list of x,y,z Guassian width</li>
+<li><strong>amp</strong> – peak Gaussian source amplitude</li>
+<li><strong>amp_cut</strong> – lower threshold (pct of max) for amplitude creating a</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>point load</dt>
+<dd>qsym: mesh symemetry (qsym, hsym, none)
+0.0:
+-2.0:</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">nodeGaussAmp - point load amplitude at the specified node</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.calc_tukey_amp">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">calc_tukey_amp</code><span class="sig-paren">(</span><em>node_xyz</em>, <em>center=(0.0</em>, <em>0.0</em>, <em>-2.0)</em>, <em>sigma=(1.0</em>, <em>1.0)</em>, <em>tukey_length=1.0</em>, <em>tukey_alpha=0.25</em>, <em>amp=1.0</em>, <em>amp_cut=0.05</em>, <em>sym='qsym'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.calc_tukey_amp" title="Permalink to this definition">¶</a></dt>
+<dd><p>calculated the Gaussian amplitude at the node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node_xyz</strong> – list of x,y,z node coordinates</li>
+<li><strong>center</strong> – list of x,y,z for excitation center (Default value = (0.0)</li>
+<li><strong>sigma</strong> – list of x,y Guassian width</li>
+<li><strong>tukey_length</strong> – length of axial extent, centered at center</li>
+<li><strong>tukey_alpha</strong> – percentage of rolloff (see scipy documentation)</li>
+<li><strong>amp</strong> – peak Gaussian source amplitude</li>
+<li><strong>amp_cut</strong> – lower threshold (pct of max) for amplitude creating a</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>point load</dt>
+<dd>qsym: mesh symemetry (qsym, hsym, none)
+0.0:
+-2.0:</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">nodeGaussAmp - point load amplitude at the specified node</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.check_num_fields">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">check_num_fields</code><span class="sig-paren">(</span><em>fields</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.check_num_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>check for 4 fields</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fields</strong> – list (node ID, x, y, z)</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.generate_loads">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">generate_loads</code><span class="sig-paren">(</span><em>sigma</em>, <em>center</em>, <em>amp=1.0</em>, <em>amp_cut=0.05</em>, <em>sym='qsym'</em>, <em>direction=-3</em>, <em>loadfilename='loads.dyn'</em>, <em>nodefile='nodes.dyn'</em>, <em>tukey_length=0.0</em>, <em>tukey_alpha=0.25</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.generate_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sigma</strong> – </li>
+<li><strong>center</strong> – </li>
+<li><strong>amp</strong> – (Default value = 1.0)</li>
+<li><strong>amp_cut</strong> – (Default value = 0.05)</li>
+<li><strong>sym</strong> – (Default value = “qsym”)</li>
+<li><strong>direction</strong> – (Default value = -3)</li>
+<li><strong>loadfilename</strong> – (Default value = “loads.dyn”)</li>
+<li><strong>nodefile</strong> – (Default value = “nodes.dyn”)</li>
+<li><strong>tukey_length</strong> – (Default value = 0.0)</li>
+<li><strong>tukey_alpha</strong> – (Default value = 0.25)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.main">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.read_cli">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">read_cli</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.read_cli" title="Permalink to this definition">¶</a></dt>
+<dd><p>read CLI arguments</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.read_node_positions">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">read_node_positions</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.read_node_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>read node position fields from line in nodefile</p>
+<p>Ignore lines that start with ‘$’ (comments) and ‘*’ keywords;
+Assume that all data entries are comma-delimited without spaces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> – single line string from nodefile</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">1x4 float list of node ID, x, y, z; None if appropriate</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">fields</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.read_process_nodes">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">read_process_nodes</code><span class="sig-paren">(</span><em>sigma</em>, <em>center</em>, <em>sym='qsym'</em>, <em>amp=1.0</em>, <em>amp_cut=0.05</em>, <em>nodefile='nodes.dyn'</em>, <em>tukey_length=0.0</em>, <em>tukey_alpha=0.25</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.read_process_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>read nodes and determine if point load should be applied based on
+spatial position</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sigma</strong> – param center:</li>
+<li><strong>sym</strong> – default = ‘qsym’</li>
+<li><strong>amp</strong> – amplitude (default = 1.0)</li>
+<li><strong>amp_cut</strong> – lower amplitude threshold (default = 0.05)</li>
+<li><strong>nodefile</strong> – default = ‘nodes.dyn’</li>
+<li><strong>tukey_length</strong> – length of Tukey window (0.0 defaults to Gaussian)</li>
+<li><strong>tukey_alpha</strong> – percentage of Tukey window to rolloff (Default value = 0.25)</li>
+<li><strong>center</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">load_nodeID_amp list of nodeID, nodeGaussAmp</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.sym_scale_amp">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">sym_scale_amp</code><span class="sig-paren">(</span><em>fields</em>, <em>nodeGaussAmp</em>, <em>sym</em>, <em>search_tol=0.0001</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.sym_scale_amp" title="Permalink to this definition">¶</a></dt>
+<dd><p>scale point load amplitude on symmetry faces / edges</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fields</strong> – list (node ID, x, y, z)</li>
+<li><strong>nodeGaussAmp</strong> – amplitude of point load</li>
+<li><strong>sym</strong> – type of mesh symmetry (none, qsym, hsym)</li>
+<li><strong>search_tol</strong> – spatial tolerance to find nearby nodes (Default value = 0.0001)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">symmetry-scaled point load amplitude</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">nodeGaussAmp</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.tukey_z_scale">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">tukey_z_scale</code><span class="sig-paren">(</span><em>z</em>, <em>center</em>, <em>length</em>, <em>alpha=0.25</em>, <em>points=101</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.tukey_z_scale" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>z</strong> – z-coordinate</li>
+<li><strong>center</strong> – center of Tukey window</li>
+<li><strong>length</strong> – length of Tukey window</li>
+<li><strong>alpha</strong> – rolloff (percentage of window) (Default value = 0.25)</li>
+<li><strong>points</strong> – number of points in Tukey window (Default value = 101)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">z_scale (scale, relative to 1.0)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GaussExc.write_load_file">
+<code class="descclassname">fem.mesh.GaussExc.</code><code class="descname">write_load_file</code><span class="sig-paren">(</span><em>loadfilename</em>, <em>load_nodeID_amp</em>, <em>direction=-3</em>, <em>header_comment='$Generated by GaussExc.py\n'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GaussExc.write_load_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>write load file</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Args:</dt>
+<dd>loadfilename: param load_nodeID_amp: list of int node ID, float amp
+direction: default = -3 (orientation (1, 2, 3) and sign)
+header_comment:  (Default value = “$Generated by GaussExc.py</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>“)</dt>
+<dd><blockquote class="first">
+<div>load_nodeID_amp:</div></blockquote>
+<p class="last">Returns:</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-fem.mesh.GenMesh">
+<span id="fem-mesh-genmesh-module"></span><h2>fem.mesh.GenMesh module<a class="headerlink" href="#module-fem.mesh.GenMesh" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-GenMesh" title="GenMesh: generate 3D mesh as ls-dyna node &amp; element input files"><code class="xref py py-mod docutils literal notranslate"><span class="pre">GenMesh</span></code></a> – mesh generation</p>
+<span class="target" id="module-GenMesh"></span><dl class="function">
+<dt id="fem.mesh.GenMesh.calc_node_pos">
+<code class="descclassname">fem.mesh.GenMesh.</code><code class="descname">calc_node_pos</code><span class="sig-paren">(</span><em>xyz=(-1.0</em>, <em>0.0</em>, <em>-1.0</em>, <em>1.0</em>, <em>-4.0</em>, <em>0.0)</em>, <em>numElem=(20</em>, <em>20</em>, <em>20)</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GenMesh.calc_node_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate nodal spatial positions based on CLI specs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xyz</strong> – xmin, xmax, ymin, ymax, zmin, zmax) (Default value = (-1.0)</li>
+<li><strong>int</strong> – numElem: (xEle, yEle, zEle)</li>
+<li><strong>0.0</strong> – </li>
+<li><strong>-1.0</strong> – </li>
+<li><strong>1.0</strong> – </li>
+<li><strong>-4.0</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">pos - list of lists containing x, y, and z positions</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GenMesh.check_x0_y0">
+<code class="descclassname">fem.mesh.GenMesh.</code><code class="descname">check_x0_y0</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GenMesh.check_x0_y0" title="Permalink to this definition">¶</a></dt>
+<dd><p>check model position
+Check to make sure that nodes exist at (x, y) = (0, 0) so that the focus /
+peak of an ARF excitation is captured by the mesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> – node positions</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">0/1 (1 = fail)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GenMesh.main">
+<code class="descclassname">fem.mesh.GenMesh.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GenMesh.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GenMesh.parse_cli">
+<code class="descclassname">fem.mesh.GenMesh.</code><code class="descname">parse_cli</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GenMesh.parse_cli" title="Permalink to this definition">¶</a></dt>
+<dd><p>parse commandline arguments</p>
+<dl class="docutils">
+<dt>Defines:</dt>
+<dd>–nodefile [nodes.dyn]
+–elefile [elems.dyn]
+–partid [1]
+–xyz [(xmin, xmax, ymin, ymax,…)]
+–numElem [(x, y, z)]</dd>
+</dl>
+<p>Args:</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GenMesh.run">
+<code class="descclassname">fem.mesh.GenMesh.</code><code class="descname">run</code><span class="sig-paren">(</span><em>xyz</em>, <em>numElem</em>, <em>nodefile='nodes.dyn'</em>, <em>elefile='elems.dyn'</em>, <em>partid=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GenMesh.run" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>xyz</strong> – param numElem:</li>
+<li><strong>nodefile</strong> – default = “nodes.dyn”</li>
+<li><strong>elefile</strong> – default = “elems.dyn”</li>
+<li><strong>partid</strong> – default = 1</li>
+<li><strong>numElem</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">0</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GenMesh.writeElems">
+<code class="descclassname">fem.mesh.GenMesh.</code><code class="descname">writeElems</code><span class="sig-paren">(</span><em>numElem</em>, <em>partid=1</em>, <em>elefile='elems.dyn'</em>, <em>header_comment='$ Generated by GenMesh.py'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GenMesh.writeElems" title="Permalink to this definition">¶</a></dt>
+<dd><p>write element file using calculated position data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pos</strong> – list of lists of x, y, z positions</li>
+<li><strong>str</strong> – elefile: elems.dyn</li>
+<li><strong>str</strong> – header_comment: what version / syntax of calling command</li>
+<li><strong>numElem</strong> – </li>
+<li><strong>partid</strong> – (Default value = 1)</li>
+<li><strong>elefile</strong> – (Default value = “elems.dyn”)</li>
+<li><strong>header_comment</strong> – (Default value = “$ Generated by GenMesh.py”)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">elems.dyn written (or specified filename)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.GenMesh.writeNodes">
+<code class="descclassname">fem.mesh.GenMesh.</code><code class="descname">writeNodes</code><span class="sig-paren">(</span><em>pos</em>, <em>nodefile='nodes.dyn'</em>, <em>header_comment='$ Generated by GenMesh.py'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.GenMesh.writeNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>write node file using calculated position data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pos</strong> – list of lists of x, y, z positions</li>
+<li><strong>nodefile</strong> – nodes.dyn (Default value = “nodes.dyn”)</li>
+<li><strong>header_comment</strong> – what version / syntax of calling command (Default value = “$ Generated by GenMesh.py”)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">nodes.dyn written (or specified filename)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-fem.mesh.TopLoad">
+<span id="fem-mesh-topload-module"></span><h2>fem.mesh.TopLoad module<a class="headerlink" href="#module-fem.mesh.TopLoad" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-TopLoad" title="TopLoad: Generate compression conditions for the top surface."><code class="xref py py-mod docutils literal notranslate"><span class="pre">TopLoad</span></code></a> – generate top load compression</p>
+<span class="target" id="module-TopLoad"></span><dl class="function">
+<dt id="fem.mesh.TopLoad.extract_top_plane_nodes">
+<code class="descclassname">fem.mesh.TopLoad.</code><code class="descname">extract_top_plane_nodes</code><span class="sig-paren">(</span><em>nodefile</em>, <em>top_face</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.TopLoad.extract_top_plane_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nodefile</strong> – param top_face:</li>
+<li><strong>top_face</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">planeNodeIDs</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.TopLoad.generate_loads">
+<code class="descclassname">fem.mesh.TopLoad.</code><code class="descname">generate_loads</code><span class="sig-paren">(</span><em>loadtype='disp'</em>, <em>direction=2</em>, <em>amplitude=-1.0</em>, <em>loadfile='topload.dyn'</em>, <em>nodefile='nodes.dyn'</em>, <em>top_face=(0</em>, <em>0</em>, <em>0</em>, <em>0</em>, <em>0</em>, <em>1)</em>, <em>lcid=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.TopLoad.generate_loads" title="Permalink to this definition">¶</a></dt>
+<dd><p>apply loads to</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>loadtype</strong> – disp’, ‘vel’, ‘accel’, ‘force’ (Default value = ‘disp’)</li>
+<li><strong>direction</strong> – 0 - x, 1 - y, 2 - z (Default value = 2)</li>
+<li><strong>amplitude</strong> – scalar of load type (Default value = -1.0)</li>
+<li><strong>loadfile</strong> – written loadfile name (Default value = ‘topload.dyn’)</li>
+<li><strong>nodefile</strong> – nodes.dyn’ (Default value = ‘nodes.dyn’)</li>
+<li><strong>top_face</strong> – 0, 0, 0, 0, 0, 1] (Default value = (0)</li>
+<li><strong>lcid</strong> – load curve ID</li>
+<li><strong>0</strong> – </li>
+<li><strong>1</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.TopLoad.main">
+<code class="descclassname">fem.mesh.TopLoad.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.TopLoad.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>way too complicated for now</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.TopLoad.read_cli">
+<code class="descclassname">fem.mesh.TopLoad.</code><code class="descname">read_cli</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.TopLoad.read_cli" title="Permalink to this definition">¶</a></dt>
+<dd><p>read CLI args</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.TopLoad.writeNodeLoads">
+<code class="descclassname">fem.mesh.TopLoad.</code><code class="descname">writeNodeLoads</code><span class="sig-paren">(</span><em>loadfile</em>, <em>planeNodeIDs</em>, <em>loadtype</em>, <em>direction</em>, <em>amplitude</em>, <em>lcid</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.TopLoad.writeNodeLoads" title="Permalink to this definition">¶</a></dt>
+<dd><p>write load keyword file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>loadfile</strong> – load filename</li>
+<li><strong>planeNodeIDS</strong> – array of node IDs</li>
+<li><strong>loadtype</strong> – str]: disp, vel, accel, force</li>
+<li><strong>direction</strong> – 0-2]</li>
+<li><strong>amplitude</strong> – param lcid: LCID</li>
+<li><strong>planeNodeIDs</strong> – </li>
+<li><strong>lcid</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-fem.mesh.bc">
+<span id="fem-mesh-bc-module"></span><h2>fem.mesh.bc module<a class="headerlink" href="#module-fem.mesh.bc" title="Permalink to this headline">¶</a></h2>
+<p>Apply boundary conditions to rectangular, solid meshes</p>
+<dl class="function">
+<dt id="fem.mesh.bc.apply_face_bc_only">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">apply_face_bc_only</code><span class="sig-paren">(</span><em>face_constraints</em>, <em>nodefile='nodes.dyn'</em>, <em>bcfile='bc.dyn'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.apply_face_bc_only" title="Permalink to this definition">¶</a></dt>
+<dd><p>driver function to apply node BCs just to faces</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>face_constraints</strong> (<em>tuple</em>) – <p>3x2 tuple of strings
+((‘0,0,0,0,0,0’), (‘0,0,0,0,0,0’),</p>
+<blockquote>
+<div>(‘0,0,0,0,0,0’), (‘0,0,0,0,0,0’),
+(‘0,0,0,0,0,0’), (‘0,0,0,0,0,0’))</div></blockquote>
+<p>Specify face BCs as ((xmin, xmax), (ymin, ymax), (zmin, zmax))</p>
+</li>
+<li><strong>nodefile</strong> (<em>str</em>) – input file for node definitions (<a href="#id1"><span class="problematic" id="id2">*</span></a>NODE)</li>
+<li><strong>bcfile</strong> (<em>str</em>) – output file for boundary conditions (<a href="#id3"><span class="problematic" id="id4">*</span></a>BOUNDARY_SPC_NODE)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.apply_nonreflect">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">apply_nonreflect</code><span class="sig-paren">(</span><em>face_constraints</em>, <em>edge_constraints</em>, <em>nodefile='nodes.dyn'</em>, <em>elefile='elems.dyn'</em>, <em>bcfile='bc.dyn'</em>, <em>segfile='nonreflect_segs.dyn'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.apply_nonreflect" title="Permalink to this definition">¶</a></dt>
+<dd><p>driver function to generate non-reflecting boundaries</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>face_constraints</strong> (<em>str</em>) – vector of face constraints, ordered xmin to zmax</li>
+<li><strong>edge_constraints</strong> (<em>str</em>) – vector of edge constraints, ordered xmin to zmax</li>
+<li><strong>nodefile</strong> (<em>str</em>) – default - ‘nodes.dyn’</li>
+<li><strong>elefile</strong> (<em>str</em>) – default - ‘elems.dyn’</li>
+<li><strong>bcfile</strong> (<em>str</em>) – default - ‘bc.dyn’</li>
+<li><strong>segfile</strong> (<em>str</em>) – default - ‘nonreflect_segs.dyn’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">0 on success</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.apply_pml">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">apply_pml</code><span class="sig-paren">(</span><em>pml_elems</em>, <em>face_constraints</em>, <em>edge_constraints</em>, <em>nodefile='nodes.dyn'</em>, <em>elefile='elems.dyn'</em>, <em>pmlfile='elems_pml.dyn'</em>, <em>bcfile='bc.dyn'</em>, <em>pml_partID=2</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.apply_pml" title="Permalink to this definition">¶</a></dt>
+<dd><p>driver function to apply PML boundary conditions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pml_elems</strong> (<em>str</em>) – 3x2 array of ints specifying thickness of
+PML elements (5–10) on each PML layer
+face_constraints: 3x2 array of strings, specifying the BCs on each
+face (3), min/max (2)</li>
+<li><strong>edge_constraints</strong> (<em>str</em>) – 1x6 vector of BCs on each edge</li>
+<li><strong>nodefile</strong> (<em>str</em>) – default - input file for the node definitions</li>
+<li><strong>elefile</strong> (<em>str</em>) – default - input file for the element definitions</li>
+<li><strong>pmlfile</strong> (<em>str</em>) – output file for the elements w/ PMLs</li>
+<li><strong>bcfile</strong> (<em>str</em>) – output file for the boundary conditions</li>
+<li><strong>pml_partID</strong> (<em>int</em>) – PID for the PML elements</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.assign_edge_sym_constraints">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">assign_edge_sym_constraints</code><span class="sig-paren">(</span><em>bcdict</em>, <em>snic</em>, <em>axes</em>, <em>edge_constraints</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.assign_edge_sym_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>modify/create node BCs for quarter-symmetry edge</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bcdict</strong> – dict of nodal BCs</li>
+<li><strong>snic</strong> – sorted node IDs and coordinates</li>
+<li><strong>axes</strong> – spatial axis vectors</li>
+<li><strong>edge_constraints</strong> – list with vector indicating edge &amp; constraint</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>(e.g., to specify the edge shared by the xmax
+and ymin faces to allow just z translation:
+(((0,1),(1,0),(0,0)),‘1,1,0,1,1,1’)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bcdict (updated from face assignment)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.assign_node_constraints">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">assign_node_constraints</code><span class="sig-paren">(</span><em>snic</em>, <em>axes</em>, <em>face_constraints</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.assign_node_constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>assign node constraints to prescribed node planes</p>
+<p>Nodes shared on multiple faces have are assigned with the following order
+of precedence: z, y, x</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snic</strong> – sorted node IDs and coordinates from nodes.dyn</li>
+<li><strong>axes</strong> – mesh axes [x, y, z]</li>
+<li><strong>face_constraints</strong> – list of DOF strings ordered by</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>((xmin, max), (ymin, …)
+(e.g., ((‘1,1,1,1,1,1’ , ‘0,1,0,0,1,0’),…)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">bcdict - dictionary of node BC to be written to bc.dyn</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.assign_pml_elems">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">assign_pml_elems</code><span class="sig-paren">(</span><em>sorted_elems</em>, <em>pml_elems</em>, <em>pml_partID='2'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.assign_pml_elems" title="Permalink to this definition">¶</a></dt>
+<dd><p>assign PML elements in the sorted element matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sorted_elems</strong> – sorted element matrix</li>
+<li><strong>pml_elems</strong> – list of tuples of # PML elems on each axis edge</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>([[xmin, max], [ymin, ymax], …)</dt>
+<dd>pml_partID: default = 2</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">sorted_pml_elems (to be written to new file)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.constrain_sym_pml_nodes">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">constrain_sym_pml_nodes</code><span class="sig-paren">(</span><em>bcdict</em>, <em>snic</em>, <em>axes</em>, <em>pml_elems</em>, <em>edge_constraints</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.constrain_sym_pml_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>make sure that all “side” nodes for the PML elements are fully
+constrained, instead of being assigned the symmetry constraints</p>
+<p>THIS FUNCTION IS NOT NEEDED!!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bcdict</strong> – param snic:</li>
+<li><strong>axes</strong> – param pml_elems:</li>
+<li><strong>edge_constraints</strong> – return: bcdict</li>
+<li><strong>snic</strong> – </li>
+<li><strong>pml_elems</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">bcdict</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.main">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>apply prescribed boundary conditions to nodes/face segments</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.read_cli">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">read_cli</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.read_cli" title="Permalink to this definition">¶</a></dt>
+<dd><p>read command line arguments</p>
+<p>Args:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">opts (argparse object)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.writeSeg">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">writeSeg</code><span class="sig-paren">(</span><em>BCFILE</em>, <em>title</em>, <em>segID</em>, <em>planeNodeIDs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.writeSeg" title="Permalink to this definition">¶</a></dt>
+<dd><p>write face segments to BC input file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>BCFILE</strong> – file IO object</li>
+<li><strong>title</strong> (<em>str</em>) – header comment line</li>
+<li><strong>segID</strong> (<em>int</em>) – segment ID #</li>
+<li><strong>planeNodeIDs</strong> (<em>int</em>) – 2D array</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">segID (inc +1)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.write_bc">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">write_bc</code><span class="sig-paren">(</span><em>bcdict</em>, <em>bc='bc.dyn'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.write_bc" title="Permalink to this definition">¶</a></dt>
+<dd><p>write node BCs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bcdict</strong> – dict of node BCs, with DOF values</li>
+<li><strong>bcfile</strong> – boundary conditions filename (bc.dyn)</li>
+<li><strong>bc</strong> – (Default value = “bc.dyn”)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.write_nonreflecting">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">write_nonreflecting</code><span class="sig-paren">(</span><em>BCFILE</em>, <em>segID</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.write_nonreflecting" title="Permalink to this definition">¶</a></dt>
+<dd><p>write non-reflecting boundaries (set segments) to input file with segments</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>BCFILE</strong> – file IO object</li>
+<li><strong>int</strong> – segID: maximum segment ID #, assuming started at 1</li>
+<li><strong>segID</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">0 on success</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.bc.write_pml_elems">
+<code class="descclassname">fem.mesh.bc.</code><code class="descname">write_pml_elems</code><span class="sig-paren">(</span><em>sorted_pml_elems</em>, <em>pmlfile='elems_pml.dyn'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.bc.write_pml_elems" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new elements file that the PML elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sorted_pml_elems</strong> – param pmlfile: default = elems_pml.dyn</li>
+<li><strong>pmlfile</strong> – (Default value = “elems_pml.dyn”)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-fem.mesh.create_pointloads_vtk">
+<span id="fem-mesh-create-pointloads-vtk-module"></span><h2>fem.mesh.create_pointloads_vtk module<a class="headerlink" href="#module-fem.mesh.create_pointloads_vtk" title="Permalink to this headline">¶</a></h2>
+<p>create_pointloads_vtk.py</p>
+<p>Creates .vts file, which can be viewed in Paraview, from node and point loads
+files.</p>
+<p>Here is one solution I found for viewing the loads on the inside of the mesh:
+1. Load the mesh into Paraview.</p>
+<p>2. Press the “Calculator” button on the top left side of Paraview. The
+calculator filter should open up in the sidebar on the left. Next, in the text
+box between “Result Array Name” and above all of the calculator buttons, type
+“mag(loads)” without the quotation marks. Next, change the “Result Array Name”
+from “Result” to something like “load magnitude”. Now, hit the Apply button.
+This part needs to be done because when the .vts file was created, the loads
+data were represented as vectors with non-zero values for the z-components only.
+Taking the magnitude of the loads vectors converts them all into scalar values.</p>
+<p>3. Now that we have the loads data in scalar form, we can apply a Threshold
+filter to visualize only the nodes with non-zero load values. The Threshold
+filter can be found on the top left, several buttons to the left of the
+“Calculator” button. Before applying the Threshold filter, make sure that you
+are filtering by “load magnitude” and that the lower threshold is a small
+non-zero value, like 0.000001. You should now only see the nodes with non-zero
+load values.</p>
+<p>4. In order to visualize these nodes within the context of the mesh, you should
+hit the eye-shaped button next to the .vts file in the side bar to allow the
+entire mesh to appear in the scene. Next, select the .vts file, scroll down to
+Opacity in the Properties tab of the sidebar, and change the opacity to around
+0.5. You should now be able to see the loads that were previously hidden inside
+the mesh.</p>
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.create_vts">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">create_vts</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.create_vts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes .vts file from node and load files. StructuredGrid format assumes a
+linear mesh, so if your mesh is actually non-plaid, this script should be
+run using with an elements file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – </td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.create_vtu">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">create_vtu</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.create_vtu" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> – </td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.main">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.parse_cli">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">parse_cli</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.parse_cli" title="Permalink to this definition">¶</a></dt>
+<dd><p>parse command-line interface arguments</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.writeCellData">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">writeCellData</code><span class="sig-paren">(</span><em>loadout</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.writeCellData" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes cell part IDs</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>loadout</strong> – </li>
+<li><strong>args</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.writeCells">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">writeCells</code><span class="sig-paren">(</span><em>loadout</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.writeCells" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes cell connectivity and types to loadout file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>loadout</strong> – </li>
+<li><strong>args</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.writeNodeIDs">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">writeNodeIDs</code><span class="sig-paren">(</span><em>loadout</em>, <em>args</em>, <em>numNodes</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.writeNodeIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes node IDs to loadout file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>loadout</strong> – </li>
+<li><strong>args</strong> – </li>
+<li><strong>numNodes</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.writeNodePositions">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">writeNodePositions</code><span class="sig-paren">(</span><em>loadout</em>, <em>args</em>, <em>filetype</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.writeNodePositions" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes opening tags as well as node positions to loadout file. returns array
+containing number of nodes (index = 0) and number of elements (index = 1).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>loadout</strong> – </li>
+<li><strong>args</strong> – </li>
+<li><strong>filetype</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.create_pointloads_vtk.writePointLoads">
+<code class="descclassname">fem.mesh.create_pointloads_vtk.</code><code class="descname">writePointLoads</code><span class="sig-paren">(</span><em>loadout</em>, <em>args</em>, <em>numNodes</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.create_pointloads_vtk.writePointLoads" title="Permalink to this definition">¶</a></dt>
+<dd><p>writes point loads to loadout file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>loadout</strong> – </li>
+<li><strong>args</strong> – </li>
+<li><strong>numNodes</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-fem.mesh.fem_mesh">
+<span id="fem-mesh-fem-mesh-module"></span><h2>fem.mesh.fem_mesh module<a class="headerlink" href="#module-fem.mesh.fem_mesh" title="Permalink to this headline">¶</a></h2>
+<p>fem_mesh.py</p>
+<p>Generic functions for all meshing functions</p>
+<p>Copyright 2015 Mark L. Palmeri (<a class="reference external" href="mailto:mlp6&#37;&#52;&#48;duke&#46;edu">mlp6<span>&#64;</span>duke<span>&#46;</span>edu</a>)</p>
+<p>Licensed under the Apache License, Version 2.0 (the “License”);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<p><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.SortElems">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">SortElems</code><span class="sig-paren">(</span><em>elems</em>, <em>axes</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.SortElems" title="Permalink to this definition">¶</a></dt>
+<dd><p>spatially sort node IDs into 3D matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>elems</strong> – element definitions, as read from elems.dyn</li>
+<li><strong>axes</strong> – lists of x, y, z axis positions</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">sorted_elems</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.SortNodeIDs">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">SortNodeIDs</code><span class="sig-paren">(</span><em>nic</em>, <em>sort=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.SortNodeIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>spatially sort node IDs into 3D matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nic</strong> – nodeIDcoords (n matrix [# nodes x 4, dtype = i4,f4,f4,f4])</li>
+<li><strong>sort</strong> – False (assume node ordering); True (spatially sort) (Default value = False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">SortedNodeIDs - n matrix (x,y,z), axes]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.check_version">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">check_version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.check_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>check at least python2.7</p>
+<p>Needed for argparse compatibility</p>
+<p>Args:</p>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.count_header_comment_skips">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">count_header_comment_skips</code><span class="sig-paren">(</span><em>nodefile</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.count_header_comment_skips" title="Permalink to this definition">¶</a></dt>
+<dd><p>count file head comments lines</p>
+<p>..synopsis:: count comments lines to skip before the first keyword (*)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodefile</strong> – node keyword filename</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.extractPlane">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">extractPlane</code><span class="sig-paren">(</span><em>snic</em>, <em>axes</em>, <em>plane</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.extractPlane" title="Permalink to this definition">¶</a></dt>
+<dd><p>extract plane node IDs</p>
+<p>Extract the node IDs on a specified plane from a sorted node ID &amp;
+coordinate 3D array.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>snic</strong> – sorted node IDs &amp; coordinates array</li>
+<li><strong>axes</strong> – list of unique coordinates in the x, y, and z dimensions</li>
+<li><strong>list</strong> – plane:</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>index - index of the plane to extract (x=0, y=1, z=2)</li>
+<li>coord - coordinate of the plane (must exist in axes list)
+plane:</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
+:example: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.load_elems">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">load_elems</code><span class="sig-paren">(</span><em>elefile='elems.dyn'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.load_elems" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>elefile</strong> – elems.dyn (Default value = “elems.dyn”)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">elems</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.load_nodeIDs_coords">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">load_nodeIDs_coords</code><span class="sig-paren">(</span><em>nodefile='nodes.dyn'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.load_nodeIDs_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>load in node IDs and coordinates</p>
+<p>Exclude ‘*’ keyword lines</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodefile</strong> – node filename (nodes.dyn) (Default value = “nodes.dyn”)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">nodeIDcoords (numpy array)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.rm_tmp_file">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">rm_tmp_file</code><span class="sig-paren">(</span><em>nodefile_nocmt</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.rm_tmp_file" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodefile_nocmt</strong> – </td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fem.mesh.fem_mesh.strip_comments">
+<code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">strip_comments</code><span class="sig-paren">(</span><em>nodefile</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.strip_comments" title="Permalink to this definition">¶</a></dt>
+<dd><p>strip comments
+string comment lines starting with $</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nodefile</strong> – keyword filename</td>
+</tr>
+</tbody>
+</table>
+<p>Returns:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-fem.mesh.parseElemsNodes">
+<span id="fem-mesh-parseelemsnodes-module"></span><h2>fem.mesh.parseElemsNodes module<a class="headerlink" href="#module-fem.mesh.parseElemsNodes" title="Permalink to this headline">¶</a></h2>
+<p>Copyright 2015 Mark L. Palmeri (<a class="reference external" href="mailto:mlp6&#37;&#52;&#48;duke&#46;edu">mlp6<span>&#64;</span>duke<span>&#46;</span>edu</a>)</p>
+<p>Licensed under the Apache License, Version 2.0 (the “License”);
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at</p>
+<p><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+<dl class="function">
+<dt id="fem.mesh.parseElemsNodes.main">
+<code class="descclassname">fem.mesh.parseElemsNodes.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.parseElemsNodes.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-fem.mesh">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-fem.mesh" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">fem.mesh package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-fem.mesh.CreateStructure">fem.mesh.CreateStructure module</a><ul>
+<li><a class="reference internal" href="#module-CreateStructure"><code class="docutils literal notranslate"><span class="pre">CreateStructure</span></code> – define structures in meshes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fem.mesh.GaussExc">fem.mesh.GaussExc module</a><ul>
+<li><a class="reference internal" href="#module-GauseExc"><code class="docutils literal notranslate"><span class="pre">GaussExc</span></code> – Gaussian excitation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-fem.mesh.GenMesh">fem.mesh.GenMesh module</a></li>
+<li><a class="reference internal" href="#module-fem.mesh.TopLoad">fem.mesh.TopLoad module</a></li>
+<li><a class="reference internal" href="#module-fem.mesh.bc">fem.mesh.bc module</a></li>
+<li><a class="reference internal" href="#module-fem.mesh.create_pointloads_vtk">fem.mesh.create_pointloads_vtk module</a></li>
+<li><a class="reference internal" href="#module-fem.mesh.fem_mesh">fem.mesh.fem_mesh module</a></li>
+<li><a class="reference internal" href="#module-fem.mesh.parseElemsNodes">fem.mesh.parseElemsNodes module</a></li>
+<li><a class="reference internal" href="#module-fem.mesh">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="create_dyna_mesh.html" title="previous chapter">Creating Rectilinear Meshes for LS-DYNA</a></li>
+      <li>Next: <a href="optistruct.html" title="next chapter">OptiStruct Mesh Conversion</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/fem.mesh.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Mark Palmeri.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/fem.mesh.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
