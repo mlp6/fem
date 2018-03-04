@@ -1,21 +1,17 @@
-"""methods to save 3D scalar and vector data in ASCII VTK format
-"""
-
-
 class SaveVTK:
+    """Methods to save 3D scalar and vector data in legacy ASCII VTK format
+
+    Args:
+        data (ndarray): [scalar] 3D numpy array
+                        [vector] tuple of 3D numpy arrays (X, Y, Z)
+        origin (float): mesh origin tuple (x, y, z)
+        spacing (float): node spacing tuple (x, y, z)
+
+    Raises:
+        IndexError: The shape of the data tuple ndarrays are not equal.
+    """
 
     def __init__(self, data, origin, spacing):
-        """initialize the object
-
-        Args:
-          data (ndarray): [scalar] 3D numpy array
-                          [vector] tuple of 3D numpy arrays (X, Y, Z)
-          origin (float): mesh origin tuple (x, y, z)
-          spacing (float): node spacing tuple (x, y, z)
-
-        Raises:
-            IndexError: The shape of the data tuple ndarrays are not equal.
-        """
         self.data = data
         self.origin = origin
         self.spacing = spacing
