@@ -2,7 +2,6 @@
 <a href="https://travis-ci.org/mlp6/fem"><img src="https://travis-ci.org/mlp6/fem.svg?branch=master" /></a>
 [![Documentation Status](https://readthedocs.org/projects/fem/badge/?version=latest)](http://fem.readthedocs.io/en/latest/?badge=latest)
 
-
 # Acoustic Radiation Force FEM Tools
 
 Finite Element Method (FEM) tools to simulate acoustic radiation force
