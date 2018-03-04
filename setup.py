@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 import sys
 
 if sys.version_info.major != 3 or (sys.version_info.major == 3 and
