@@ -5,12 +5,13 @@ addons:
       apt_packages:
               - swig
               - python-dev
-              - texlive
+cache: pip
+
 install:
       - pip install -r requirements.txt
 script: 
       - pytest -v --pep8
-      - PYTHONPATH=$HOME sphinx-build -b dummy docs/ docs/_build/latex
+      - PYTHONPATH=$HOME sphinx-build -b dummy docs/ docs/_build/html
       - cd post/create_disp_dat_c
       - make
       - make test
