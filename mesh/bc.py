@@ -4,8 +4,6 @@
 
 .. module:: bc
    :synopsis: apply boundary conditions to rectangular solid meshes
-   :license: Apache v2.0 (see LICENSE for details)
-   :copyright: Copyright 2015--2016 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 

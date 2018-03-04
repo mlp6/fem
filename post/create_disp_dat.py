@@ -2,9 +2,8 @@
 :mod:`create_disp_dat` -- generate disp.dat binary from nodout ASCII
 
 .. module:: create_disp_dat
-   :synopsis: generate disp.dat binary from nodout ASCII
-   :license: Apache v2.0, see LICENSE for details
-   :copyright: Copyright 2016--2017 Mark Palmeri
+:synopsis: generate disp.dat binary from nodout ASCII
+:copyright: Copyright 2016--2017 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """

@@ -4,8 +4,6 @@
 
 .. module:: GauseExc
    :synopsis: generate Gaussian distribution of point loads
-   :license: Apache v2.0, see LICENSE for details
-   :copyright: Copyright 2016 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """

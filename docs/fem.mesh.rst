@@ -44,14 +44,6 @@ fem.mesh.bc module
     :undoc-members:
     :show-inheritance:
 
-fem.mesh.calcNodeVol module
----------------------------
-
-.. automodule:: fem.mesh.calcNodeVol
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 fem.mesh.create\_pointloads\_vtk module
 ---------------------------------------
 
