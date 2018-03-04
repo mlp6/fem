@@ -9,6 +9,7 @@ setup(
     name='fem',
     packages=['fem'],
     package_dir={'fem': '.', 'fem.mesh': 'mesh'},
+    py_modules=['fem/mesh'],
     version='6.9.1',
     license='Apache v2.0',
     author='Mark Palmeri',
