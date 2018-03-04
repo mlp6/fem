@@ -7,9 +7,8 @@ if sys.version_info.major != 3 or (sys.version_info.major == 3 and
 
 setup(
     name='fem',
-    packages=['fem'],
-    package_dir={'fem': '.', 'fem.mesh': 'mesh'},
-    py_modules=['fem/mesh'],
+    packages=['fem', 'fem.mesh', 'fem.post'],
+    package_dir={'fem': '.'},
     version='6.9.1',
     license='Apache v2.0',
     author='Mark Palmeri',
