@@ -62,3 +62,20 @@ def test_savevtk_raise_3D_exception(savevtk_data):
     with pytest.raises(IndexError):
         vtkobj = SaveVTK(data3d, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
 
+
+def test_write_scalar(savevtk_data, tmpdir):
+    from savevtk import SaveVTK
+
+    fname = tmpdir.join('file.vtk')
+
+    vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
+
+    vtkobj.save_scalar(fname.strpath, dataname="scalars", header_comment="unit test")
+
+    with open(fname.strpath, 'r') as written_file:
+        text = written_file.readlines()
+
+    assert text[2] == 'ASCII\n'
+    assert text[5].split()[2] == '5'
+    assert text[7].startswith('ORIGIN')
+    assert text[8].split()[3] == '0.300'
