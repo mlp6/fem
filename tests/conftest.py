@@ -73,3 +73,13 @@ def mktmpdir(tmpdir_factory):
     """
     tmpdir = tmpdir_factory.mktemp('tmp')
     return tmpdir
+
+
+@pytest.fixture
+def savevtk_data():
+    from scipy.io import loadmat
+
+    d = loadmat('{}/savevtk_data.mat'.format(myPath))
+    savevtk_data = d['data']
+
+    return savevtk_data
