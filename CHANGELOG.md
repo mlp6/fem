@@ -45,3 +45,6 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v6.9.1
 * Fix Sphinx documentation
+
+## v6.10.0
+* Working `setup.py` for `pip git+` installs.

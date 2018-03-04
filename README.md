@@ -53,3 +53,4 @@ tracker: https://github.com/mlp6/fem/issues
 - Nick Bottenus (nbb5@duke.edu)
 - Brian Bigler (brian.bigler@duke.edu)
 - Carl Herickhoff (cdh14@duke.edu)
+- Sam Lipman (sll16@duke.edu)

@@ -35,33 +35,20 @@
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><dl class="first docutils">
-<dt>You can locally clone this repository:</dt>
-<dd><code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">git&#64;gitlab.oit.duke.edu:mlp6/fem.git</span></code></dd>
-</dl>
-</li>
-</ul>
-<p>This approach will work if you have an <a class="reference external" href="https://help.github.com/articles/generating-ssh-keys">SSH
-key</a> uploaded
-to GitLab. If not, then you can also clone the reportory using:
-<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://gitlab.oit.duke.edu/mlp6/fem.git</span></code></p>
-<ul class="simple">
-<li>Add the fem subdirectories to your Matlab path. One approach is to add the
-following to <code class="docutils literal notranslate"><span class="pre">$HOME/matlab/startup.m</span></code>: <code class="docutils literal notranslate"><span class="pre">fem_root</span> <span class="pre">=</span>
-<span class="pre">'PATH/TO/GIT/CLONED/fem';</span>&#160; <span class="pre">addpath(fullfile(fem_root,</span> <span class="pre">'mesh'));</span>
-<span class="pre">addpath(fullfile(fem_root,</span> <span class="pre">'field'));</span>&#160; <span class="pre">addpath(fullfile(fem_root,</span> <span class="pre">'post'));</span></code>
-where <code class="docutils literal notranslate"><span class="pre">fem_root</span></code> is the path of your git-cloned fem repository.</li>
-<li>Siemens proprietary probe definitions can be cloned from the Duke
-access-restricted repository: <a class="reference external" href="https://gitlab.oit.duke.edu/ultrasound/probes">https://gitlab.oit.duke.edu/ultrasound/probes</a> .</li>
-<li>All of the python scripts require python &gt;=3.3.</li>
+<li>If you just plan to use (not develop) this code, then you can use pip to
+install this in a local virtualenv: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span>
+<span class="pre">git+https://github.com/mlp6/fem.git</span></code></li>
+<li>You can also locally clone this repository: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span>
+<span class="pre">https://github.com:mlp6/fem.git</span></code>.  You will need to properly define
+<code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> in your environment to include the root directory that the fem
+repository was cloned into.</li>
+<li>All of the python scripts require python &gt;=3.5.</li>
+<li>If you locally clone the repository, there is a pip <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file
+available to setup a python virtual environment will all of the necessary
+packages.</li>
 <li>Most code can be utilized as importable modules as part of the fem package,
 or can be executed from the CLI.  Most CLI-executed scripts have help
 available using the <code class="docutils literal notranslate"><span class="pre">--help</span></code> flag.</li>
-<li>If you are importing the fem code as a python package, then be sure to
-properly define <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> in your environment to include the root
-directory that the fem repository was cloned into.</li>
-<li>There is a pip <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file available to setup a python virtual
-environment will all of the necessary packages.</li>
 </ul>
 </div>
 
