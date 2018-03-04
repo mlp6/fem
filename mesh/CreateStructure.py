@@ -1,6 +1,6 @@
 """
-:mod:`CreateStructe` -- define structures in meshes
-===================================================
+:mod:`CreateStructer` -- define structures in meshes
+====================================================
 
 .. module:: CreateStructure
    :synopsis: define structures in meshes
