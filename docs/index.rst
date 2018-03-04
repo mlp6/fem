@@ -15,10 +15,10 @@ Contents:
    code_layout
    coordinates_units
    create_dyna_mesh
-   mesh
+   fem.mesh
    optistruct
    simulate_ARFI
-   post_modules
+   fem.post
    hypermesh
    examples
    testing
