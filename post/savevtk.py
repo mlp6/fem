@@ -17,16 +17,24 @@ class SaveVTK:
         :param float origin: mesh origin tuple (x, y, z)
         :param float spacing: node spacing tuple (x, y, z)
         """
+        self.data = data
+        self.origin = origin
+        self.spacing = spacing
+
+    @property
+    def data(self):
+        return self.__data
+
+    @data.setter
+    def data(self, data):
         import numpy as np
 
         if isinstance(data, np.ndarray):
-            self.data = data
+            self.__data = data
         elif isinstance(data, tuple):
-            self.data.X = data[0]
-            self.data.Y = data[1]
-            self.data.Z = data[2]
-        self.origin = origin
-        self.spacing = spacing
+            self.__data.X = data[0]
+            self.__data.Y = data[1]
+            self.__data.Z = data[2]
 
 
     def save_scalar(self, filename, dataname="scalars", header_comment=None):
