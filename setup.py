@@ -7,8 +7,8 @@ if sys.version_info.major != 3 or (sys.version_info.major == 3 and
 
 setup(
     name='FEM',
-    packages=['fem'],
-    version='v6.9.1',
+    packages=['.'],
+    version='6.9.1',
     license='Apache v2.0',
     author='Mark Palmeri',
     author_email='mlp6@duke.edu',
