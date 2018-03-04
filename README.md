@@ -17,7 +17,8 @@ Finite-Element Method Model of Soft Tissue Response to Impulsive
 Acoustic Radiation Force," IEEE UFFC, 52(10): 1699-1712,
 2005](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/)
 
-Also please cite the following manuscript if you use `Field II <http://field-ii.dk>`:
+Also please cite the following manuscript if you use [Field
+II](http://field-ii.dk):
 
 [J.A. Jensen and N. B. Svendsen: Calculation of pressure fields from
 arbitrarily shaped, apodized, and excited ultrasound transducers, IEEE
