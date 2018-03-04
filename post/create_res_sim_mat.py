@@ -3,7 +3,6 @@
 
 .. module:: create_res_sim_mat
    :synopsis: create res_sim.mat from disp.dat
-   :copyright: Copyright 2016 Mark Palmeri
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """

@@ -1,6 +1,6 @@
 """
-:mod:`CreateStructer` -- define structures in meshes
-====================================================
+:mod:`CreateStructure` -- define structures in meshes
+=====================================================
 
 .. module:: CreateStructure
    :synopsis: define structures in meshes
@@ -184,7 +184,7 @@ def findStructElemIDs(elefile, structNodeIDs):
     """find elements that contain nodes in structNodeIDs
 
     :param str elefile: element filename
-    :param structNodeIDs: numpy array
+    :param ndarray structNodeIDs:
     :returns: (elems, structElemIds)
     """
     from fem.mesh.fem_mesh import load_elems

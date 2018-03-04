@@ -1,22 +1,13 @@
-'''
-TopLoad.py - Generate compression conditions for the top surface of the
-specified mesh.  Search through the provided node file, extract the top
- layer of nodes and write out point loads for each matching node. Nodes
-  are written in spatially-sorted order.
+"""
+:mod:`TopLoad` -- generate top load compression
 
-Copyright 2015-2017 Mark L. Palmeri (mlp6@duke.edu)
+.. module:: TopLoad
+   :synopsis: Generate compression conditions for the top surface.
 
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License.  You may obtain a copy of the
-License at
+.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
+"""
 
-http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-CONDITIONS OF ANY KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations under the License.
-'''
 
 __author__ = "Mark Palmeri "
 __email__ = "mlp6@duke.edu"

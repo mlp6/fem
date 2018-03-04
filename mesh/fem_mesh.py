@@ -47,8 +47,7 @@ def strip_comments(nodefile):
 def count_header_comment_skips(nodefile):
     """count file head comments lines
 
-    count the number of file head comments lines to skip before the first
-    keyword (line starting with *)
+    ..synopsis:: count comments lines to skip before the first keyword (*)
 
     :param nodefile: node keyword filename
 
@@ -80,10 +79,9 @@ def extractPlane(snic, axes, plane):
 
     :param snic: sorted node IDs & coordinates array
     :param axes: list of unique coordinates in the x, y, and z dimensions
-    :param plane: list
-            index - index of the plane to extract (x=0, y=1, z=2)
-            coord - coordinate of the plane to extract (must exist in axes
-                    list)
+    :param list plane: 
+        + index - index of the plane to extract (x=0, y=1, z=2)
+        + coord - coordinate of the plane (must exist in axes list)
     :returns: planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
     :example: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
     """

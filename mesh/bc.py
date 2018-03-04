@@ -235,7 +235,7 @@ def read_cli():
 def write_nonreflecting(BCFILE, segID):
     """write non-reflecting boundaries (set segments) to input file with segments
 
-    ASSUMES THAT SEGMENT FILE HAS ALREADY BEEN WRITTEN TO AND NOT TERMINATED
+    .. warnings also:: ASSUMES THAT SEGMENT FILE HAS ALREADY BEEN WRITTEN TO AND NOT TERMINATED
      WITH *END
 
     :param BCFILE: file IO object
