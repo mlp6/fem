@@ -18,7 +18,6 @@ class H52VTR:
         self.read_h5data()
         self.read_h5axes()
 
-
     def read_h5data(self):
         """Read data in from HDF5 file."""
 
@@ -27,7 +26,6 @@ class H52VTR:
 
         d = h5py.File(self.h5file)
         self.data = np.array(d[self.dataname])
-
 
     def read_h5axes(self):
         """Read axes from HDF5 file."""
@@ -39,10 +37,9 @@ class H52VTR:
         self.axis1 = np.array(d[self.axisnames[1]]).ravel()
         self.axis2 = np.array(d[self.axisnames[2]]).ravel()
 
-
     def write_vtr(self):
         """Write rectilinear VTR file."""
         from pyevtk.hl import gridToVTK
 
         gridToVTK(self.vtrname, self.axis0, self.axis1, self.axis2,
-                  pointData = {self.dataname: self.data})
+                  pointData={self.dataname: self.data})
