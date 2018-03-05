@@ -1,5 +1,5 @@
 class SaveVTK:
-    """Methods to save 3D scalar and vector data in legacy ASCII VTK format
+    """Save *structured* 3D scalar and vector data in legacy ASCII VTK format.
 
     Args:
         data (ndarray): [scalar] 3D numpy array
