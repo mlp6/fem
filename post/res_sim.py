@@ -8,10 +8,10 @@ class ResSim:
         """load MATv5 data
 
         Args:
-          filename: returns: attributes - lat, axial, t, arfidata
+            filename (str): input filename
 
         Returns:
-          attributes - lat, axial, t, arfidata
+            attributes (ndarray): [lat, axial, t, arfidata]
 
         """
         from scipy.io import loadmat
@@ -24,10 +24,10 @@ class ResSim:
         self.arfidata = d['arfidata']
 
     def plot(self, timestep):
-        """plot arfidata at specified timestep
+        """Plot arfidata at specified timestep.
 
         Args:
-          timestep: int
+            timestep (int):
 
         Returns:
 
@@ -48,8 +48,8 @@ class ResSim:
         """plot arfidata through time at specified ax and lat position (mm)
 
         Args:
-          axial: axial depth (mm)
-          lat: lateral position (mm)
+            axial (ndarray): axial depth (mm)
+            lat (ndarray): lateral position (mm)
 
         Returns:
 
@@ -74,7 +74,7 @@ class ResSim:
         Strongly recommend not stepping though each timesteps; use some skips!
 
         Args:
-          timerange: range generator of time steps to animate
+            timerange (range): range generator of time steps to animate
 
         Returns:
 

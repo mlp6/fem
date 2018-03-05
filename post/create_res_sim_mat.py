@@ -1,10 +1,4 @@
-"""
-:mod:`create_res_sim_mat` -- create res_sim.mat from disp.dat
-
-.. module:: create_res_sim_mat
-   :synopsis: create res_sim.mat from disp.dat
-
-.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
+"""Create res_sim.mat from disp.dat.
 """
 
 
@@ -24,16 +18,16 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     """
 
     Args:
-      dynadeck: main dyna input deck
-      disp_comp: 2: component of displacement to extract (Default value = 2)
-      disp_scale: 1e4: displacement scaling (Default value = -1e4)
-      ressim: default = "res_sim.mat"
-      nodedyn: default = "nodes.dyn"
-      dispout: default = "disp.dat"
-      legacynodes:  (Default value = False)
+        dynadeck (str): main dyna input deck
+        disp_comp (int): component of displacement to extract
+        disp_scale (float): displacement scaling
+        ressim (str): result filename to write
+        nodedyn (str): node defintion input filename
+        dispout (str): binary displacement input filename
+        legacynodes (Boolean): node IDs written with each timestep in dispout
 
     Returns:
-      0
+        0
 
     """
     from fem.mesh import fem_mesh
@@ -59,16 +53,15 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
     """extract ARFI data from disp.dat
 
     Args:
-      dispout: name of disp.dat file
-      header: num_nodes, num_dims, num_timesteps
-      image_plane: matrix of image plane node IDs spatially sorted
-      disp_comp: disp component index to extract (0, 1, 2 [default, z])
-      legacynodes: Boolean flag to use legacy disp.dat format with node
-    IDs repeated every timestep (default = False)
-      disp_scale:  (Default value = -1e4)
+        dispout (str): name of disp.dat file
+        header (dict): num_nodes, num_dims, num_timesteps
+        image_plane (ndarray): matrix of image plane node IDs spatially sorted
+        disp_comp (int): disp component index to extract (0, 1, 2 [default, z])
+        legacynodes (Boolean): node IDs repeated every timestep
+        disp_scale (float):  cm -> um
 
     Returns:
-      arfidata matrix
+        arfidata (ndarray): 
 
     """
     import numpy as np
@@ -142,13 +135,12 @@ def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
     """create zdisp array from squeezed disp_slice at appropriate index
 
     Args:
-      nodeidlist: first column of disp_slice with node IDs in row order
-      disp_slice_z_only: squeezed disp_slice of just zisp
-      zdisp:
+        nodeidlist: first column of disp_slice with node IDs in row order
+        disp_slice_z_only: squeezed disp_slice of just zdisp
+        zdisp:
 
     Returns:
-      zdisp -- array of z-disp in rows corresponding to node ID
-      (for fast read access)
+        zdisp (ndarray): rows corresponding to node ID
 
     """
     import numpy as np

@@ -17,15 +17,13 @@ def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
     """apply loads to
 
     Args:
-      loadtype: disp', 'vel', 'accel', 'force' (Default value = 'disp')
-      direction: 0 - x, 1 - y, 2 - z (Default value = 2)
-      amplitude: scalar of load type (Default value = -1.0)
-      loadfile: written loadfile name (Default value = 'topload.dyn')
-      nodefile: nodes.dyn' (Default value = 'nodes.dyn')
-      top_face: 0, 0, 0, 0, 0, 1] (Default value = (0)
-      lcid: load curve ID
-      0:
-      1:
+        loadtype (str): disp', 'vel', 'accel', 'force'
+        direction (int): 0 - x, 1 - y, 2 - z
+        amplitude (float): scalar of load type
+        loadfile (str): written loadfile name
+        nodefile (str):
+        top_face (tuple): constraintst to apply
+        lcid (int): load curve ID
 
     Returns:
 
@@ -41,11 +39,11 @@ def extract_top_plane_nodes(nodefile, top_face):
     """
 
     Args:
-      nodefile: param top_face:
-      top_face:
+        nodefile: param top_face:
+        top_face:
 
     Returns:
-      planeNodeIDs
+        planeNodeIDs
 
     """
     import numpy as np
@@ -70,19 +68,18 @@ def extract_top_plane_nodes(nodefile, top_face):
 
 def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
                    amplitude, lcid):
-    """write load keyword file
+    """Write load keyword file.
 
     Args:
-      loadfile: load filename
-      planeNodeIDS: array of node IDs
-      loadtype: str]: disp, vel, accel, force
-      direction: 0-2]
-      amplitude: param lcid: LCID
-      planeNodeIDs:
-      lcid:
+        loadfile (str): load filename
+        planeNodeIDS (ndarray): array of node IDs
+        loadtype (str): disp, vel, accel, force
+        direction (int): 0-2
+        amplitude (float):
+        lcid (int): LCID
 
     Returns:
-      None
+        None
 
     """
     import sys

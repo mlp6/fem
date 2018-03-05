@@ -1,32 +1,19 @@
-"""
-:mod:`create_disp_dat` -- generate disp.dat binary from nodout ASCII
-
-.. module:: create_disp_dat
-    :synopsis: generate disp.dat binary from nodout ASCII
-
-.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
+"""Generate disp.dat binary from nodout ASCII.
 """
 
 
 def main():
-    """ """
     args = parse_cli()
     create_dat(args.nodout, args.dispout, args.legacynodes)
 
 
 def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
-    """create binary data file
+    """Create binary data file from nodout ASCII file.
 
     Args:
-      str: nodout: nodout file created by ls-dyna (default="nodout")
-      str: dispout: default = "disp.dat"
-      boolean: legacynodes: node IDs written every timestep (default=False)
-      nodout:  (Default value = "nodout")
-      dispout:  (Default value = "disp.dat")
-      legacynodes:  (Default value = False)
-
-    Returns:
-
+        nodout (str):  nodout input filename
+        dispout (str) : binary output filename
+        legacynodes (Boolean):  (Default value = False)
     """
     header_written = False
     timestep_read = False
@@ -65,14 +52,13 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
 
 
 def parse_line(line):
-    """parse raw data line into vector of floats
+    """Parse raw data line into vector of floats.
 
     Args:
-      str: line: raw data line from nodout
-      line:
+        line (str): raw data line from nodout
 
     Returns:
-      float: raw_data
+        raw_data (float):
 
     """
     # first 10 characters (int)
@@ -134,12 +120,11 @@ def generate_header(data, outfile):
     """generate headers from data matrix of first time step
 
     Args:
-      data: data
-      str: outfile: output filename to count times from
-      outfile:
+        data (nparray): data
+        outfile (str): output filename to count times from
 
     Returns:
-      header
+        header (dict):
 
     """
     ts_count = count_timesteps(outfile.name)
@@ -152,7 +137,7 @@ def generate_header(data, outfile):
 
 
 def count_timesteps(outfile):
-    """count timesteps written to nodout
+    """Count timesteps written to nodout.
 
     searches for 'time' in lines, and then removes 1 extra entry that occurs
     for t = 0
@@ -160,10 +145,10 @@ def count_timesteps(outfile):
     grep will be used on linux systems (way faster)
 
     Args:
-      outfile: usually 'nodout'
+        outfile (str): usually 'nodout'
 
     Returns:
-      int ts_count
+        ts_count (int):
 
     """
     from sys import platform
@@ -190,14 +175,13 @@ def count_timesteps(outfile):
 
 
 def write_headers(outfile, header):
-    """write binary header
+    """Write binary header.
 
-    write binary header information to reformat things on read downstream
+    Write binary header information to reformat things on read downstream.
 
     Args:
-      str: outfile: output file object
-      header: dictcontaining the necessary information
-      outfile:
+        outfile (str): output file object
+        header (dict):
 
     Returns:
       None
@@ -217,13 +201,13 @@ def process_timestep_data(data, outfile, writenode):
     """write data for the entire timestep to outfile
 
     Args:
-      data: param outfile: output file object
-      writenode: Boolean if the node IDs should be written to save
-    ~25% of the disp.dat file size
-      outfile:
+        data (ndarray):
+        outfile (obj): output file object
+        writenode (Boolean): Boolean if the node IDs should be written to save
+            ~25% of the disp.dat file size
 
     Returns:
-      None
+        None
 
     """
     from struct import pack
@@ -239,18 +223,17 @@ def process_timestep_data(data, outfile, writenode):
 
 
 def correct_Enot(line):
-    """correct dropped 'E' in -??? scientific notation
+    """Correct dropped 'E' in -??? scientific notation.
 
     ls-dyna seems to drop the 'E' when the negative exponent is three digits,
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
 
     Args:
-      str: line: strict of split raw string data
-      line:
+        line (str): string of split raw string data
 
     Returns:
-      line with corrected -??? -> -E100
+        line with corrected -??? -> -E100
 
     """
     import re
@@ -262,14 +245,13 @@ def correct_Enot(line):
 
 
 def correct_neg(line):
-    """add space before negative coefficient numbers
+    """Add space before negative coefficient numbers.
 
     Args:
-      str: line:
-      line:
+        line (str0:
 
     Returns:
-      line with space(s) added before negative coefficients
+        line (str): line with space(s) added before negative coefficients
 
     """
     import re
@@ -280,13 +262,13 @@ def correct_neg(line):
 
 
 def open_dispout(dispout):
-    """open dispout file for writing
+    """Open dispout file for writing.
 
     Args:
-      dispout: str) dispout filename (disp.dat.xz)
+        dispout (str): dispout filename (disp.dat.xz)
 
     Returns:
-      dispout file object
+        dispout (obj): file object
 
     """
     if dispout.endswith('.xz'):
