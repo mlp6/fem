@@ -61,7 +61,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
         disp_scale (float):  cm -> um
 
     Returns:
-        arfidata (ndarray): 
+        arfidata (ndarray):
 
     """
     import numpy as np
