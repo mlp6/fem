@@ -48,3 +48,9 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v6.10.0
 * Working `setup.py` for `pip git+` installs.
+
+## v7.0.0
+* Refactor `create_res_sim_mat` to now be `create_res_sim` with more options to
+  output HDF5 and PVD timeseries VTR data.  Legacy calls to
+  `create_res_sim_mat` should still work, but the name of the module has been
+  changed to reflect the new functionality under the hood.
