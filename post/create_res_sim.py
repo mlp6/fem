@@ -242,14 +242,18 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
 
 
     output_switch = {
-        '.h5': saveh5(**kwargs)
-        '.mat': savemat(**kwargs)
+        '.h5': saveh5(**kwargs),
+        '.mat': savemat(**kwargs),
         '.pvd': savepvd(**kwargs)
     }
 
-    output_switch[os.path.splitext(resfile)]()
+    try:
+        output_switch[os.path.splitext(resfile)]()
+    except:
+        raise NameError("resfile filetype not recognized")
 
     #TODO: create a function for the PVD output
+    """
     elif resfile.endswith('.vtr'):
         if arfdata.ndim != 4:
             raise ValueError("Trying to save timeseries VTR data not supported.")
@@ -262,10 +266,7 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
             for ts, time in enumerate(t):
                 vtrfilename = '{}/{}_T{4d}.vtr'.format(resfileprefix, resfileprefix, ts)
                 with open(vtrfilename, 'w') as vtr:
-                    # TODO: WIP
-
-    else:
-        raise NameError("resfile filetype not recognized")
+    """
 
 
 def saveh5(**kwargs):
@@ -447,21 +448,19 @@ def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
     """
 
     from fem.mesh import fem_mesh
-    import fem.post.create_res_sim_mat as create_res_sim
     import numpy as np
 
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
-    header = create_res_sim.read_header(dispout)
-    dt = create_res_sim.extract_dt(dynadeck)
+    header = read_header(dispout)
+    dt = extract_dt(dynadeck)
     t = [float(x) * dt for x in range(0, header['num_timesteps'])]
 
-    arfidata = create_res_sim.extract_arfi_data(dispout, header, snic['id'],
-                                                disp_comp, disp_scale,
-                                                legacynodes=False)
+    arfidata = extract_arfi_data(dispout, header, snic['id'],
+                                 disp_comp, disp_scale, legacynodes=False)
 
-    create_res_sim.save_res_sim(ressim, arfidata, axes, t)
+    save_res_sim(ressim, arfidata, axes, t)
 
 
 if __name__ == "__main__":
