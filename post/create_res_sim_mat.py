@@ -26,9 +26,6 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         dispout (str): binary displacement input filename
         legacynodes (Boolean): node IDs written with each timestep in dispout
 
-    Returns:
-        0
-
     """
     from fem.mesh import fem_mesh
 
@@ -63,10 +60,12 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
     Returns:
         arfidata (ndarray):
 
+    Raises:
+        IndexError: unexpected arfidata dimensions
+
     """
     import numpy as np
     import struct
-    from warnings import warn
 
     word_size = 4
     header_bytes = 3 * word_size
@@ -120,7 +119,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
                 for (k, i, j), nodeid in np.ndenumerate(image_plane):
                     arfidata[j, i, k, t - 1] = disp_scale * zdisp[nodeid]
             else:
-                warn("unexpected number of dimensions for arfidata")
+                raise IndexError("Unexpected number of dimensions for arfidata.")
 
         print('\nDone extracting all timesteps.')
 
@@ -203,29 +202,32 @@ def extract_image_plane(snic, axes, ele_pos):
 
 
 def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
-    """save res_sim.mat file using variables scanner-generated data
+    """Save res_sim.[mat,h5,vtr] file with arfidata and relevant axes.
 
-    data are saved as float32 to save space
+    Data are saved as float32 (single) to save space.
+
+    Paraview data formats: https://www.paraview.org/Wiki/ParaView/Data_formats
 
     Args:
-      resfile: res_sim.mat filename
-      arfidata: arfidata matrix (3D or 4D (added elev dim, axes[0]))
-      axes: ele, lat, axial (mesh units)
-      t: time
-      axis_scale: scale axes sign & mag [default: [-10, 10, -10]]
-      10:
-      -10:
+        resfile (str): res_sim.[mat,h5,vtr] filename
+        arfidata (ndarray): arfidata (3D or 4D (added elev dim, axes[0]))
+        axes (ndarrays tuple): ele, lat, axial (mesh units)
+        t (ndarray): time
+        axis_scale (floats tuple): scale axes sign & mag
 
-    Returns:
-      0
+    Raises:
+        TypeError: arfidata >4 GB and tried to be saved as Matlab v5 file
+        ValueError: Trying to save timeseries VTR data not supported.
 
     """
     from scipy.io import savemat
-    from warnings import warn
+    import h5py
+    from pyevtk.hl import gridToVTK
+    import os
 
     if arfidata.nbytes > 4e9 and resfile.endswith('.mat'):
-        warn('arfidata exceeds 4 GB and cannot be written to MATLAB v5\n'
-             'format; you must use HDF5 (*.h5)')
+        raise TypeError("arfidata >4 GB, cannot be saved as MATLAB v5;
+                        must use HDF5 (*.h5)")
 
     # scale axes
     if arfidata.ndim == 4:
@@ -237,7 +239,6 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
 
     print('Saving data to: {}'.format(resfile), flush=True)
     if resfile.endswith('.h5'):
-        import h5py
         r = h5py.File(resfile, 'w')
         r.create_dataset(data=arfidata,
                          name="arfidata",
@@ -278,10 +279,22 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
                      't': t},
                     do_compression=True
                     )
-    else:
-        warn("resfile filetype not recognized")
+    elif resfile.endswith('.vtr'):
+        if arfdata.ndim != 4:
+            raise ValueError("Trying to save timeseries VTR data not supported.")
+        else:
+            resfileprefix=os.path.splitext(resfile)[0]
+            try:
+                os.mkdir(resfileprefix)
+            except OSError:
+                raise OSError("Cannot create PVD file directory.")
+            for ts, time in enumerate(t):
+                vtrfilename = '{}/{}_T{4d}.vtr'.format(resfileprefix, resfileprefix, ts)
+                with open(vtrfilename, 'w') as vtr:
+                    # TODO: WIP
 
-    return 0
+    else:
+        raise NameError("resfile filetype not recognized")
 
 
 def read_header(dispout):
@@ -365,9 +378,11 @@ def preallocate_arfidata(image_plane, num_timesteps):
     Returns:
       arfidata
 
+    Raises:
+        IndexError: unexpected number of sorted node dimensions
+
     """
     import numpy as np
-    from warnings import warn
 
     num_timesteps = int(num_timesteps)
 
@@ -379,7 +394,7 @@ def preallocate_arfidata(image_plane, num_timesteps):
                              image_plane.shape[0], num_timesteps),
                             dtype=np.float32)
     else:
-        warn("unexpected number of dimensions in sorted nodes")
+        raise IndeError("Unexpected number of dimensions in sorted nodes.")
 
     return arfidata
 
@@ -388,11 +403,11 @@ def gen_t(dt, num_timesteps):
     """generate time vector, starting at 0
 
     Args:
-      dt: time between saved timesteps
-      num_timesteps: number of total timesteps
+        dt (float): time between saved timesteps
+        num_timesteps (int): number of total timesteps
 
     Returns:
-      turn: t
+        t (list):
 
     """
     t = [float(x) * dt for x in range(0, num_timesteps)]
