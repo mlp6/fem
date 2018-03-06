@@ -5,4 +5,4 @@ ls-dyna-d ncpu=2 i=vf105.dyn
 python ../../post/create_disp_dat.py
 
 # Edit the 'fempath' argument in the next line with your /PATH/TO/GIT/REPO/fem/post
-python ../../post/create_res_sim_mat.py --dynadeck vf105.dyn --fempath /home/mlp6/git/fem/post
+# python ../../post/create_res_sim.py --dynadeck vf105.dyn --fempath /home/mlp6/git/fem/post

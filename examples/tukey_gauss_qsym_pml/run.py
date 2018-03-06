@@ -13,7 +13,7 @@ from time import ctime
 from fem.mesh import GenMesh, bc
 from fem.mesh.GaussExc import generate_loads
 from fem.post.create_disp_dat import create_dat as create_disp_dat
-from fem.post.create_res_sim_mat import run as create_res_sim_mat
+from fem.post.create_res_sim import run as create_res_sim
 
 print('STARTED: %s' % ctime())
 print('HOST: %s' % gethostname())
@@ -39,7 +39,7 @@ system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 
 create_disp_dat()
 
-create_res_sim_mat(DYNADECK)
+create_res_sim(DYNADECK)
 
 if os.path.exists('res_sim.mat'):
     os.system("rm d3* nodout")
