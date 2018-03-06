@@ -40,7 +40,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
                                  disp_scale, legacynodes)
 
-    save_res_mat(ressim, arfidata, axes, t)
+    save_res_sim(ressim, arfidata, axes, t)
 
     return 0
 
@@ -201,7 +201,7 @@ def extract_image_plane(snic, axes, ele_pos):
     return image_plane
 
 
-def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
+def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     """Save res_sim.[mat,h5,vtr] file with arfidata and relevant axes.
 
     Data are saved as float32 (single) to save space.
@@ -216,18 +216,12 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
         axis_scale (floats tuple): scale axes sign & mag
 
     Raises:
-        TypeError: arfidata >4 GB and tried to be saved as Matlab v5 file
         ValueError: Trying to save timeseries VTR data not supported.
 
     """
-    from scipy.io import savemat
-    import h5py
     from pyevtk.hl import gridToVTK
     import os
 
-    if arfidata.nbytes > 4e9 and resfile.endswith('.mat'):
-        raise TypeError("arfidata >4 GB, cannot be saved as MATLAB v5;
-                        must use HDF5 (*.h5)")
 
     # scale axes
     if arfidata.ndim == 4:
@@ -238,47 +232,24 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
         axial = axial[::-1]
 
     print('Saving data to: {}'.format(resfile), flush=True)
-    if resfile.endswith('.h5'):
-        r = h5py.File(resfile, 'w')
-        r.create_dataset(data=arfidata,
-                         name="arfidata",
-                         compression="gzip",
-                         compression_opts=9)
-        r.create_dataset(data=lat,
-                         name="lat",
-                         compression="gzip",
-                         compression_opts=9)
-        r.create_dataset(data=axial,
-                         name="axial",
-                         compression="gzip",
-                         compression_opts=9)
-        if arfidata.ndim == 4:
-            r.create_dataset(data=elev,
-                             name="elev",
-                             compression="gzip",
-                             compression_opts=9)
-        r.create_dataset(data=t,
-                         name="t",
-                         compression="gzip",
-                         compression_opts=9)
-    elif resfile.endswith('.mat'):
-        if arfidata.ndim == 4:
-            savemat(resfile,
-                    {'arfidata': arfidata,
-                     'lat': lat,
-                     'axial': axial,
-                     'elev': elev,
-                     't': t},
-                    do_compression=True
-                    )
-        else:
-            savemat(resfile,
-                    {'arfidata': arfidata,
-                     'lat': lat,
-                     'axial': axial,
-                     't': t},
-                    do_compression=True
-                    )
+
+    kwargs = {'resfile': resfile,
+              'arfidata': arfidata,
+              'axial': axial,
+              'lat': lat}
+    if arfidata.ndim == 4:
+        kwargs['elev']=elev
+
+
+    output_switch = {
+        '.h5': saveh5(**kwargs)
+        '.mat': savemat(**kwargs)
+        '.pvd': savepvd(**kwargs)
+    }
+
+    output_switch[os.path.splitext(resfile)]()
+
+    #TODO: create a function for the PVD output
     elif resfile.endswith('.vtr'):
         if arfdata.ndim != 4:
             raise ValueError("Trying to save timeseries VTR data not supported.")
@@ -295,6 +266,52 @@ def save_res_mat(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
 
     else:
         raise NameError("resfile filetype not recognized")
+
+
+def saveh5(**kwargs):
+    """Save HDF5 file."""
+    import h5py
+    r = h5py.File(resfile, 'w')
+    r.create_dataset(data=kwargs['arfidata'],
+                     name="arfidata",
+                     compression="gzip",
+                     compression_opts=9)
+    r.create_dataset(data=kwargs['lat'],
+                     name="lat",
+                     compression="gzip",
+                     compression_opts=9)
+    r.create_dataset(data=kwargs['axial'],
+                     name="axial",
+                     compression="gzip",
+                     compression_opts=9)
+    if arfidata.ndim == 4:
+        r.create_dataset(data=kwargs['elev'],
+                         name="elev",
+                         compression="gzip",
+                         compression_opts=9)
+    r.create_dataset(data=kwargs['t'],
+                     name="t",
+                     compression="gzip",
+                     compression_opts=9)
+
+
+def savemat(**kwargs):
+    """Save Matlab v5 file.
+
+    Raises:
+        TypeError: arfidata >4 GB
+
+    """
+    from scipy.io import savemat
+
+    if arfidata.nbytes > 4e9:
+        raise TypeError("arfidata >4 GB, cannot be saved as MATLAB v5;
+                        must use HDF5 (*.h5)")
+
+    resfile = kwargs['resfile']
+    kwargs.pop('resfile')
+
+    savemat(resfile, kwargs, do_compression=True)
 
 
 def read_header(dispout):
@@ -444,7 +461,7 @@ def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
                                                 disp_comp, disp_scale,
                                                 legacynodes=False)
 
-    create_res_sim.save_res_mat(ressim, arfidata, axes, t)
+    create_res_sim.save_res_sim(ressim, arfidata, axes, t)
 
 
 if __name__ == "__main__":
