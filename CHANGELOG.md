@@ -52,5 +52,10 @@ See the git commit history for an effective change log pre-v6.3.1
 ## v7.0.0
 * Refactor `create_res_sim_mat` to now be `create_res_sim` with more options to
   output HDF5 and PVD timeseries VTR data.  Legacy calls to
-  `create_res_sim_mat` should still work, but the name of the module has been
-  changed to reflect the new functionality under the hood.
+  `create_res_sim_mat` syntax (specifically `run()`) should still work, but the
+  name of the module has been changed to reflect the new functionality under
+  the hood.
+* Paraview PVD / VTR (rectilinear grid) timeseries data files can now be
+  generated.
+* Unit tests for MATv5, HDF5 and PVD/VTR files added.
+* General refactoring of code and clean-up for Google Style docstrings.

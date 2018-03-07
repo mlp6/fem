@@ -30,7 +30,7 @@ Trans. Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
 You can clone this source directory and work directly with it by specifying
 `PYTHONPATH` to include the root directory you clone this to... or you can
 install this with pip in a local virtualenv (recommended): `pip install
-git+http://github.com/mlp6/fem.git`.
+git+https://github.com/mlp6/fem.git`.
 
 ## Documentation
 
