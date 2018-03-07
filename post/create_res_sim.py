@@ -309,30 +309,43 @@ def savepvd(**kwargs):
         Need unit test
     """
     from pyevtk.hl import gridToVTK
+    import os
+    import numpy as np
 
     if kwargs['arfidata'].ndim != 4:
         raise ValueError("Trying to save timeseries VTR data not supported.")
 
     resfileprefix = os.path.splitext(kwargs['resfile'])[0]
+    resfilepath = '{}_pvd'.format(resfileprefix)
     try:
-        os.mkdir(resfileprefix)
+        os.mkdir(resfilepath)
     except FileExistsError:
         raise FileExistsError("Cannot create PVD file directory.")
 
-    os.chdir(resfileprefix)
+    try:
+        os.chdir(resfilepath)
+    except FileNotFoundError:
+        raise FileNotFoundError("Cannot find the PVD file directory.")
 
-    with open(resfile, 'w') as pvd:
+    with open(kwargs['resfile'], 'w') as pvd:
+
         pvd.write('<?xml version="1.0"?>\n')
         pvd.write('<VTKFile type="Collection" version="0.1" \
                   byte_order="LittleEndian" \
                   compressor="vtkZLibDataCompressor">\n')
         pvd.write('<Collection>\n')
+
         for ts, time in enumerate(kwargs['t']):
-            vtrfilename = '{}_PVD_T{4d}'.format(resfileprefix, ts)
+
+            arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata'][:, :, :, ts]))
+
+            vtrfilename = '{}_PVD_T{:04d}'.format(resfileprefix, ts)
+
             pvd.write('<DataSet timestep="{}" group="" part="0" \
                       file="{}.vtr"/>\n'.format(ts, vtrfilename))
-            gridToVTK('/{}', kwargs['elev'], kwargs['lat'], kwargs['axial'],
-                      pointData={'arfidata', kwargs['arfidata']})
+
+            gridToVTK('./{}'.format(vtrfilename), kwargs['axial'].ravel(), kwargs['elev'].ravel(),
+                      kwargs['lat'].ravel(), pointData={'arfidata': arfidata})
         pvd.write('</Collection>\n')
         pvd.write('</VTKFile>\n')
 
