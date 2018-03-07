@@ -245,7 +245,9 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     try:
         filetype = os.path.splitext(resfile)[-1]
         output_switch[filetype](**kwargs)
-    except:
+    except ValueError:
+        raise ValueError("Cannot save 2D PVD timeseries data.")
+    except KeyError:
         raise KeyError("resfile filetype not recognized")
 
 
