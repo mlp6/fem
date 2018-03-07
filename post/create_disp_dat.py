@@ -139,16 +139,14 @@ def generate_header(data, outfile):
 def count_timesteps(outfile):
     """Count timesteps written to nodout.
 
-    searches for 'time' in lines, and then removes 1 extra entry that occurs
-    for t = 0
-
-    grep will be used on linux systems (way faster)
+    Searches for 'time' in lines, and then removes 1 extra entry that occurs
+    for t = 0.  `grep` will be used on linux systems (way faster).
 
     Args:
-        outfile (str): usually 'nodout'
+        outfile (str): usually nodout
 
     Returns:
-        ts_count (int):
+        ts_count (int): number of time steps counted - 1
 
     """
     from sys import platform
