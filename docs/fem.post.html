@@ -50,24 +50,34 @@
 <p>ls-dyna seems to drop the ‘E’ when the negative exponent is three digits,
 so check for those in the line data and change those to ‘E-100’ so that
 we can convert to floats</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>line (str): string of split raw string data</dd>
-<dt>Returns:</dt>
-<dd>line with corrected -??? -&gt; -E100</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>str</em>) – string of split raw string data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">line with corrected -??? -&gt; -E100</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_disp_dat.correct_neg">
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">correct_neg</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.correct_neg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add space before negative coefficient numbers.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>line (str0:</dd>
-<dt>Returns:</dt>
-<dd>line (str): line with space(s) added before negative coefficients</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>(</strong><strong>str0</strong> (<em>line</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">line with space(s) added before negative coefficients</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">line (str)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -77,37 +87,61 @@ we can convert to floats</p>
 <p>searches for ‘time’ in lines, and then removes 1 extra entry that occurs
 for t = 0</p>
 <p>grep will be used on linux systems (way faster)</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>outfile (str): usually ‘nodout’</dd>
-<dt>Returns:</dt>
-<dd>ts_count (int):</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – usually ‘nodout’</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ts_count (int)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_disp_dat.create_dat">
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">create_dat</code><span class="sig-paren">(</span><em>nodout='nodout'</em>, <em>dispout='disp.dat'</em>, <em>legacynodes=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.create_dat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create binary data file from nodout ASCII file.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>nodout (str):  nodout input filename
-dispout (str) : binary output filename
-legacynodes (Boolean):  (Default value = False)</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nodout</strong> (<em>str</em>) – nodout input filename</li>
+<li><strong>dispout</strong> (<em>str</em>) – binary output filename</li>
+<li><strong>legacynodes</strong> (<em>Boolean</em>) – (Default value = False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_disp_dat.generate_header">
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">generate_header</code><span class="sig-paren">(</span><em>data</em>, <em>outfile</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.generate_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>generate headers from data matrix of first time step</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>data (nparray): data
-outfile (str): output filename to count times from</dd>
-<dt>Returns:</dt>
-<dd>header (dict):</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>nparray</em>) – data</li>
+<li><strong>outfile</strong> (<em>str</em>) – output filename to count times from</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">header (dict)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -119,12 +153,18 @@ outfile (str): output filename to count times from</dd>
 <dt id="fem.post.create_disp_dat.open_dispout">
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">open_dispout</code><span class="sig-paren">(</span><em>dispout</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.open_dispout" title="Permalink to this definition">¶</a></dt>
 <dd><p>Open dispout file for writing.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dispout (str): dispout filename (disp.dat.xz)</dd>
-<dt>Returns:</dt>
-<dd>dispout (obj): file object</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dispout</strong> (<em>str</em>) – dispout filename (disp.dat.xz)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">file object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dispout (obj)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -137,29 +177,41 @@ outfile (str): output filename to count times from</dd>
 <dt id="fem.post.create_disp_dat.parse_line">
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">parse_line</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.parse_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse raw data line into vector of floats.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>line (str): raw data line from nodout</dd>
-<dt>Returns:</dt>
-<dd>raw_data (float):</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>str</em>) – raw data line from nodout</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">raw_data (float)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_disp_dat.process_timestep_data">
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">process_timestep_data</code><span class="sig-paren">(</span><em>data</em>, <em>outfile</em>, <em>writenode</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.process_timestep_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>write data for the entire timestep to outfile</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">data (ndarray):
-outfile (obj): output file object
-writenode (Boolean): Boolean if the node IDs should be written to save</p>
-<blockquote class="last">
-<div>~25% of the disp.dat file size</div></blockquote>
-</dd>
-<dt>Returns:</dt>
-<dd>None</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>ndarray</em>) – </li>
+<li><strong>outfile</strong> (<em>obj</em>) – output file object</li>
+<li><strong>writenode</strong> (<em>Boolean</em>) – Boolean if the node IDs should be written to save
+~25% of the disp.dat file size</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -167,13 +219,21 @@ writenode (Boolean): Boolean if the node IDs should be written to save</p>
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">write_headers</code><span class="sig-paren">(</span><em>outfile</em>, <em>header</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.write_headers" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write binary header.</p>
 <p>Write binary header information to reformat things on read downstream.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>outfile (str): output file object
-header (dict):</dd>
-<dt>Returns:</dt>
-<dd>None</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>outfile</strong> (<em>str</em>) – output file object</li>
+<li><strong>header</strong> (<em>dict</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -184,48 +244,78 @@ header (dict):</dd>
 <dt id="fem.post.create_res_sim.create_zdisp">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">create_zdisp</code><span class="sig-paren">(</span><em>nodeidlist</em>, <em>disp_slice_z_only</em>, <em>zdisp</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.create_zdisp" title="Permalink to this definition">¶</a></dt>
 <dd><p>create zdisp array from squeezed disp_slice at appropriate index</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>nodeidlist: first column of disp_slice with node IDs in row order
-disp_slice_z_only: squeezed disp_slice of just zdisp
-zdisp:</dd>
-<dt>Returns:</dt>
-<dd>zdisp (ndarray): rows corresponding to node ID</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>nodeidlist</strong> – first column of disp_slice with node IDs in row order</li>
+<li><strong>disp_slice_z_only</strong> – squeezed disp_slice of just zdisp</li>
+<li><strong>zdisp</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">rows corresponding to node ID</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">zdisp (ndarray)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_res_sim.extract3Darfidata">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">extract3Darfidata</code><span class="sig-paren">(</span><em>dynadeck=None</em>, <em>disp_comp=2</em>, <em>disp_scale=-10000.0</em>, <em>ressim='res_sim.h5'</em>, <em>nodedyn='nodes.dyn'</em>, <em>dispout='disp.dat.xz'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.extract3Darfidata" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract 3D volume of specified displacement component.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dynadeck (str): LS-DYNA3D input deck (used to get dt)
-disp_comp (int): displacement component to extract (0, 1, 2)
-disp_scale (float): displacement scaling factor (cm -&gt; um)
-ressim (str): output file name (can be MAT or HDF5)
-nodedyn (str): node input file
-dispout (str): binary displacement data</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dynadeck</strong> (<em>str</em>) – LS-DYNA3D input deck (used to get dt)</li>
+<li><strong>disp_comp</strong> (<em>int</em>) – displacement component to extract (0, 1, 2)</li>
+<li><strong>disp_scale</strong> (<em>float</em>) – displacement scaling factor (cm -&gt; um)</li>
+<li><strong>ressim</strong> (<em>str</em>) – output file name (can be MAT or HDF5)</li>
+<li><strong>nodedyn</strong> (<em>str</em>) – node input file</li>
+<li><strong>dispout</strong> (<em>str</em>) – binary displacement data</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_res_sim.extract_arfi_data">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">extract_arfi_data</code><span class="sig-paren">(</span><em>dispout</em>, <em>header</em>, <em>image_plane</em>, <em>disp_comp=2</em>, <em>disp_scale=-10000.0</em>, <em>legacynodes=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.extract_arfi_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>extract ARFI data from disp.dat</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dispout (str): name of disp.dat file
-header (dict): num_nodes, num_dims, num_timesteps
-image_plane (ndarray): matrix of image plane node IDs spatially sorted
-disp_comp (int): disp component index to extract (0, 1, 2 [default, z])
-legacynodes (Boolean): node IDs repeated every timestep
-disp_scale (float):  cm -&gt; um</dd>
-<dt>Returns:</dt>
-<dd>arfidata (ndarray):</dd>
-<dt>Raises:</dt>
-<dd>IndexError: unexpected arfidata dimensions</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dispout</strong> (<em>str</em>) – name of disp.dat file</li>
+<li><strong>header</strong> (<em>dict</em>) – num_nodes, num_dims, num_timesteps</li>
+<li><strong>image_plane</strong> (<em>ndarray</em>) – matrix of image plane node IDs spatially sorted</li>
+<li><strong>disp_comp</strong> (<em>int</em>) – disp component index to extract (0, 1, 2 [default, z])</li>
+<li><strong>legacynodes</strong> (<em>Boolean</em>) – node IDs repeated every timestep</li>
+<li><strong>disp_scale</strong> (<em>float</em>) – cm -&gt; um</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">arfidata (ndarray)</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">IndexError</span></code> – unexpected arfidata dimensions</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -233,12 +323,16 @@ disp_scale (float):  cm -&gt; um</dd>
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">extract_dt</code><span class="sig-paren">(</span><em>dyn_file</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.extract_dt" title="Permalink to this definition">¶</a></dt>
 <dd><p>extract time step (dt) from dyna input deck</p>
 <p>assumes that input deck is comma-delimited</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dyn_file: input.dyn filename</dd>
-<dt>Returns:</dt>
-<dd>dt from input.dyn binary data save parameter</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dyn_file</strong> – input.dyn filename</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dt from input.dyn binary data save parameter</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -247,27 +341,46 @@ disp_scale (float):  cm -&gt; um</dd>
 <dd><p>extract 2D imaging plane node IDs</p>
 <p>Extract a 2D matrix of the imaging plane node IDs based on the
 elevation position (mesh coordinates).</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>snic: sorted node IDs and coordinates
-axes: spatial axes
-ele_pos: elevation position for plane of interest</dd>
-<dt>Returns:</dt>
-<dd>image_plane (node IDs)</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>snic</strong> – sorted node IDs and coordinates</li>
+<li><strong>axes</strong> – spatial axes</li>
+<li><strong>ele_pos</strong> – elevation position for plane of interest</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">image_plane (node IDs)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_res_sim.gen_t">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">gen_t</code><span class="sig-paren">(</span><em>dt</em>, <em>num_timesteps</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.gen_t" title="Permalink to this definition">¶</a></dt>
 <dd><p>generate time vector, starting at 0</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dt (float): time between saved timesteps
-num_timesteps (int): number of total timesteps</dd>
-<dt>Returns:</dt>
-<dd>t (list):</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dt</strong> (<em>float</em>) – time between saved timesteps</li>
+<li><strong>num_timesteps</strong> (<em>int</em>) – number of total timesteps</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">t (list)</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -279,27 +392,40 @@ num_timesteps (int): number of total timesteps</dd>
 <dt id="fem.post.create_res_sim.open_dispout">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">open_dispout</code><span class="sig-paren">(</span><em>dispout</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.open_dispout" title="Permalink to this definition">¶</a></dt>
 <dd><p>open dispout file for reading</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dispout: str) dispout filename (disp.dat)</dd>
-<dt>Returns:</dt>
-<dd>dispout file object</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dispout</strong> – str) dispout filename (disp.dat)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dispout file object</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_res_sim.preallocate_arfidata">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">preallocate_arfidata</code><span class="sig-paren">(</span><em>image_plane</em>, <em>num_timesteps</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.preallocate_arfidata" title="Permalink to this definition">¶</a></dt>
 <dd><p>pre-allocate arfidata array</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>image_plane: sorted node IDs on selected imaging plane
-num_timesteps: number of timesteps to extract</dd>
-<dt>Returns:</dt>
-<dd>arfidata</dd>
-<dt>Raises:</dt>
-<dd>IndexError: unexpected number of sorted node dimensions</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>image_plane</strong> – sorted node IDs on selected imaging plane</li>
+<li><strong>num_timesteps</strong> – number of timesteps to extract</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">arfidata</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">IndexError</span></code> – unexpected number of sorted node dimensions</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -312,27 +438,38 @@ num_timesteps: number of timesteps to extract</dd>
 <dt id="fem.post.create_res_sim.read_header">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">read_header</code><span class="sig-paren">(</span><em>dispout</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.read_header" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read header (first 3 words) from disp.dat</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>dispout: disp.dat filename</dd>
-<dt>Returns:</dt>
-<dd>header (num_nodes, num_dims, num_timesteps)</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dispout</strong> – disp.dat filename</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">header (num_nodes, num_dims, num_timesteps)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="fem.post.create_res_sim.run">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">run</code><span class="sig-paren">(</span><em>dynadeck</em>, <em>disp_comp=2</em>, <em>disp_scale=-10000.0</em>, <em>ressim='res_sim.mat'</em>, <em>nodedyn='nodes.dyn'</em>, <em>dispout='disp.dat'</em>, <em>legacynodes=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.run" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Args:</dt>
-<dd>dynadeck (str): main dyna input deck
-disp_comp (int): component of displacement to extract
-disp_scale (float): displacement scaling
-ressim (str): result filename to write
-nodedyn (str): node defintion input filename
-dispout (str): binary displacement input filename
-legacynodes (Boolean): node IDs written with each timestep in dispout</dd>
-</dl>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dynadeck</strong> (<em>str</em>) – main dyna input deck</li>
+<li><strong>disp_comp</strong> (<em>int</em>) – component of displacement to extract</li>
+<li><strong>disp_scale</strong> (<em>float</em>) – displacement scaling</li>
+<li><strong>ressim</strong> (<em>str</em>) – result filename to write</li>
+<li><strong>nodedyn</strong> (<em>str</em>) – node defintion input filename</li>
+<li><strong>dispout</strong> (<em>str</em>) – binary displacement input filename</li>
+<li><strong>legacynodes</strong> (<em>Boolean</em>) – node IDs written with each timestep in dispout</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -340,16 +477,24 @@ legacynodes (Boolean): node IDs written with each timestep in dispout</dd>
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">save_res_sim</code><span class="sig-paren">(</span><em>resfile</em>, <em>arfidata</em>, <em>axes</em>, <em>t</em>, <em>axis_scale=(-10</em>, <em>10</em>, <em>-10)</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.save_res_sim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save res_sim.[mat,h5,pvd] file with arfidata and relevant axes.</p>
 <p>Data are saved as float32 (single) to save space.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>resfile (str): res_sim.[mat,h5,pvd] filename
-arfidata (ndarray): arfidata (3D or 4D (added elev dim, axes[0]))
-axes (ndarrays tuple): ele, lat, axial (mesh units)
-t (ndarray): time
-axis_scale (floats tuple): scale axes sign &amp; mag</dd>
-<dt>Raises:</dt>
-<dd>KeyError: Trying to save unknown output type.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>resfile</strong> (<em>str</em>) – res_sim.[mat,h5,pvd] filename</li>
+<li><strong>arfidata</strong> (<em>ndarray</em>) – arfidata (3D or 4D (added elev dim, axes[0]))</li>
+<li><strong>axes</strong> (<em>ndarrays tuple</em>) – ele, lat, axial (mesh units)</li>
+<li><strong>t</strong> (<em>ndarray</em>) – time</li>
+<li><strong>axis_scale</strong> (<em>floats tuple</em>) – scale axes sign &amp; mag</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code> – Trying to save unknown output type.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -362,10 +507,14 @@ axis_scale (floats tuple): scale axes sign &amp; mag</dd>
 <dt id="fem.post.create_res_sim.savemat">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">savemat</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.savemat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save Matlab v5 file.</p>
-<dl class="docutils">
-<dt>Raises:</dt>
-<dd>TypeError: arfidata &gt;4 GB</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> – arfidata &gt;4 GB</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -373,11 +522,18 @@ axis_scale (floats tuple): scale axes sign &amp; mag</dd>
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">savepvd</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.savepvd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save Paraview PVD rectilinear (VTR) time series data.</p>
 <p>Paraview data formats: <a class="reference external" href="https://www.paraview.org/Wiki/ParaView/Data_formats">https://www.paraview.org/Wiki/ParaView/Data_formats</a></p>
-<dl class="docutils">
-<dt>Raises:</dt>
-<dd>ValueError: Not saving 3D time series data.
-FileExistsError: PVD file directory cannot be created.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Not saving 3D time series data.</li>
+<li><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileExistsError</span></code> – PVD file directory cannot be created.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -388,13 +544,20 @@ FileExistsError: PVD file directory cannot be created.</dd>
 <em class="property">class </em><code class="descclassname">fem.post.h52vtr.</code><code class="descname">H52VTR</code><span class="sig-paren">(</span><em>h5file=None</em>, <em>axisnames=('elev'</em>, <em>'lat'</em>, <em>'axial')</em>, <em>dataname='arfidata'</em>, <em>vtrname='rectilinear'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.h52vtr.H52VTR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Convert HDF5 file to rectilinear VTR file.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>h5file (str): input HDF5 filename
-axisnames (str): (‘elev’, ‘lat’, ‘axial’)
-dataname (str): ‘arfidata’
-vtrname (str): ‘rectilinear’</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>h5file</strong> (<em>str</em>) – input HDF5 filename</li>
+<li><strong>axisnames</strong> (<em>str</em>) – (‘elev’, ‘lat’, ‘axial’)</li>
+<li><strong>dataname</strong> (<em>str</em>) – ‘arfidata’</li>
+<li><strong>vtrname</strong> (<em>str</em>) – ‘rectilinear’</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="fem.post.h52vtr.H52VTR.read_h5axes">
 <code class="descname">read_h5axes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.h52vtr.H52VTR.read_h5axes" title="Permalink to this definition">¶</a></dt>
@@ -423,10 +586,14 @@ vtrname (str): ‘rectilinear’</dd>
 <code class="descclassname">fem.post.listedcmap2xml.</code><code class="descname">listedcmap2xml</code><span class="sig-paren">(</span><em>cmap</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.listedcmap2xml.listedcmap2xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert ListedColormap to XML format for import into Paraview</p>
 <p>Based on: <a class="reference external" href="https://www.paraview.org/Wiki/Colormaps">https://www.paraview.org/Wiki/Colormaps</a></p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>ListedColormap (ListedColormap): Matplotlib-formated ListedColormap</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ListedColormap</strong> (<em>ListedColormap</em>) – Matplotlib-formated ListedColormap</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -446,12 +613,18 @@ vtrname (str): ‘rectilinear’</dd>
 <dt id="fem.post.ressim.ResSim.load">
 <code class="descname">load</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>load MATv5 data</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>filename (str): input filename</dd>
-<dt>Returns:</dt>
-<dd>attributes (ndarray): [lat, axial, t, arfidata]</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – input filename</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">[lat, axial, t, arfidata]</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">attributes (ndarray)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -459,10 +632,14 @@ vtrname (str): ‘rectilinear’</dd>
 <code class="descname">play</code><span class="sig-paren">(</span><em>timerange</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.play" title="Permalink to this definition">¶</a></dt>
 <dd><p>play an animation</p>
 <p>Strongly recommend not stepping though each timesteps; use some skips!</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>timerange (range): range generator of time steps to animate</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timerange</strong> (<em>range</em>) – range generator of time steps to animate</td>
+</tr>
+</tbody>
+</table>
 <p>Returns:</p>
 </dd></dl>
 
@@ -470,10 +647,14 @@ vtrname (str): ‘rectilinear’</dd>
 <dt id="fem.post.ressim.ResSim.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>timestep</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot arfidata at specified timestep.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>timestep (int):</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timestep</strong> (<em>int</em>) – </td>
+</tr>
+</tbody>
+</table>
 <p>Returns:</p>
 </dd></dl>
 
@@ -481,11 +662,18 @@ vtrname (str): ‘rectilinear’</dd>
 <dt id="fem.post.ressim.ResSim.timeplot">
 <code class="descname">timeplot</code><span class="sig-paren">(</span><em>axial</em>, <em>lat</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.timeplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>plot arfidata through time at specified ax and lat position (mm)</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>axial (ndarray): axial depth (mm)
-lat (ndarray): lateral position (mm)</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>axial</strong> (<em>ndarray</em>) – axial depth (mm)</li>
+<li><strong>lat</strong> (<em>ndarray</em>) – lateral position (mm)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Returns:</p>
 </dd></dl>
 
@@ -499,18 +687,23 @@ lat (ndarray): lateral position (mm)</dd>
 <em class="property">class </em><code class="descclassname">fem.post.savevtk.</code><code class="descname">SaveVTK</code><span class="sig-paren">(</span><em>data</em>, <em>origin</em>, <em>spacing</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.savevtk.SaveVTK" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Save <em>structured</em> 3D scalar and vector data in legacy ASCII VTK format.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><dl class="first docutils">
-<dt>data (ndarray): [scalar] 3D numpy array</dt>
-<dd>[vector] tuple of 3D numpy arrays (X, Y, Z)</dd>
-</dl>
-<p class="last">origin (float): mesh origin tuple (x, y, z)
-spacing (float): node spacing tuple (x, y, z)</p>
-</dd>
-<dt>Raises:</dt>
-<dd>IndexError: The shape of the data tuple ndarrays are not equal.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>ndarray</em>) – [scalar] 3D numpy array
+[vector] tuple of 3D numpy arrays (X, Y, Z)</li>
+<li><strong>origin</strong> (<em>float</em>) – mesh origin tuple (x, y, z)</li>
+<li><strong>spacing</strong> (<em>float</em>) – node spacing tuple (x, y, z)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">IndexError</span></code> – The shape of the data tuple ndarrays are not equal.</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="attribute">
 <dt id="fem.post.savevtk.SaveVTK.data">
 <code class="descname">data</code><a class="headerlink" href="#fem.post.savevtk.SaveVTK.data" title="Permalink to this definition">¶</a></dt>
@@ -520,24 +713,38 @@ spacing (float): node spacing tuple (x, y, z)</p>
 <dt id="fem.post.savevtk.SaveVTK.save_scalar">
 <code class="descname">save_scalar</code><span class="sig-paren">(</span><em>filename</em>, <em>dataname='scalars'</em>, <em>header_comment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.savevtk.SaveVTK.save_scalar" title="Permalink to this definition">¶</a></dt>
 <dd><p>save 3D scalar data in VTK structure points format</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>filename (str): output filename
-dataname (str): data name
-header_comment (str): optional header comment in output file</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>str</em>) – output filename</li>
+<li><strong>dataname</strong> (<em>str</em>) – data name</li>
+<li><strong>header_comment</strong> (<em>str</em>) – optional header comment in output file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="fem.post.savevtk.SaveVTK.save_vector">
 <code class="descname">save_vector</code><span class="sig-paren">(</span><em>filename</em>, <em>dataname='vectors'</em>, <em>header_comment=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.savevtk.SaveVTK.save_vector" title="Permalink to this definition">¶</a></dt>
 <dd><p>save 3D vector array in VTK structure points format</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>filename (str): output filename
-dataname (str): data name
-header_comment (str): optional header comment in output file</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>str</em>) – output filename</li>
+<li><strong>dataname</strong> (<em>str</em>) – data name</li>
+<li><strong>header_comment</strong> (<em>str</em>) – optional header comment in output file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>

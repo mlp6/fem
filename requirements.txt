@@ -8,5 +8,6 @@ pytest-cov
 pytest-pep8
 scipy
 sphinx
+sphinxcontrib-napoleon
 pyevtk
 pudb

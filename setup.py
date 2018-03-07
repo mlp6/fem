@@ -20,5 +20,6 @@ setup(
     download_url='https://github.com/mlp6/fem/archive/v7.0.0.tar.gz',
     classifiers=[],
     install_requires=['h5py', 'ipython', 'jupyter', 'matplotlib', 'numpy',
-                      'pytest', 'pytest-pep8', 'scipy', 'sphinx', 'pyevtk'],
+                      'pytest', 'pytest-pep8', 'scipy', 'sphinx',
+                      'sphinxcontrib-napoleon', 'pyevtk'],
 )
