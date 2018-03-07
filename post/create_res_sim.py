@@ -214,9 +214,11 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
         axis_scale (floats tuple): scale axes sign & mag
 
     Raises:
-        ValueError: Trying to save timeseries VTR data not supported.
+        KeyError: Trying to save unknown output type.
 
     """
+    import os
+
     # scale axes
     if arfidata.ndim == 4:
         elev = axis_scale[0] * axes[0]
@@ -230,26 +232,27 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     kwargs = {'resfile': resfile,
               'arfidata': arfidata,
               'axial': axial,
-              'lat': lat}
+              'lat': lat,
+              't': t}
     if arfidata.ndim == 4:
         kwargs['elev'] = elev
 
     output_switch = {
-        '.h5': saveh5(**kwargs),
-        '.mat': savemat(**kwargs),
-        '.pvd': savepvd(**kwargs)
-    }
+        '.h5': saveh5,
+        '.mat': savemat,
+        '.pvd': savepvd}
 
     try:
-        output_switch[os.path.splitext(resfile)]()
+        filetype = os.path.splitext(resfile)[-1]
+        output_switch[filetype](**kwargs)
     except:
-        raise NameError("resfile filetype not recognized")
+        raise KeyError("resfile filetype not recognized")
 
 
 def saveh5(**kwargs):
     """Save HDF5 file."""
     import h5py
-    r = h5py.File(resfile, 'w')
+    r = h5py.File(kwargs['resfile'], 'w')
     r.create_dataset(data=kwargs['arfidata'],
                      name="arfidata",
                      compression="gzip",
@@ -262,7 +265,7 @@ def saveh5(**kwargs):
                      name="axial",
                      compression="gzip",
                      compression_opts=9)
-    if arfidata.ndim == 4:
+    if kwargs['arfidata'].ndim == 4:
         r.create_dataset(data=kwargs['elev'],
                          name="elev",
                          compression="gzip",
@@ -280,15 +283,15 @@ def savemat(**kwargs):
         TypeError: arfidata >4 GB
 
     """
-    from scipy.io import savemat
+    from scipy.io import savemat as save_mat
 
-    if arfidata.nbytes > 4e9:
+    if kwargs['arfidata'].nbytes > 4e9:
         raise TypeError("arfidata >4 GB, cannot be saved as MATLAB v5")
 
     resfile = kwargs['resfile']
     kwargs.pop('resfile')
 
-    savemat(resfile, kwargs, do_compression=True)
+    save_mat(resfile, kwargs, do_compression=True)
 
 
 def savepvd(**kwargs):
@@ -303,12 +306,12 @@ def savepvd(**kwargs):
     Todo:
         Need unit test
     """
-    from pevtk.hl import GridToVtk
+    from pyevtk.hl import gridToVTK
 
-    if arfdata.ndim != 4:
+    if kwargs['arfidata'].ndim != 4:
         raise ValueError("Trying to save timeseries VTR data not supported.")
 
-    resfileprefix = os.path.splitext(resfile)[0]
+    resfileprefix = os.path.splitext(kwargs['resfile'])[0]
     try:
         os.mkdir(resfileprefix)
     except FileExistsError:
@@ -316,21 +319,20 @@ def savepvd(**kwargs):
 
     os.chdir(resfileprefix)
 
-    for ts, time in enumerate(t):
-        with open(resfile, 'w') as pvd:
-            pvd.write('<?xml version="1.0"?>\n')
-            pvd.write('<VTKFile type="Collection" version="0.1" \
-                      byte_order="LittleEndian" \
-                      compressor="vtkZLibDataCompressor">\n')
-            pvd.write('<Collection>\n')
-            for ts, time in enumerate(t):
-                vtrfilename = '{}_PVD_T{4d}'.format(resfileprefix, ts)
-                pvd.write('<DataSet timestep="{}" group="" part="0" \
-                          file="{}.vtr"/>\n'.format(ts, vtrfilename))
-                gridToVTK('/{}', elev, lat, axial, pointData={'arfidata',
-                                                              arfidata})
-            pvd.write('</Collection>\n')
-            pvd.write('</VTKFile>\n')
+    with open(resfile, 'w') as pvd:
+        pvd.write('<?xml version="1.0"?>\n')
+        pvd.write('<VTKFile type="Collection" version="0.1" \
+                  byte_order="LittleEndian" \
+                  compressor="vtkZLibDataCompressor">\n')
+        pvd.write('<Collection>\n')
+        for ts, time in enumerate(kwargs['t']):
+            vtrfilename = '{}_PVD_T{4d}'.format(resfileprefix, ts)
+            pvd.write('<DataSet timestep="{}" group="" part="0" \
+                      file="{}.vtr"/>\n'.format(ts, vtrfilename))
+            gridToVTK('/{}', kwargs['elev'], kwargs['lat'], kwargs['axial'],
+                      pointData={'arfidata', kwargs['arfidata']})
+        pvd.write('</Collection>\n')
+        pvd.write('</VTKFile>\n')
 
 
 def read_header(dispout):
