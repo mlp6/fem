@@ -54,3 +54,41 @@ def test_savemat(tmpdir):
     test_data = loadmat(matfile.strpath)
 
     assert test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2]
+
+
+def test_saveh5(tmpdir):
+    from create_res_sim import run
+    import h5py
+
+    h5file = tmpdir.join('res_sim_test.h5')
+    valid_data_path = '{}/../examples/gauss_qsym_pml'.format(myPath)
+
+    run(dynadeck='{}/gauss_qsym_pml.dyn'.format(valid_data_path),
+        dispout='{}/disp.dat.xz'.format(valid_data_path),
+        nodedyn='{}/nodes.dyn'.format(valid_data_path), ressim=h5file.strpath)
+
+    valid_data = h5py.File('{}/res_sim_valid.h5'.format(valid_data_path))
+    test_data = h5py.File(h5file.strpath)
+
+    assert test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2]
+
+
+def test_savepvd(tmpdir):
+    """Test the PVD/VTR files written correctly.
+
+    It is difficult to test the complete contents of the PVD file, and the vinary VTR files are also
+    a mess, so using this test to just make sure that the files are created withour errors / raised
+    exceptions.
+    """
+    from create_res_sim import extract3Darfidata as run
+    import filecmp
+
+    pvdfile = tmpdir.join('res_sim.pvd')
+    valid_data_path = '{}/../examples/gauss_qsym_pml'.format(myPath)
+
+    run(dynadeck='{}/gauss_qsym_pml.dyn'.format(valid_data_path),
+        dispout='{}/disp.dat.xz'.format(valid_data_path),
+        nodedyn='{}/nodes.dyn'.format(valid_data_path), ressim=pvdfile.strpath)
+
+    valid_data = '{}/res_sim.pvd'.format(valid_data_path)
+    test_data = pvdfile.strpath
