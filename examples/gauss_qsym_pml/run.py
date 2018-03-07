@@ -13,7 +13,7 @@ from time import ctime
 from fem.mesh import GenMesh, bc
 from fem.mesh.GaussExc import generate_loads
 from fem.post.create_disp_dat import create_dat as create_disp_dat
-from fem.post.create_res_sim import run as create_res_sim
+from fem.post import create_res_sim
 
 print('STARTED: %s' % ctime())
 print('HOST: %s' % gethostname())
@@ -38,11 +38,10 @@ generate_loads([0.25, 0.25, 0.75], [0.0, 0.0, -1.5])
 system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 
 create_disp_dat()
+os.system("xz -v disp.dat")
 
-create_res_sim(DYNADECK)
-
-#if os.path.exists('res_sim.mat'):
-#    os.system("rm d3* nodout")
-#    os.system("xz -v disp.dat")
+create_res_sim.run(DYNADECK, dispout="disp.dat.xz", ressim="res_sim.mat")
+create_res_sim.run(dynadeck=DYNADECK, dispout="disp.dat.xz", ressim='res_sim.h5')
+create_res_sim.extract3Darfidata(dynadeck=DYNADECK, dispout="disp.dat.xz", ressim="res_sim.pvd")
 
 print('FINISHED: %s' % ctime())
