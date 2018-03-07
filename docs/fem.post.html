@@ -84,16 +84,15 @@ we can convert to floats</p>
 <dt id="fem.post.create_disp_dat.count_timesteps">
 <code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">count_timesteps</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.count_timesteps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Count timesteps written to nodout.</p>
-<p>searches for ‘time’ in lines, and then removes 1 extra entry that occurs
-for t = 0</p>
-<p>grep will be used on linux systems (way faster)</p>
+<p>Searches for ‘time’ in lines, and then removes 1 extra entry that occurs
+for t = 0.  <cite>grep</cite> will be used on linux systems (way faster).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – usually ‘nodout’</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – usually nodout</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">number of time steps counted - 1</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ts_count (int)</td>
 </tr>
