@@ -1,22 +1,4 @@
-"""
-fem_mesh.py
-
-Generic functions for all meshing functions
-
-Copyright 2015 Mark L. Palmeri (mlp6@duke.edu)
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-"""
+"""Generic functions for all meshing functions."""
 
 
 def check_version():
@@ -60,18 +42,22 @@ def count_header_comment_skips(nodefile):
     Args:
       nodefile: node keyword filename
 
-    Returns:
+    Raises:
+        FileNotFoundError: Cannot open the specified node file.
 
     """
     import re
     node = re.compile('\*')
     count = 1
-    with open(nodefile) as f:
-        for line in f:
-            if node.match(line):
-                return count
-            else:
-                count = count + 1
+    try:
+        with open(nodefile) as f:
+            for line in f:
+                if node.match(line):
+                    return count
+                else:
+                    count = count + 1
+    except FileNotFoundError:
+        raise FileNotFoundError("Cannot open {}.".format(nodefile))
 
 
 def rm_tmp_file(nodefile_nocmt):
