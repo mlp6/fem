@@ -252,22 +252,6 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     except:
         raise NameError("resfile filetype not recognized")
 
-    #TODO: create a function for the PVD output
-    """
-    elif resfile.endswith('.vtr'):
-        if arfdata.ndim != 4:
-            raise ValueError("Trying to save timeseries VTR data not supported.")
-        else:
-            resfileprefix=os.path.splitext(resfile)[0]
-            try:
-                os.mkdir(resfileprefix)
-            except OSError:
-                raise OSError("Cannot create PVD file directory.")
-            for ts, time in enumerate(t):
-                vtrfilename = '{}/{}_T{4d}.vtr'.format(resfileprefix, resfileprefix, ts)
-                with open(vtrfilename, 'w') as vtr:
-    """
-
 
 def saveh5(**kwargs):
     """Save HDF5 file."""
@@ -313,6 +297,27 @@ def savemat(**kwargs):
     kwargs.pop('resfile')
 
     savemat(resfile, kwargs, do_compression=True)
+
+
+def savepvd(**kwargs):
+    """Save Paraview PVD rectilinear (VTR) time series data.
+
+    Raises:
+        ValueError: Not saving 3D time series data.
+        FileExistsError: PVD file directory cannot be created.
+    """
+    if arfdata.ndim != 4:
+        raise ValueError("Trying to save timeseries VTR data not supported.")
+
+    resfileprefix=os.path.splitext(resfile)[0]
+    try:
+        os.mkdir(resfileprefix)
+    except FileExistsError:
+        raise FileExistsError("Cannot create PVD file directory.")
+
+    for ts, time in enumerate(t):
+        vtrfilename = '{}/{}_T{4d}.vtr'.format(resfileprefix, resfileprefix, ts)
+        with open(vtrfilename, 'w') as vtr:
 
 
 def read_header(dispout):
