@@ -53,7 +53,8 @@ def test_savemat(tmpdir):
     valid_data = loadmat('{}/res_sim_valid.mat'.format(valid_data_path))
     test_data = loadmat(matfile.strpath)
 
-    assert test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2]
+    assert (test_data['arfidata'][10, 10, 2] ==
+            valid_data['arfidata'][10, 10, 2])
 
 
 def test_saveh5(tmpdir):
@@ -70,15 +71,16 @@ def test_saveh5(tmpdir):
     valid_data = h5py.File('{}/res_sim_valid.h5'.format(valid_data_path))
     test_data = h5py.File(h5file.strpath)
 
-    assert test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2]
+    assert (test_data['arfidata'][10, 10, 2] ==
+            valid_data['arfidata'][10, 10, 2])
 
 
 def test_savepvd(tmpdir):
     """Test the PVD/VTR files written correctly.
 
-    It is difficult to test the complete contents of the PVD file, and the vinary VTR files are also
-    a mess, so using this test to just make sure that the files are created withour errors / raised
-    exceptions.
+    It is difficult to test the complete contents of the PVD file, and the
+    binary VTR files are also a mess, so using this test to just make
+    sure that the files are created withour errors / raised exceptions.
     """
     from create_res_sim import extract3Darfidata as run
     import filecmp

@@ -40,8 +40,14 @@ system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
 create_disp_dat()
 os.system("xz -v disp.dat")
 
-create_res_sim.run(DYNADECK, dispout="disp.dat.xz", ressim="res_sim.mat")
-create_res_sim.run(dynadeck=DYNADECK, dispout="disp.dat.xz", ressim='res_sim.h5')
-create_res_sim.extract3Darfidata(dynadeck=DYNADECK, dispout="disp.dat.xz", ressim="res_sim.pvd")
+create_res_sim.run(DYNADECK,
+                   dispout="disp.dat.xz",
+                   ressim="res_sim.mat")
+create_res_sim.run(dynadeck=DYNADECK,
+                   dispout="disp.dat.xz",
+                   ressim='res_sim.h5')
+create_res_sim.extract3Darfidata(dynadeck=DYNADECK,
+                                 dispout="disp.dat.xz",
+                                 ressim="res_sim.pvd")
 
 print('FINISHED: %s' % ctime())

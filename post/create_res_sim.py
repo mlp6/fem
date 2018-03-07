@@ -324,7 +324,8 @@ def savepvd(**kwargs):
 
         for ts, time in enumerate(kwargs['t']):
 
-            arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata'][:, :, :, ts])).transpose()
+            arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata']
+                                                    [:, :, :, ts])).transpose()
 
             vtrfilename = '{}_T{:04d}'.format(resfileprefix, ts)
 
