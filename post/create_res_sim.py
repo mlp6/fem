@@ -27,7 +27,12 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         legacynodes (Boolean): node IDs written with each timestep in dispout
 
     """
-    from fem.mesh import fem_mesh
+    import os
+    import sys
+    myPath = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, myPath + '/../mesh/')
+
+    import fem_mesh
 
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
@@ -472,8 +477,12 @@ def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
         nodedyn (str): node input file
         dispout (str): binary displacement data
     """
+    import os
+    import sys
+    myPath = os.path.dirname(os.path.abspath(__file__))
+    sys.path.insert(0, myPath + '/../mesh/')
 
-    from fem.mesh import fem_mesh
+    import fem_mesh
     import numpy as np
 
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
