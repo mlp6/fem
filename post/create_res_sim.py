@@ -202,14 +202,12 @@ def extract_image_plane(snic, axes, ele_pos):
 
 
 def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
-    """Save res_sim.[mat,h5,vtr] file with arfidata and relevant axes.
+    """Save res_sim.[mat,h5,pvd] file with arfidata and relevant axes.
 
     Data are saved as float32 (single) to save space.
 
-    Paraview data formats: https://www.paraview.org/Wiki/ParaView/Data_formats
-
     Args:
-        resfile (str): res_sim.[mat,h5,vtr] filename
+        resfile (str): res_sim.[mat,h5,pvd] filename
         arfidata (ndarray): arfidata (3D or 4D (added elev dim, axes[0]))
         axes (ndarrays tuple): ele, lat, axial (mesh units)
         t (ndarray): time
@@ -219,10 +217,6 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
         ValueError: Trying to save timeseries VTR data not supported.
 
     """
-    from pyevtk.hl import gridToVTK
-    import os
-
-
     # scale axes
     if arfidata.ndim == 4:
         elev = axis_scale[0] * axes[0]
@@ -302,10 +296,14 @@ def savemat(**kwargs):
 def savepvd(**kwargs):
     """Save Paraview PVD rectilinear (VTR) time series data.
 
+    Paraview data formats: https://www.paraview.org/Wiki/ParaView/Data_formats
+
     Raises:
         ValueError: Not saving 3D time series data.
         FileExistsError: PVD file directory cannot be created.
     """
+    from pevtk.hl import GridToVtk
+
     if arfdata.ndim != 4:
         raise ValueError("Trying to save timeseries VTR data not supported.")
 
@@ -315,9 +313,20 @@ def savepvd(**kwargs):
     except FileExistsError:
         raise FileExistsError("Cannot create PVD file directory.")
 
+    os.chdir(resfileprefix)
+
     for ts, time in enumerate(t):
-        vtrfilename = '{}/{}_T{4d}.vtr'.format(resfileprefix, resfileprefix, ts)
-        with open(vtrfilename, 'w') as vtr:
+        with open(resfile, 'w') as pvd:
+            pvd.write('<?xml version="1.0"?>\n')
+            pvd.write('<VTKFile type="Collection" version="0.1" byte_order="LittleEndian"
+                      compressor="vtkZLibDataCompressor">\n')
+            pvd.write('<Collection>\n')
+            for ts, time in enumerate(t):
+                vtrfilename = '{}_PVD_T{4d}'.format(resfileprefix, ts)
+                pvd.write('<DataSet timestep="{}" group="" part="0" file="{}.vtr"/>\n'.format(ts, vtrfilename))
+                gridToVTK('/{}', elev, lat, axial, pointData={'arfidata', arfidata})
+            pvd.write('</Collection>\n')
+            pvd.write('</VTKFile>\n')
 
 
 def read_header(dispout):
