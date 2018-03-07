@@ -337,15 +337,15 @@ def savepvd(**kwargs):
 
         for ts, time in enumerate(kwargs['t']):
 
-            arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata'][:, :, :, ts]))
+            arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata'][:, :, :, ts])).transpose()
 
             vtrfilename = '{}_PVD_T{:04d}'.format(resfileprefix, ts)
 
             pvd.write('<DataSet timestep="{}" group="" part="0" \
                       file="{}.vtr"/>\n'.format(ts, vtrfilename))
 
-            gridToVTK('./{}'.format(vtrfilename), kwargs['axial'].ravel(), kwargs['elev'].ravel(),
-                      kwargs['lat'].ravel(), pointData={'arfidata': arfidata})
+            gridToVTK('./{}'.format(vtrfilename), kwargs['elev'].ravel(), kwargs['lat'].ravel(),
+                      kwargs['axial'].ravel(), pointData={'arfidata': arfidata})
         pvd.write('</Collection>\n')
         pvd.write('</VTKFile>\n')
 
