@@ -416,15 +416,13 @@ top_face:</dd>
 <dd><p>apply loads to</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>loadtype: disp’, ‘vel’, ‘accel’, ‘force’ (Default value = ‘disp’)
-direction: 0 - x, 1 - y, 2 - z (Default value = 2)
-amplitude: scalar of load type (Default value = -1.0)
-loadfile: written loadfile name (Default value = ‘topload.dyn’)
-nodefile: nodes.dyn’ (Default value = ‘nodes.dyn’)
-top_face: 0, 0, 0, 0, 0, 1] (Default value = (0)
-lcid: load curve ID
-0:
-1:</dd>
+<dd>loadtype (str): disp’, ‘vel’, ‘accel’, ‘force’
+direction (int): 0 - x, 1 - y, 2 - z
+amplitude (float): scalar of load type
+loadfile (str): written loadfile name
+nodefile (str):
+top_face (tuple): constraintst to apply
+lcid (int): load curve ID</dd>
 </dl>
 <p>Returns:</p>
 </dd></dl>
@@ -444,16 +442,15 @@ lcid: load curve ID
 <dl class="function">
 <dt id="fem.mesh.TopLoad.writeNodeLoads">
 <code class="descclassname">fem.mesh.TopLoad.</code><code class="descname">writeNodeLoads</code><span class="sig-paren">(</span><em>loadfile</em>, <em>planeNodeIDs</em>, <em>loadtype</em>, <em>direction</em>, <em>amplitude</em>, <em>lcid</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.TopLoad.writeNodeLoads" title="Permalink to this definition">¶</a></dt>
-<dd><p>write load keyword file</p>
+<dd><p>Write load keyword file.</p>
 <dl class="docutils">
 <dt>Args:</dt>
-<dd>loadfile: load filename
-planeNodeIDS: array of node IDs
-loadtype: str]: disp, vel, accel, force
-direction: 0-2]
-amplitude: param lcid: LCID
-planeNodeIDs:
-lcid:</dd>
+<dd>loadfile (str): load filename
+planeNodeIDS (ndarray): array of node IDs
+loadtype (str): disp, vel, accel, force
+direction (int): 0-2
+amplitude (float):
+lcid (int): LCID</dd>
 <dt>Returns:</dt>
 <dd>None</dd>
 </dl>
@@ -806,18 +803,7 @@ numNodes:</dd>
 </div>
 <div class="section" id="module-fem.mesh.fem_mesh">
 <span id="fem-mesh-fem-mesh-module"></span><h2>fem.mesh.fem_mesh module<a class="headerlink" href="#module-fem.mesh.fem_mesh" title="Permalink to this headline">¶</a></h2>
-<p>fem_mesh.py</p>
-<p>Generic functions for all meshing functions</p>
-<p>Copyright 2015 Mark L. Palmeri (<a class="reference external" href="mailto:mlp6&#37;&#52;&#48;duke&#46;edu">mlp6<span>&#64;</span>duke<span>&#46;</span>edu</a>)</p>
-<p>Licensed under the Apache License, Version 2.0 (the “License”);
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at</p>
-<p><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
-<p>Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an “AS IS” BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.</p>
+<p>Generic functions for all meshing functions.</p>
 <dl class="function">
 <dt id="fem.mesh.fem_mesh.SortElems">
 <code class="descclassname">fem.mesh.fem_mesh.</code><code class="descname">SortElems</code><span class="sig-paren">(</span><em>elems</em>, <em>axes</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.fem_mesh.SortElems" title="Permalink to this definition">¶</a></dt>
@@ -864,8 +850,9 @@ sort (Boolean): False (assume node ordering)</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>nodefile: node keyword filename</dd>
+<dt>Raises:</dt>
+<dd>FileNotFoundError: Cannot open the specified node file.</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="function">
@@ -941,16 +928,6 @@ string comment lines starting with $</p>
 </div>
 <div class="section" id="module-fem.mesh.parseElemsNodes">
 <span id="fem-mesh-parseelemsnodes-module"></span><h2>fem.mesh.parseElemsNodes module<a class="headerlink" href="#module-fem.mesh.parseElemsNodes" title="Permalink to this headline">¶</a></h2>
-<p>Copyright 2015 Mark L. Palmeri (<a class="reference external" href="mailto:mlp6&#37;&#52;&#48;duke&#46;edu">mlp6<span>&#64;</span>duke<span>&#46;</span>edu</a>)</p>
-<p>Licensed under the Apache License, Version 2.0 (the “License”);
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at</p>
-<p><a class="reference external" href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a></p>
-<p>Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an “AS IS” BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.</p>
 <dl class="function">
 <dt id="fem.mesh.parseElemsNodes.main">
 <code class="descclassname">fem.mesh.parseElemsNodes.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.mesh.parseElemsNodes.main" title="Permalink to this definition">¶</a></dt>
