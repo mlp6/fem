@@ -322,8 +322,8 @@ def savepvd(**kwargs):
     with open(kwargs['resfile'], 'w') as pvd:
 
         pvd.write('<?xml version="1.0"?>\n')
-        pvd.write('<VTKFile type="Collection" version="0.1"'
-                  'byte_order="LittleEndian"'
+        pvd.write('<VTKFile type="Collection" version="0.1" '
+                  'byte_order="LittleEndian" '
                   'compressor="vtkZLibDataCompressor">\n')
         pvd.write('    <Collection>\n')
 
@@ -334,7 +334,7 @@ def savepvd(**kwargs):
 
             vtrfilename = '{}_T{:04d}'.format(resfileprefix, ts)
 
-            pvd.write('        <DataSet timestep="{}" group="" part="0"'
+            pvd.write('        <DataSet timestep="{}" group="" part="0" '
                       'file="{}.vtr"/>\n'.format(ts, os.path.
                                                  basename(vtrfilename)))
 

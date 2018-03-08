@@ -59,3 +59,12 @@ See the git commit history for an effective change log pre-v6.3.1
   generated.
 * Unit tests for MATv5, HDF5 and PVD/VTR files added.
 * General refactoring of code and clean-up for Google Style docstrings.
+
+## v7.0.1
+* Fix Sphinx documentation to render Google Style docstrings correctly.
+
+## v7.0.2
+* Relax python3 compatibility to now work with >=3.4
+
+## v7.0.3
+* Fix writing of PVD XML file.
