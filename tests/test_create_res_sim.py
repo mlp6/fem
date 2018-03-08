@@ -76,12 +76,7 @@ def test_saveh5(tmpdir):
 
 
 def test_savepvd(tmpdir):
-    """Test the PVD/VTR files written correctly.
-
-    It is difficult to test the complete contents of the PVD file, and the
-    binary VTR files are also a mess, so using this test to just make
-    sure that the files are created withour errors / raised exceptions.
-    """
+    """Test the PVD/VTR files written correctly."""
     from create_res_sim import extract3Darfidata as run
     import filecmp
 
@@ -92,5 +87,7 @@ def test_savepvd(tmpdir):
         dispout='{}/disp.dat.xz'.format(valid_data_path),
         nodedyn='{}/nodes.dyn'.format(valid_data_path), ressim=pvdfile.strpath)
 
-    valid_data = '{}/res_sim.pvd'.format(valid_data_path)
-    test_data = pvdfile.strpath
+    valid_pvd = '{}/res_sim.pvd'.format(valid_data_path)
+    test_pvd = pvdfile.strpath
+
+    assert filecmp.cmp(valid_pvd, test_pvd)

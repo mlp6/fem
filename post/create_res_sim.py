@@ -322,10 +322,10 @@ def savepvd(**kwargs):
     with open(kwargs['resfile'], 'w') as pvd:
 
         pvd.write('<?xml version="1.0"?>\n')
-        pvd.write('<VTKFile type="Collection" version="0.1" \
-                  byte_order="LittleEndian" \
-                  compressor="vtkZLibDataCompressor">\n')
-        pvd.write('<Collection>\n')
+        pvd.write('<VTKFile type="Collection" version="0.1"'
+                  'byte_order="LittleEndian"'
+                  'compressor="vtkZLibDataCompressor">\n')
+        pvd.write('    <Collection>\n')
 
         for ts, time in enumerate(kwargs['t']):
 
@@ -334,15 +334,16 @@ def savepvd(**kwargs):
 
             vtrfilename = '{}_T{:04d}'.format(resfileprefix, ts)
 
-            pvd.write('<DataSet timestep="{}" group="" part="0" \
-                      file="{}.vtr"/>\n'.format(ts, vtrfilename))
+            pvd.write('        <DataSet timestep="{}" group="" part="0"'
+                      'file="{}.vtr"/>\n'.format(ts, os.path.
+                                                 basename(vtrfilename)))
 
             gridToVTK('{}'.format(vtrfilename),
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),
                       kwargs['axial'].ravel(),
                       pointData={'arfidata': arfidata})
-        pvd.write('</Collection>\n')
+        pvd.write('    </Collection>\n')
         pvd.write('</VTKFile>\n')
 
 
