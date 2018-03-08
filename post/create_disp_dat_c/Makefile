@@ -1,4 +1,4 @@
-PYTHON36  = $(HOME)/virtualenv/python3.6.3/
+PYTHON36  = $(HOME)/fem/env/
 #PYTHON36  = $(HOME)/miniconda3/envs/fem
 CC         = gcc
 CFLAGS     = -c -fpic
@@ -8,8 +8,8 @@ SRCS       = create_disp_dat.c create_disp_dat_wrap.c
 INTERFACE  = create_disp_dat.i
 OBJS       = create_disp_dat.o create_disp_dat_wrap.o
 TARGET     = _create_disp_dat.so
-PYTHON_INCLUDE    = -I$(PYTHON36)/include/python3.6m
-PYTHON_LIB = -L$(PYTHON36)/lib -lpython3.6m
+PYTHON_INCLUDE    = -I$(PYTHON36)/include/python3.5m
+PYTHON_LIB = -L$(PYTHON36)/lib -lpython3.5m
 SWIG       = swig
 
 SWIGOPT     = -python
