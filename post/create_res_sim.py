@@ -312,6 +312,7 @@ def savepvd(**kwargs):
         lat (float): lateral axis vector [mm]
         elev (float): elevation axis vector [mm]
         t (float): time vector (s)
+        resfile (str): 'res_sim.pvd'
 
     Raises:
         ValueError: Not saving 3D time series data.
