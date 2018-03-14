@@ -306,6 +306,13 @@ def savepvd(**kwargs):
 
     Paraview data formats: https://www.paraview.org/Wiki/ParaView/Data_formats
 
+    Args:
+        arfidata (float): 4D arfidata matrix
+        axial (float): depth axis vector [mm]
+        lat (float): lateral axis vector [mm]
+        elev (float): elevation axis vector [mm]
+        t (float): time vector (s)
+
     Raises:
         ValueError: Not saving 3D time series data.
         FileExistsError: PVD file directory cannot be created.
