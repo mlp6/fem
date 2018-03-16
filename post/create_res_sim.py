@@ -307,6 +307,7 @@ def savepvd(ts_start=0, part=0, **kwargs):
     Paraview data formats: https://www.paraview.org/Wiki/ParaView/Data_formats
 
     Args:
+        ts_start (int): override starting timestep index from 0 to this value
         arfidata (float): 4D arfidata matrix
         axial (float): depth axis vector [mm]
         lat (float): lateral axis vector [mm]
