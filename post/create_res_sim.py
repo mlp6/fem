@@ -301,7 +301,7 @@ def savemat(**kwargs):
     save_mat(resfile, kwargs, do_compression=True)
 
 
-def savepvd(**kwargs):
+def savepvd(ts_start=0, part=0, **kwargs):
     """Save Paraview PVD rectilinear (VTR) time series data.
 
     Paraview data formats: https://www.paraview.org/Wiki/ParaView/Data_formats
@@ -340,10 +340,11 @@ def savepvd(**kwargs):
             arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata']
                                                     [:, :, :, ts])).transpose()
 
-            vtrfilename = '{}_T{:04d}'.format(resfileprefix, ts)
+            timestep = ts_start + ts
+            vtrfilename = '{}_T{:04d}'.format(resfileprefix, timestep)
 
-            pvd.write('        <DataSet timestep="{}" group="" part="0" '
-                      'file="{}.vtr"/>\n'.format(ts, os.path.
+            pvd.write('        <DataSet timestep="{}" group="" part="{}" '
+                      'file="{}.vtr"/>\n'.format(timestep, part, os.path.
                                                  basename(vtrfilename)))
 
             gridToVTK('{}'.format(vtrfilename),
