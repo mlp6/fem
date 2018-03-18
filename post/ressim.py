@@ -23,11 +23,14 @@ class ResSim:
         self.t = d['t'].squeeze() * 1e3  # convert from s -> ms
         self.arfidata = d['arfidata']
 
-    def plot(self, timestep):
+    def plot(self, timestep, show=True, save=False, savename='file'):
         """Plot arfidata at specified timestep.
 
         Args:
             timestep (int):
+            show (Boolean): show plot
+            save (Boolean): save PNG (objectname_timestep.png)
+            savename (str): saved PNG filename prefix
 
         Returns:
 
@@ -40,7 +43,12 @@ class ResSim:
         plt.ylabel('Axial (mm)')
         plt.title('t = {:.2f} ms'.format(self.t[timestep]))
         plt.gca().invert_yaxis()
-        plt.show()
+        if save:
+            filename = '{}_{:04d}.png'.format(savename, timestep)
+            plt.savefig(filename)
+            print('Saved plot: {}'.format(filename))
+        if show:
+            plt.show()
 
         return
 
