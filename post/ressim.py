@@ -1,29 +1,49 @@
 class ResSim:
-    """plot and animate res_sim.mat simulation data"""
+    """plot and animate res_sim.mat simulation data
+
+    Attributes:
+        filename (str): name of file to load in (MATv5)
+        arfidata (float ndarray): arfidata
+        axial (float ndarray): depth
+        lat (float ndarray): lateral
+        t (float ndarray): time
+        time_scale_factor (float): time scale factor (e.g., s -> ms)
+        disp_scale_factor (float): displacement scale factor
+
+    """
 
     def __init__(self, filename="res_sim.mat"):
-        self.load(filename)
+        self.filename = filename
+        self.lat = None
+        self.axial = None
+        self.t = None
+        self.arfidata = None
+        self.time_scale_factor = 1e3 # s -> ms
+        self.disp_scale_factor = 1.0
 
-    def load(self, filename, time_scale_factor=1e3, disp_scale_factor=1.0):
+        self.load()
+
+    def load(self):
         """load MATv5 data
 
         Args:
             filename (str): input filename
-            time_scale_factor (float): time scale factor (e.g., s -> ms)
-            disp_scale_factor (float): displacement scale factor
 
-        Returns:
-            attributes (ndarray): [lat, axial, t, arfidata]
+        Todo:
+            * Make compatible with v7.3 (HDF5) format files.
 
         """
         from scipy.io import loadmat
 
-        d = loadmat(filename)
+        try:
+            d = loadmat(filename)
+        except:
+            print('{} most likely not MATv5 format'.format(filename))
 
         self.lat = d['lat'].squeeze()
         self.axial = d['axial'].squeeze()
-        self.t = d['t'].squeeze() * time_scale_factor
-        self.arfidata = d['arfidata'] * disp_scale_factor
+        self.t = d['t'].squeeze() * self.time_scale_factor
+        self.arfidata = d['arfidata'] * self.disp_scale_factor
 
     def plot(self, timestep, show=True, save=False, savename='file',
              xlabel='Lateral (mm)', ylabel='Axial (mm)', title=None):
@@ -37,8 +57,6 @@ class ResSim:
             xlabel (str):
             ylabel (str):
             title (str):
-
-        Returns:
 
         """
         import matplotlib.pyplot as plt
@@ -84,6 +102,7 @@ class ResSim:
         axInd = np.min(np.where(self.axial >= axial))
         latInd = np.min(np.where(self.lat >= lat))
 
+    def play(self, timerange):
         axes.plot(self.t, self.arfidata[axInd, latInd, :])
         axes.set_xlabel(xlabel)
         axes.set_ylabel(ylabel)
@@ -107,8 +126,6 @@ class ResSim:
             xlabel (str):
             ylabel (str):
             show (Boolean): show animation
-
-        Returns:
 
         Todo:
             * Add save option
