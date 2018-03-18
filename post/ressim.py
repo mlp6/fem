@@ -25,8 +25,8 @@ class ResSim:
         self.t = d['t'].squeeze() * time_scale_factor
         self.arfidata = d['arfidata'] * disp_scale_factor
 
-    def plot(self, timestep, show=True, save=False, savename='file', xlabel='Lateral (mm)',
-             ylabel='Axial (mm)', title=None):
+    def plot(self, timestep, show=True, save=False, savename='file',
+             xlabel='Lateral (mm)', ylabel='Axial (mm)', title=None):
         """Plot arfidata at specified timestep.
 
         Args:
@@ -59,8 +59,8 @@ class ResSim:
         if show:
             plt.show()
 
-    def timeplot(self, axial, lat, xlabel='Time (ms)', ylabel='Displacement (\mum)', title=None,
-                 show=True):
+    def timeplot(self, axial, lat, xlabel='Time (ms)',
+                 ylabel='Displacement (\mum)', title=None, show=True):
         """plot arfidata through time at specified ax and lat position (mm)
 
         Args:
@@ -86,12 +86,13 @@ class ResSim:
             plt.title('Axial = {:.1f} mm, Lateral = {:.1f} mm'.
                       format(self.axial[axInd], self.lat[latInd]))
         else:
-            plt.title=(title)
+            plt.title(title)
 
         if show:
             plt.show()
 
-    def play(self, timerange, xlabel='Lateral (mm)', ylabel='Axial (mm)', show=True):
+    def play(self, timerange, xlabel='Lateral (mm)', ylabel='Axial (mm)',
+             show=True):
         """play an animation
 
         Strongly recommend not stepping though each timesteps; use some skips!
