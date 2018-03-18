@@ -8,7 +8,7 @@
 using namespace std;
 
 int main (int argc, char **argv) {
-    float scaleFactor;
+    float scaleFactor = 1.0;
     int wordSize = 4;  // 32-bit float
     int headerCount = 3;  // number of header words
     int count = 0;  // float word count
@@ -64,7 +64,7 @@ int main (int argc, char **argv) {
             count++;
             }
         else {
-            value *= 0.1;
+            value *= scaleFactor;
             dispout.write((char*)&value, wordSize);
             // reset the counter if we've completed a time step
             if (count == (headerCount + NUM_NODES*4 - 1)) {
