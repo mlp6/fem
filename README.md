@@ -2,49 +2,45 @@
 <a href="https://travis-ci.org/mlp6/fem"><img src="https://travis-ci.org/mlp6/fem.svg?branch=master" /></a>
 
 # Acoustic Radiation Force FEM Tools
-
 Finite Element Method (FEM) tools to simulate acoustic radiation force
 excitations and resultant shear wave propagation.
 
-All software in this repository is licensed under the Apache v2.0
-license, as detailed in the LICENSE file.
+All software in this repository is licensed under the Apache v2.0 license, as
+detailed in the LICENSE file.
 
-If you are using the FEM simulation tools in work that you publish, then
-please consider citing the following manuscript:
+If you are using the FEM simulation tools in work that you publish, then please
+consider citing the following manuscript:
 
 [Palmeri ML, Sharma AC, Bouchard RR, Nightingale RW, Nightingale KR. "A
-Finite-Element Method Model of Soft Tissue Response to Impulsive
-Acoustic Radiation Force," IEEE UFFC, 52(10): 1699-1712,
+Finite-Element Method Model of Soft Tissue Response to Impulsive Acoustic
+Radiation Force," IEEE UFFC, 52(10): 1699-1712,
 2005](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2818996/)
 
 Also please cite the following manuscript if you use [Field
 II](http://field-ii.dk):
 
 [J.A. Jensen and N. B. Svendsen: Calculation of pressure fields from
-arbitrarily shaped, apodized, and excited ultrasound transducers, IEEE
-Trans. Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
+arbitrarily shaped, apodized, and excited ultrasound transducers, IEEE Trans.
+Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
 1992.](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123)
 
 ## Installation
-
-You can clone this source directory and work directly with it by specifying
-`PYTHONPATH` to include the root directory you clone this to... or you can
-install this with pip in a local virtualenv (recommended): `pip install
-git+https://github.com/mlp6/fem.git`.
+There are two different methods to use/install this package:
+1. Install this with pip in a local virtualenv (recommended): `pip install
+   git+https://github.com/mlp6/fem.git`.
+1. Clone this source directory and work directly with it by defining
+   `PYTHONPATH` to include the root directory this repository was cloned into.
 
 ## Documentation
-
 The latest documentation is automatically generated using Sphinx and can be
 built in ``docs/``.  The same documentation is also built and rendered
 automatically at https://mlp6.github.io/fem/.
 
 ## Issues
-
-Please file any bug reports, features requests, etc. using the GitHub Issue
-tracker: https://github.com/mlp6/fem/issues
+Please file any bug reports, features requests, etc. using the GitHub
+[Issues](https://github.com/mlp6/fem/issues).
 
 ## Contributors
-
 - Mark Palmeri (mlp6@duke.edu)
 - Ningrui Li (nl91@duke.edu)
 - Mallory Selzo (UNC-CH)
