@@ -68,3 +68,8 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v7.0.3
 * Fix writing of PVD XML file.
+
+## v7.1.0
+* add more custimization to ResSim methods
+* add ability to re-number PVD timeframes
+* augment docstrings
