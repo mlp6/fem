@@ -43,21 +43,23 @@ class ResSim:
         """
         import matplotlib.pyplot as plt
 
-        plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, timestep])
-        plt.axes().set_aspect('equal')
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
+        fig, axes = plt.subplots()
+
+        axes.pcolormesh(self.lat, self.axial, self.arfidata[:, :, timestep])
+        axes.set_aspect('equal')
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
         if title is None:
-            plt.title('t = {:.2f} ms'.format(self.t[timestep]))
+            axes.set_title('t = {:.2f} ms'.format(self.t[timestep]))
         else:
-            plt.title(title)
-        plt.gca().invert_yaxis()
+            axes.set_title(title)
+        axes.invert_yaxis()
         if save:
             filename = '{}_{:04d}.png'.format(savename, timestep)
-            plt.savefig(filename)
+            fig.savefig(filename)
             print('Saved plot: {}'.format(filename))
         if show:
-            plt.show()
+            fig.show()
 
     def timeplot(self, axial, lat, xlabel='Time (ms)',
                  ylabel='Displacement (\mum)', title=None, show=True):
@@ -77,19 +79,22 @@ class ResSim:
         import matplotlib.pyplot as plt
         import numpy as np
 
+        fig, axes = plt.subplots()
+
         axInd = np.min(np.where(self.axial >= axial))
         latInd = np.min(np.where(self.lat >= lat))
-        plt.plot(self.t, self.arfidata[axInd, latInd, :])
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
+
+        axes.plot(self.t, self.arfidata[axInd, latInd, :])
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
         if title is None:
-            plt.title('Axial = {:.1f} mm, Lateral = {:.1f} mm'.
-                      format(self.axial[axInd], self.lat[latInd]))
+            axes.set_title('Axial = {:.1f} mm, Lateral = {:.1f} mm'.
+                           format(self.axial[axInd], self.lat[latInd]))
         else:
-            plt.title(title)
+            axes.set_title(title)
 
         if show:
-            plt.show()
+            fig.show()
 
     def play(self, timerange, xlabel='Lateral (mm)', ylabel='Axial (mm)',
              show=True):
@@ -112,19 +117,19 @@ class ResSim:
         import matplotlib.pyplot as plt
         import matplotlib.animation as animation
 
-        fig = plt.figure()
+        fig, axes = plt.subplots()
 
-        plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, 0])
-        plt.axes().set_aspect('equal')
-        plt.gca().invert_yaxis()
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
+        axes.pcolormesh(self.lat, self.axial, self.arfidata[:, :, 0])
+        axes.set_aspect('equal')
+        axes.invert_yaxis()
+        axes.set_xlabel(xlabel)
+        axes.set_ylabel(ylabel)
 
         anim = animation.FuncAnimation(fig, self.animate, frames=timerange,
                                        blit=False)
 
         if show:
-            plt.show()
+            fig.show()
 
     def animate(self, i):
         import matplotlib.pyplot as plt
