@@ -342,7 +342,7 @@ def savepvd(ts_start=0, part=0, **kwargs):
                                                     [:, :, :, ts])).transpose()
 
             timestep = ts_start + ts
-            vtrfilename = '{}_T{:04d}'.format(resfileprefix, timestep)
+            vtrfilename = '{}_T{:04d}'.format(resfileprefix, ts)
 
             pvd.write('        <DataSet timestep="{}" group="" part="{}" '
                       'file="{}.vtr"/>\n'.format(timestep, part, os.path.
