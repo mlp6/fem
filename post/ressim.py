@@ -18,7 +18,7 @@ class ResSim:
         self.axial = None
         self.t = None
         self.arfidata = None
-        self.time_scale_factor = 1e3 # s -> ms
+        self.time_scale_factor = 1e3  # s -> ms
         self.disp_scale_factor = 1.0
 
         self.load()
