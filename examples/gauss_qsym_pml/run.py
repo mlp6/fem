@@ -33,7 +33,7 @@ bc.apply_pml(pml_elems, face_constraints, edge_constraints)
 
 generate_loads([0.25, 0.25, 0.75], [0.0, 0.0, -1.5])
 
-system('ls-dyna-d ncpu=%s i=%s' % (NTASKS, DYNADECK))
+system('ls-dyna-d ncpu={} i={}'.format(NTASKS, DYNADECK))
 
 create_disp_dat()
 
@@ -49,4 +49,4 @@ create_res_sim.extract3Darfidata(dynadeck=DYNADECK,
 
 os.system("xz -v disp.dat")
 
-print('FINISHED: %s' % ctime())
+print('FINISHED: {}'.format(ctime()))
