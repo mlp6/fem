@@ -4,11 +4,13 @@ class ResSim:
     def __init__(self, filename="res_sim.mat"):
         self.load(filename)
 
-    def load(self, filename):
+    def load(self, filename, time_scale_factor=1e3, disp_scale_factor=1.0):
         """load MATv5 data
 
         Args:
             filename (str): input filename
+            time_scale_factor (float): time scale factor (e.g., s -> ms)
+            disp_scale_factor (float): displacement scale factor
 
         Returns:
             attributes (ndarray): [lat, axial, t, arfidata]
@@ -20,8 +22,8 @@ class ResSim:
 
         self.lat = d['lat'].squeeze()
         self.axial = d['axial'].squeeze()
-        self.t = d['t'].squeeze() * 1e3  # convert from s -> ms
-        self.arfidata = d['arfidata']
+        self.t = d['t'].squeeze() * time_scale_factor
+        self.arfidata = d['arfidata'] * disp_scale_factor
 
     def plot(self, timestep, show=True, save=False, savename='file', xlabel='Lateral (mm)',
              ylabel='Axial (mm)', title=None):
