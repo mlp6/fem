@@ -257,34 +257,52 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
 
 
 def saveh5(**kwargs):
-    """Save HDF5 file."""
+    """Save HDF5 file with gzip compression.
+
+    Args:
+        arfidata (float): 4D arfidata matrix
+        axial (float): depth axis vector [mm]
+        lat (float): lateral axis vector [mm]
+        elev (float): elevation axis vector [mm]
+        t (float): time vector (s)
+        resfile (str): 'res_sim.pvd'
+
+    """
     import h5py
-    r = h5py.File(kwargs['resfile'], 'w')
-    r.create_dataset(data=kwargs['arfidata'],
-                     name="arfidata",
-                     compression="gzip",
-                     compression_opts=9)
-    r.create_dataset(data=kwargs['lat'],
-                     name="lat",
-                     compression="gzip",
-                     compression_opts=9)
-    r.create_dataset(data=kwargs['axial'],
-                     name="axial",
-                     compression="gzip",
-                     compression_opts=9)
-    if kwargs['arfidata'].ndim == 4:
-        r.create_dataset(data=kwargs['elev'],
-                         name="elev",
-                         compression="gzip",
-                         compression_opts=9)
-    r.create_dataset(data=kwargs['t'],
-                     name="t",
-                     compression="gzip",
-                     compression_opts=9)
+
+    compression = {'shuffle': True,
+                   'compression': 'gzip',
+                   'compression_opts': 9}
+
+    with h5py.File(kwargs['resfile'], 'w') as r:
+        r.create_dataset(data=kwargs['arfidata'],
+                         name="arfidata",
+                         **compression)
+        r.create_dataset(data=kwargs['lat'],
+                         name="lat",
+                         **compression)
+        r.create_dataset(data=kwargs['axial'],
+                         name="axial",
+                         **compression)
+        if kwargs['arfidata'].ndim == 4:
+            r.create_dataset(data=kwargs['elev'],
+                             name="elev",
+                             **compression)
+        r.create_dataset(data=kwargs['t'],
+                         name="t",
+                         **compression)
 
 
 def savemat(**kwargs):
     """Save Matlab v5 file.
+
+    Args:
+        arfidata (float): 4D arfidata matrix
+        axial (float): depth axis vector [mm]
+        lat (float): lateral axis vector [mm]
+        elev (float): elevation axis vector [mm]
+        t (float): time vector (s)
+        resfile (str): 'res_sim.pvd'
 
     Raises:
         TypeError: arfidata >4 GB
