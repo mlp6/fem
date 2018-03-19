@@ -262,23 +262,28 @@ def saveh5(**kwargs):
     r = h5py.File(kwargs['resfile'], 'w')
     r.create_dataset(data=kwargs['arfidata'],
                      name="arfidata",
+                     shuffle=True,
                      compression="gzip",
                      compression_opts=9)
     r.create_dataset(data=kwargs['lat'],
                      name="lat",
+                     shuffle=True,
                      compression="gzip",
                      compression_opts=9)
     r.create_dataset(data=kwargs['axial'],
                      name="axial",
+                     shuffle=True,
                      compression="gzip",
                      compression_opts=9)
     if kwargs['arfidata'].ndim == 4:
         r.create_dataset(data=kwargs['elev'],
                          name="elev",
+                         shuffle=True,
                          compression="gzip",
                          compression_opts=9)
     r.create_dataset(data=kwargs['t'],
                      name="t",
+                     shuffle=True,
                      compression="gzip",
                      compression_opts=9)
 
