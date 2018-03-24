@@ -74,7 +74,8 @@ See the git commit history for an effective change log pre-v6.3.1
 * add ability to re-number PVD timeframes
 * augment docstrings
 
-## v7.2.0a
+## v7.2.0
 * shuffle HDF5 data on save for more effective compression
 * refactor `create_res_sim.py` for more explicit file closure, detailed
   docstrings
+* fix ResSim class (`self.filename`)

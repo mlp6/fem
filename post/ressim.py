@@ -36,9 +36,9 @@ class ResSim:
         from scipy.io import loadmat
 
         try:
-            d = loadmat(filename)
+            d = loadmat(self.filename)
         except:
-            print('{} most likely not MATv5 format'.format(filename))
+            print('{} most likely not MATv5 format'.format(self.filename))
 
         self.lat = d['lat'].squeeze()
         self.axial = d['axial'].squeeze()
