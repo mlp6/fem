@@ -14,3 +14,6 @@ d3*
 nodout
 env/
 .pytest_cache/
+build/
+dist/
+fem.egg-info

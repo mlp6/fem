@@ -25,11 +25,15 @@ Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
 1992.](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123)
 
 ## Installation
-There are two different methods to use/install this package:
+There are three different methods to use/install this package:
 1. Install this with pip in a local virtualenv (recommended): `pip install
    git+https://github.com/mlp6/fem.git`.
+1. Clone this source directory and manually install it in your local
+   virtualenv: `python setup.py install`
 1. Clone this source directory and work directly with it by defining
    `PYTHONPATH` to include the root directory this repository was cloned into.
+   This is the easiest method if you are planning to actively edit/develop the
+   codebase.
 
 ## Documentation
 The latest documentation is automatically generated using Sphinx and can be

@@ -78,4 +78,5 @@ See the git commit history for an effective change log pre-v6.3.1
 * shuffle HDF5 data on save for more effective compression
 * refactor `create_res_sim.py` for more explicit file closure, detailed
   docstrings
+* update installation instructions
 * fix ResSim class (`self.filename`)
