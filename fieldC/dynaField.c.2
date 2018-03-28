@@ -1,0 +1,148 @@
+/*
+% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, lownslow)
+%
+% Generate intensity values at the nodal locations for conversion to force and
+% input into the dyna deck.
+%
+% INPUTS:
+%   FIELD_PARAMS.alpha (float) - absorption (dB/cm/MHz)
+%   FIELD_PARAMS.measurementPointsandNodes - nodal IDs and spatial locations
+%                                            from field2dyna.m
+%   FIELD_PARAMS.Fnum (float) - F/#
+%   FIELD_PARAMS.focus - [x y z] (m)
+%   FIELD_PARAMS.Frequency (float) - push frequency (MHz)
+%                                    6.67 (VF10-5)
+%                                    4.21 (VF7-3)
+%   FIELD_PARAMS.Transducer (string) - 'vf105'; select the
+%       transducer-dependent parameters to use for the simulation
+%   FIELD_PARAMS.Impulse (string) - 'guassian','exp'; use a Gaussian function
+%       based on the defined fractional bandwidth and center
+%       frequency, or use the experimentally-measured impulse
+%       response
+%   threads (int) - number of parallel threads to use [default = numCores]
+%   lownslow (bool) - low RAM footprint, but much slower
+%
+% OUTPUT:
+%   intensity - intensity values at all of the node locations
+%   FIELD_PARAMS - field parameter structure
+%
+% EXAMPLE:
+%   [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS)
+%
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <pthread.h>	/* needed to keep types.h (from field_II.h) happy */
+#include "field.h"		/* includes field_II.h */
+#include "cJSON.h"
+
+dynaField(struct FieldParams params, int threads, int lowNslow)
+{
+int i;
+sys_con_type   *sys_con;      /*  System constants for Field II */ 
+aperture_type *Th;
+char *info;
+cJSON *commands, *impulseResponse, *probeInfo;
+cJSON *item;
+FILE *input;
+long len;
+char *data, *out;
+int no_elements, no_sub_x, no_sub_y;
+double width, height, kerf, Rconvex, Rfocus;
+double *foo;
+point_type *focus;
+double exciteFreq, texcite, *excitationPulse, stepSize;
+int numCYC = 50;
+int numSteps;
+
+/* how do I do check_add_probes? */
+
+/*
+ * initialize Field II; field_init is in the provided c library; the '-1'
+ * arg supresses ascii output.
+ */
+	
+	sys_con = field_init(-1);
+
+/* set transducer-independent parameters */
+
+	set_field("c", params.soundSpeed);
+	set_field("fs", params.samplingFrequency);
+	set_field("threads", params.threads);
+	fprintf(stderr, "PARALLEL THREADS: %d\n", threads);
+
+/* get info from JSON */
+	input = fopen("./c52Fixed.json","rb");
+	fseek(input,0,SEEK_END);
+	len=ftell(input );
+	fseek(input,0,SEEK_SET);
+	data=(char*)malloc(len+1);
+	fread(data,1,len,input);
+	fclose(input);
+
+	probeInfo = cJSON_Parse(data);
+	if (!probeInfo) {
+		printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+		}
+
+	else {
+		out=cJSON_Print(probeInfo);
+		printf("%s\n",out);
+		free(out);
+		}
+
+	fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
+
+	no_elements = cJSON_GetObjectItem(probeInfo, "no_elements")->valueint;
+	no_sub_x = cJSON_GetObjectItem(probeInfo, "no_sub_x")->valueint;
+	no_sub_y = cJSON_GetObjectItem(probeInfo, "no_sub_y")->valueint;
+
+	fprintf(stderr, "elements %d subX %d subY %d\n", no_elements, no_sub_x,
+		no_sub_y);
+
+	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
+	fprintf(stderr, "width %f\n", width);
+	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
+	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
+	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
+	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
+
+/*
+	fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
+	commands = cJSON_GetObjectItem(probeInfo, "commands");
+	fprintf(stderr, "Th %s\n", cJSON_GetObjectItem(commands, "Th")->valuestring);
+	fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
+	impulseResponse = cJSON_GetObjectItem(probeInfo, "impulse_response");
+	fprintf(stderr, "center freq %d\n", cJSON_GetObjectItem(impulseResponse, "f0")->valueint);
+	fprintf(stderr, "phase %d\n", cJSON_GetObjectItem(impulseResponse, "phase")->valueint);
+	fprintf(stderr, "bw %d\n", cJSON_GetObjectItem(impulseResponse, "bw")->valueint);
+*/
+
+/* I think the next thing is to set Th, impulse */
+
+	Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,Rfocus,no_sub_x,no_sub_y,params.focus);
+
+	fprintf(stderr, "#elements %d\n", Th->no_elements);
+
+	info = "rect";
+
+	foo = (double *)malloc(26*1344*sizeof(double));
+	
+	xdc_get(Th, info, foo);
+	fprintf(stderr, "back from xdc_get, got %f %f %f\n", foo[4], foo[5], foo[6]);
+	
+	exciteFreq = params.frequency * 1E6;
+	stepSize = 1 / exciteFreq;
+
+	numSteps = (int) (numCYC * exciteFreq) * 2;
+
+	excitationPulse = (double *)malloc(numSteps * sizeof(double));
+
+	excitationPulse[0] = 0;
+
+	for (i = 0; i < numSteps; i++) {
+		excitationPulse[i] = sin(2 * M_PI * exciteFreq * i * stepSize);
+		}
+}

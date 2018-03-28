@@ -1,0 +1,58 @@
+/*
+% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, lownslow)
+%
+% Generate intensity values at the nodal locations for conversion to force and
+% input into the dyna deck.
+%
+% INPUTS:
+%   FIELD_PARAMS.alpha (float) - absorption (dB/cm/MHz)
+%   FIELD_PARAMS.measurementPointsandNodes - nodal IDs and spatial locations
+%                                            from field2dyna.m
+%   FIELD_PARAMS.Fnum (float) - F/#
+%   FIELD_PARAMS.focus - [x y z] (m)
+%   FIELD_PARAMS.Frequency (float) - push frequency (MHz)
+%                                    6.67 (VF10-5)
+%                                    4.21 (VF7-3)
+%   FIELD_PARAMS.Transducer (string) - 'vf105'; select the
+%       transducer-dependent parameters to use for the simulation
+%   FIELD_PARAMS.Impulse (string) - 'guassian','exp'; use a Gaussian function
+%       based on the defined fractional bandwidth and center
+%       frequency, or use the experimentally-measured impulse
+%       response
+%   threads (int) - number of parallel threads to use [default = numCores]
+%   lownslow (bool) - low RAM footprint, but much slower
+%
+% OUTPUT:
+%   intensity - intensity values at all of the node locations
+%   FIELD_PARAMS - field parameter structure
+%
+% EXAMPLE:
+%   [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS)
+%
+*/
+
+#include <stdio.h>
+#include "field.h"
+
+dynaField(struct FieldParams params, int threads, int lowNslow)
+{
+
+/* how do I do check_add_probes? */
+
+/*
+ * initialize Field II; field_init is in the provided c library; the '-1'
+ * arg supresses ascii output.
+ */
+	
+	field_init(-1);
+
+/* set transducer-independent parameters */
+
+	set_field('c', params.soundSpeed);
+	set_field('fs', params.samplingFrequency);
+	set_field('threads', params.threads);
+	fprintf(stderr, "PARALLEL THREADS: %d\n", threads);
+
+/* I think the next thing is to set Th, impulse */
+
+	params.Th_data = xdc_get(Th, 'rect');
