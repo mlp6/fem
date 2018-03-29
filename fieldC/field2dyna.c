@@ -40,16 +40,20 @@
 int checkOnAxis();
 
 char *
-field2dyna(char *nodeName, float alpha, float fnum, point_type focus,
-	float freq, char *transducer, char *impulse, int threads,
+field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
+	double freq, char *transducer, char *impulse, int threads,
 	int lowNslow, char *elemName, int forceNonlinear)
 {
 int i, numNodes;
-float temp;
+double temp;
 struct nodeEntry *pointsAndNodes, *readMpn();
 struct FieldParams fieldParams;
 
-	fprintf(stderr, "calling readMpn; node name %s\n", nodeName);
+	fprintf(stderr, "in field2dyna, focus x %f fnum %f freq %f\n", focus.x, fnum, freq);
+	fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
+	fprintf(stderr, "in field2dyna, threads %d\n", threads);
+	fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
+	fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
 
 	pointsAndNodes = readMpn(nodeName, &numNodes);
 
@@ -87,7 +91,7 @@ struct FieldParams fieldParams;
 /*
 	for (i = 0; i < 13; i++)
 	    fprintf(stderr, "field2dyna 4, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
-*/
+e/
 
 
 /* change from centimeters to meters */
@@ -113,6 +117,7 @@ struct FieldParams fieldParams;
 	fieldParams.impulse = impulse;
 	fieldParams.soundSpeed = 1540;
 	fieldParams.samplingFrequency = 100e6;
+	fieldParams.threads = threads;
 
 /*
  * at this point the matlab code sets up some defaults, because apparently

@@ -69,8 +69,8 @@ point_type *points;
 /*
 for (i = 0; i < 13; i++)
         fprintf(stderr, "in dynaField, node %d is %d, %f, %f, %f\n", i, params.pointsAndNodes[i].nodeID, params.pointsAndNodes[i].x, params.pointsAndNodes[i].y, params.pointsAndNodes[i].z);
-*/
 
+*/
 /* how do I do check_add_probes? */
 
 /*
@@ -85,7 +85,7 @@ for (i = 0; i < 13; i++)
 	set_field("c", params.soundSpeed);
 	set_field("fs", params.samplingFrequency);
 	set_field("threads", params.threads);
-	fprintf(stderr, "PARALLEL THREADS: %d\n", threads);
+	fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n", threads, params.threads);
 
 /* get info from JSON */
 	input = fopen("./c52Fixed.json","rb");
@@ -143,7 +143,7 @@ for (i = 0; i < 13; i++)
 
 	info = "rect";
 
-/* 	foo = (double *)malloc(26*1344*sizeof(double)); */
+/* 	foo = (double *)malloc(26*no_elements*no_sub_y*sizeof(double)); */
 	
 	xdc_get(Th, info, foo);
 	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
