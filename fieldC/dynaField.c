@@ -46,7 +46,7 @@ dynaField(struct FieldParams params, int threads, int numNodes)
 int i, j;
 sys_con_type   *sys_con;      /*  System constants for Field II */ 
 aperture_type *Th;
-char *info;
+int32 info;
 cJSON *commands, *impulseResponseCmd, *probeInfo;
 cJSON *item;
 FILE *input;
@@ -195,10 +195,10 @@ for (i = 0; i < 13; i++)
 		impulseResponse[1], impulseResponse[2]);
 	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 
-	info = "rect";
-	fprintf(stderr, "info is %s\n", info);
+	info = 1;
+	fprintf(stderr, "info is %d\n", info);
 
-/* 	foo = (double *)malloc(26*no_elements*no_sub_y*sizeof(double)); */
+	foo = (double *)malloc(26*no_elements*no_sub_x*no_sub_y*sizeof(double));
 	
 	xdc_get(Th, info, foo);
 
@@ -208,8 +208,10 @@ for (i = 0; i < 13; i++)
 
 	fprintf(stderr, "back from xdc_get, got %f\n", foo[0]);
 
-	for (i = 0; i < 20; i++)
-	fprintf(stderr, "back from xdc_get, got %f\n", foo[i]);
+	for (i = 0; i < 26*no_elements*no_sub_x*no_sub_y; i+=26) {
+		fprintf(stderr, "%3.0f %3.0f \n", foo[i],foo[i+1]);
+	}
+	fprintf(stderr, "\n");
 	fprintf(stderr, "done from xdc_get\n");
 /*
 */
