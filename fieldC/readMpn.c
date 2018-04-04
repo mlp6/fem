@@ -16,13 +16,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "field.h"
 
 #define LINE 160			/* space for input line */
-
-struct nodeEntry {
-	int nodeID;
-	float x, y, z;
-	};
 
 struct nodeEntry *
 readMpn(char *NodeName, int *numNodes)
@@ -47,7 +43,7 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-	fprintf(stderr, "numNodes %d\n", *numNodes);
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
 
 /*
  * going to make two passes through the data because I need the number of
@@ -62,8 +58,8 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-	fprintf(stderr, "numNodes %d\n", *numNodes);
-	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry)))== NULL) {
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);
 		}
@@ -87,6 +83,8 @@ struct nodeEntry *nodes;
 		}
 
 	fclose(nodesDyn);
+
+	free(buf);
 
 	return(nodes);
 }

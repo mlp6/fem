@@ -1,0 +1,52 @@
+head	1.1;
+access;
+symbols;
+locks
+	ndd:1.1; strict;
+comment	@ * @;
+
+
+1.1
+date	2018.03.30.16.58.27;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@working on tests for the converted field2dyna routines
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#include <stdio.h>
+#include <string.h>
+#include "field.h"
+
+void
+main(int argc, char **argv)
+{
+struct nodeEntry *pointsAndNodes, *readMpn();
+char *nodeName;
+char *cmd;
+int numNodes;
+int correctNumNodes;
+FILE *checkResult;
+
+	if ((argc == 1) || (strcmp(argv[1], "readMpn") == 0)) {
+		fprintf(stderr, "test is readMpn\n");
+		nodeName = "./myNodes.dyn";
+		fprintf(stderr, "testing, calling readMpn; node name %s\n", nodeName);
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+		fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+		cmd = "grep '^[0-9]' ./myNodes.dyn | wc -l";
+		checkResult = popen(cmd, "r");
+		fscanf(checkResult, "%d", &correctNumNodes);
+		fclose(checkResult);
+		fprintf(stderr, "after system; correctNumNodes %d\n", correctNumNodes);
+		}
+}
+@

@@ -1,10 +1,15 @@
-head	1.3;
+head	1.4;
 access;
 symbols;
 locks
-	ndd:1.3; strict;
+	ndd:1.4; strict;
 comment	@ * @;
 
+
+1.4
+date	2018.04.03.17.08.19;	author ndd;	state Exp;
+branches;
+next	1.3;
 
 1.3
 date	2018.03.19.15.43.50;	author ndd;	state Exp;
@@ -27,9 +32,9 @@ desc
 @
 
 
-1.3
+1.4
 log
-@added some more code, ready to work on dynaField
+@a couple of small changes, mostly debugging statements
 @
 text
 @/*
@@ -65,8 +70,12 @@ text
 % mlp6@@duke.edu
 % 2015-03-17
 %
-% Ned Danieley
+* Ned Danieley
+*
+* note that there's no use for low-n-slow because C can't do the whole
+* calculation at once.
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "field.h"
@@ -74,38 +83,59 @@ text
 int checkOnAxis();
 
 char *
-field2dyna(char *nodeName, float alpha, float fnum, struct Focus focus,
-	float freq, char *transducer, char *impulse, int threads,
-	int lowNslow, char *elemName, int forceNonlinear)
+field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
+	double freq, char *transducer, char *impulse, int threads,
+	char *elemName, int forceNonlinear)
 {
 int i, numNodes;
-float temp;
+double temp;
 struct nodeEntry *pointsAndNodes, *readMpn();
 struct FieldParams fieldParams;
 
-	fprintf(stderr, "calling readMpn; node name %s\n", nodeName);
+	fprintf(stderr, "in field2dyna, focus x %f fnum %f freq %f\n", focus.x, fnum, freq);
+	fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
+	fprintf(stderr, "in field2dyna, threads %d\n", threads);
+	fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
+	fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
 
 	pointsAndNodes = readMpn(nodeName, &numNodes);
 
 	fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
 
+/*
 	for (i = 0; i < 13; i++)
-	    fprintf(stderr, "node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+	    fprintf(stderr, "field2dyna 1, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+*/
 
 	if (!checkOnAxis(pointsAndNodes, numNodes)) {
 		fprintf(stderr, "There are no nodes in the lateral / elevation plane = 0 (imaging plane).\n");
 		fprintf(stderr, "This can lead to inaccurate representations of the intensity fields!!')\n");
 		}
 
+/*
+	for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 2, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+
+*/
 /* invert the z axis */
 	for (i = 0; i < numNodes; i++) pointsAndNodes[i].z = -pointsAndNodes[i].z;
 
+/*
+	for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 3, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+
+*/
 /* switch x and y */
 	for (i = 0; i < numNodes; i++) {
 		temp = pointsAndNodes[i].x;
 		pointsAndNodes[i].x = pointsAndNodes[i].y;
 		pointsAndNodes[i].y = temp;
 		}
+/*
+	for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 4, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+e/
+
 
 /* change from centimeters to meters */
 	for (i = 0; i < numNodes; i++) {
@@ -113,6 +143,11 @@ struct FieldParams fieldParams;
 		pointsAndNodes[i].y /= 100;
 		pointsAndNodes[i].z /= 100;
 		}
+
+/*
+	for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 5, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+*/
 
 /* populate structure for dynaField */
 
@@ -125,6 +160,7 @@ struct FieldParams fieldParams;
 	fieldParams.impulse = impulse;
 	fieldParams.soundSpeed = 1540;
 	fieldParams.samplingFrequency = 100e6;
+	fieldParams.threads = threads;
 
 /*
  * at this point the matlab code sets up some defaults, because apparently
@@ -133,7 +169,42 @@ struct FieldParams fieldParams;
  */
 
 /* call dynaField here */
+
+	dynaField(fieldParams, threads, numNodes);
 }
+@
+
+
+1.3
+log
+@added some more code, ready to work on dynaField
+@
+text
+@d34 4
+a37 1
+% Ned Danieley
+d39 1
+d47 3
+a49 3
+field2dyna(char *nodeName, float alpha, float fnum, struct Focus focus,
+	float freq, char *transducer, char *impulse, int threads,
+	int lowNslow, char *elemName, int forceNonlinear)
+d52 1
+a52 1
+float temp;
+d56 5
+a60 1
+	fprintf(stderr, "calling readMpn; node name %s\n", nodeName);
+d66 1
+d68 2
+a69 1
+	    fprintf(stderr, "node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+d76 5
+d84 5
+d95 5
+d108 5
+d124 1
+d133 2
 @
 
 

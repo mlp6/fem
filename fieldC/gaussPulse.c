@@ -8,6 +8,7 @@
 #include <math.h>
 #include "field.h"
 
+double *
 gaussPulse(double fbw, double fc, struct FieldParams params)
 {
 double fv, power, ref;
@@ -38,13 +39,14 @@ int i, numSteps;
 		fprintf(stderr, "got gaussian; ref %f, delta %f, a %f\n", ref, delta, fv);
 
 		tc = sqrt(-2 * tv * log(delta));
-		fprintf(stderr, "tc %f\n", tc);
+		fprintf(stderr, "tc %g\n", tc);
 
 /* 		params.samplingFrequency = 5000; */
+		fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
 		numSteps = (int) (tc * params.samplingFrequency) * 2;
 		freq = (double) params.samplingFrequency;
 
-		fprintf(stderr, "freq %f, numSteps %d\n", freq, numSteps);
+		fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
 
 		impulseResponse = (double *)malloc(numSteps * sizeof(double));
 		stepSize = 1.0/params.samplingFrequency;
@@ -61,7 +63,7 @@ int i, numSteps;
 			impulse = -tc + i * stepSize;
 			ye = exp(-impulse * impulse / (2 * tv));
 			impulseResponse[i] = ye * cos(2 * M_PI * fc * impulse);
-			fprintf(stderr, "impulse %f, ye %f, yc %f\n", impulse, ye, impulseResponse[i]);
+/* 			fprintf(stderr, "impulse %f, ye %f, yc %f\n", impulse, ye, impulseResponse[i]); */
 			}
 		fprintf(stderr, "finished loop\n");
 		}
@@ -69,5 +71,7 @@ int i, numSteps;
 	if (strstr(params.impulse, "exp")) {
 		fprintf(stderr, "got exp\n");
 		}
+
+	return(impulseResponse);
 }
 			

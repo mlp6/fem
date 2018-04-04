@@ -3,17 +3,17 @@
 
 struct nodeEntry {
 	int nodeID;
-	float x, y, z;
+	double x, y, z;
 	};
 
 struct FieldParams {
-	float alpha;
+	double alpha;
 	struct nodeEntry *pointsAndNodes;
-	float fnum;
+	double fnum;
 	point_type focus;
-	float frequency;
+	double frequency;
 	char *transducer, *impulse;
-	int threads, lowNslow;
+	int threads;
 	int soundSpeed, samplingFrequency;
 	double *ThData;
 	};

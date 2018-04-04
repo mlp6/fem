@@ -10,7 +10,7 @@ char *field2dyna();
 
 struct nodeEntry {
 	int nodeID;
-	float x, y, z;
+	double x, y, z;
 	} *nodes, *readMpn();
 
 point_type focus;
@@ -20,14 +20,13 @@ point_type focus;
 	focus.z = 1;
 
 /*
-field2dyna(char *nodeName, float alpha, float fnum, struct Focus focus,
-    float freq, char *transducer, char *impulse, int threads,
-	    int lowNslow, char *elemName, int forceNonlinear)
+field2dyna(char *nodeName, double alpha, double fnum, struct Focus focus,
+    double freq, char *transducer, char *impulse, int threads,
+	    char *elemName, int forceNonlinear)
 */
 
-field2dyna("../tests/nodes.dyn", .1, .1, focus,
-    100.1, "VF", "gaussian", 2,
-	    0, "../tests/elems.dyn", 0);
+field2dyna("../tests/nodes.dyn", .1, .1, focus, 100.1, "VF", "gaussian", 2,
+	"../tests/elems.dyn", 0);
 
 /* 	nodes = readMpn("../tests/nodes.dyn");
 

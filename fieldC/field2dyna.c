@@ -31,8 +31,12 @@
 % mlp6@duke.edu
 % 2015-03-17
 %
-% Ned Danieley
+* Ned Danieley
+*
+* note that there's no use for low-n-slow because C can't do the whole
+* calculation at once.
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "field.h"
@@ -42,7 +46,7 @@ int checkOnAxis();
 char *
 field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
 	double freq, char *transducer, char *impulse, int threads,
-	int lowNslow, char *elemName, int forceNonlinear)
+	char *elemName, int forceNonlinear)
 {
 int i, numNodes;
 double temp;
@@ -127,5 +131,5 @@ e/
 
 /* call dynaField here */
 
-	dynaField(fieldParams, threads, lowNslow, numNodes);
+	dynaField(fieldParams, threads, numNodes);
 }

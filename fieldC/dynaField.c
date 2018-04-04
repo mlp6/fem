@@ -18,7 +18,7 @@
 %                                    4.21 (VF7-3)
 %   FIELD_PARAMS.Transducer (string) - 'vf105'; select the
 %       transducer-dependent parameters to use for the simulation
-%   FIELD_PARAMS.Impulse (string) - 'guassian','exp'; use a Gaussian function
+%   FIELD_PARAMS.Impulse (string) - 'gaussian','exp'; use a Gaussian function
 %       based on the defined fractional bandwidth and center
 %       frequency, or use the experimentally-measured impulse
 %       response
@@ -47,13 +47,16 @@ int i, j;
 sys_con_type   *sys_con;      /*  System constants for Field II */ 
 aperture_type *Th;
 char *info;
-cJSON *commands, *impulseResponse, *probeInfo;
+cJSON *commands, *impulseResponseCmd, *probeInfo;
 cJSON *item;
 FILE *input;
 long len;
 char *data, *out;
 int no_elements, no_sub_x, no_sub_y;
+int no_elements_y;
 double width, height, kerf, Rconvex, Rfocus;
+double heights;
+double convexRadius, elvFocus, pitch, fractBandwidth, centerFreq;
 double *foo;
 point_type *focus;
 double exciteFreq, texcite;
@@ -65,6 +68,10 @@ int numCYC = 50;
 int numSteps;
 double *intensity;
 point_type *points;
+char *thCmd, *impulseCmd;
+double *impulseResponse;
+double f0, phase, bw;
+char *wavetype;
 
 /*
 for (i = 0; i < 13; i++)
@@ -81,6 +88,8 @@ for (i = 0; i < 13; i++)
 	sys_con = field_init(-1);
 
 /* set transducer-independent parameters */
+
+	fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
 
 	set_field("c", params.soundSpeed);
 	set_field("fs", params.samplingFrequency);
@@ -122,38 +131,88 @@ for (i = 0; i < 13; i++)
 	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
 	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
 	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
+	convexRadius = cJSON_GetObjectItem(probeInfo, "convex_radius")->valuedouble;
+	elvFocus = cJSON_GetObjectItem(probeInfo, "elv_focus")->valuedouble;
+	pitch = cJSON_GetObjectItem(probeInfo, "pitch")->valuedouble;
+	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
+	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
 
 /*
+*/
 	fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
 	commands = cJSON_GetObjectItem(probeInfo, "commands");
-	fprintf(stderr, "Th %s\n", cJSON_GetObjectItem(commands, "Th")->valuestring);
+	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
+	fprintf(stderr, "Th command %s\n", thCmd);
+
+/* set aperture. as of now, there are only 3 xdc calls for this */
+
+	if (strstr(thCmd, "xdc_concave") != NULL) {
+/* optical piston only? should this be handled differently? */
+		fprintf(stderr, "calling xdc_concave\n");
+		Th = xdc_concave(9.5E-3, 38E-3, 0.5E-3);
+		}
+
+	if (strstr(thCmd, "xdc_convex_focused_array") != NULL) {
+		fprintf(stderr, "calling xdc_convex_focused_array\n");
+		Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,
+			Rfocus,no_sub_x,no_sub_y,params.focus);
+		fprintf(stderr, "from xdc_focused_multirow got info: %s %s\n",
+			Th->information.name, Th->information.create_date);
+		}
+
+	else if (strstr(thCmd, "xdc_focused_multirow") != NULL) {
+/* linear only? should this be handled differently? */
+		fprintf(stderr, "calling xdc_focused_multirow\n");
+		no_elements_y = 1;
+		heights = height;
+		Th = xdc_focused_multirow(no_elements,width,no_elements_y,&heights,
+			kerf,kerf, Rfocus,no_sub_x,no_sub_y,params.focus);
+		}
+
+	else fprintf(stderr, "unknown aperture command\n");
+
 	fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
-	impulseResponse = cJSON_GetObjectItem(probeInfo, "impulse_response");
-	fprintf(stderr, "center freq %d\n", cJSON_GetObjectItem(impulseResponse, "f0")->valueint);
-	fprintf(stderr, "phase %d\n", cJSON_GetObjectItem(impulseResponse, "phase")->valueint);
-	fprintf(stderr, "bw %d\n", cJSON_GetObjectItem(impulseResponse, "bw")->valueint);
-*/
+	impulseResponseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
 
-/* I think the next thing is to set Th, impulse */
+	f0 = cJSON_GetObjectItem(impulseResponseCmd, "f0")->valueint;
+	phase = cJSON_GetObjectItem(impulseResponseCmd, "phase")->valueint;
+	bw = cJSON_GetObjectItem(impulseResponseCmd, "bw")->valueint;
+	wavetype = cJSON_GetObjectItem(impulseResponseCmd, "wavetype")->valuestring;
+	
+	fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
+	fprintf(stderr, "wavetype %s\n", wavetype);
 
-	Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,Rfocus,no_sub_x,no_sub_y,params.focus);
+/*
+ * I think the next thing is to set impulse. this seems to be the same for
+ * all the apertures. the matlab code calls defineImpulseResponse() which
+ * calls * the matlab routine 'gauspuls', but since I had to write my own
+ * I'm going to skip defineImpulseResponse()
+ */
 
-	fprintf(stderr, "#elements %d\n", Th->no_elements);
+	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params);
+
+	fprintf(stderr, "impulse response %f %f %f\n", impulseResponse[0],
+		impulseResponse[1], impulseResponse[2]);
 	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 
 	info = "rect";
+	fprintf(stderr, "info is %s\n", info);
 
 /* 	foo = (double *)malloc(26*no_elements*no_sub_y*sizeof(double)); */
 	
 	xdc_get(Th, info, foo);
+
 	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 	fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
 	fprintf(stderr, "tri? %d\n", sys_con->Use_triangles);
-/*
-*/
+
+	fprintf(stderr, "back from xdc_get, got %f\n", foo[0]);
+
 	for (i = 0; i < 20; i++)
 	fprintf(stderr, "back from xdc_get, got %f\n", foo[i]);
 	fprintf(stderr, "done from xdc_get\n");
+/*
+*/
 
 /*
 % figure out the axial shift (m) that will need to be applied to the scatterers
