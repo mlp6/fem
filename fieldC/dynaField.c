@@ -41,12 +41,16 @@
 #include "field.h"		/* includes field_II.h */
 #include "cJSON.h"
 
+#define RECT 1	/* type of info we want from xdc_get */
+#define ROWS 26	/* amount of information xdc_get returns for each rectangle */
+
 dynaField(struct FieldParams params, int threads, int numNodes)
 {
 int i, j;
+int debug = 0;
 sys_con_type   *sys_con;      /*  System constants for Field II */ 
 aperture_type *Th;
-char *info;
+int info;
 cJSON *commands, *impulseResponseCmd, *probeInfo;
 cJSON *item;
 FILE *input;
@@ -57,7 +61,6 @@ int no_elements_y;
 double width, height, kerf, Rconvex, Rfocus;
 double heights;
 double convexRadius, elvFocus, pitch, fractBandwidth, centerFreq;
-double *foo;
 point_type *focus;
 double exciteFreq, texcite;
 signal_type *excitationPulse;
@@ -73,11 +76,6 @@ double *impulseResponse;
 double f0, phase, bw;
 char *wavetype;
 
-/*
-for (i = 0; i < 13; i++)
-        fprintf(stderr, "in dynaField, node %d is %d, %f, %f, %f\n", i, params.pointsAndNodes[i].nodeID, params.pointsAndNodes[i].x, params.pointsAndNodes[i].y, params.pointsAndNodes[i].z);
-
-*/
 /* how do I do check_add_probes? */
 
 /*
@@ -89,12 +87,12 @@ for (i = 0; i < 13; i++)
 
 /* set transducer-independent parameters */
 
-	fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
+	if (debug) fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
 
 	set_field("c", params.soundSpeed);
 	set_field("fs", params.samplingFrequency);
 	set_field("threads", params.threads);
-	fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n", threads, params.threads);
+	if (debug) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n", threads, params.threads);
 
 /* get info from JSON */
 	input = fopen("./c52Fixed.json","rb");
@@ -116,17 +114,17 @@ for (i = 0; i < 13; i++)
 		free(out);
 		}
 
-	fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
+	if (debug) fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
 
 	no_elements = cJSON_GetObjectItem(probeInfo, "no_elements")->valueint;
 	no_sub_x = cJSON_GetObjectItem(probeInfo, "no_sub_x")->valueint;
 	no_sub_y = cJSON_GetObjectItem(probeInfo, "no_sub_y")->valueint;
 
-	fprintf(stderr, "elements %d subX %d subY %d\n", no_elements, no_sub_x,
+	if (debug) fprintf(stderr, "elements %d subX %d subY %d\n", no_elements, no_sub_x,
 		no_sub_y);
 
 	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
-	fprintf(stderr, "width %f\n", width);
+	if (debug) fprintf(stderr, "width %f\n", width);
 	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
 	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
 	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
@@ -139,10 +137,10 @@ for (i = 0; i < 13; i++)
 
 /*
 */
-	fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
+	if (debug) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
 	commands = cJSON_GetObjectItem(probeInfo, "commands");
 	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
-	fprintf(stderr, "Th command %s\n", thCmd);
+	if (debug) fprintf(stderr, "Th command %s\n", thCmd);
 
 /* set aperture. as of now, there are only 3 xdc calls for this */
 
@@ -156,7 +154,7 @@ for (i = 0; i < 13; i++)
 		fprintf(stderr, "calling xdc_convex_focused_array\n");
 		Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,
 			Rfocus,no_sub_x,no_sub_y,params.focus);
-		fprintf(stderr, "from xdc_focused_multirow got info: %s %s\n",
+		if (debug) fprintf(stderr, "from xdc_focused_multirow got info: %s %s\n",
 			Th->information.name, Th->information.create_date);
 		}
 
@@ -171,7 +169,7 @@ for (i = 0; i < 13; i++)
 
 	else fprintf(stderr, "unknown aperture command\n");
 
-	fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
+	if (debug) fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
 	impulseResponseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
 
 	f0 = cJSON_GetObjectItem(impulseResponseCmd, "f0")->valueint;
@@ -179,8 +177,8 @@ for (i = 0; i < 13; i++)
 	bw = cJSON_GetObjectItem(impulseResponseCmd, "bw")->valueint;
 	wavetype = cJSON_GetObjectItem(impulseResponseCmd, "wavetype")->valuestring;
 	
-	fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
-	fprintf(stderr, "wavetype %s\n", wavetype);
+	if (debug) fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
+	if (debug) fprintf(stderr, "wavetype %s\n", wavetype);
 
 /*
  * I think the next thing is to set impulse. this seems to be the same for
@@ -189,29 +187,26 @@ for (i = 0; i < 13; i++)
  * I'm going to skip defineImpulseResponse()
  */
 
-	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params);
+	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params, debug);
 
-	fprintf(stderr, "impulse response %f %f %f\n", impulseResponse[0],
+	if (debug) fprintf(stderr, "impulse response %f %f %f\n", impulseResponse[0],
 		impulseResponse[1], impulseResponse[2]);
-	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
+	if (debug) fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 
-	info = "rect";
-	fprintf(stderr, "info is %s\n", info);
+	info = RECT;
 
-/* 	foo = (double *)malloc(26*no_elements*no_sub_y*sizeof(double)); */
+	params.ThData = (double *)malloc(ROWS * no_elements * no_sub_y * sizeof(double));
 	
-	xdc_get(Th, info, foo);
+	xdc_get(Th, info, params.ThData);
 
 	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 	fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
 	fprintf(stderr, "tri? %d\n", sys_con->Use_triangles);
 
-	fprintf(stderr, "back from xdc_get, got %f\n", foo[0]);
-
-	for (i = 0; i < 20; i++)
-	fprintf(stderr, "back from xdc_get, got %f\n", foo[i]);
-	fprintf(stderr, "done from xdc_get\n");
 /*
+	for (i = 0; i < 20; i++)
+	fprintf(stderr, "back from xdc_get, got %f\n", params.ThData[i]);
+	fprintf(stderr, "done from xdc_get\n");
 */
 
 /*
@@ -235,9 +230,19 @@ for (i = 0; i < 13; i++)
 		excitationPulse->data[i] = sin(2 * M_PI * exciteFreq * i * stepSize);
 		}
 
+/*
 	fprintf(stderr, "calling excitation\n");
+	fprintf(stderr, "got %d %d\n", Th->excitation->allocated, Th->excitation->no_samples);
+	for (i = 0; i < 30; i++)
+		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+*/
 	xdc_excitation(Th, excitationPulse);
+/*
 	fprintf(stderr, "back from excitation\n");
+	fprintf(stderr, "got %d %d\n", Th->excitation->allocated, Th->excitation->no_samples);
+	for (i = 0; i < 30; i++)
+		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+*/
 
 	freqAtt = params.alpha * 100 / 1E6; /* frequency atten. in dB/cm/MHz */
 
@@ -255,16 +260,23 @@ for (i = 0; i < 13; i++)
 * how many points does calc_hp return?
 *
 */
+	pressure = (signal_type **)malloc(sizeof(signal_type *));
+/* 	    excitationPulse->data = (double *)malloc(numSteps * sizeof(double)); */
+
 	intensity = (double *)malloc(sizeof(double));
 
+fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
 	for (i = 0; i < numNodes; i++) {
 		points->x = params.pointsAndNodes[i].x;
 		points->y = params.pointsAndNodes[i].y;
 		points->z = params.pointsAndNodes[i].z;
 
-		pressure = calc_hp(Th, 1, points);
+		calc_hp(Th, 1, points);
+/* 		pressure = calc_hp(Th, 1, points); */
+/* 		fprintf(stderr, "pressure %f\n", pressure[i]->data[0]); */
 /* 		for (j = 0; j < ?; j++) intensity[i] +=  *(pressure[j]->data) * *(pressure[j]->data; */
 		}
+fprintf(stderr, "done with calc_hp\n");
 			
 
 }

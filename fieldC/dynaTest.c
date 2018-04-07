@@ -11,5 +11,5 @@ struct FieldParams params;
 
 	fprintf(stderr, "sampling %d\n", params.samplingFrequency);
 
-	dynaField(params, 1, 0);
+	dynaField(params, 1, 100);
 }

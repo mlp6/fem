@@ -1,10 +1,20 @@
-head	1.8;
+head	1.10;
 access;
 symbols;
 locks
-	ndd:1.8; strict;
+	ndd:1.10; strict;
 comment	@ * @;
 
+
+1.10
+date	2018.04.05.17.48.00;	author ndd;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2018.04.05.13.10.10;	author ndd;	state Exp;
+branches;
+next	1.8;
 
 1.8
 date	2018.04.04.17.18.53;	author ndd;	state Exp;
@@ -52,9 +62,10 @@ desc
 @
 
 
-1.8
+1.10
 log
-@some more progress on reading the JSON file, added impulse response
+@did some cleanup on the debugging, made some more progress on xdc_get.
+working on excitation now.
 @
 text
 @/*
@@ -100,13 +111,17 @@ text
 #include "field.h"		/* includes field_II.h */
 #include "cJSON.h"
 
+#define RECT 1	/* type of info we want from xdc_get */
+#define ROWS 26	/* amount of information xdc_get returns for each rectangle */
+
 dynaField(struct FieldParams params, int threads, int numNodes)
 {
 int i, j;
+int debug = 0;
 sys_con_type   *sys_con;      /*  System constants for Field II */ 
 aperture_type *Th;
-char *info;
-cJSON *commands, *impulseResponse, *probeInfo;
+int info;
+cJSON *commands, *impulseResponseCmd, *probeInfo;
 cJSON *item;
 FILE *input;
 long len;
@@ -116,7 +131,6 @@ int no_elements_y;
 double width, height, kerf, Rconvex, Rfocus;
 double heights;
 double convexRadius, elvFocus, pitch, fractBandwidth, centerFreq;
-double *foo;
 point_type *focus;
 double exciteFreq, texcite;
 signal_type *excitationPulse;
@@ -128,12 +142,10 @@ int numSteps;
 double *intensity;
 point_type *points;
 char *thCmd, *impulseCmd;
+double *impulseResponse;
+double f0, phase, bw;
+char *wavetype;
 
-/*
-for (i = 0; i < 13; i++)
-        fprintf(stderr, "in dynaField, node %d is %d, %f, %f, %f\n", i, params.pointsAndNodes[i].nodeID, params.pointsAndNodes[i].x, params.pointsAndNodes[i].y, params.pointsAndNodes[i].z);
-
-*/
 /* how do I do check_add_probes? */
 
 /*
@@ -145,10 +157,12 @@ for (i = 0; i < 13; i++)
 
 /* set transducer-independent parameters */
 
+	if (debug) fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
+
 	set_field("c", params.soundSpeed);
 	set_field("fs", params.samplingFrequency);
 	set_field("threads", params.threads);
-	fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n", threads, params.threads);
+	if (debug) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n", threads, params.threads);
 
 /* get info from JSON */
 	input = fopen("./c52Fixed.json","rb");
@@ -170,17 +184,17 @@ for (i = 0; i < 13; i++)
 		free(out);
 		}
 
-	fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
+	if (debug) fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
 
 	no_elements = cJSON_GetObjectItem(probeInfo, "no_elements")->valueint;
 	no_sub_x = cJSON_GetObjectItem(probeInfo, "no_sub_x")->valueint;
 	no_sub_y = cJSON_GetObjectItem(probeInfo, "no_sub_y")->valueint;
 
-	fprintf(stderr, "elements %d subX %d subY %d\n", no_elements, no_sub_x,
+	if (debug) fprintf(stderr, "elements %d subX %d subY %d\n", no_elements, no_sub_x,
 		no_sub_y);
 
 	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
-	fprintf(stderr, "width %f\n", width);
+	if (debug) fprintf(stderr, "width %f\n", width);
 	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
 	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
 	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
@@ -193,25 +207,30 @@ for (i = 0; i < 13; i++)
 
 /*
 */
-	fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
+	if (debug) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
 	commands = cJSON_GetObjectItem(probeInfo, "commands");
 	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
-	fprintf(stderr, "Th command %s\n", thCmd);
+	if (debug) fprintf(stderr, "Th command %s\n", thCmd);
 
 /* set aperture. as of now, there are only 3 xdc calls for this */
 
 	if (strstr(thCmd, "xdc_concave") != NULL) {
 /* optical piston only? should this be handled differently? */
+		fprintf(stderr, "calling xdc_concave\n");
 		Th = xdc_concave(9.5E-3, 38E-3, 0.5E-3);
 		}
 
 	if (strstr(thCmd, "xdc_convex_focused_array") != NULL) {
+		fprintf(stderr, "calling xdc_convex_focused_array\n");
 		Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,
 			Rfocus,no_sub_x,no_sub_y,params.focus);
+		if (debug) fprintf(stderr, "from xdc_focused_multirow got info: %s %s\n",
+			Th->information.name, Th->information.create_date);
 		}
 
 	else if (strstr(thCmd, "xdc_focused_multirow") != NULL) {
 /* linear only? should this be handled differently? */
+		fprintf(stderr, "calling xdc_focused_multirow\n");
 		no_elements_y = 1;
 		heights = height;
 		Th = xdc_focused_multirow(no_elements,width,no_elements_y,&heights,
@@ -220,11 +239,16 @@ for (i = 0; i < 13; i++)
 
 	else fprintf(stderr, "unknown aperture command\n");
 
-	fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
-	impulseResponse = cJSON_GetObjectItem(probeInfo, "impulse_response");
-	fprintf(stderr, "center freq %d\n", cJSON_GetObjectItem(impulseResponse, "f0")->valueint);
-	fprintf(stderr, "phase %d\n", cJSON_GetObjectItem(impulseResponse, "phase")->valueint);
-	fprintf(stderr, "bw %d\n", cJSON_GetObjectItem(impulseResponse, "bw")->valueint);
+	if (debug) fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
+	impulseResponseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
+
+	f0 = cJSON_GetObjectItem(impulseResponseCmd, "f0")->valueint;
+	phase = cJSON_GetObjectItem(impulseResponseCmd, "phase")->valueint;
+	bw = cJSON_GetObjectItem(impulseResponseCmd, "bw")->valueint;
+	wavetype = cJSON_GetObjectItem(impulseResponseCmd, "wavetype")->valuestring;
+	
+	if (debug) fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
+	if (debug) fprintf(stderr, "wavetype %s\n", wavetype);
 
 /*
  * I think the next thing is to set impulse. this seems to be the same for
@@ -233,24 +257,27 @@ for (i = 0; i < 13; i++)
  * I'm going to skip defineImpulseResponse()
  */
 
-	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params);
+	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params, debug);
 
-	fprintf(stderr, "#elements %d\n", Th->no_elements);
-	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
+	if (debug) fprintf(stderr, "impulse response %f %f %f\n", impulseResponse[0],
+		impulseResponse[1], impulseResponse[2]);
+	if (debug) fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 
-	info = "rect";
+	info = RECT;
 
-/* 	foo = (double *)malloc(26*no_elements*no_sub_y*sizeof(double)); */
+	params.ThData = (double *)malloc(ROWS * no_elements * no_sub_y * sizeof(double));
 	
-	xdc_get(Th, info, foo);
+	xdc_get(Th, info, params.ThData);
+
 	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 	fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
 	fprintf(stderr, "tri? %d\n", sys_con->Use_triangles);
+
 /*
-*/
 	for (i = 0; i < 20; i++)
-	fprintf(stderr, "back from xdc_get, got %f\n", foo[i]);
+	fprintf(stderr, "back from xdc_get, got %f\n", params.ThData[i]);
 	fprintf(stderr, "done from xdc_get\n");
+*/
 
 /*
 % figure out the axial shift (m) that will need to be applied to the scatterers
@@ -274,8 +301,12 @@ for (i = 0; i < 13; i++)
 		}
 
 	fprintf(stderr, "calling excitation\n");
+	for (i = 0; i < 30; i++)
+		fprintf(stderr, "got %f\n", Th->excitation[i]);
 	xdc_excitation(Th, excitationPulse);
 	fprintf(stderr, "back from excitation\n");
+	for (i = 0; i < 30; i++)
+		fprintf(stderr, "got %f\n", Th->excitation[i]);
 
 	freqAtt = params.alpha * 100 / 1E6; /* frequency atten. in dB/cm/MHz */
 
@@ -306,6 +337,122 @@ for (i = 0; i < 13; i++)
 			
 
 }
+@
+
+
+1.9
+log
+@made some fixed for impulse response, read some more constants from JSON
+file
+@
+text
+@d44 3
+d50 1
+d53 1
+a53 1
+char *info;
+a63 1
+double *foo;
+a78 5
+/*
+for (i = 0; i < 13; i++)
+        fprintf(stderr, "in dynaField, node %d is %d, %f, %f, %f\n", i, params.pointsAndNodes[i].nodeID, params.pointsAndNodes[i].x, params.pointsAndNodes[i].y, params.pointsAndNodes[i].z);
+
+*/
+d90 1
+a90 1
+	fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
+d95 1
+a95 1
+	fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n", threads, params.threads);
+d117 1
+a117 1
+	fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
+d123 1
+a123 1
+	fprintf(stderr, "elements %d subX %d subY %d\n", no_elements, no_sub_x,
+d127 1
+a127 1
+	fprintf(stderr, "width %f\n", width);
+d140 1
+a140 1
+	fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
+d143 1
+a143 1
+	fprintf(stderr, "Th command %s\n", thCmd);
+d157 1
+a157 1
+		fprintf(stderr, "from xdc_focused_multirow got info: %s %s\n",
+d172 1
+a172 1
+	fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
+d180 2
+a181 2
+	fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
+	fprintf(stderr, "wavetype %s\n", wavetype);
+d190 1
+a190 1
+	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params);
+d192 1
+a192 1
+	fprintf(stderr, "impulse response %f %f %f\n", impulseResponse[0],
+d194 1
+a194 1
+	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
+d196 1
+a196 2
+	info = "rect";
+	fprintf(stderr, "info is %s\n", info);
+d198 1
+a198 1
+/* 	foo = (double *)malloc(26*no_elements*no_sub_y*sizeof(double)); */
+d200 1
+a200 1
+	xdc_get(Th, info, foo);
+d206 1
+a206 2
+	fprintf(stderr, "back from xdc_get, got %f\n", foo[0]);
+
+d208 1
+a208 1
+	fprintf(stderr, "back from xdc_get, got %f\n", foo[i]);
+a209 1
+/*
+d234 2
+d238 2
+@
+
+
+1.8
+log
+@some more progress on reading the JSON file, added impulse response
+@
+text
+@d50 1
+a50 1
+cJSON *commands, *impulseResponse, *probeInfo;
+d72 3
+d92 2
+d151 1
+d156 1
+d159 2
+d165 1
+d175 9
+a183 4
+	impulseResponse = cJSON_GetObjectItem(probeInfo, "impulse_response");
+	fprintf(stderr, "center freq %d\n", cJSON_GetObjectItem(impulseResponse, "f0")->valueint);
+	fprintf(stderr, "phase %d\n", cJSON_GetObjectItem(impulseResponse, "phase")->valueint);
+	fprintf(stderr, "bw %d\n", cJSON_GetObjectItem(impulseResponse, "bw")->valueint);
+d194 2
+a195 1
+	fprintf(stderr, "#elements %d\n", Th->no_elements);
+d199 1
+d204 1
+d208 3
+a210 2
+/*
+*/
+d214 2
 @
 
 
