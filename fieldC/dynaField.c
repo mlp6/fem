@@ -50,7 +50,7 @@ int i, j;
 int debug = 0;
 sys_con_type   *sys_con;      /*  System constants for Field II */ 
 aperture_type *Th;
-int info;
+int32 info;
 cJSON *commands, *impulseResponseCmd, *probeInfo;
 cJSON *item;
 FILE *input;
@@ -203,9 +203,12 @@ char *wavetype;
 	fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
 	fprintf(stderr, "tri? %d\n", sys_con->Use_triangles);
 
-/*
-	for (i = 0; i < 20; i++)
-	fprintf(stderr, "back from xdc_get, got %f\n", params.ThData[i]);
+	fprintf(stderr, "back from xdc_get, got %f\n", foo[0]);
+
+	for (i = 0; i < 26*no_elements*no_sub_x*no_sub_y; i+=26) {
+		fprintf(stderr, "%3.0f %3.0f \n", foo[i],foo[i+1]);
+	}
+	fprintf(stderr, "\n");
 	fprintf(stderr, "done from xdc_get\n");
 */
 
