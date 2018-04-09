@@ -70,7 +70,7 @@ double freqAtt, attF0, att;
 int numCYC = 50;
 int numSteps;
 double *intensity;
-point_type *points;
+point_type points;
 char *thCmd, *impulseCmd;
 double *impulseResponse;
 double f0, phase, bw;
@@ -87,7 +87,16 @@ char *wavetype;
 
 /* set transducer-independent parameters */
 
-	if (debug) fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
+	if (debug) {
+		fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
+		fprintf(stderr, "alpha %f\n", params.alpha);
+		fprintf(stderr, "fnum %f\n", params.fnum);
+		fprintf(stderr, "frequency %f\n", params.frequency);
+		fprintf(stderr, "points %f %f %f\n",
+			params.pointsAndNodes[0].x,
+			params.pointsAndNodes[0].y,
+			params.pointsAndNodes[0].z);
+			}
 
 	set_field("c", params.soundSpeed);
 	set_field("fs", params.samplingFrequency);
@@ -199,6 +208,7 @@ char *wavetype;
 	
 	xdc_get(Th, info, params.ThData);
 
+/*
 	fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 	fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
 	fprintf(stderr, "tri? %d\n", sys_con->Use_triangles);
@@ -263,18 +273,22 @@ char *wavetype;
 * how many points does calc_hp return?
 *
 */
+/*
 	pressure = (signal_type **)malloc(sizeof(signal_type *));
-/* 	    excitationPulse->data = (double *)malloc(numSteps * sizeof(double)); */
+	excitationPulse->data = (double *)malloc(numSteps * sizeof(double));
+*/
 
 	intensity = (double *)malloc(sizeof(double));
 
 fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
 	for (i = 0; i < numNodes; i++) {
-		points->x = params.pointsAndNodes[i].x;
-		points->y = params.pointsAndNodes[i].y;
-		points->z = params.pointsAndNodes[i].z;
+/* fprintf(stderr, "in calc_hp, i is %d\n", i); */
+		points.x = params.pointsAndNodes[i].x;
+		points.y = params.pointsAndNodes[i].y;
+		points.z = params.pointsAndNodes[i].z;
+/* fprintf(stderr, "in calc_hp, point is %f %f %f\n", points.x, points.y, points.z); */
 
-		calc_hp(Th, 1, points);
+		calc_hp(Th, 1, &points);
 /* 		pressure = calc_hp(Th, 1, points); */
 /* 		fprintf(stderr, "pressure %f\n", pressure[i]->data[0]); */
 /* 		for (j = 0; j < ?; j++) intensity[i] +=  *(pressure[j]->data) * *(pressure[j]->data; */

@@ -25,7 +25,7 @@ field2dyna(char *nodeName, double alpha, double fnum, struct Focus focus,
 	    char *elemName, int forceNonlinear)
 */
 
-field2dyna("../tests/nodes.dyn", .1, .1, focus, 100.1, "VF", "gaussian", 2,
+field2dyna("./myNodes.dyn", .1, .1, focus, 100.1, "VF", "gaussian", 2,
 	"../tests/elems.dyn", 0);
 
 /* 	nodes = readMpn("../tests/nodes.dyn");

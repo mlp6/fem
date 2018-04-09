@@ -1,10 +1,15 @@
-head	1.4;
+head	1.5;
 access;
 symbols;
 locks
-	ndd:1.4; strict;
+	ndd:1.5; strict;
 comment	@ * @;
 
+
+1.5
+date	2018.04.07.21.44.21;	author ndd;	state Exp;
+branches;
+next	1.4;
 
 1.4
 date	2018.03.30.16.58.08;	author ndd;	state Exp;
@@ -32,9 +37,9 @@ desc
 @
 
 
-1.4
+1.5
 log
-@cleaned up a little.
+@corrected error in sscanf
 @
 text
 @/*
@@ -63,6 +68,7 @@ struct nodeEntry *
 readMpn(char *NodeName, int *numNodes)
 {
 int i;
+int ret;
 FILE *nodesDyn;
 char *buf;
 size_t lineLength = LINE;
@@ -82,7 +88,7 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-	fprintf(stderr, "numNodes %d\n", *numNodes);
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
 
 /*
  * going to make two passes through the data because I need the number of
@@ -97,7 +103,7 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-	fprintf(stderr, "numNodes %d\n", *numNodes);
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
 	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);
@@ -115,16 +121,41 @@ struct nodeEntry *nodes;
 	while ((numChars = getline(&buf, &lineLength, nodesDyn)) != -1) {
 		if (buf[0] == '$') continue;
 		if (buf[0] == '*') continue;
-/* 		fprintf(stderr, "%s\n", buf); */
-		sscanf(buf, "%d,%f,%f,%f", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
-/* 		fprintf(stderr, "%d %f %f %f\n", nodes[i].nodeID, nodes[i].x, nodes[i].y, nodes[i].z); */
+		ret = sscanf(buf, "%d,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+		if (ret != 4) {
+			fprintf(stderr, "wrong return from sscanf\n");
+			return(NULL);
+			}
 		i++;
 		}
 
 	fclose(nodesDyn);
 
+	free(buf);
+
 	return(nodes);
 }
+@
+
+
+1.4
+log
+@cleaned up a little.
+@
+text
+@d27 1
+d47 1
+a47 1
+	fprintf(stderr, "numNodes %d\n", *numNodes);
+d62 1
+a62 1
+	fprintf(stderr, "numNodes %d\n", *numNodes);
+d80 5
+a84 3
+/* 		fprintf(stderr, "%s\n", buf); */
+		sscanf(buf, "%d,%f,%f,%f", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+/* 		fprintf(stderr, "%d %f %f %f\n", nodes[i].nodeID, nodes[i].x, nodes[i].y, nodes[i].z); */
+d89 2
 @
 
 
