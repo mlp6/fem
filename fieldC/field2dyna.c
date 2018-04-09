@@ -60,12 +60,16 @@ struct FieldParams fieldParams;
 	fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
 
 	pointsAndNodes = readMpn(nodeName, &numNodes);
+	if (pointsAndNodes == NULL) {
+		fprintf(stderr, "didn't get enough values from readMpn\n");
+		exit(0);
+		}
 
 	fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
 
-/*
 	for (i = 0; i < 13; i++)
 	    fprintf(stderr, "field2dyna 1, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+/*
 */
 
 	if (!checkOnAxis(pointsAndNodes, numNodes)) {

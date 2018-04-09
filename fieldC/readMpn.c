@@ -24,6 +24,7 @@ struct nodeEntry *
 readMpn(char *NodeName, int *numNodes)
 {
 int i;
+int ret;
 FILE *nodesDyn;
 char *buf;
 size_t lineLength = LINE;
@@ -76,9 +77,11 @@ struct nodeEntry *nodes;
 	while ((numChars = getline(&buf, &lineLength, nodesDyn)) != -1) {
 		if (buf[0] == '$') continue;
 		if (buf[0] == '*') continue;
-/* 		fprintf(stderr, "%s\n", buf); */
-		sscanf(buf, "%d,%f,%f,%f", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
-/* 		fprintf(stderr, "%d %f %f %f\n", nodes[i].nodeID, nodes[i].x, nodes[i].y, nodes[i].z); */
+		ret = sscanf(buf, "%d,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+		if (ret != 4) {
+			fprintf(stderr, "wrong return from sscanf\n");
+			return(NULL);
+			}
 		i++;
 		}
 
