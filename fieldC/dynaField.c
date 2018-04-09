@@ -285,7 +285,7 @@ fprintf(stderr, "in calc_hp, i is %d\n", i);
 
 /* 		calc_hp(Th, 1, &points); */
 /* 		pressure = calc_hp(Th, 1, &points); */
-		pressure = calc_hp(Th, 70, &params.pointsAndNodes[i]);
+		pressure = calc_hp(Th, 1, &params.pointsAndNodes[i]);
 		fprintf(stderr, "pressure %g\n", pressure[i]->data[5]);
 /* 		for (j = 0; j < ?; j++) intensity[i] +=  *(pressure[j]->data) * *(pressure[j]->data; */
 		}
