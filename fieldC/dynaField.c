@@ -70,7 +70,6 @@ double freqAtt, attF0, att;
 int numCYC = 50;
 int numSteps;
 double *intensity;
-point_type points;
 char *thCmd, *impulseCmd;
 double *impulseResponse;
 double f0, phase, bw;
@@ -282,15 +281,12 @@ char *wavetype;
 
 fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
 	for (i = 0; i < numNodes; i++) {
-/* fprintf(stderr, "in calc_hp, i is %d\n", i); */
-		points.x = params.pointsAndNodes[i].x;
-		points.y = params.pointsAndNodes[i].y;
-		points.z = params.pointsAndNodes[i].z;
-/* fprintf(stderr, "in calc_hp, point is %f %f %f\n", points.x, points.y, points.z); */
+fprintf(stderr, "in calc_hp, i is %d\n", i);
 
-		calc_hp(Th, 1, &points);
-/* 		pressure = calc_hp(Th, 1, points); */
-/* 		fprintf(stderr, "pressure %f\n", pressure[i]->data[0]); */
+/* 		calc_hp(Th, 1, &points); */
+/* 		pressure = calc_hp(Th, 1, &points); */
+		pressure = calc_hp(Th, 70, &params.pointsAndNodes[i]);
+		fprintf(stderr, "pressure %g\n", pressure[i]->data[5]);
 /* 		for (j = 0; j < ?; j++) intensity[i] +=  *(pressure[j]->data) * *(pressure[j]->data; */
 		}
 fprintf(stderr, "done with calc_hp\n");
