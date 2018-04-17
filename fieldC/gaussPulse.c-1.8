@@ -23,8 +23,8 @@ double freq;
 double ye, yc;
 int i, numSteps;
 
-	if (debug) fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
-	if (debug) fprintf(stderr, "in pulse; params.impulse %s\n", params.impulse);
+	fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
+	fprintf(stderr, "in pulse; params.impulse %s\n", params.impulse);
 /*
  */
 
@@ -66,6 +66,8 @@ int i, numSteps;
 		if (debug) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
 
 		impulseResponse = alloc_signal(numSteps, 0);
+
+		if (debug) fprintf(stderr, "finished with alloc\n");
 
 		stepSize = 1.0/params.samplingFrequency;
 

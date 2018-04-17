@@ -9,21 +9,21 @@ struct nodeEntry *pointsAndNodes, *readMpn();
 point_type focus;
 
 	params.impulse = "gaussian";
-	params.frequency = 7.2;
 	params.samplingFrequency = 100E6;
 
-	focus.x = 2;
-	focus.y = 1;
-	focus.z = 1;
+	focus.x = 0;
+	focus.y = 0;
+	focus.z = 0.02;
 
 /*
-	params.alpha = 0.1;
-	params.fnum = 0.1;
-	params.focus = focus;
-	params.frequency = 100.1;
-	params.transducer = "VF";
-	params.threads = 1;
 */
+	params.alpha = 0.5;
+	params.fnum = 1.3;
+	params.focus = focus;
+	params.frequency = 7.2;
+	params.transducer = "vf105";
+	params.threads = 1;
+
 	params.soundSpeed = 1540;
 
 	params.pointsAndNodes = readMpn("./myNodes.dyn", &numNodes);
@@ -39,5 +39,5 @@ point_type focus;
 
 	fprintf(stderr, "sampling %d\n", params.samplingFrequency);
 
-	dynaField(params, 1, 100);
+	dynaField(params, 1, numNodes);
 }

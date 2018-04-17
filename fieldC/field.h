@@ -1,6 +1,8 @@
 #include <pthread.h>
 #include "field_II.h"
 
+extern sys_con_type   *sys_con;
+
 struct nodeEntry {
 	int nodeID;
 	double x, y, z;

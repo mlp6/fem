@@ -1,6 +1,8 @@
 /*
 % function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, lownslow)
 *
+* no need for lownslow because C can't compute the whole array at once
+*
 %
 % Generate intensity values at the nodal locations for conversion to force and
 % input into the dyna deck.
@@ -35,7 +37,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <math.h>
 #include "field.h"		/* includes field_II.h */
 #include "cJSON.h"
@@ -43,15 +44,14 @@
 #define RECT 1	/* type of info we want from xdc_get */
 #define ROWS 26	/* amount of information xdc_get returns for each rectangle */
 
-sys_con_type   *sys_con;      /*  System constants for Field II */ 
-
-dynaField(struct FieldParams params, int threads, int numNodes, int lowNslow)
+dynaField(struct FieldParams params, int threads, int numNodes)
 {
 int i, j;
-int debug = 0;
+int debug = 1;
+sys_con_type   *sys_con;      /*  System constants for Field II */ 
 aperture_type *Th;
 int32 info;
-cJSON *commands, *impulseCmd, *probeInfo;
+cJSON *commands, *impulseResponseCmd, *probeInfo;
 cJSON *item;
 FILE *input;
 long len;
@@ -64,14 +64,14 @@ double convexRadius, elvFocus, pitch, fractBandwidth, centerFreq;
 point_type *focus, *points;
 double exciteFreq, texcite;
 signal_type *excitationPulse;
-signal_type *impulseResponse, *gaussPulse();
 signal_type **pressure;
 double stepSize;
 double freqAtt, attF0, att;
 int numCYC = 50;
 int numSteps;
 double *intensity;
-char *thCmd;
+char *thCmd, *impulseCmd;
+double *impulseResponse;
 double f0, phase, bw;
 char *wavetype;
 double lensCorrection, correctAxialLens();
@@ -103,8 +103,7 @@ double lensCorrection, correctAxialLens();
 
 	set_field("threads", params.threads);
 
-	if (debug) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n",
-		threads, params.threads);
+	if (debug) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n", threads, params.threads);
 
 /* get info from JSON */
 	input = fopen("./c52Fixed.json","rb");
@@ -132,8 +131,8 @@ double lensCorrection, correctAxialLens();
 	no_sub_x = cJSON_GetObjectItem(probeInfo, "no_sub_x")->valueint;
 	no_sub_y = cJSON_GetObjectItem(probeInfo, "no_sub_y")->valueint;
 
-	if (debug) fprintf(stderr, "elements %d subX %d subY %d\n", no_elements,
-		no_sub_x, no_sub_y);
+	if (debug) fprintf(stderr, "elements %d subX %d subY %d\n", no_elements, no_sub_x,
+		no_sub_y);
 
 	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
 	if (debug) fprintf(stderr, "width %f\n", width);
@@ -147,8 +146,9 @@ double lensCorrection, correctAxialLens();
 	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
 	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
 
+/*
+*/
 	if (debug) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
-
 	commands = cJSON_GetObjectItem(probeInfo, "commands");
 	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
 	if (debug) fprintf(stderr, "Th command %s\n", thCmd);
@@ -169,7 +169,7 @@ double lensCorrection, correctAxialLens();
 
 		Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,
 			Rfocus,no_sub_x,no_sub_y,params.focus);
-		if (debug) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
+		if (debug) fprintf(stderr, "from xdc_convex_focused_array got info: %s %s\n",
 			Th->information.name, Th->information.create_date);
 		}
 
@@ -184,15 +184,13 @@ double lensCorrection, correctAxialLens();
 
 	else fprintf(stderr, "unknown aperture command\n");
 
-	if (debug) fprintf(stderr, "impulse response command %s\n",
-		cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
+	if (debug) fprintf(stderr, "impulse response command %s\n", cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
+	impulseResponseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
 
-	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
-
-	f0 = cJSON_GetObjectItem(impulseCmd, "f0")->valueint;
-	phase = cJSON_GetObjectItem(impulseCmd, "phase")->valueint;
-	bw = cJSON_GetObjectItem(impulseCmd, "bw")->valueint;
-	wavetype = cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring;
+	f0 = cJSON_GetObjectItem(impulseResponseCmd, "f0")->valueint;
+	phase = cJSON_GetObjectItem(impulseResponseCmd, "phase")->valueint;
+	bw = cJSON_GetObjectItem(impulseResponseCmd, "bw")->valueint;
+	wavetype = cJSON_GetObjectItem(impulseResponseCmd, "wavetype")->valuestring;
 	
 	if (debug) fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
 	if (debug) fprintf(stderr, "wavetype %s\n", wavetype);
@@ -206,12 +204,9 @@ double lensCorrection, correctAxialLens();
 
 	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params, debug);
 
-	if (debug) fprintf(stderr, "back\n");
-	if (debug) fprintf(stderr, "impulse response %f %f %f\n",
-		impulseResponse->data[0], impulseResponse->data[1],
-		impulseResponse->data[2]);
-	if (debug) fprintf(stderr, "num apertures from sys_con %d\n",
-		sys_con->No_apertures);
+	if (debug) fprintf(stderr, "impulse response %f %f %f\n", impulseResponse[0],
+		impulseResponse[1], impulseResponse[2]);
+	if (debug) fprintf(stderr, "num apertures from sys_con %d\n", sys_con->No_apertures);
 
 	info = RECT;
 
@@ -219,6 +214,9 @@ double lensCorrection, correctAxialLens();
  * note that ROWS won't be right for the other xdc calls; they return
  * a different amount of data for each point
  */
+
+/* is this needed?
+*/
 
 	params.ThData = (double *)malloc(ROWS * no_elements * no_sub_y * sizeof(double));
 	
@@ -232,14 +230,12 @@ double lensCorrection, correctAxialLens();
 		fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
 		fprintf(stderr, "tri? %d\n", sys_con->Use_triangles);
 
-		fprintf(stderr, "back from xdc_get, got %f %f %f\n", params.ThData[7],
-			params.ThData[8], params.ThData[9]);
+		fprintf(stderr, "back from xdc_get, got %f %f %f\n", params.ThData[7], params.ThData[8], params.ThData[9]);
 
-		if (debug > 1)
-			for (i = 0; i < 26*no_elements*no_sub_x*no_sub_y; i+=26) {
-				fprintf(stderr, "%3.0f %3.0f \n", params.ThData[i],
-					params.ThData[i+1]);
-				}
+		if (debug > 1) for (i = 0; i < 26*no_elements*no_sub_x*no_sub_y; i+=26) {
+			fprintf(stderr, "%3.0f %3.0f \n", params.ThData[i],
+				params.ThData[i+1]);
+			}
 		fprintf(stderr, "\n");
 		fprintf(stderr, "finished xdc_get\n");
 		}
@@ -252,11 +248,9 @@ double lensCorrection, correctAxialLens();
 */
 	
 	if (debug) fprintf(stderr, "calling cAL\n");
-
 	lensCorrection = correctAxialLens(params.ThData, ROWS,
-		no_elements * no_sub_y, debug); 
-
-	if (debug) fprintf(stderr, "back from cAL\n");
+		no_elements * no_sub_y); 
+	if (debug) fprintf(stderr, "back from cAL; correction %f\n", lensCorrection);
 
 	for (i = 0; i < numNodes; i++)
 		params.pointsAndNodes[i].z += lensCorrection;
@@ -265,36 +259,44 @@ double lensCorrection, correctAxialLens();
 
 	xdc_impulse(Th, impulseResponse);
 
+#if 0
 	exciteFreq = params.frequency * 1000000;
 	stepSize = 1.0 / params.samplingFrequency;
 
-	if (debug) fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g\n",
-		params.frequency, exciteFreq, stepSize);
+	fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g result %g\n", params.frequency, exciteFreq, stepSize, ceil(numCYC / exciteFreq / stepSize));
 	numSteps = ceil ((double )numCYC / exciteFreq / stepSize);
+
+/*
+	excitationPulse = (signal_type *)malloc(sizeof(signal_type));
+	excitationPulse->data = (double *)malloc(numSteps * sizeof(double));
+*/
 
 	excitationPulse = alloc_signal(numSteps, 0);
 
 	fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
 
+/* 	excitationPulse->data[0] = 0; */
+
 	for (i = 0; i < numSteps; i++) {
 		excitationPulse->data[i] = sin(2 * M_PI * exciteFreq * i * stepSize);
+/* 		fprintf(stderr, "pulse is %g\n", excitationPulse->data[i]); */
 		}
 
-	if (debug) fprintf(stderr, "calling excitation\n");
-	if (debug) fprintf(stderr, "before call %d %d\n",
-		Th->excitation->allocated, Th->excitation->no_samples);
-
-	if (debug > 1) for (i = 0; i < 30; i++)
+	fprintf(stderr, "calling excitation\n");
+	fprintf(stderr, "got %d %d\n", Th->excitation->allocated, Th->excitation->no_samples);
+/*
+	for (i = 0; i < 30; i++)
 		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+*/
 
 	xdc_excitation(Th, excitationPulse);
 
-	if (debug) fprintf(stderr, "back from excitation\n");
-	if (debug) fprintf(stderr, "got %d %d\n", Th->excitation->allocated,
-		Th->excitation->no_samples);
-
-	if (debug > 1) for (i = 0; i < Th->excitation->no_samples; i++)
+	fprintf(stderr, "back from excitation\n");
+	fprintf(stderr, "got %d %d\n", Th->excitation->allocated, Th->excitation->no_samples);
+/*
+	for (i = 0; i < Th->excitation->no_samples; i++)
 		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+*/
 
 	freqAtt = params.alpha * 100 / 1E6; /* frequency atten. in dB/cm/MHz */
 
@@ -313,51 +315,36 @@ double lensCorrection, correctAxialLens();
 *
 */
 
-	if (debug) fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
+	intensity = (double *)malloc(sizeof(double));
 
-	if (debug) field_info;
-
+fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
 /*
- * calc_hp just wants the xyz coordinates, but pointsAndNodes includes the
- * node id. may not need the id, but for now I'm going to make a copy.
- */
+*/
+	for (i = 0; i < 20; i++)
+		fprintf(stderr, "points %f %f %f\n",
+			params.pointsAndNodes[i].x,
+			params.pointsAndNodes[i].y,
+			params.pointsAndNodes[i].z);
 
-	points = (point_type *)malloc(numNodes * sizeof(point_type));
+#endif
+	field_info;
 
+int a;
+
+	pressure = calc_hp(Th, 1, params.pointsAndNodes);
+
+fprintf(stderr, "done with calc_hp; num samples at 0 %d\n", pressure[0]->no_samples);
+
+/* 	pressure = calc_hp(Th, numNodes, points); */
+
+		for (a = 0; a < pressure[0]->no_samples; a++)
+			fprintf(stderr, "pressure %g\n", pressure[0]->data[a]);
+/*
 	for (i = 0; i < numNodes; i++) {
-		points[i].x = params.pointsAndNodes[i].x;
-		points[i].y = params.pointsAndNodes[i].y;
-		points[i].z = params.pointsAndNodes[i].z;
-		
-		if (debug) fprintf(stderr, "x %f, y %f, z %f\n", points[i].x,
-			points[i].y, points[i].z);
+		fprintf(stderr, "num samples at %d %d\n", i, pressure[i]->no_samples);
+		for (a = 0; a < pressure[i]->no_samples; a++)
+			fprintf(stderr, "pressure %g\n", pressure[i]->data[a]);
 		}
-
-	if (lowNslow) {
-		fprintf(stderr, "running low-n-slow\n");
-		for (i = 0; i < numNodes; i++) {
-			if (debug) fprintf(stderr, "i %d\n", i);
-			pressure = calc_hp(Th, 1, &points[i]);
-			if (debug) fprintf(stderr, "num samples %d\n",
-				pressure[0]->no_samples);
-			if (debug) for (j = 0; j < pressure[0]->no_samples; j++)
-				fprintf(stderr, "pressure %g\n", pressure[0]->data[j]);
-			}
-		}
-	else
-		pressure = calc_hp(Th, numNodes, points);
-
-	if (debug) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
-		pressure[0]->no_samples);
-
-	if (debug) for (j = 0; j < pressure[0]->no_samples; j++)
-			fprintf(stderr, "pressure %g\n", pressure[0]->data[j]);
-
-	if (debug) for (i = 0; i < numNodes; i++) {
-		fprintf(stderr, "AAAAAAAAAAAAAAAAA; num samples at %d %d\n", i,
-			pressure[i]->no_samples);
-		for (j = 0; j < pressure[i]->no_samples; j++)
-			fprintf(stderr, "pressure %g\n", pressure[i]->data[j]);
-		}
+*/
 
 }

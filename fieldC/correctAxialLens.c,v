@@ -1,0 +1,121 @@
+head	1.3;
+access;
+symbols;
+locks
+	ndd:1.3; strict;
+comment	@ * @;
+
+
+1.3
+date	2018.04.17.14.15.50;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.04.13.16.20.35;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.04.12.20.24.12;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@routine to find axial shift for lens
+@
+
+
+1.3
+log
+@cleaned up debugging
+@
+text
+@/*
+% function lens_correction_m = correct_axial_lens(thData)
+% 
+% INPUTS:   thData - array of values from Field II xdc_get(Th, 'rect')
+%
+% OUTPUTS:  lens_correction_m (float) - axial shift of the center of the center
+%                                       element (m)
+*/
+
+#include <stdio.h>
+#include <limits.h>
+
+double
+correctAxialLens(double *thData, int rows, int numPoints, int debug)
+{
+int i;
+/*
+ * the array returned by xdc_get for the RECT case has x, y, and z at
+ * 8, 9 and 10, which for a C array is 7, 8, 9.
+ */
+int xPosLoc = 7;
+int zPosLoc = 9;
+double correction;
+int indexMin;
+
+/* find center element */
+
+	if (debug) fprintf(stderr, "in correctAxialLens, rows %d, numPoints %d\n",
+		rows, numPoints);
+
+	for (i = 0; i < numPoints; i++) {
+		if (thData[rows * i + xPosLoc] >= 0) {
+				indexMin = i;
+				break;
+				}
+			}
+
+	if (debug) fprintf(stderr, "in correctAxialLens, indexMin %d\n", indexMin);
+	correction = thData[rows * indexMin + zPosLoc];
+	return(correction);
+}
+@
+
+
+1.2
+log
+@changed selection to first non-zero entry
+@
+text
+@d14 1
+a14 1
+correctAxialLens(double *thData, int rows, int numPoints)
+d28 2
+a29 1
+	fprintf(stderr, "rows %d, numPoints %d\n", rows, numPoints);
+a31 1
+		fprintf(stderr, "i %d\n", i);
+d38 1
+a38 1
+	fprintf(stderr, "indexMin %d\n", indexMin);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a20 1
+
+d23 2
+a24 2
+double correction, temp, min = INT_MAX;
+int indexMin = 0;
+d32 1
+a32 7
+		temp = thData[rows * i + xPosLoc];
+		fprintf(stderr, "temp %g\n", temp);
+		if (temp >= 0) {
+			fprintf(stderr, "temp >= 0\n");
+			if (temp < min) {
+				fprintf(stderr, "got new min\n");
+				min = temp;
+d34 1
+a36 1
+		}
+@

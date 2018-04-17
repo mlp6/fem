@@ -33,8 +33,6 @@
 %
 * Ned Danieley
 *
-* note that there's no use for low-n-slow because C can't do the whole
-* calculation at once.
 */
 
 #include <stdio.h>
@@ -45,7 +43,7 @@ int checkOnAxis();
 
 char *
 field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
-	double freq, char *transducer, char *impulse, int threads,
+	double freq, char *transducer, char *impulse, int threads, int lowNslow,
 	char *elemName, int forceNonlinear)
 {
 int i, numNodes;
@@ -53,7 +51,7 @@ double temp;
 struct nodeEntry *pointsAndNodes, *readMpn();
 struct FieldParams fieldParams;
 
-	fprintf(stderr, "in field2dyna, focus x %f fnum %f freq %f\n", focus.x, fnum, freq);
+	fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
 	fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
 	fprintf(stderr, "in field2dyna, threads %d\n", threads);
 	fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
@@ -67,9 +65,9 @@ struct FieldParams fieldParams;
 
 	fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
 
+/*
 	for (i = 0; i < 13; i++)
 	    fprintf(stderr, "field2dyna 1, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
-/*
 */
 
 	if (!checkOnAxis(pointsAndNodes, numNodes)) {
@@ -99,7 +97,7 @@ struct FieldParams fieldParams;
 /*
 	for (i = 0; i < 13; i++)
 	    fprintf(stderr, "field2dyna 4, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
-e/
+*/
 
 
 /* change from centimeters to meters */
@@ -127,13 +125,9 @@ e/
 	fieldParams.samplingFrequency = 100e6;
 	fieldParams.threads = threads;
 
-/*
- * at this point the matlab code sets up some defaults, because apparently
- * you can call a matlab function without passing all the arguments that it
- * excepts. can't do that in C.
- */
+	fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
 
 /* call dynaField here */
 
-	dynaField(fieldParams, threads, numNodes);
+	dynaField(fieldParams, threads, numNodes, lowNslow);
 }
