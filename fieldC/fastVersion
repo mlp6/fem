@@ -7,7 +7,6 @@ after readMpn; numNodes 100
 in field2dyna, focus x 0.000000 y 0.000000 z 0.020000
 calling xdc_convex_focused_array
 setting excitationPulse; numSteps 695
-running low-n-slow
 intensity 5.50061e-24
 intensity 7.42244e-24
 intensity 1.21572e-23

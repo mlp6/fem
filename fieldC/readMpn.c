@@ -77,7 +77,7 @@ struct nodeEntry *nodes;
 	while ((numChars = getline(&buf, &lineLength, nodesDyn)) != -1) {
 		if (buf[0] == '$') continue;
 		if (buf[0] == '*') continue;
-		ret = sscanf(buf, "%d,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+		ret = sscanf(buf, "%lf,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
 		if (ret != 4) {
 			fprintf(stderr, "wrong return from sscanf\n");
 			return(NULL);

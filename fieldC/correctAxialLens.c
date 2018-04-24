@@ -37,5 +37,6 @@ int indexMin;
 
 	if (debug) fprintf(stderr, "in correctAxialLens, indexMin %d\n", indexMin);
 	correction = thData[rows * indexMin + zPosLoc];
+	if (debug) fprintf(stderr, "in correctAxialLens, correction %g\n", correction);
 	return(correction);
 }

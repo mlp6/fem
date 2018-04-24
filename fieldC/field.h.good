@@ -4,7 +4,7 @@
 extern sys_con_type   *sys_con;
 
 struct nodeEntry {
-	double nodeID;
+	int nodeID;
 	double x, y, z;
 	};
 

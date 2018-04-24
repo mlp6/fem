@@ -52,7 +52,6 @@ int debug = 0;
 aperture_type *Th;
 int32 info;
 cJSON *commands, *impulseCmd, *probeInfo;
-cJSON *item;
 FILE *input;
 long len;
 char *data, *out;
@@ -66,15 +65,16 @@ double exciteFreq, texcite;
 signal_type *excitationPulse;
 signal_type *impulseResponse, *gaussPulse();
 signal_type **pressure;
+double *intensity;
 double stepSize;
 double freqAtt, attF0, att;
 int numCYC = 50;
 int numSteps;
-double *intensity;
 char *thCmd;
 double f0, phase, bw;
 char *wavetype;
 double lensCorrection, correctAxialLens();
+double temp;
 
 /* how do I do check_add_probes? */
 
@@ -236,7 +236,7 @@ double lensCorrection, correctAxialLens();
 			params.ThData[8], params.ThData[9]);
 
 		if (debug > 1)
-			for (i = 0; i < 26*no_elements*no_sub_x*no_sub_y; i+=26) {
+			for (i = 0; i < 26*no_elements*no_sub_x*no_sub_y; i += 26) {
 				fprintf(stderr, "%3.0f %3.0f \n", params.ThData[i],
 					params.ThData[i+1]);
 				}
@@ -256,10 +256,16 @@ double lensCorrection, correctAxialLens();
 	lensCorrection = correctAxialLens(params.ThData, ROWS,
 		no_elements * no_sub_y, debug); 
 
-	if (debug) fprintf(stderr, "back from cAL\n");
+	if (debug) fprintf(stderr, "back from cAL, correction %g\n", lensCorrection);
+
+	if (debug) for (i = 0; i < 10; i++)
+		fprintf(stderr, "uncorrected z %g\n", params.pointsAndNodes[i].z);
 
 	for (i = 0; i < numNodes; i++)
 		params.pointsAndNodes[i].z += lensCorrection;
+	
+	if (debug) for (i = 0; i < 10; i++)
+		fprintf(stderr, "corrected z %g\n", params.pointsAndNodes[i].z);
 
 /* define the impulse response */
 
@@ -276,15 +282,18 @@ double lensCorrection, correctAxialLens();
 
 	fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
 
+	temp = 2 * M_PI * exciteFreq * stepSize;
+
 	for (i = 0; i < numSteps; i++) {
-		excitationPulse->data[i] = sin(2 * M_PI * exciteFreq * i * stepSize);
+		excitationPulse->data[i] = sin(i * temp);
+		if (debug) fprintf(stderr, "data %g\n", excitationPulse->data[i]);
 		}
 
 	if (debug) fprintf(stderr, "calling excitation\n");
 	if (debug) fprintf(stderr, "before call %d %d\n",
 		Th->excitation->allocated, Th->excitation->no_samples);
 
-	if (debug > 1) for (i = 0; i < 30; i++)
+	if (debug) for (i = 0; i < 30; i++)
 		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
 
 	xdc_excitation(Th, excitationPulse);
@@ -304,6 +313,9 @@ double lensCorrection, correctAxialLens();
 	set_field("Freq_att", freqAtt);
 	set_field("att_f0", attF0);
 	set_field("use_att", 1);
+
+	if (debug) fprintf(stderr, "freqAtt %g attF0 %g att %g\n", freqAtt, attF0,
+		att);
 
 /*
 % compute Ispta at each location for a single tx pulse
@@ -333,7 +345,11 @@ double lensCorrection, correctAxialLens();
 			points[i].y, points[i].z);
 		}
 
-	if (lowNslow) {
+/* have to init intensity to 0 so we can sum into it */
+
+	intensity = (double *)calloc(numNodes, sizeof(double));
+
+	if (1) {
 		fprintf(stderr, "running low-n-slow\n");
 		for (i = 0; i < numNodes; i++) {
 			if (debug) fprintf(stderr, "i %d\n", i);
@@ -342,22 +358,31 @@ double lensCorrection, correctAxialLens();
 				pressure[0]->no_samples);
 			if (debug) for (j = 0; j < pressure[0]->no_samples; j++)
 				fprintf(stderr, "pressure %g\n", pressure[0]->data[j]);
+			for (j = 0; j < pressure[0]->no_samples; j++)
+				intensity[i] += pressure[0]->data[j] * pressure[0]->data[j];
 			}
 		}
-	else
+	else {
 		pressure = calc_hp(Th, numNodes, points);
+		for (i = 0; i < numNodes; i++)
+			for (j = 0; j < pressure[i]->no_samples; j++)
+				intensity[i] += pressure[i]->data[j] * pressure[i]->data[j];
+		}
+
+	if (1) for (i = 0; i < numNodes; i++)
+		fprintf(stderr, "intensity %g\n", intensity[i]);
 
 	if (debug) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
 		pressure[0]->no_samples);
 
 	if (debug) for (j = 0; j < pressure[0]->no_samples; j++)
-			fprintf(stderr, "pressure %g\n", pressure[0]->data[j]);
+			fprintf(stderr, "%g\n", pressure[0]->data[j]);
 
-	if (debug) for (i = 0; i < numNodes; i++) {
+	if (debug > 1) for (i = 0; i < numNodes; i++) {
 		fprintf(stderr, "AAAAAAAAAAAAAAAAA; num samples at %d %d\n", i,
 			pressure[i]->no_samples);
 		for (j = 0; j < pressure[i]->no_samples; j++)
-			fprintf(stderr, "pressure %g\n", pressure[i]->data[j]);
+			fprintf(stderr, "j %d pressure %g %g\n", j, pressure[i]->data[j], pressure[i]->data[j]);
 		}
 
 }

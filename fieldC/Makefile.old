@@ -10,6 +10,9 @@ checkOnAxis.o: checkOnAxis.c field.h
 correctAxialLens.o: correctAxialLens.c field.h
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c correctAxialLens.c
 
+defineImpulseResponse.o: defineImpulseResponse.c field.h
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c defineImpulseResponse.c
+
 dynaField.o: dynaField.c cJSON.c cJSON.h field.h
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c dynaField.c cJSON.c
 
@@ -25,8 +28,8 @@ field2dyna.o: field2dyna.c field.h
 readMpn.o: readMpn.c
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c readMpn.c
 
-gaussTest: gaussTest.o gaussPulse.o
-	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) gaussTest.o gaussPulse.o -o gaussTest /aiki/scratch/ndd/Field_II_Pro-master/c_library/lib_Field_II.a -lpthread -lm
+gaussTest: gaussTest.o defineImpulseResponse.o gaussPulse.o
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) gaussTest.o defineImpulseResponse.o gaussPulse.o -o gaussTest -lm
 
 gaussTest.o: gaussTest.c
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c gaussTest.c
