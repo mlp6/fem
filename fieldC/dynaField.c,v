@@ -1,10 +1,30 @@
-head	1.18;
+head	1.22;
 access;
 symbols;
 locks
-	ndd:1.18; strict;
+	ndd:1.22; strict;
 comment	@ * @;
 
+
+1.22
+date	2018.04.30.20.53.58;	author ndd;	state Exp;
+branches;
+next	1.21;
+
+1.21
+date	2018.04.30.20.32.17;	author ndd;	state Exp;
+branches;
+next	1.20;
+
+1.20
+date	2018.04.30.19.02.51;	author ndd;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2018.04.27.21.27.13;	author ndd;	state Exp;
+branches;
+next	1.18;
 
 1.18
 date	2018.04.23.14.44.27;	author ndd;	state Exp;
@@ -102,9 +122,9 @@ desc
 @
 
 
-1.18
+1.22
 log
-@added intensity calculation.
+@looks pretty good for data output.
 @
 text
 @/*
@@ -150,7 +170,8 @@ text
 #include "cJSON.h"
 
 #define RECT 1	/* type of info we want from xdc_get */
-#define ROWS 26	/* amount of information xdc_get returns for each rectangle */
+#define ROWS_RECT 26	/* rows xdc_get returns for each rectangle */
+#define ROWS_TRI 15	/* rows xdc_get returns for each triangle */
 
 sys_con_type   *sys_con;      /*  System constants for Field II */ 
 
@@ -184,6 +205,9 @@ double f0, phase, bw;
 char *wavetype;
 double lensCorrection, correctAxialLens();
 double temp;
+char outFileName[80];
+FILE *outptr;
+int xdcGetSize;
 
 /* how do I do check_add_probes? */
 
@@ -325,17 +349,19 @@ double temp;
 	info = RECT;
 
 /*
- * note that ROWS won't be right for the other xdc calls; they return
- * a different amount of data for each point
+ * note that 'ROWS*' is specific to the type of info you request from xdc_get
  */
 
-	params.ThData = (double *)malloc(ROWS * no_elements * no_sub_y * sizeof(double));
+	xdcGetSize = ROWS_RECT * no_elements * no_sub_y;
+
+	if (debug) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
+
+	params.ThData = (double *)malloc(xdcGetSize * sizeof(double));
 	
-	if (debug) fprintf(stderr, "calling xdc_get\n");
 
 	xdc_get(Th, info, params.ThData);
 
-	if (debug) {
+	if (1) {
 		fprintf(stderr, "num apertures from sys_con %d\n",
 			sys_con->No_apertures);
 		fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
@@ -362,7 +388,7 @@ double temp;
 	
 	if (debug) fprintf(stderr, "calling cAL\n");
 
-	lensCorrection = correctAxialLens(params.ThData, ROWS,
+	lensCorrection = correctAxialLens(params.ThData, ROWS_RECT,
 		no_elements * no_sub_y, debug); 
 
 	if (debug) fprintf(stderr, "back from cAL, correction %g\n", lensCorrection);
@@ -478,7 +504,7 @@ double temp;
 				intensity[i] += pressure[i]->data[j] * pressure[i]->data[j];
 		}
 
-	if (1) for (i = 0; i < numNodes; i++)
+	if (debug) for (i = 0; i < numNodes; i++)
 		fprintf(stderr, "intensity %g\n", intensity[i]);
 
 	if (debug) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
@@ -494,7 +520,222 @@ double temp;
 			fprintf(stderr, "j %d pressure %g %g\n", j, pressure[i]->data[j], pressure[i]->data[j]);
 		}
 
+/*
+ * the original code wrote out the intensity and the field params from
+ * 'field2dyna', but I'm going to do it here. the file will be:
+ *
+ * int numNodes
+ *
+ * intensity, numNodes doubles
+ *
+ * fieldParams:
+ *
+ *  int threads
+ *	int soundSpeed
+ *	int samplingFrequency
+ *	double alpha
+ *	double fnum
+ *	point_type focus (struct of three doubles)
+ *	double frequency
+ *	transducer, character string
+ *	impulse, character string
+ *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
+ *		three doubles)
+ *	int ROWS * no_elements * no_sub_y
+ *	ThData, which is ROWS * no_elements * no_sub_y doubles. ROWS is a constant
+ *		determined by the return of 'xdc_get, and no_elements, no_sub_y come
+ *		from the probe description file. in our case, it appears that we only
+ *		care about rectangles.
+ */
+
+	sprintf(outFileName, "dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.ned",
+		params.frequency, params.fnum, params.focus.z, params.alpha);
+
+	fprintf(stderr, "file name %s\n", outFileName);
+
+/* open output file */
+
+    if ((outptr = fopen(outFileName, "wb")) == NULL) {
+		fprintf(stderr, "couldn't open output file %s\n", outFileName);
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&numNodes, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write numNodes\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.threads, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write threads\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.soundSpeed, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write soundSpeed\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.samplingFrequency, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write samplingFrequency\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(intensity, sizeof(double), numNodes, outptr) != numNodes) {
+		fprintf(stderr, "failed to write intensity\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.alpha, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write alpha\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.fnum, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write fnum\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.focus, sizeof(point_type), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write focus\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.frequency, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write frequency\n");
+		exit(EXIT_FAILURE);
+		}
+
+	i = strlen(params.transducer) + 1;
+
+	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write length of transducer string\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(params.transducer, sizeof(char), i, outptr) != i) {
+		fprintf(stderr, "failed to write transducer\n");
+		exit(EXIT_FAILURE);
+		}
+
+	i = strlen(params.impulse) + 1;
+
+	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write length of impulse string\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(params.impulse, i, 1, outptr) != 1) {
+		fprintf(stderr, "failed to write impulse\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(params.pointsAndNodes, sizeof(struct nodeEntry), numNodes, outptr) != numNodes) {
+		fprintf(stderr, "failed to write points and nodes\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&xdcGetSize, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write size of xdc_get\n");
+		exit(EXIT_FAILURE);
+		}
+
+/*
+*/
+	if (fwrite(params.ThData, sizeof(double), xdcGetSize, outptr) != xdcGetSize) {
+		fprintf(stderr, "failed to write ThData\n");
+		exit(EXIT_FAILURE);
+		}
+
+	fclose(outptr);
 }
+@
+
+
+1.21
+log
+@made some progress on writing the output file; still not done
+@
+text
+@d228 1
+a228 1
+	if (1) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
+d235 1
+a235 1
+	if (debug) {
+d415 1
+d508 8
+a515 1
+	if (fwrite(params.ThData, sizeof(double), xdcGetSize, outptr) != ROWS_RECT * no_elements * no_sub_y) {
+@
+
+
+1.20
+log
+@added code to write out results; not tested.
+@
+text
+@d81 1
+d226 5
+a230 1
+	params.ThData = (double *)malloc(ROWS_RECT * no_elements * no_sub_y * sizeof(double));
+a231 1
+	if (debug) fprintf(stderr, "calling xdc_get\n");
+d478 8
+a485 1
+	if (fwrite(params.transducer, sizeof(char), strlen(params.transducer), outptr) != strlen(params.transducer)) {
+d490 8
+a497 1
+	if (fwrite(params.impulse, sizeof(char), strlen(params.impulse), outptr) != strlen(params.impulse)) {
+d507 1
+a507 1
+	if (fwrite(params.ThData, sizeof(double), ROWS_RECT * no_elements * no_sub_y, outptr) != ROWS_RECT * no_elements * no_sub_y) {
+@
+
+
+1.19
+log
+@corrected some comments and a constant, started work on writing output
+file.
+@
+text
+@d394 2
+d400 3
+a403 2
+ *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
+ *		three doubles)
+d409 2
+a410 3
+ *  int threads
+ *	int soundSpeed
+ *	int samplingFrequency
+d429 20
+d451 40
+@
+
+
+1.18
+log
+@added intensity calculation.
+@
+text
+@d44 2
+a45 1
+#define ROWS 26	/* amount of information xdc_get returns for each rectangle */
+d79 2
+d222 1
+a222 2
+ * note that ROWS won't be right for the other xdc calls; they return
+ * a different amount of data for each point
+d225 1
+a225 1
+	params.ThData = (double *)malloc(ROWS * no_elements * no_sub_y * sizeof(double));
+d258 1
+a258 1
+	lensCorrection = correctAxialLens(params.ThData, ROWS,
+d374 1
+a374 1
+	if (1) for (i = 0; i < numNodes; i++)
+d390 43
 @
 
 

@@ -25,6 +25,7 @@ readMpn(char *NodeName, int *numNodes)
 {
 int i;
 int ret;
+int temp;
 FILE *nodesDyn;
 char *buf;
 size_t lineLength = LINE;
@@ -44,7 +45,7 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+	fprintf(stderr, "numNodes %d\n", *numNodes);
 
 /*
  * going to make two passes through the data because I need the number of
@@ -59,7 +60,7 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+	fprintf(stderr, "numNodes %d\n", *numNodes);
 	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);
@@ -77,7 +78,8 @@ struct nodeEntry *nodes;
 	while ((numChars = getline(&buf, &lineLength, nodesDyn)) != -1) {
 		if (buf[0] == '$') continue;
 		if (buf[0] == '*') continue;
-		ret = sscanf(buf, "%lf,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+		ret = sscanf(buf, "%d,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+
 		if (ret != 4) {
 			fprintf(stderr, "wrong return from sscanf\n");
 			return(NULL);

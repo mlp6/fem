@@ -4,18 +4,18 @@
 extern sys_con_type   *sys_con;
 
 struct nodeEntry {
-	double nodeID;
+	int nodeID;
 	double x, y, z;
 	};
 
 struct FieldParams {
+	int threads;
+	int soundSpeed, samplingFrequency;
 	double alpha;
-	struct nodeEntry *pointsAndNodes;
 	double fnum;
 	point_type focus;
 	double frequency;
 	char *transducer, *impulse;
-	int threads;
-	int soundSpeed, samplingFrequency;
+	struct nodeEntry *pointsAndNodes;
 	double *ThData;
 	};

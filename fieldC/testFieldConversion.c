@@ -54,6 +54,7 @@ FILE *checkResult;
 
 /* now check values */
 		for (i = 0; i < numNodes; i++) {
+			fprintf(stderr, "%f %f %f %f\n", pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
 			if ((testDyn[i].x != pointsAndNodes[i].x) ||
 				(testDyn[i].y != pointsAndNodes[i].y) ||
 				(testDyn[i].z != pointsAndNodes[i].z)) {

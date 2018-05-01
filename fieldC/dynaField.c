@@ -41,7 +41,8 @@
 #include "cJSON.h"
 
 #define RECT 1	/* type of info we want from xdc_get */
-#define ROWS 26	/* amount of information xdc_get returns for each rectangle */
+#define ROWS_RECT 26	/* rows xdc_get returns for each rectangle */
+#define ROWS_TRI 15	/* rows xdc_get returns for each triangle */
 
 sys_con_type   *sys_con;      /*  System constants for Field II */ 
 
@@ -75,6 +76,9 @@ double f0, phase, bw;
 char *wavetype;
 double lensCorrection, correctAxialLens();
 double temp;
+char outFileName[80];
+FILE *outptr;
+int xdcGetSize;
 
 /* how do I do check_add_probes? */
 
@@ -216,17 +220,19 @@ double temp;
 	info = RECT;
 
 /*
- * note that ROWS won't be right for the other xdc calls; they return
- * a different amount of data for each point
+ * note that 'ROWS*' is specific to the type of info you request from xdc_get
  */
 
-	params.ThData = (double *)malloc(ROWS * no_elements * no_sub_y * sizeof(double));
+	xdcGetSize = ROWS_RECT * no_elements * no_sub_y;
+
+	if (debug) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
+
+	params.ThData = (double *)malloc(xdcGetSize * sizeof(double));
 	
-	if (debug) fprintf(stderr, "calling xdc_get\n");
 
 	xdc_get(Th, info, params.ThData);
 
-	if (debug) {
+	if (1) {
 		fprintf(stderr, "num apertures from sys_con %d\n",
 			sys_con->No_apertures);
 		fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
@@ -253,7 +259,7 @@ double temp;
 	
 	if (debug) fprintf(stderr, "calling cAL\n");
 
-	lensCorrection = correctAxialLens(params.ThData, ROWS,
+	lensCorrection = correctAxialLens(params.ThData, ROWS_RECT,
 		no_elements * no_sub_y, debug); 
 
 	if (debug) fprintf(stderr, "back from cAL, correction %g\n", lensCorrection);
@@ -369,7 +375,7 @@ double temp;
 				intensity[i] += pressure[i]->data[j] * pressure[i]->data[j];
 		}
 
-	if (1) for (i = 0; i < numNodes; i++)
+	if (debug) for (i = 0; i < numNodes; i++)
 		fprintf(stderr, "intensity %g\n", intensity[i]);
 
 	if (debug) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
@@ -385,4 +391,131 @@ double temp;
 			fprintf(stderr, "j %d pressure %g %g\n", j, pressure[i]->data[j], pressure[i]->data[j]);
 		}
 
+/*
+ * the original code wrote out the intensity and the field params from
+ * 'field2dyna', but I'm going to do it here. the file will be:
+ *
+ * int numNodes
+ *
+ * intensity, numNodes doubles
+ *
+ * fieldParams:
+ *
+ *  int threads
+ *	int soundSpeed
+ *	int samplingFrequency
+ *	double alpha
+ *	double fnum
+ *	point_type focus (struct of three doubles)
+ *	double frequency
+ *	transducer, character string
+ *	impulse, character string
+ *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
+ *		three doubles)
+ *	int ROWS * no_elements * no_sub_y
+ *	ThData, which is ROWS * no_elements * no_sub_y doubles. ROWS is a constant
+ *		determined by the return of 'xdc_get, and no_elements, no_sub_y come
+ *		from the probe description file. in our case, it appears that we only
+ *		care about rectangles.
+ */
+
+	sprintf(outFileName, "dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.ned",
+		params.frequency, params.fnum, params.focus.z, params.alpha);
+
+	fprintf(stderr, "file name %s\n", outFileName);
+
+/* open output file */
+
+    if ((outptr = fopen(outFileName, "wb")) == NULL) {
+		fprintf(stderr, "couldn't open output file %s\n", outFileName);
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&numNodes, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write numNodes\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.threads, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write threads\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.soundSpeed, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write soundSpeed\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.samplingFrequency, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write samplingFrequency\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(intensity, sizeof(double), numNodes, outptr) != numNodes) {
+		fprintf(stderr, "failed to write intensity\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.alpha, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write alpha\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.fnum, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write fnum\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.focus, sizeof(point_type), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write focus\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&params.frequency, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write frequency\n");
+		exit(EXIT_FAILURE);
+		}
+
+	i = strlen(params.transducer) + 1;
+
+	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write length of transducer string\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(params.transducer, sizeof(char), i, outptr) != i) {
+		fprintf(stderr, "failed to write transducer\n");
+		exit(EXIT_FAILURE);
+		}
+
+	i = strlen(params.impulse) + 1;
+
+	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write length of impulse string\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(params.impulse, i, 1, outptr) != 1) {
+		fprintf(stderr, "failed to write impulse\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(params.pointsAndNodes, sizeof(struct nodeEntry), numNodes, outptr) != numNodes) {
+		fprintf(stderr, "failed to write points and nodes\n");
+		exit(EXIT_FAILURE);
+		}
+
+	if (fwrite(&xdcGetSize, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "failed to write size of xdc_get\n");
+		exit(EXIT_FAILURE);
+		}
+
+/*
+*/
+	if (fwrite(params.ThData, sizeof(double), xdcGetSize, outptr) != xdcGetSize) {
+		fprintf(stderr, "failed to write ThData\n");
+		exit(EXIT_FAILURE);
+		}
+
+	fclose(outptr);
 }
