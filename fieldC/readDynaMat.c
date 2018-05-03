@@ -68,6 +68,13 @@ double *intensity;
 
 	fprintf(stderr, "numNodes %d\n", numNodes);
 
+	intensity = (double *)malloc(sizeof(double) * numNodes);
+
+	if (fread(intensity, sizeof(double), numNodes, inptr) != numNodes) {
+		fprintf(stderr, "failed to read intensity\n");
+		exit(EXIT_FAILURE);
+		}
+
 	if (fread(&params.threads, sizeof(int), 1, inptr) != 1) {
 		fprintf(stderr, "failed to read threads\n");
 		exit(EXIT_FAILURE);
@@ -88,13 +95,6 @@ double *intensity;
 		}
 
 	fprintf(stderr, "params.samplingFrequency %d\n", params.samplingFrequency);
-
-	intensity = (double *)malloc(sizeof(double) * numNodes);
-
-	if (fread(intensity, sizeof(double), numNodes, inptr) != numNodes) {
-		fprintf(stderr, "failed to read intensity\n");
-		exit(EXIT_FAILURE);
-		}
 
 	for (i = 0; i < numNodes; i++)
 		fprintf(stderr, "intensity %g\n", intensity[i]);
@@ -178,9 +178,6 @@ double *intensity;
 
 	fprintf(stderr, "xdcGetSize %d\n", xdcGetSize);
 
-/* 	if (fread(params.ThData, sizeof(double), ROWS_RECT * no_elements * no_sub_y, inptr) != ROWS_RECT * no_elements * no_sub_y) { */
-
-	fprintf(stderr, "foo\n");
 	params.ThData = (double *)malloc(sizeof(double) * xdcGetSize);
 
 	if (params.ThData == NULL) {
@@ -188,7 +185,6 @@ double *intensity;
 		exit(EXIT_FAILURE);
 		}
 
-	fprintf(stderr, "foo\n");
 	if (fread(params.ThData, sizeof(double), xdcGetSize, inptr) != xdcGetSize) {
 		fprintf(stderr, "failed to read ThData\n");
 		exit(EXIT_FAILURE);

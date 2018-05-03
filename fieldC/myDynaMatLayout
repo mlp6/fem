@@ -1,0 +1,29 @@
+/*
+ * the original code wrote out the intensity and the field params from
+ * 'field2dyna', but I'm going to do it here. the file will be:
+ *
+ * int numNodes
+ *
+ * intensity, numNodes doubles
+ *
+ * fieldParams:
+ *
+ *  int threads
+ *  int soundSpeed
+ *  int samplingFrequency
+ *  double alpha
+ *  double fnum
+ *  point_type focus (struct of three doubles)
+ *  double frequency
+ *  length of transducer character string, int
+ *  transducer, character string
+ *  length of impulse character string, int
+ *  impulse, character string
+ *  pointsAndNodes, which is numNodes nodeEntry structs (one int,
+ *      three doubles)
+ *  int ROWS * no_elements * no_sub_y
+ *  ThData, which is ROWS * no_elements * no_sub_y doubles. ROWS is a constant
+ *      determined by the return of 'xdc_get, and no_elements, no_sub_y come
+ *      from the probe description file. in our case, it appears that we only
+ *      care about rectangles.
+ */

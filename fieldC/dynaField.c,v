@@ -1,10 +1,20 @@
-head	1.22;
+head	1.24;
 access;
 symbols;
 locks
-	ndd:1.22; strict;
+	ndd:1.24; strict;
 comment	@ * @;
 
+
+1.24
+date	2018.05.02.19.03.08;	author ndd;	state Exp;
+branches;
+next	1.23;
+
+1.23
+date	2018.05.01.17.35.18;	author ndd;	state Exp;
+branches;
+next	1.22;
 
 1.22
 date	2018.04.30.20.53.58;	author ndd;	state Exp;
@@ -122,9 +132,9 @@ desc
 @
 
 
-1.22
+1.24
 log
-@looks pretty good for data output.
+@added to output comment
 @
 text
 @/*
@@ -189,7 +199,7 @@ int no_elements, no_sub_x, no_sub_y;
 int no_elements_y;
 double width, height, kerf, Rconvex, Rfocus;
 double heights;
-double convexRadius, elvFocus, pitch, fractBandwidth, centerFreq;
+double fractBandwidth, centerFreq;
 point_type *focus, *points;
 double exciteFreq, texcite;
 signal_type *excitationPulse;
@@ -201,12 +211,9 @@ double freqAtt, attF0, att;
 int numCYC = 50;
 int numSteps;
 char *thCmd;
-double f0, phase, bw;
-char *wavetype;
 double lensCorrection, correctAxialLens();
 double temp;
 char outFileName[80];
-FILE *outptr;
 int xdcGetSize;
 
 /* how do I do check_add_probes? */
@@ -274,9 +281,6 @@ int xdcGetSize;
 	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
 	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
 	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
-	convexRadius = cJSON_GetObjectItem(probeInfo, "convex_radius")->valuedouble;
-	elvFocus = cJSON_GetObjectItem(probeInfo, "elv_focus")->valuedouble;
-	pitch = cJSON_GetObjectItem(probeInfo, "pitch")->valuedouble;
 	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
 	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
 
@@ -322,14 +326,6 @@ int xdcGetSize;
 
 	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
 
-	f0 = cJSON_GetObjectItem(impulseCmd, "f0")->valueint;
-	phase = cJSON_GetObjectItem(impulseCmd, "phase")->valueint;
-	bw = cJSON_GetObjectItem(impulseCmd, "bw")->valueint;
-	wavetype = cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring;
-	
-	if (debug) fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
-	if (debug) fprintf(stderr, "wavetype %s\n", wavetype);
-
 /*
  * I think the next thing is to set impulse. this seems to be the same for
  * all the apertures. the matlab code calls defineImpulseResponse() which
@@ -361,7 +357,7 @@ int xdcGetSize;
 
 	xdc_get(Th, info, params.ThData);
 
-	if (1) {
+	if (debug) {
 		fprintf(stderr, "num apertures from sys_con %d\n",
 			sys_con->No_apertures);
 		fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
@@ -484,7 +480,7 @@ int xdcGetSize;
 
 	intensity = (double *)calloc(numNodes, sizeof(double));
 
-	if (1) {
+	if (debug) {
 		fprintf(stderr, "running low-n-slow\n");
 		for (i = 0; i < numNodes; i++) {
 			if (debug) fprintf(stderr, "i %d\n", i);
@@ -537,7 +533,9 @@ int xdcGetSize;
  *	double fnum
  *	point_type focus (struct of three doubles)
  *	double frequency
- *	transducer, character string
+ *  length of transducer character string, int
+ *  transducer, character string
+ *  length of impulse character string, int
  *	impulse, character string
  *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
  *		three doubles)
@@ -553,6 +551,57 @@ int xdcGetSize;
 
 	fprintf(stderr, "file name %s\n", outFileName);
 
+	dynaWrite(outFileName, intensity, params, numNodes, xdcGetSize);
+
+}
+@
+
+
+1.23
+log
+@moved output code to dynaWrite(), removed some unused variables
+@
+text
+@d221 1
+a221 1
+	if (1) {
+d344 1
+a344 1
+	if (1) {
+d397 3
+a399 1
+ *	transducer, character string
+@
+
+
+1.22
+log
+@looks pretty good for data output.
+@
+text
+@d63 1
+a63 1
+double convexRadius, elvFocus, pitch, fractBandwidth, centerFreq;
+a74 2
+double f0, phase, bw;
+char *wavetype;
+a77 1
+FILE *outptr;
+a144 3
+	convexRadius = cJSON_GetObjectItem(probeInfo, "convex_radius")->valuedouble;
+	elvFocus = cJSON_GetObjectItem(probeInfo, "elv_focus")->valuedouble;
+	pitch = cJSON_GetObjectItem(probeInfo, "pitch")->valuedouble;
+a189 8
+	f0 = cJSON_GetObjectItem(impulseCmd, "f0")->valueint;
+	phase = cJSON_GetObjectItem(impulseCmd, "phase")->valueint;
+	bw = cJSON_GetObjectItem(impulseCmd, "bw")->valueint;
+	wavetype = cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring;
+	
+	if (debug) fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
+	if (debug) fprintf(stderr, "wavetype %s\n", wavetype);
+
+d413 1
+a413 92
 /* open output file */
 
     if ((outptr = fopen(outFileName, "wb")) == NULL) {
@@ -645,9 +694,8 @@ int xdcGetSize;
 		fprintf(stderr, "failed to write ThData\n");
 		exit(EXIT_FAILURE);
 		}
-
+a414 1
 	fclose(outptr);
-}
 @
 
 

@@ -1,10 +1,15 @@
-head	1.1;
+head	1.2;
 access;
 symbols;
 locks
-	ndd:1.1; strict;
+	ndd:1.2; strict;
 comment	@ * @;
 
+
+1.2
+date	2018.05.01.18.08.17;	author ndd;	state Exp;
+branches;
+next	1.1;
 
 1.1
 date	2018.04.30.20.54.14;	author ndd;	state Exp;
@@ -17,9 +22,9 @@ desc
 @
 
 
-1.1
+1.2
 log
-@Initial revision
+@changed to match correct output order.
 @
 text
 @#include <stdio.h>
@@ -92,6 +97,13 @@ double *intensity;
 
 	fprintf(stderr, "numNodes %d\n", numNodes);
 
+	intensity = (double *)malloc(sizeof(double) * numNodes);
+
+	if (fread(intensity, sizeof(double), numNodes, inptr) != numNodes) {
+		fprintf(stderr, "failed to read intensity\n");
+		exit(EXIT_FAILURE);
+		}
+
 	if (fread(&params.threads, sizeof(int), 1, inptr) != 1) {
 		fprintf(stderr, "failed to read threads\n");
 		exit(EXIT_FAILURE);
@@ -112,13 +124,6 @@ double *intensity;
 		}
 
 	fprintf(stderr, "params.samplingFrequency %d\n", params.samplingFrequency);
-
-	intensity = (double *)malloc(sizeof(double) * numNodes);
-
-	if (fread(intensity, sizeof(double), numNodes, inptr) != numNodes) {
-		fprintf(stderr, "failed to read intensity\n");
-		exit(EXIT_FAILURE);
-		}
 
 	for (i = 0; i < numNodes; i++)
 		fprintf(stderr, "intensity %g\n", intensity[i]);
@@ -221,4 +226,21 @@ double *intensity;
 	fprintf(stderr, "params.ThData %f %f %f\n", params.ThData[7], params.ThData[8], params.ThData[9]);
 	fclose(inptr);
 }
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d71 7
+a97 7
+
+	intensity = (double *)malloc(sizeof(double) * numNodes);
+
+	if (fread(intensity, sizeof(double), numNodes, inptr) != numNodes) {
+		fprintf(stderr, "failed to read intensity\n");
+		exit(EXIT_FAILURE);
+		}
 @

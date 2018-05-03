@@ -60,7 +60,7 @@ int no_elements, no_sub_x, no_sub_y;
 int no_elements_y;
 double width, height, kerf, Rconvex, Rfocus;
 double heights;
-double convexRadius, elvFocus, pitch, fractBandwidth, centerFreq;
+double fractBandwidth, centerFreq;
 point_type *focus, *points;
 double exciteFreq, texcite;
 signal_type *excitationPulse;
@@ -72,12 +72,9 @@ double freqAtt, attF0, att;
 int numCYC = 50;
 int numSteps;
 char *thCmd;
-double f0, phase, bw;
-char *wavetype;
 double lensCorrection, correctAxialLens();
 double temp;
 char outFileName[80];
-FILE *outptr;
 int xdcGetSize;
 
 /* how do I do check_add_probes? */
@@ -145,9 +142,6 @@ int xdcGetSize;
 	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
 	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
 	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
-	convexRadius = cJSON_GetObjectItem(probeInfo, "convex_radius")->valuedouble;
-	elvFocus = cJSON_GetObjectItem(probeInfo, "elv_focus")->valuedouble;
-	pitch = cJSON_GetObjectItem(probeInfo, "pitch")->valuedouble;
 	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
 	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
 
@@ -193,14 +187,6 @@ int xdcGetSize;
 
 	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
 
-	f0 = cJSON_GetObjectItem(impulseCmd, "f0")->valueint;
-	phase = cJSON_GetObjectItem(impulseCmd, "phase")->valueint;
-	bw = cJSON_GetObjectItem(impulseCmd, "bw")->valueint;
-	wavetype = cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring;
-	
-	if (debug) fprintf(stderr, "f0 %f phase %f bw %f\n", f0, phase, bw);
-	if (debug) fprintf(stderr, "wavetype %s\n", wavetype);
-
 /*
  * I think the next thing is to set impulse. this seems to be the same for
  * all the apertures. the matlab code calls defineImpulseResponse() which
@@ -232,7 +218,7 @@ int xdcGetSize;
 
 	xdc_get(Th, info, params.ThData);
 
-	if (1) {
+	if (debug) {
 		fprintf(stderr, "num apertures from sys_con %d\n",
 			sys_con->No_apertures);
 		fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
@@ -355,7 +341,7 @@ int xdcGetSize;
 
 	intensity = (double *)calloc(numNodes, sizeof(double));
 
-	if (1) {
+	if (debug) {
 		fprintf(stderr, "running low-n-slow\n");
 		for (i = 0; i < numNodes; i++) {
 			if (debug) fprintf(stderr, "i %d\n", i);
@@ -408,7 +394,9 @@ int xdcGetSize;
  *	double fnum
  *	point_type focus (struct of three doubles)
  *	double frequency
- *	transducer, character string
+ *  length of transducer character string, int
+ *  transducer, character string
+ *  length of impulse character string, int
  *	impulse, character string
  *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
  *		three doubles)
@@ -424,98 +412,6 @@ int xdcGetSize;
 
 	fprintf(stderr, "file name %s\n", outFileName);
 
-/* open output file */
+	dynaWrite(outFileName, intensity, params, numNodes, xdcGetSize);
 
-    if ((outptr = fopen(outFileName, "wb")) == NULL) {
-		fprintf(stderr, "couldn't open output file %s\n", outFileName);
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&numNodes, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write numNodes\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&params.threads, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write threads\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&params.soundSpeed, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write soundSpeed\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&params.samplingFrequency, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write samplingFrequency\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(intensity, sizeof(double), numNodes, outptr) != numNodes) {
-		fprintf(stderr, "failed to write intensity\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&params.alpha, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write alpha\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&params.fnum, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write fnum\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&params.focus, sizeof(point_type), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write focus\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&params.frequency, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write frequency\n");
-		exit(EXIT_FAILURE);
-		}
-
-	i = strlen(params.transducer) + 1;
-
-	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write length of transducer string\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(params.transducer, sizeof(char), i, outptr) != i) {
-		fprintf(stderr, "failed to write transducer\n");
-		exit(EXIT_FAILURE);
-		}
-
-	i = strlen(params.impulse) + 1;
-
-	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write length of impulse string\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(params.impulse, i, 1, outptr) != 1) {
-		fprintf(stderr, "failed to write impulse\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(params.pointsAndNodes, sizeof(struct nodeEntry), numNodes, outptr) != numNodes) {
-		fprintf(stderr, "failed to write points and nodes\n");
-		exit(EXIT_FAILURE);
-		}
-
-	if (fwrite(&xdcGetSize, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write size of xdc_get\n");
-		exit(EXIT_FAILURE);
-		}
-
-/*
-*/
-	if (fwrite(params.ThData, sizeof(double), xdcGetSize, outptr) != xdcGetSize) {
-		fprintf(stderr, "failed to write ThData\n");
-		exit(EXIT_FAILURE);
-		}
-
-	fclose(outptr);
 }

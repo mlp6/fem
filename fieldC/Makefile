@@ -1,8 +1,8 @@
 INCLUDE=.
 FIELD_INCLUDE=/aiki/scratch/ndd/Field_II_Pro-master/c_library
 
-main: checkOnAxis.o correctAxialLens.o dynaField.o field2dyna.o gaussPulse.o readMpn.o main.c
-	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o field2dyna.o gaussPulse.o readMpn.o main.c cJSON.c /aiki/scratch/ndd/Field_II_Pro-master/c_library/lib_Field_II.a -lpthread -lm
+main: checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c cJSON.c /aiki/scratch/ndd/Field_II_Pro-master/c_library/lib_Field_II.a -lpthread -lm
 
 checkOnAxis.o: checkOnAxis.c field.h
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c checkOnAxis.c
@@ -12,6 +12,9 @@ correctAxialLens.o: correctAxialLens.c field.h
 
 dynaField.o: dynaField.c cJSON.c cJSON.h field.h
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c dynaField.c cJSON.c
+
+dynaWrite.o: dynaWrite.c field.h
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c dynaWrite.c
 
 dynaTest.o: dynaTest.c
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c dynaTest.c
