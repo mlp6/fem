@@ -1,11 +1,14 @@
 INCLUDE=.
 FIELD_INCLUDE=/aiki/scratch/ndd/Field_II_Pro-master/c_library
 
-main: checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c
-	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c cJSON.c /aiki/scratch/ndd/Field_II_Pro-master/c_library/lib_Field_II.a -lpthread -lm
+main: checkOnAxis.o checkUniform.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o checkUniform.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c cJSON.c /aiki/scratch/ndd/Field_II_Pro-master/c_library/lib_Field_II.a -lpthread -lm
 
 checkOnAxis.o: checkOnAxis.c field.h
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c checkOnAxis.c
+
+checkUniform.o: checkUniform.c field.h
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c checkUniform.c
 
 correctAxialLens.o: correctAxialLens.c field.h
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c correctAxialLens.c
@@ -42,3 +45,10 @@ testFieldConversion.o: testFieldConversion.c
 
 testFieldConversion: testFieldConversion.o checkOnAxis.o readMpn.o
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) testFieldConversion.o checkOnAxis.o readMpn.o -o testFieldConversion
+
+uniformTest.o: uniformTest.c
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c uniformTest.c -lm
+
+uniformTest: uniformTest.o checkUniform.o readMpn.o
+	cc -I $(INCLUDE) uniformTest.o checkUniform.o readMpn.o -o uniformTest
+

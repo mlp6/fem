@@ -37,9 +37,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "field.h"
 
-int checkOnAxis();
+int checkOnAxis(), checkUniform();
 
 char *
 field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
@@ -47,9 +48,14 @@ field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
 	char *elemName, int forceNonlinear)
 {
 int i, numNodes;
+int debug = 0;
+int isUniform;
 double temp;
 struct nodeEntry *pointsAndNodes, *readMpn();
 struct FieldParams fieldParams;
+char nodeVolFileName[80];
+char calcNodeVolCmd[80];
+int status;
 
 	fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
 	fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
@@ -130,4 +136,37 @@ struct FieldParams fieldParams;
 /* call dynaField here */
 
 	dynaField(fieldParams, threads, numNodes, lowNslow);
+
+/* % check if non-uniform force scaling must be done */
+
+	isUniform = checkUniform(pointsAndNodes, numNodes, debug);
+
+	fprintf(stderr, "in field2dyna, isUniform %d\n", isUniform);
+
+	if (!isUniform || forceNonlinear) {
+		/* run calcNodeVol.py */
+		fprintf(stderr, "This is a non-linear mesh. Generating node volume file.\n");
+/*
+		sprintf(nodeVolFileName, "NodeVolume_%s_%s.txt",
+			nodeName, elemName);
+*/
+		sprintf(nodeVolFileName, "nodeVolFile");
+
+		fprintf(stderr, "nodeVolFileName %s\n", nodeVolFileName);
+
+		if (access(nodeVolFileName, F_OK) == -1) {
+
+/* 			sprintf(calcNodeVolCmd, "python calcNodeVol.py --nodefile %s --elefile %s --nodevolfile %s", nodeName, elemName, nodeVolFileName); */
+
+			sprintf(calcNodeVolCmd, "python calcNodeVol.py --nodefile myNodes.dyn --elefile elems.dyn --nodevolfile %s", nodeVolFileName);
+
+			fprintf(stderr, "calcNodeVolCmd %s\n", calcNodeVolCmd);
+
+			status = system(calcNodeVolCmd);
+
+			fprintf(stderr, "status %d\n", status);
+			if (status == -1) fprintf(stderr, "problem with call to calcNodeVol\n");
+			}
+		}
+
 }

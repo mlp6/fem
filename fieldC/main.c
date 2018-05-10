@@ -22,6 +22,6 @@ field2dyna(char *nodeName, double alpha, double fnum, struct Focus focus,
 */
 
 field2dyna("./myNodes.dyn", .5, 1.3, focus, 7.2, "vf105", "gaussian", 1, 0,
-	"../tests/elems.dyn", 0);
+	"../tests/elems.dyn", 1);
 
 }
