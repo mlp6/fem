@@ -13,53 +13,53 @@ fprintf(stderr, "output file %s\n", outFileName);
 /* open output file */
 
     if ((outptr = fopen(outFileName, "wb")) == NULL) {
-		fprintf(stderr, "couldn't open output file %s\n", outFileName);
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: couldn't open output file %s\n", outFileName);
+		return(-1);
 		}
 
 	if (fwrite(&numNodes, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write numNodes\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write numNodes\n");
+		return(-1);
 		}
 
 	if (fwrite(intensity, sizeof(double), numNodes, outptr) != numNodes) {
-		fprintf(stderr, "failed to write intensity\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write intensity\n");
+		return(-1);
 		}
 
 	if (fwrite(&params.threads, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write threads\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write threads\n");
+		return(-1);
 		}
 
 	if (fwrite(&params.soundSpeed, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write soundSpeed\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write soundSpeed\n");
+		return(-1);
 		}
 
 	if (fwrite(&params.samplingFrequency, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write samplingFrequency\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write samplingFrequency\n");
+		return(-1);
 		}
 
 	if (fwrite(&params.alpha, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write alpha\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write alpha\n");
+		return(-1);
 		}
 
 	if (fwrite(&params.fnum, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write fnum\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write fnum\n");
+		return(-1);
 		}
 
 	if (fwrite(&params.focus, sizeof(point_type), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write focus\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write focus\n");
+		return(-1);
 		}
 
 	if (fwrite(&params.frequency, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write frequency\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write frequency\n");
+		return(-1);
 		}
 
 /* not saving null character for transducer or impulse */
@@ -67,43 +67,45 @@ fprintf(stderr, "output file %s\n", outFileName);
 	i = strlen(params.transducer);
 
 	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write length of transducer string\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write length of transducer string\n");
+		return(-1);
 		}
 
 	if (fwrite(params.transducer, sizeof(char), i, outptr) != i) {
-		fprintf(stderr, "failed to write transducer\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write transducer\n");
+		return(-1);
 		}
 
 	i = strlen(params.impulse);
 
 	if (fwrite(&i, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write length of impulse string\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write length of impulse string\n");
+		return(-1);
 		}
 
 	if (fwrite(params.impulse, i, 1, outptr) != 1) {
-		fprintf(stderr, "failed to write impulse\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write impulse\n");
+		return(-1);
 		}
 
 	if (fwrite(params.pointsAndNodes, sizeof(struct nodeEntry), numNodes, outptr) != numNodes) {
-		fprintf(stderr, "failed to write points and nodes\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write points and nodes\n");
+		return(-1);
 		}
 
 	if (fwrite(&xdcGetSize, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "failed to write size of xdc_get\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write size of xdc_get\n");
+		return(-1);
 		}
 
 /*
 */
 	if (fwrite(params.ThData, sizeof(double), xdcGetSize, outptr) != xdcGetSize) {
-		fprintf(stderr, "failed to write ThData\n");
-		exit(EXIT_FAILURE);
+		fprintf(stderr, "dynaWrite: failed to write ThData\n");
+		return(-1);
 		}
 
 	fclose(outptr);
+
+	return(1);
 }

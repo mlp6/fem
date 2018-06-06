@@ -1,10 +1,25 @@
-head	1.9;
+head	1.12;
 access;
 symbols;
 locks
-	ndd:1.9; strict;
+	ndd:1.12; strict;
 comment	@ * @;
 
+
+1.12
+date	2018.06.06.16.09.07;	author ndd;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2018.06.06.15.19.34;	author ndd;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2018.06.06.13.46.26;	author ndd;	state Exp;
+branches;
+next	1.9;
 
 1.9
 date	2018.05.09.18.06.30;	author ndd;	state Exp;
@@ -57,9 +72,9 @@ desc
 @
 
 
-1.9
+1.12
 log
-@trying to add call to calcNodeVol.py
+@put some of the error prints behind 'debug'
 @
 text
 @/*
@@ -121,11 +136,11 @@ char nodeVolFileName[80];
 char calcNodeVolCmd[80];
 int status;
 
-	fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
-	fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
-	fprintf(stderr, "in field2dyna, threads %d\n", threads);
-	fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
-	fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+	if (debug) fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
+	if (debug) fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
+	if (debug) fprintf(stderr, "in field2dyna, threads %d\n", threads);
+	if (debug) fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
+	if (debug) fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
 
 	pointsAndNodes = readMpn(nodeName, &numNodes);
 	if (pointsAndNodes == NULL) {
@@ -199,13 +214,21 @@ int status;
 
 /* call dynaField here */
 
-	dynaField(fieldParams, threads, numNodes, lowNslow);
+	if (dynaField(fieldParams, threads, numNodes, lowNslow) == 0) {
+		fprintf(stderr, "in field2dyna, call to dynaField failed\n");
+		exit(0);
+		}
 
 /* % check if non-uniform force scaling must be done */
 
 	isUniform = checkUniform(pointsAndNodes, numNodes, debug);
 
 	fprintf(stderr, "in field2dyna, isUniform %d\n", isUniform);
+
+	if (isUniform == -1) {
+		fprintf(stderr, "in field2dyna, call to checkUniform failed\n");
+		exit(0);
+		}
 
 	if (!isUniform || forceNonlinear) {
 		/* run calcNodeVol.py */
@@ -234,6 +257,41 @@ int status;
 		}
 
 }
+@
+
+
+1.11
+log
+@added error check for dynaField
+@
+text
+@d60 5
+a64 5
+	fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
+	fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
+	fprintf(stderr, "in field2dyna, threads %d\n", threads);
+	fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
+	fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+@
+
+
+1.10
+log
+@added error return for checkUniform
+@
+text
+@d138 4
+a141 1
+	dynaField(fieldParams, threads, numNodes, lowNslow);
+@
+
+
+1.9
+log
+@trying to add call to calcNodeVol.py
+@
+text
+@d146 5
 @
 
 

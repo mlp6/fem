@@ -18,7 +18,7 @@ gaussPulse(double fbw, double fc, struct FieldParams params, int debug)
 double fv, power, ref;
 double tc, delta, tv;
 double impulse, stepSize;
-signal_type *impulseResponse;
+signal_type *impulseResponse = NULL;
 double freq;
 double ye, yc;
 int i, numSteps;
@@ -66,6 +66,11 @@ int i, numSteps;
 		if (debug) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
 
 		impulseResponse = alloc_signal(numSteps, 0);
+
+		if (impulseResponse == NULL) {
+			fprintf(stderr, "error allocating impulseResponse\n");
+			return(NULL);
+			}
 
 		stepSize = 1.0/params.samplingFrequency;
 

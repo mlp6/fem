@@ -1,5 +1,6 @@
 /*
-% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, lownslow)
+% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, numNodes,
+%	lownslow)
 *
 %
 % Generate intensity values at the nodal locations for conversion to force and
@@ -50,10 +51,11 @@ dynaField(struct FieldParams params, int threads, int numNodes, int lowNslow)
 {
 int i, j;
 int debug = 0;
-aperture_type *Th;
+aperture_type *Th = NULL;
 int32 info;
 cJSON *commands, *impulseCmd, *probeInfo;
-FILE *input;
+FILE *jsonInput;
+char jsonFileName[128];
 long len;
 char *data, *out;
 int no_elements, no_sub_x, no_sub_y;
@@ -63,9 +65,9 @@ double heights;
 double fractBandwidth, centerFreq;
 point_type *focus, *points;
 double exciteFreq, texcite;
-signal_type *excitationPulse;
-signal_type *impulseResponse, *gaussPulse();
-signal_type **pressure;
+signal_type *excitationPulse = NULL;
+signal_type *impulseResponse = NULL, *gaussPulse();
+signal_type **pressure = NULL;
 double *intensity;
 double stepSize;
 double freqAtt, attF0, att;
@@ -97,7 +99,7 @@ int xdcGetSize;
 			params.pointsAndNodes[0].x,
 			params.pointsAndNodes[0].y,
 			params.pointsAndNodes[0].z);
-			}
+		}
 
 	set_field("c", params.soundSpeed);
 	set_field("fs", params.samplingFrequency);
@@ -108,22 +110,38 @@ int xdcGetSize;
 		threads, params.threads);
 
 /* get info from JSON */
-	input = fopen("./c52Fixed.json","rb");
-	fseek(input,0,SEEK_END);
-	len=ftell(input );
-	fseek(input,0,SEEK_SET);
-	data=(char*)malloc(len+1);
-	fread(data,1,len,input);
-	fclose(input);
+	strcpy(jsonFileName, "./c52Fixed.json");
+
+	if ((jsonInput = fopen(jsonFileName,"rb")) == NULL) {
+		fprintf(stderr, "couldn't open json file %s\n", jsonFileName);
+		return(0);
+		}
+
+	fseek(jsonInput,0,SEEK_END);
+	len = ftell(jsonInput);
+
+	fseek(jsonInput,0,SEEK_SET);
+
+	if ((data = (char*)malloc(len+1)) == NULL) {
+		fprintf(stderr, "couldn't allocate space for json data\n");
+		return(0);
+		}
+
+	if (fread(data,1,len,jsonInput) != len) {
+		fprintf(stderr, "couldn't read json data\n");
+		return(0);
+		}
+
+	fclose(jsonInput);
 
 	probeInfo = cJSON_Parse(data);
 	if (!probeInfo) {
 		printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+		return(0);
 		}
 
 	else {
-		out=cJSON_Print(probeInfo);
-/* 		printf("%s\n",out); */
+		out = cJSON_Print(probeInfo);
 		free(out);
 		}
 
@@ -138,46 +156,62 @@ int xdcGetSize;
 
 	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
 	if (debug) fprintf(stderr, "width %f\n", width);
+
 	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
 	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
 	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
 	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
+
 	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
+
 	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
 
 	if (debug) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
 
 	commands = cJSON_GetObjectItem(probeInfo, "commands");
 	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
+
 	if (debug) fprintf(stderr, "Th command %s\n", thCmd);
 
 /* set aperture. as of now, there are only 3 xdc calls for this */
 
 	if (strstr(thCmd, "xdc_concave") != NULL) {
 /* optical piston only? should this be handled differently? */
-		fprintf(stderr, "calling xdc_concave\n");
+		if (debug) fprintf(stderr, "calling xdc_concave\n");
 		Th = xdc_concave(9.5E-3, 38E-3, 0.5E-3);
+		if (Th == NULL) {
+			fprintf(stderr, "error calling xdc_concave\n");
+			return(0);
+			}
 		}
 
 	else if (strstr(thCmd, "xdc_convex_focused_array") != NULL) {
-		fprintf(stderr, "calling xdc_convex_focused_array\n");
+		if (debug) fprintf(stderr, "calling xdc_convex_focused_array\n");
 		if (debug) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
 			no_elements,width,height,kerf,Rconvex, Rfocus,no_sub_x,
 			no_sub_y,params.focus.x, params.focus.y, params.focus.z);
 
 		Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,
 			Rfocus,no_sub_x,no_sub_y,params.focus);
+		if (Th == NULL) {
+			fprintf(stderr, "error calling xdc_convex_focused_array\n");
+			return(0);
+			}
 		if (debug) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
 			Th->information.name, Th->information.create_date);
 		}
 
 	else if (strstr(thCmd, "xdc_focused_multirow") != NULL) {
 /* linear only? should this be handled differently? */
-		fprintf(stderr, "calling xdc_focused_multirow\n");
+		if (debug) fprintf(stderr, "calling xdc_focused_multirow\n");
 		no_elements_y = 1;
 		heights = height;
 		Th = xdc_focused_multirow(no_elements,width,no_elements_y,&heights,
 			kerf,kerf, Rfocus,no_sub_x,no_sub_y,params.focus);
+		if (Th == NULL) {
+			fprintf(stderr, "error calling xdc_focused_multirow\n");
+			return(0);
+			}
 		}
 
 	else fprintf(stderr, "unknown aperture command\n");
@@ -196,6 +230,11 @@ int xdcGetSize;
 
 	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params, debug);
 
+	if (impulseResponse == NULL) {
+		fprintf(stderr, "error calling gaussPulse\n");
+		return(0);
+		}
+
 	if (debug) fprintf(stderr, "back\n");
 	if (debug) fprintf(stderr, "impulse response %f %f %f\n",
 		impulseResponse->data[0], impulseResponse->data[1],
@@ -213,8 +252,10 @@ int xdcGetSize;
 
 	if (debug) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
 
-	params.ThData = (double *)malloc(xdcGetSize * sizeof(double));
-	
+	if ((params.ThData = (double *)malloc(xdcGetSize * sizeof(double))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for ThData\n");
+		return(0);
+		}
 
 	xdc_get(Th, info, params.ThData);
 
@@ -241,12 +282,14 @@ int xdcGetSize;
 % to accomodate the mathematical element shift due to the lens
  *
  * have to tell correctAxialLens() how many data points we have
-*/
+ */
 	
 	if (debug) fprintf(stderr, "calling cAL\n");
 
 	lensCorrection = correctAxialLens(params.ThData, ROWS_RECT,
 		no_elements * no_sub_y, debug); 
+
+	if (lensCorrection == -1) return(0);
 
 	if (debug) fprintf(stderr, "back from cAL, correction %g\n", lensCorrection);
 
@@ -268,11 +311,17 @@ int xdcGetSize;
 
 	if (debug) fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g\n",
 		params.frequency, exciteFreq, stepSize);
+
 	numSteps = ceil ((double )numCYC / exciteFreq / stepSize);
 
 	excitationPulse = alloc_signal(numSteps, 0);
 
-	fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
+	if (excitationPulse == NULL) {
+		fprintf(stderr, "couldn't allocate excitationPulse\n");
+		return(0);
+		}
+
+	if (debug) fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
 
 	temp = 2 * M_PI * exciteFreq * stepSize;
 
@@ -312,10 +361,10 @@ int xdcGetSize;
 /*
 % compute Ispta at each location for a single tx pulse
 % optimizing by computing only relevant nodes... will assume others are zero
-*
-* how many points does calc_hp return?
-*
-*/
+ *
+ * how many points does calc_hp return?
+ *
+ */
 
 	if (debug) fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
 
@@ -326,7 +375,10 @@ int xdcGetSize;
  * node id. may not need the id, but for now I'm going to make a copy.
  */
 
-	points = (point_type *)malloc(numNodes * sizeof(point_type));
+	if ((points = (point_type *)malloc(numNodes * sizeof(point_type))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for points\n");
+		return(0);
+		}
 
 	for (i = 0; i < numNodes; i++) {
 		points[i].x = params.pointsAndNodes[i].x;
@@ -339,13 +391,22 @@ int xdcGetSize;
 
 /* have to init intensity to 0 so we can sum into it */
 
-	intensity = (double *)calloc(numNodes, sizeof(double));
+	if ((intensity = (double *)calloc(numNodes, sizeof(double))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for intensity\n");
+		return(0);
+		}
 
 	if (debug) {
 		fprintf(stderr, "running low-n-slow\n");
 		for (i = 0; i < numNodes; i++) {
 			if (debug) fprintf(stderr, "i %d\n", i);
+
 			pressure = calc_hp(Th, 1, &points[i]);
+			if (pressure == NULL) {
+				fprintf(stderr, "call to calc_hp failed\n");
+				return(0);
+				}
+
 			if (debug) fprintf(stderr, "num samples %d\n",
 				pressure[0]->no_samples);
 			if (debug) for (j = 0; j < pressure[0]->no_samples; j++)
@@ -356,6 +417,12 @@ int xdcGetSize;
 		}
 	else {
 		pressure = calc_hp(Th, numNodes, points);
+
+		if (pressure == NULL) {
+			fprintf(stderr, "call to calc_hp failed\n");
+			return(0);
+			}
+
 		for (i = 0; i < numNodes; i++)
 			for (j = 0; j < pressure[i]->no_samples; j++)
 				intensity[i] += pressure[i]->data[j] * pressure[i]->data[j];
@@ -407,11 +474,16 @@ int xdcGetSize;
  *		care about rectangles.
  */
 
-	sprintf(outFileName, "dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.ned",
+	sprintf(outFileName, "dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.new",
 		params.frequency, params.fnum, params.focus.z, params.alpha);
 
-	fprintf(stderr, "file name %s\n", outFileName);
+	if (debug) fprintf(stderr, "file name %s\n", outFileName);
 
-	dynaWrite(outFileName, intensity, params, numNodes, xdcGetSize);
+	if (dynaWrite(outFileName, intensity, params, numNodes, xdcGetSize) == -1) {
+		fprintf(stderr, "dynaWrite failed\n");
+		return(0);
+		}
+
+	return(1);
 
 }

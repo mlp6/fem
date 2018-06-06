@@ -1,10 +1,20 @@
-head	1.4;
+head	1.6;
 access;
 symbols;
 locks
-	ndd:1.4; strict;
+	ndd:1.6; strict;
 comment	@ * @;
 
+
+1.6
+date	2018.06.06.13.46.48;	author ndd;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.05.10.18.39.33;	author ndd;	state Exp;
+branches;
+next	1.4;
 
 1.4
 date	2018.05.07.18.47.00;	author ndd;	state Exp;
@@ -32,12 +42,16 @@ desc
 @
 
 
-1.4
+1.6
 log
-@added code to compute the diffs; seems to work.
+@added error return for checkUniform
 @
 text
-@#include <stdio.h>
+@/*
+ * the routine 'checkUniform' checks for a uniform mesh
+ */
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "field.h"
@@ -47,11 +61,17 @@ typedef struct node {
 	struct node *nextEntry;
 	} node;
 
-node *insertSortedUnique(node *head, double num)
+/* produce a sorted list of the unique mesh points */
+
+node
+*insertSortedUnique(node *head, double num)
 {
 node *temp, *prev, *next;
 
-	temp = (node *)malloc(sizeof(node));
+	if ((temp = (node *)malloc(sizeof(node))) == NULL) {
+		return(NULL);
+		}
+
 	temp->value = num;
 	temp->nextEntry = NULL;
 
@@ -98,6 +118,24 @@ void free_list(node *head)
 		}       
 }
 
+/*
+ * the routine 'checkUniform' does the following:
+ *
+ * find all the unique x, y and z coordinates
+ *
+ * x = unique(measurementPoints(:, 1));
+ * y = unique(measurementPoints(:, 2));
+ * z = unique(measurementPoints(:, 3));
+ *
+ * take the difference of each adjacent pair of {xyz}, divide by the difference
+ * between the first two coordinates in each dimension, subtract 1 from that
+ * ratio, check to see if that is less than 10^-9, then take the absolute value
+ * of that test.
+ *
+ * if all the comparisons for each of x, y and z are less than 10^-9, the mesh
+ * is linear.
+ */
+
 int
 checkUniform(struct nodeEntry *pointsAndNodes, int numNodes, int debug)
 {
@@ -111,15 +149,15 @@ node *headX, *headY, *headZ, *p;
 	headY = NULL;
 	headZ = NULL;
 
-/*
-		headX = insertSortedUnique(headX, pointsAndNodes[i].x, &numUniqueX);
-		headY = insertSortedUnique(headY, pointsAndNodes[i].y, &numUniqueY);
-		headZ = insertSortedUnique(headZ, pointsAndNodes[i].z, &numUniqueZ);
-*/
 	for (i = 0; i < numNodes; i++) {
 		headX = insertSortedUnique(headX, pointsAndNodes[i].x);
+		fprintf(stderr, "couldn't allocate space for sort node\n");
 		headY = insertSortedUnique(headY, pointsAndNodes[i].y);
 		headZ = insertSortedUnique(headZ, pointsAndNodes[i].z);
+		if ((headX == NULL) || (headY == NULL) || (headZ == NULL)) {
+			fprintf(stderr, "couldn't allocate space for sort node\n");
+			return(-1);
+			}
 		}
 
 	p = headX;
@@ -232,6 +270,38 @@ node *headX, *headY, *headZ, *p;
 
 	return(1);
 }
+@
+
+
+1.5
+log
+@mostly comments, removed some unused code.
+@
+text
+@d22 4
+a25 1
+	temp = (node *)malloc(sizeof(node));
+d105 1
+d108 4
+@
+
+
+1.4
+log
+@added code to compute the diffs; seems to work.
+@
+text
+@d1 4
+d15 4
+a18 1
+node *insertSortedUnique(node *head, double num)
+d69 18
+a99 5
+/*
+		headX = insertSortedUnique(headX, pointsAndNodes[i].x, &numUniqueX);
+		headY = insertSortedUnique(headY, pointsAndNodes[i].y, &numUniqueY);
+		headZ = insertSortedUnique(headZ, pointsAndNodes[i].z, &numUniqueZ);
+*/
 @
 
 

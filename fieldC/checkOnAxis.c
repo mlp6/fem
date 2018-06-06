@@ -1,3 +1,8 @@
+/*
+ * the requirement is that there exists at least one point in the mesh
+ * where both x and y are zero.
+ */
+
 #include "field.h"
 
 int

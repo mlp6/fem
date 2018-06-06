@@ -21,7 +21,7 @@ int i;
 int xPosLoc = 7;
 int zPosLoc = 9;
 double correction;
-int indexMin;
+int indexMin = -1;
 
 /* find center element */
 
@@ -35,8 +35,16 @@ int indexMin;
 				}
 			}
 
+	if (indexMin == -1) {
+		fprintf(stderr, "something went wrong in correctAxialLens\n");
+		return(-1);
+		}
+
 	if (debug) fprintf(stderr, "in correctAxialLens, indexMin %d\n", indexMin);
+
 	correction = thData[rows * indexMin + zPosLoc];
+
 	if (debug) fprintf(stderr, "in correctAxialLens, correction %g\n", correction);
+
 	return(correction);
 }

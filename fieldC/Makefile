@@ -43,8 +43,8 @@ gaussPulse.o: gaussPulse.c field.h
 testFieldConversion.o: testFieldConversion.c
 	cc -c -I $(INCLUDE) -I $(FIELD_INCLUDE) testFieldConversion.c
 
-testFieldConversion: testFieldConversion.o checkOnAxis.o readMpn.o
-	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) testFieldConversion.o checkOnAxis.o readMpn.o -o testFieldConversion
+testFieldConversion: testFieldConversion.o checkOnAxis.o checkUniform.o readMpn.o
+	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) testFieldConversion.o checkOnAxis.o checkUniform.o readMpn.o -o testFieldConversion
 
 uniformTest.o: uniformTest.c
 	cc -I $(INCLUDE) -I $(FIELD_INCLUDE) -c uniformTest.c -lm

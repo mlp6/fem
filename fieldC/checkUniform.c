@@ -1,3 +1,7 @@
+/*
+ * the routine 'checkUniform' checks for a uniform mesh
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -8,11 +12,17 @@ typedef struct node {
 	struct node *nextEntry;
 	} node;
 
-node *insertSortedUnique(node *head, double num)
+/* produce a sorted list of the unique mesh points */
+
+node
+*insertSortedUnique(node *head, double num)
 {
 node *temp, *prev, *next;
 
-	temp = (node *)malloc(sizeof(node));
+	if ((temp = (node *)malloc(sizeof(node))) == NULL) {
+		return(NULL);
+		}
+
 	temp->value = num;
 	temp->nextEntry = NULL;
 
@@ -59,6 +69,24 @@ void free_list(node *head)
 		}       
 }
 
+/*
+ * the routine 'checkUniform' does the following:
+ *
+ * find all the unique x, y and z coordinates
+ *
+ * x = unique(measurementPoints(:, 1));
+ * y = unique(measurementPoints(:, 2));
+ * z = unique(measurementPoints(:, 3));
+ *
+ * take the difference of each adjacent pair of {xyz}, divide by the difference
+ * between the first two coordinates in each dimension, subtract 1 from that
+ * ratio, check to see if that is less than 10^-9, then take the absolute value
+ * of that test.
+ *
+ * if all the comparisons for each of x, y and z are less than 10^-9, the mesh
+ * is linear.
+ */
+
 int
 checkUniform(struct nodeEntry *pointsAndNodes, int numNodes, int debug)
 {
@@ -72,15 +100,14 @@ node *headX, *headY, *headZ, *p;
 	headY = NULL;
 	headZ = NULL;
 
-/*
-		headX = insertSortedUnique(headX, pointsAndNodes[i].x, &numUniqueX);
-		headY = insertSortedUnique(headY, pointsAndNodes[i].y, &numUniqueY);
-		headZ = insertSortedUnique(headZ, pointsAndNodes[i].z, &numUniqueZ);
-*/
 	for (i = 0; i < numNodes; i++) {
 		headX = insertSortedUnique(headX, pointsAndNodes[i].x);
 		headY = insertSortedUnique(headY, pointsAndNodes[i].y);
 		headZ = insertSortedUnique(headZ, pointsAndNodes[i].z);
+		if ((headX == NULL) || (headY == NULL) || (headZ == NULL)) {
+			fprintf(stderr, "couldn't allocate space for sort node\n");
+			return(-1);
+			}
 		}
 
 	p = headX;

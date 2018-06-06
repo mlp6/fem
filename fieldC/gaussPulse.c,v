@@ -1,10 +1,15 @@
-head	1.9;
+head	1.10;
 access;
 symbols;
 locks
-	ndd:1.9; strict;
+	ndd:1.10; strict;
 comment	@ * @;
 
+
+1.10
+date	2018.06.06.16.09.53;	author ndd;	state Exp;
+branches;
+next	1.9;
 
 1.9
 date	2018.04.17.19.44.55;	author ndd;	state Exp;
@@ -57,9 +62,9 @@ desc
 @
 
 
-1.9
+1.10
 log
-@cleaned up some error messages
+@added error check
 @
 text
 @/*
@@ -82,7 +87,7 @@ gaussPulse(double fbw, double fc, struct FieldParams params, int debug)
 double fv, power, ref;
 double tc, delta, tv;
 double impulse, stepSize;
-signal_type *impulseResponse;
+signal_type *impulseResponse = NULL;
 double freq;
 double ye, yc;
 int i, numSteps;
@@ -131,6 +136,11 @@ int i, numSteps;
 
 		impulseResponse = alloc_signal(numSteps, 0);
 
+		if (impulseResponse == NULL) {
+			fprintf(stderr, "error allocating impulseResponse\n");
+			return(NULL);
+			}
+
 		stepSize = 1.0/params.samplingFrequency;
 
 		impulse = -tc;
@@ -157,6 +167,18 @@ int i, numSteps;
 	return(impulseResponse);
 }
 			
+@
+
+
+1.9
+log
+@cleaned up some error messages
+@
+text
+@d21 1
+a21 1
+signal_type *impulseResponse;
+d69 5
 @
 
 

@@ -54,7 +54,9 @@ FILE *checkResult;
 
 /* now check values */
 		for (i = 0; i < numNodes; i++) {
-			fprintf(stderr, "%f %f %f %f\n", pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+			fprintf(stderr, "%f %f %f %f\n", pointsAndNodes[i].nodeID,
+				pointsAndNodes[i].x, pointsAndNodes[i].y,
+				pointsAndNodes[i].z);
 			if ((testDyn[i].x != pointsAndNodes[i].x) ||
 				(testDyn[i].y != pointsAndNodes[i].y) ||
 				(testDyn[i].z != pointsAndNodes[i].z)) {
@@ -67,13 +69,40 @@ FILE *checkResult;
 		fprintf(stderr, "test is checkOnAxis\n");
 		nodeName = "./myNodes.dyn";
 	    pointsAndNodes = readMpn(nodeName, &numNodes);
+
 		if (checkOnAxis(pointsAndNodes, numNodes) == 1)
 			fprintf(stderr, "checkOnAxis correct for good node list\n");
 		else fprintf(stderr, "checkOnAxis wrong for good node list\n");
+
 		nodeName = "./myNodesBadAxis.dyn";
 	    pointsAndNodes = readMpn(nodeName, &numNodes);
+
 		if (checkOnAxis(pointsAndNodes, numNodes) == 0)
 			fprintf(stderr, "checkOnAxis correct for bad node list\n");
 		else fprintf(stderr, "checkOnAxis wrong for bad node list\n");
+		}
+	else if (strcmp(argv[1], "checkUniform") == 0) {
+		fprintf(stderr, "test is checkUniform\n");
+		nodeName = "./myNodes.dyn";
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+
+		i = checkUniform(pointsAndNodes, numNodes, 0);
+
+		if (i == -1)
+			fprintf(stderr, "couldn't allocate node space\n");
+		else if (i == 1)
+			fprintf(stderr, "checkUniform correct for good node list\n");
+		else fprintf(stderr, "checkUniform wrong for good node list\n");
+
+		nodeName = "./myNodesNonUniform.dyn";
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+
+		i = checkUniform(pointsAndNodes, numNodes, 0);
+
+		if (i == -1)
+			fprintf(stderr, "couldn't allocate node space\n");
+		else if (i == 0)
+			fprintf(stderr, "checkUniform correct for bad node list\n");
+		else fprintf(stderr, "checkUniform wrong for bad node list\n");
 		}
 }
