@@ -46,29 +46,12 @@ end
 set_field('threads', threads);
 disp(sprintf('PARALLEL THREADS: %d', threads));
 
-% TODO: load in params from JSON -> probe struct
-% define the transducer
-switch probe.name
-    case {'vf105', 'vf135', 'vf73', 'vf105gfp', 'sonivate', 'tu15l8w', 'l74', ...
-          'l94', 'l124', 'l145', 'i7505', 'acunav64', 'acunav128', ...
-          'acunav128_fullapp', 'er7bl', 'p42', 'ph41', 'pl35elegra'}
-        Th = xdc_focused_multirow(probe.no_elements, probe.width,
-                                  probe.no_elements_y, probe.height, ... 
-                                  probe.kerf, probe.kerf, probe.Rfocus, ...
-                                  probe.no_sub_x, probe.no_sub_y, ...
-                                  FIELD_PARAMS.focus);
-    case {'c52', 'c52v', 'ch41', 'ch62', 'ev94'}
-        Th = xdc_convex_focused_array(probe.no_elements, probe.width, probe.height, ...
-                                      probe.kerf, probe.Rconvex, probe.Rfocus, ...
-                                      probe.no_sub_x, probe.no_sub_y, ...
-                                      FIELD_PARAMS.focus);
-    otherwise
-        warning('Specified probe not explicitly handled.')
+% define the transducer definition
+probe = readProbeJson(FIELD_PARAMS.Transducer);
+Th = genTh(probe);
 
-
-% compute and load the experimentally-measured impulse response
-%%%% TODO: Make sure that exp vs gausian properly handled w/i defineImpResp %%%%
-impulseResponse = defineImpResp(fractionalBandwidth, centerFrequency, FIELD_PARAMS);
+% compute or load the experimentally-measured impulse response
+impulseResponse = defineImpResp(probe.fractionalBandwidth, probe.centerFrequency, FIELD_PARAMS);
 
 % check specs of the defined transducer
 FIELD_PARAMS.Th_data = xdc_get(Th, 'rect');
