@@ -59,6 +59,8 @@ FIELD_PARAMS.Th_data = xdc_get(Th, 'rect');
 lens_correction_m = correct_axial_lens(FIELD_PARAMS.Th_data);
 FIELD_PARAMS.measurementPointsandNodes(:, 4) = FIELD_PARAMS.measurementPointsandNodes(:, 4) + lens_correction_m;
 
+xdc_center_focus(Th, FIELD_PARAMS.center_focus);
+
 % define the impulse response
 xdc_impulse(Th, impulseResponse);
 
