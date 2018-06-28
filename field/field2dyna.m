@@ -1,16 +1,11 @@
-function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, threads, lownslow, ElemName, ForceNonlinear)
-% function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency, Transducer, Impulse, threads, lownslow, ElemName, ForceNonlinear)
+function [dynaImat] = field2dyna(NodeName, field_params_json, ElemName, ForceNonlinear)
+% function [dynaImat] = field2dyna(NodeName, field_params_json, ElemName, ForceNonlinear)
 %
 % INPUT:
 %   NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
 %                       be a comma-delimited file with header/footer lines that
 %                       start with '*'
-%   alpha - 0.5, 1.0, etc. (dB/cm/MHz)
-%   Fnum - F/# (e.g. 1.3)
-%   focus - [x y z] (m) "Field" coordinates
-%   Frequency - excitation frequency (MHz)
-%   Transducer (string) - 'vf105','vf73'
-%   Impulse (string) - 'gaussian','exp'
+%   field_params_json (str)
 %   threads (int) - number of parallel threads to use for Field II Pro
 %   lownslow (bool) - low memory footprint, or faster parallel (high RAM) [default = 0]
 %   ElemName (string) - file name to read elements from (default: elems.dyn);
@@ -45,37 +40,24 @@ measurementPointsandNodes(:,2:3)=[measurementPointsandNodes(:,3) measurementPoin
 measurementPointsandNodes(:,2:4)=measurementPointsandNodes(:,2:4)/100;
 
 % create a variable structure to pass to dynaField
+fid = fopen(field_params_json);
+rawtext = fread(fid, '*char');
+fclose(fid);
+FIELD_PARAMS = jsondecode(rawtext);
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
-FIELD_PARAMS.alpha = alpha;
-FIELD_PARAMS.Fnum = Fnum;
-FIELD_PARAMS.focus = focus;
-FIELD_PARAMS.Frequency = Frequency;
-FIELD_PARAMS.Transducer = Transducer;
-FIELD_PARAMS.Impulse = Impulse;
-
-% below are hard-coded constants (transducer independent)
-FIELD_PARAMS.soundSpeed=1540;
-FIELD_PARAMS.samplingFrequency = 100e6;
-
-% setup some input argument defaults
-if (nargin < 7),
-    threads = 1;
-end;
-
-if (nargin < 8),
-    lownslow = true;
-end;
 
 % perform the field calculation
 [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, threads, lownslow);
 
 % save intensity file
-dynaImat = sprintf('dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat', Frequency, Fnum, focus(3), alpha);
+dynaImat = sprintf('dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat', ...
+                   FIELD_PARAMS.Frequency, FIELD_PARAMS.Fnum, ...
+                   FIELD_PARAMS.focus(3), FIELD_PARAMS.alpha);
 save(dynaImat, 'intensity', 'FIELD_PARAMS');
 
 % check if non-uniform force scaling must be done
 isUniform = checkUniform(measurementPointsandNodes(:,2:4));
-if (nargin < 11)
+if (nargin < 4)
     ForceNonlinear = 0;
 end
 if (~isUniform || ForceNonlinear == 1)

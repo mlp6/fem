@@ -1,0 +1,12 @@
+{
+    "Transducer": "vf105",
+    "alpha": 0.5,
+    "Fnum": 1.0,
+    "focus": 2.0,
+    "Frequency": 1.0,
+    "Impulse": "gaussian",
+    "soundSpeed": 1540,
+    "samplingFrequency": 100e6,
+    "threads": 1,
+    "lownslow": "true"
+}
