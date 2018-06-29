@@ -1,13 +1,14 @@
 {
-    "Transducer": "vf105",
-    "alpha": 0.5,
-    "Fnum": 1.0,
-    "focus": 2.0,
-    "center_focus": [0.0, 0.0, 0.0],
-    "Frequency": 1.0,
-    "Impulse": "gaussian",
-    "soundSpeed": 1540,
-    "samplingFrequency": 100e6,
+    "transducer": "vf105",
+    "transducer_type": "focused_multirow",
+    "alpha_dB_cm_MHz": 0.5,
+    "fnum": 1.0,
+    "focus_m": [0.0, 0.0, 0.02],
+    "center_focus_m": [0.0, 0.0, 0.0],
+    "freq_MHz": 1.0,
+    "impulse": "gaussian",
+    "sound_speed_m_s": 1540,
+    "sampling_freq_Hz": 100e6,
     "threads": 1,
     "lownslow": "true"
 }

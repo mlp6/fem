@@ -46,8 +46,8 @@ FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
 
 % save intensity file
 dynaImat = sprintf('dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat', ...
-                   FIELD_PARAMS.Frequency, FIELD_PARAMS.Fnum, ...
-                   FIELD_PARAMS.focus(3), FIELD_PARAMS.alpha);
+                   FIELD_PARAMS.freq_MHz, FIELD_PARAMS.fnum, ...
+                   FIELD_PARAMS.focus_m(3), FIELD_PARAMS.alpha_dB_cm_MHz);
 save(dynaImat, 'intensity', 'FIELD_PARAMS');
 
 % check if non-uniform force scaling must be done
