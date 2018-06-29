@@ -32,8 +32,6 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 
 % figure out where this function exists to link probes submod
 functionDir = fileparts(which(mfilename));
-probesPath = fullfile(functionDir, '..', '..', 'probes', 'fem');
-check_add_probes(probesPath);
 
 % check that Field II is in the Matlab search path, and initialize
 check_start_Field_II;
@@ -45,8 +43,12 @@ set_field('fs', FIELD_PARAMS.sampling_freq_Hz);
 set_field('threads', FIELD_PARAMS.threads);
 disp(sprintf('PARALLEL THREADS: %d', FIELD_PARAMS.threads));
 
-% define transducer-dependent parameters
-eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.transducer));
+% define the transducer definition
+probe = readProbeJson(FIELD_PARAMS.Transducer);
+Th = genTh(probe);
+
+% compute or load the experimentally-measured impulse response
+impulseResponse = defineImpResp(probe.fractionalBandwidth, probe.centerFrequency, FIELD_PARAMS);
 
 % check specs of the defined transducer
 FIELD_PARAMS.Th_data = xdc_get(Th, 'rect');
