@@ -29,8 +29,8 @@ set_field('threads', FIELD_PARAMS.threads);
 disp(sprintf('PARALLEL THREADS: %d', FIELD_PARAMS.threads));
 
 % define the transducer definition
-probe = readProbeJson(FIELD_PARAMS.Transducer);
-Th = genTh(probe);
+probe = read_probe_json(FIELD_PARAMS.probe_params);
+Th = genTh(probe, FIELD_PARAMS);
 
 % compute or load the experimentally-measured impulse response
 impulseResponse = defineImpResp(probe.fractionalBandwidth, probe.centerFrequency, FIELD_PARAMS);
