@@ -4,23 +4,8 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 % Generate intensity values at the nodal locations for conversion to force and
 % input into the dyna deck.
 %
-% INPUTS:
-%   FIELD_PARAMS.alpha (float) - absoprtion (dB/cm/MHz)
-%   FIELD_PARAMS.measurementPointsandNodes - nodal IDs and spatial locations
-%                                            from field2dyna.m
-%   FIELD_PARAMS.Fnum (float) - F/#
-%   FIELD_PARAMS.focus - [x y z] (m)
-%   FIELD_PARAMS.Frequency (float) - push frequency (MHz)
-%                                    6.67 (VF10-5)
-%                                    4.21 (VF7-3)
-%   FIELD_PARAMS.Transducer (string) - 'vf105'; select the
-%       transducer-dependent parameters to use for the simulation
-%   FIELD_PARAMS.Impulse (string) - 'guassian','exp'; use a Guassian function
-%       based on the defined fractional bandwidth and center
-%       frequency, or use the experimentally-measured impulse
-%       response
-%   FIELD_PARAMS.threads (int) - number of parallel threads to use [default = numCores]
-%   FIELD_PARAMS.lownslow (bool) - low RAM footprint, but much slower
+% PARAMS:
+%   FIELD_PARAMS (struct)
 %
 % OUTPUT:
 %   intensity - intensity values at all of the node locations
