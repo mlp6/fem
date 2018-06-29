@@ -1,5 +1,5 @@
-function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, lownslow)
-% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, lownslow)
+function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
+% function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS)
 %
 % Generate intensity values at the nodal locations for conversion to force and
 % input into the dyna deck.
@@ -19,8 +19,8 @@ function [intensity, FIELD_PARAMS]=dynaField(FIELD_PARAMS, threads, lownslow)
 %       based on the defined fractional bandwidth and center
 %       frequency, or use the experimentally-measured impulse
 %       response
-%   threads (int) - number of parallel threads to use [default = numCores]
-%   lownslow (bool) - low RAM footprint, but much slower
+%   FIELD_PARAMS.threads (int) - number of parallel threads to use [default = numCores]
+%   FIELD_PARAMS.lownslow (bool) - low RAM footprint, but much slower
 %
 % OUTPUT:
 %   intensity - intensity values at all of the node locations
@@ -42,11 +42,8 @@ check_start_Field_II;
 set_field('c', FIELD_PARAMS.soundSpeed);
 set_field('fs', FIELD_PARAMS.samplingFrequency);
 
-if (nargin < 2),
-    threads = feature('numCores');
-end
-set_field('threads', threads);
-disp(sprintf('PARALLEL THREADS: %d', threads));
+set_field('threads', FIELD_PARAMS.threads);
+disp(sprintf('PARALLEL THREADS: %d', FIELD_PARAMS.threads));
 
 % define transducer-dependent parameters
 eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
@@ -59,7 +56,7 @@ FIELD_PARAMS.Th_data = xdc_get(Th, 'rect');
 lens_correction_m = correct_axial_lens(FIELD_PARAMS.Th_data);
 FIELD_PARAMS.measurementPointsandNodes(:, 4) = FIELD_PARAMS.measurementPointsandNodes(:, 4) + lens_correction_m;
 
-xdc_center_focus(Th, FIELD_PARAMS.center_focus);
+xdc_center_focus(Th, FIELD_PARAMS.center_focus');
 
 % define the impulse response
 xdc_impulse(Th, impulseResponse);
@@ -80,13 +77,7 @@ set_field('Freq_att', Freq_att);
 set_field('att_f0', att_f0);
 set_field('use_att', 1);
  
-% compute Ispta at each location for a single tx pulse
-% optimizing by computing only relevant nodes... will assume others are zero
-if (nargin < 3),
-    lownslow = true;
-end;
-
-if lownslow,
+if FIELD_PARAMS.lownslow,
     disp('Running low-n-slow... ')
     numNodes = size(FIELD_PARAMS.measurementPointsandNodes, 1);
     for i = 1:numNodes,

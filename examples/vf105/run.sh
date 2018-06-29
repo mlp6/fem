@@ -1,10 +1,12 @@
 # this is an example of an older, CLI-based run script
-python3 ../../mesh/GenMesh.py --xyz -0.5 0.0 0.0 1.0 -3.0 0.0 --numElem 50 100 300
-python3 ../../mesh/bc.py
-matlab -nodesktop -nosplash -r "field2dyna('nodes.dyn',0.5,1.0,[0.0 0.0 0.02],7.2,'vf105','gaussian'); ...
-                                makeLoadsTemps('dyna-I-f7.20-F1.0-FD0.020-a0.50.mat', ...
-                                'dyna-I-f7.20-F1.0-FD0.020-a0.50.mat', ...
-                                1000,400,4.2,0.01^3,'q',1); quit;"
-ls-dyna-d ncpu=2 i=vf105.dyn
-python3 ../../post/create_disp_dat.py
-python3 ../../post/create_res_sim.py --dynadeck vf105.dyn 
+#python3 ../../mesh/GenMesh.py --xyz -0.5 0.0 0.0 1.0 -3.0 0.0 --numElem 50 100 300
+#python3 ../../mesh/bc.py --nonreflect
+matlab -nodesktop -nosplash -r "addpath('/home/mlp6/fem/field'); addpath('/home/mlp6/Documents/MATLAB/Field_II_Pro/m_files'); field2dyna('nodes.dyn', 'field_params.json'); quit;"
+
+#matlab -nodesktop -nosplash -r "field2dyna('nodes.dyn',0.5,1.0,[0.0 0.0 0.02],7.2,'vf105','gaussian'); ...
+#                                makeLoadsTemps('dyna-I-f7.20-F1.0-FD0.020-a0.50.mat', ...
+#                                'dyna-I-f7.20-F1.0-FD0.020-a0.50.mat', ...
+#                                1000,400,4.2,0.01^3,'q',1); quit;"
+#ls-dyna-d ncpu=2 i=vf105.dyn
+#python3 ../../post/create_disp_dat.py
+#python3 ../../post/create_res_sim.py --dynadeck vf105.dyn 

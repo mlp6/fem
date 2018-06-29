@@ -47,7 +47,7 @@ FIELD_PARAMS = jsondecode(rawtext);
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
 
 % perform the field calculation
-[intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS, threads, lownslow);
+[intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
 
 % save intensity file
 dynaImat = sprintf('dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.mat', ...
