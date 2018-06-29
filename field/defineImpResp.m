@@ -14,11 +14,11 @@ function [impulseResponse]=defineImpResp(fBW,Fc,FIELD_PARAMS);
 %
 % Mark 06/20/07
 
-switch FIELD_PARAMS.Impulse
+switch FIELD_PARAMS.impulse
     case 'gaussian',
         disp('Impulse Response: Gaussian');
         tc = gauspuls('cutoff',Fc,fBW,-6,-40);
-        t = -tc:1/FIELD_PARAMS.samplingFrequency:tc;
+        t = -tc:1/FIELD_PARAMS.sampling_freq_Hz:tc;
         impulseResponse =gauspuls(t,Fc,fBW);
     case 'exp',
         disp('Impulse Response: Experimental');
