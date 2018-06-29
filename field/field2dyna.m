@@ -5,9 +5,7 @@ function [dynaImat] = field2dyna(NodeName, field_params_json, ElemName, ForceNon
 %   NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs to
 %                       be a comma-delimited file with header/footer lines that
 %                       start with '*'
-%   field_params_json (str)
-%   threads (int) - number of parallel threads to use for Field II Pro
-%   lownslow (bool) - low memory footprint, or faster parallel (high RAM) [default = 0]
+%   field_params_json (str) - JSON filename
 %   ElemName (string) - file name to read elements from (default: elems.dyn);
 %                       like node file, needs to be comma-delimited.
 %   ForceNonlinear(int) - optional input argument. Set as 1 if you want to
@@ -39,11 +37,8 @@ measurementPointsandNodes(:,2:3)=[measurementPointsandNodes(:,3) measurementPoin
 % convert from cm -> m
 measurementPointsandNodes(:,2:4)=measurementPointsandNodes(:,2:4)/100;
 
-% create a variable structure to pass to dynaField
-fid = fopen(field_params_json);
-rawtext = fread(fid, '*char');
-fclose(fid);
-FIELD_PARAMS = jsondecode(rawtext);
+FIELD_PARAMS = read_json(field_params_json);
+
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
 
 % perform the field calculation
