@@ -52,5 +52,12 @@ class PointLoads:
                 except:
                     pass
 
-        plt.imshow(np.flipud(image_plane_loads.transpose()))
+
+        fig, axes = plt.subplots()
+        axes.pcolormesh(self.axes[1], -self.axes[2], image_plane_loads.transpose())
+        axes.set_aspect('equal')
+        axes.set_xlabel('Lateral (cm)')
+        axes.set_ylabel('Axial (cm)')
+        axes.invert_yaxis()
+        axes.set_title('Intensity Distribution')
         plt.show()
