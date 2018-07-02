@@ -1,5 +1,5 @@
 # this is an example of an older, CLI-based run script
-#python3 ../../mesh/GenMesh.py --xyz -0.5 0.0 0.0 1.0 -3.0 0.0 --numElem 50 100 300
+# python3 ../../mesh/GenMesh.py --xyz -0.5 0.0 0.0 1.0 -3.0 0.0 --numElem 50 100 300
 #python3 ../../mesh/bc.py --nonreflect
 matlab -nodesktop -nosplash -r "addpath('/home/mlp6/fem/field'); addpath('/home/mlp6/Documents/MATLAB/Field_II_Pro/m_files'); field2dyna('nodes.dyn', 'field_params.json'); quit;"
 
