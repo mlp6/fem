@@ -11,7 +11,7 @@ class PointLoads:
         """ """
         import numpy as np
 
-        self.pt_loads = np.loadtxt('PointLoads-f1.80-F1.0-FD0.120-a0.50.dyn',
+        self.pt_loads = np.loadtxt(self.loadfile,
                                    comments=['$', '*'],
                                    delimiter=',',
                                    dtype={'names': ('NID', 'Direction', 'LCID',
