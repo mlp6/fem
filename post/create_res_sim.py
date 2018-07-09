@@ -4,7 +4,7 @@
 
 def main():
     """ """
-    args = read_cli()
+    args = __read_cli()
     if args.legacynodes:
         legacynodes = True
     else:
@@ -40,7 +40,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     image_plane = extract_image_plane(snic, axes, ele_pos=0.0)
 
     header = read_header(dispout)
-    t = gen_t(extract_dt(dynadeck), header['num_timesteps'])
+    t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
 
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
                                  disp_scale, legacynodes)
@@ -81,7 +81,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
     with open_dispout(dispout) as fid:
         trange = [x for x in range(1, header['num_timesteps'] + 1)]
 
-        arfidata = preallocate_arfidata(image_plane, header['num_timesteps'])
+        arfidata = __preallocate_arfidata(image_plane, header['num_timesteps'])
 
         print('Total Timesteps: {}'.format(header['num_timesteps']))
         print('Extracting timestep:', end=' ')
@@ -155,7 +155,7 @@ def create_zdisp(nodeidlist, disp_slice_z_only, zdisp):
     return zdisp
 
 
-def read_cli():
+def __read_cli():
     """read in command line arguments"""
 
     import argparse as ap
@@ -446,7 +446,7 @@ def open_dispout(dispout):
     return dispout
 
 
-def preallocate_arfidata(image_plane, num_timesteps):
+def __preallocate_arfidata(image_plane, num_timesteps):
     """pre-allocate arfidata array
 
     Args:
@@ -472,12 +472,12 @@ def preallocate_arfidata(image_plane, num_timesteps):
                              image_plane.shape[0], num_timesteps),
                             dtype=np.float32)
     else:
-        raise IndeError("Unexpected number of dimensions in sorted nodes.")
+        raise IndexError("Unexpected number of dimensions in sorted nodes.")
 
     return arfidata
 
 
-def gen_t(dt, num_timesteps):
+def __gen_t(dt, num_timesteps):
     """generate time vector, starting at 0
 
     Args:
