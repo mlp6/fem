@@ -495,14 +495,14 @@ def __gen_t(dt, num_timesteps):
 
 def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
                       ressim="res_sim.h5", nodedyn="nodes.dyn",
-                      dispout="disp.dat.xz"):
+                      dispout="disp.dat"):
     """Extract 3D volume of specified displacement component.
 
     Args:
         dynadeck (str): LS-DYNA3D input deck (used to get dt)
         disp_comp (int): displacement component to extract (0, 1, 2)
         disp_scale (float): displacement scaling factor (cm -> um)
-        ressim (str): output file name (can be MAT or HDF5)
+        ressim (str): output file name [.mat, .h5, .pvd]
         nodedyn (str): node input file
         dispout (str): binary displacement data
     """
@@ -513,6 +513,9 @@ def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
 
     import fem_mesh
     import numpy as np
+
+    if not ressim.endswith(('.mat', '.h5', '.pvd')):
+        raise NameError('Output res_sim filename not supported')
 
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
