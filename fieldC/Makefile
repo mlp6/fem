@@ -1,11 +1,14 @@
 INCLUDE=.
 #FIELD_INCLUDE=/aiki/scratch/ndd/Field_II_Pro-master/c_library
-FIELD_INCLUDE=/work/ndd/Field_II_Pro-master/c_library
+#FIELD_INCLUDE=/home/mlp6/Documents/MATLAB/Field_II_Pro/c_library
 
 CFLAGS=
 
 OS=$(shell lsb_release -si)
 ifeq ($(OS),Ubuntu)
+	CFLAGS=-no-pie
+endif
+ifeq ($(OS),LinuxMint)
 	CFLAGS=-no-pie
 endif
 

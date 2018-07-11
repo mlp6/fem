@@ -14,3 +14,4 @@ d3*
 nodout
 env/
 .pytest_cache/
+.venv/
