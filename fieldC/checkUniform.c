@@ -32,7 +32,7 @@ node *temp, *prev, *next;
 	 else{
 		prev = NULL;
 		next = head;
-		while (next && next->value <= num) {
+		while ((next != NULL) && next->value <= num) {
 			if (next->value == num) {
 				free(temp);
 				return(head);
@@ -143,7 +143,10 @@ node *headX, *headY, *headZ, *p;
 
 	if (debug) fprintf(stderr, "unique Z points %d\n", uniqueZpnts);
 
-	xDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+	if ((xDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for xdiffs\n");
+		return(0);
+		}
 
 	p = headX;
 
@@ -159,7 +162,10 @@ node *headX, *headY, *headZ, *p;
 		p = p->nextEntry;
 		}
 
-	yDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+	if ((yDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for ydiffs\n");
+		return(0);
+		}
 
 	p = headY;
 
@@ -175,7 +181,10 @@ node *headX, *headY, *headZ, *p;
 		p = p->nextEntry;
 		}
 
-	zDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+	if ((zDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for zdiffs\n");
+		return(0);
+		}
 
 	p = headZ;
 
@@ -217,6 +226,9 @@ node *headX, *headY, *headZ, *p;
 	free_list(headX);
 	free_list(headY);
 	free_list(headZ);
+	free_list(xDiffs);
+	free_list(yDiffs);
+	free_list(zDiffs);
 
 	return(1);
 }

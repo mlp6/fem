@@ -1,0 +1,28 @@
+{
+	"probeType": "curvilinear",
+	"commands":
+	{
+		"Th": "Th=xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,Rfocus,noSubX,noSubY,FIELD_PARAMS.focus);",
+		"impulseResponse": "[impulseResponse]=defineImpResp(fractionalBandwidth,centerFrequency,FIELD_PARAMS);"
+	},
+	"convexRadius": 0.05,
+	"noSubY": 7.0,
+	"noSubX": 1.0,
+	"kerf": 3.2500000000000004e-05,
+	"elvFocus": 0.0725,
+	"height": 0.0112,
+	"noElements": 192.0,
+	"impulseResponse":
+	{
+		"f0": 4000000.0,
+		"phase": 0.0,
+		"bw": 55.0,
+		"wavetype": "gaussian"
+	},
+	"pitch": 0.000412,
+	"Rfocus": 0.0725,
+	"fractionalBandwidth": 0.7,
+	"Rconvex": 0.0394,
+	"width": 0.0002925,
+	"centerFrequency": 3000000.0
+}

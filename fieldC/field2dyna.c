@@ -47,6 +47,7 @@ field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
 	double freq, char *transducer, char *impulse, int threads, int lowNslow,
 	char *elemName, int forceNonlinear)
 {
+int dynaField();
 int i, numNodes;
 int debug = 0;
 int isUniform;

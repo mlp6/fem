@@ -1,10 +1,15 @@
-head	1.2;
+head	1.3;
 access;
 symbols;
 locks
-	ndd:1.2; strict;
+	ndd:1.3; strict;
 comment	@ * @;
 
+
+1.3
+date	2018.06.06.17.38.16;	author ndd;	state Exp;
+branches;
+next	1.2;
 
 1.2
 date	2018.05.01.18.08.17;	author ndd;	state Exp;
@@ -22,9 +27,9 @@ desc
 @
 
 
-1.2
+1.3
 log
-@changed to match correct output order.
+@updated to work with new JSON files.
 @
 text
 @#include <stdio.h>
@@ -72,9 +77,9 @@ double *intensity;
  *	impulse length and character string
  *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
  *		three doubles)
- *	int ROWS * no_elements * no_sub_y
- *	ThData, which is ROWS * no_elements * no_sub_y doubles. ROWS is a constant
- *		determined by the return of 'xdc_get, and no_elements, no_sub_y come
+ *	int ROWS * noElements * noSubY
+ *	ThData, which is ROWS * noElements * noSubY doubles. ROWS is a constant
+ *		determined by the return of 'xdc_get, and noElements, noSubY come
  *		from the probe description file. in our case, it appears that we only
  *		care about rectangles.
  */
@@ -207,9 +212,6 @@ double *intensity;
 
 	fprintf(stderr, "xdcGetSize %d\n", xdcGetSize);
 
-/* 	if (fread(params.ThData, sizeof(double), ROWS_RECT * no_elements * no_sub_y, inptr) != ROWS_RECT * no_elements * no_sub_y) { */
-
-	fprintf(stderr, "foo\n");
 	params.ThData = (double *)malloc(sizeof(double) * xdcGetSize);
 
 	if (params.ThData == NULL) {
@@ -217,7 +219,6 @@ double *intensity;
 		exit(EXIT_FAILURE);
 		}
 
-	fprintf(stderr, "foo\n");
 	if (fread(params.ThData, sizeof(double), xdcGetSize, inptr) != xdcGetSize) {
 		fprintf(stderr, "failed to read ThData\n");
 		exit(EXIT_FAILURE);
@@ -226,6 +227,25 @@ double *intensity;
 	fprintf(stderr, "params.ThData %f %f %f\n", params.ThData[7], params.ThData[8], params.ThData[9]);
 	fclose(inptr);
 }
+@
+
+
+1.2
+log
+@changed to match correct output order.
+@
+text
+@d46 3
+a48 3
+ *	int ROWS * no_elements * no_sub_y
+ *	ThData, which is ROWS * no_elements * no_sub_y doubles. ROWS is a constant
+ *		determined by the return of 'xdc_get, and no_elements, no_sub_y come
+a180 3
+/* 	if (fread(params.ThData, sizeof(double), ROWS_RECT * no_elements * no_sub_y, inptr) != ROWS_RECT * no_elements * no_sub_y) { */
+
+	fprintf(stderr, "foo\n");
+a187 1
+	fprintf(stderr, "foo\n");
 @
 
 

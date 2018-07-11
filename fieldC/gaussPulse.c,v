@@ -1,10 +1,15 @@
-head	1.10;
+head	1.11;
 access;
 symbols;
 locks
-	ndd:1.10; strict;
+	ndd:1.11; strict;
 comment	@ * @;
 
+
+1.11
+date	2018.06.12.18.40.41;	author ndd;	state Exp;
+branches;
+next	1.10;
 
 1.10
 date	2018.06.06.16.09.53;	author ndd;	state Exp;
@@ -62,9 +67,9 @@ desc
 @
 
 
-1.10
+1.11
 log
-@added error check
+@cleaned up the code a bit
 @
 text
 @/*
@@ -89,7 +94,7 @@ double tc, delta, tv;
 double impulse, stepSize;
 signal_type *impulseResponse = NULL;
 double freq;
-double ye, yc;
+double ye;
 int i, numSteps;
 
 	if (debug) fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
@@ -129,7 +134,7 @@ int i, numSteps;
 		if (debug) fprintf(stderr, "tc %g\n", tc);
 
 		if (debug) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
-		numSteps = ceil((tc * params.samplingFrequency) * 2);
+		numSteps = (int )ceil((tc * params.samplingFrequency) * 2);
 		freq = (double) params.samplingFrequency;
 
 		if (debug) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
@@ -167,6 +172,20 @@ int i, numSteps;
 	return(impulseResponse);
 }
 			
+@
+
+
+1.10
+log
+@added error check
+@
+text
+@d23 1
+a23 1
+double ye, yc;
+d63 1
+a63 1
+		numSteps = ceil((tc * params.samplingFrequency) * 2);
 @
 
 

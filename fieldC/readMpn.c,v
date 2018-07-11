@@ -1,10 +1,15 @@
-head	1.5;
+head	1.6;
 access;
 symbols;
 locks
-	ndd:1.5; strict;
+	ndd:1.6; strict;
 comment	@ * @;
 
+
+1.6
+date	2018.06.12.18.41.34;	author ndd;	state Exp;
+branches;
+next	1.5;
 
 1.5
 date	2018.04.07.21.44.21;	author ndd;	state Exp;
@@ -37,9 +42,9 @@ desc
 @
 
 
-1.5
+1.6
 log
-@corrected error in sscanf
+@cleaned up the code a bit
 @
 text
 @/*
@@ -68,6 +73,7 @@ struct nodeEntry *
 readMpn(char *NodeName, int *numNodes)
 {
 int i;
+int debug;
 int ret;
 FILE *nodesDyn;
 char *buf;
@@ -88,7 +94,7 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
 
 /*
  * going to make two passes through the data because I need the number of
@@ -103,7 +109,7 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
 	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);
@@ -122,6 +128,7 @@ struct nodeEntry *nodes;
 		if (buf[0] == '$') continue;
 		if (buf[0] == '*') continue;
 		ret = sscanf(buf, "%d,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+
 		if (ret != 4) {
 			fprintf(stderr, "wrong return from sscanf\n");
 			return(NULL);
@@ -135,6 +142,22 @@ struct nodeEntry *nodes;
 
 	return(nodes);
 }
+@
+
+
+1.5
+log
+@corrected error in sscanf
+@
+text
+@d27 1
+d48 1
+a48 1
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+d63 1
+a63 1
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+d82 1
 @
 
 

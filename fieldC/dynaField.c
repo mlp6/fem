@@ -49,6 +49,7 @@ sys_con_type   *sys_con;      /*  System constants for Field II */
 
 dynaField(struct FieldParams params, int threads, int numNodes, int lowNslow)
 {
+int dynaWrite();
 int i, j;
 int debug = 0;
 aperture_type *Th = NULL;
@@ -58,13 +59,13 @@ FILE *jsonInput;
 char jsonFileName[128];
 long len;
 char *data, *out;
-int no_elements, no_sub_x, no_sub_y;
-int no_elements_y;
+int noElements, noSubX, noSubY;
+int noElementsY;
 double width, height, kerf, Rconvex, Rfocus;
 double heights;
 double fractBandwidth, centerFreq;
-point_type *focus, *points;
-double exciteFreq, texcite;
+point_type *points;
+double exciteFreq;
 signal_type *excitationPulse = NULL;
 signal_type *impulseResponse = NULL, *gaussPulse();
 signal_type **pressure = NULL;
@@ -101,6 +102,12 @@ int xdcGetSize;
 			params.pointsAndNodes[0].z);
 		}
 
+/*
+ * splint throws a warning here because set_field wants doubles even though
+ * some params are really ints. I'm going to ignore it; I think the code is
+ * clearer without the cast.
+ */
+
 	set_field("c", params.soundSpeed);
 	set_field("fs", params.samplingFrequency);
 
@@ -110,24 +117,24 @@ int xdcGetSize;
 		threads, params.threads);
 
 /* get info from JSON */
-	strcpy(jsonFileName, "./c52Fixed.json");
+	strcpy(jsonFileName, "./c52.json");
 
-	if ((jsonInput = fopen(jsonFileName,"rb")) == NULL) {
+	if ((jsonInput = fopen(jsonFileName, "rb")) == NULL) {
 		fprintf(stderr, "couldn't open json file %s\n", jsonFileName);
 		return(0);
 		}
 
-	fseek(jsonInput,0,SEEK_END);
+	fseek(jsonInput, 0, SEEK_END);
 	len = ftell(jsonInput);
 
-	fseek(jsonInput,0,SEEK_SET);
+	fseek(jsonInput, 0, SEEK_SET);
 
-	if ((data = (char*)malloc(len+1)) == NULL) {
+	if ((data = (char *)malloc(len+1)) == NULL) {
 		fprintf(stderr, "couldn't allocate space for json data\n");
 		return(0);
 		}
 
-	if (fread(data,1,len,jsonInput) != len) {
+	if (fread(data, 1, len, jsonInput) != len) {
 		fprintf(stderr, "couldn't read json data\n");
 		return(0);
 		}
@@ -136,7 +143,7 @@ int xdcGetSize;
 
 	probeInfo = cJSON_Parse(data);
 	if (!probeInfo) {
-		printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+		printf("Error before: [%s]\n", cJSON_GetErrorPtr());
 		return(0);
 		}
 
@@ -147,12 +154,12 @@ int xdcGetSize;
 
 	if (debug) fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
 
-	no_elements = cJSON_GetObjectItem(probeInfo, "no_elements")->valueint;
-	no_sub_x = cJSON_GetObjectItem(probeInfo, "no_sub_x")->valueint;
-	no_sub_y = cJSON_GetObjectItem(probeInfo, "no_sub_y")->valueint;
+	noElements = cJSON_GetObjectItem(probeInfo, "noElements")->valueint;
+	noSubX = cJSON_GetObjectItem(probeInfo, "noSubX")->valueint;
+	noSubY = cJSON_GetObjectItem(probeInfo, "noSubY")->valueint;
 
-	if (debug) fprintf(stderr, "elements %d subX %d subY %d\n", no_elements,
-		no_sub_x, no_sub_y);
+	if (debug) fprintf(stderr, "elements %d subX %d subY %d\n", noElements,
+		noSubX, noSubY);
 
 	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
 	if (debug) fprintf(stderr, "width %f\n", width);
@@ -166,7 +173,7 @@ int xdcGetSize;
 
 	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
 
-	if (debug) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probe_type")->valuestring);
+	if (debug) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probeType")->valuestring);
 
 	commands = cJSON_GetObjectItem(probeInfo, "commands");
 	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
@@ -188,11 +195,11 @@ int xdcGetSize;
 	else if (strstr(thCmd, "xdc_convex_focused_array") != NULL) {
 		if (debug) fprintf(stderr, "calling xdc_convex_focused_array\n");
 		if (debug) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
-			no_elements,width,height,kerf,Rconvex, Rfocus,no_sub_x,
-			no_sub_y,params.focus.x, params.focus.y, params.focus.z);
+			noElements,width,height,kerf,Rconvex, Rfocus,noSubX,
+			noSubY,params.focus.x, params.focus.y, params.focus.z);
 
-		Th = xdc_convex_focused_array(no_elements,width,height,kerf,Rconvex,
-			Rfocus,no_sub_x,no_sub_y,params.focus);
+		Th = xdc_convex_focused_array(noElements,width,height,kerf,Rconvex,
+			Rfocus,noSubX,noSubY,params.focus);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_convex_focused_array\n");
 			return(0);
@@ -204,10 +211,10 @@ int xdcGetSize;
 	else if (strstr(thCmd, "xdc_focused_multirow") != NULL) {
 /* linear only? should this be handled differently? */
 		if (debug) fprintf(stderr, "calling xdc_focused_multirow\n");
-		no_elements_y = 1;
+		noElementsY = 1;
 		heights = height;
-		Th = xdc_focused_multirow(no_elements,width,no_elements_y,&heights,
-			kerf,kerf, Rfocus,no_sub_x,no_sub_y,params.focus);
+		Th = xdc_focused_multirow(noElements,width,noElementsY,&heights,
+			kerf,kerf, Rfocus,noSubX,noSubY,params.focus);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_focused_multirow\n");
 			return(0);
@@ -219,7 +226,7 @@ int xdcGetSize;
 	if (debug) fprintf(stderr, "impulse response command %s\n",
 		cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
 
-	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulse_response");
+	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
 
 /*
  * I think the next thing is to set impulse. this seems to be the same for
@@ -248,7 +255,7 @@ int xdcGetSize;
  * note that 'ROWS*' is specific to the type of info you request from xdc_get
  */
 
-	xdcGetSize = ROWS_RECT * no_elements * no_sub_y;
+	xdcGetSize = ROWS_RECT * noElements * noSubY;
 
 	if (debug) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
 
@@ -269,7 +276,7 @@ int xdcGetSize;
 			params.ThData[8], params.ThData[9]);
 
 		if (debug > 1)
-			for (i = 0; i < 26*no_elements*no_sub_x*no_sub_y; i += 26) {
+			for (i = 0; i < 26*noElements*noSubX*noSubY; i += 26) {
 				fprintf(stderr, "%3.0f %3.0f \n", params.ThData[i],
 					params.ThData[i+1]);
 				}
@@ -287,7 +294,7 @@ int xdcGetSize;
 	if (debug) fprintf(stderr, "calling cAL\n");
 
 	lensCorrection = correctAxialLens(params.ThData, ROWS_RECT,
-		no_elements * no_sub_y, debug); 
+		noElements * noSubY, debug); 
 
 	if (lensCorrection == -1) return(0);
 
@@ -312,7 +319,7 @@ int xdcGetSize;
 	if (debug) fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g\n",
 		params.frequency, exciteFreq, stepSize);
 
-	numSteps = ceil ((double )numCYC / exciteFreq / stepSize);
+	numSteps = (int )ceil ((double )numCYC / exciteFreq / stepSize);
 
 	excitationPulse = alloc_signal(numSteps, 0);
 
@@ -467,9 +474,9 @@ int xdcGetSize;
  *	impulse, character string
  *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
  *		three doubles)
- *	int ROWS * no_elements * no_sub_y
- *	ThData, which is ROWS * no_elements * no_sub_y doubles. ROWS is a constant
- *		determined by the return of 'xdc_get, and no_elements, no_sub_y come
+ *	int ROWS * noElements * noSubY
+ *	ThData, which is ROWS * noElements * noSubY doubles. ROWS is a constant
+ *		determined by the return of 'xdc_get, and noElements, noSubY come
  *		from the probe description file. in our case, it appears that we only
  *		care about rectangles.
  */

@@ -24,8 +24,8 @@ struct nodeEntry *
 readMpn(char *NodeName, int *numNodes)
 {
 int i;
+int debug;
 int ret;
-int temp;
 FILE *nodesDyn;
 char *buf;
 size_t lineLength = LINE;
@@ -45,7 +45,7 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-	fprintf(stderr, "numNodes %d\n", *numNodes);
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
 
 /*
  * going to make two passes through the data because I need the number of
@@ -60,7 +60,7 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-	fprintf(stderr, "numNodes %d\n", *numNodes);
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
 	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);

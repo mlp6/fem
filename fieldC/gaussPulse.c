@@ -20,7 +20,7 @@ double tc, delta, tv;
 double impulse, stepSize;
 signal_type *impulseResponse = NULL;
 double freq;
-double ye, yc;
+double ye;
 int i, numSteps;
 
 	if (debug) fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
@@ -60,7 +60,7 @@ int i, numSteps;
 		if (debug) fprintf(stderr, "tc %g\n", tc);
 
 		if (debug) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
-		numSteps = ceil((tc * params.samplingFrequency) * 2);
+		numSteps = (int )ceil((tc * params.samplingFrequency) * 2);
 		freq = (double) params.samplingFrequency;
 
 		if (debug) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);

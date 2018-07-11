@@ -1,10 +1,15 @@
-head	1.6;
+head	1.7;
 access;
 symbols;
 locks
-	ndd:1.6; strict;
+	ndd:1.7; strict;
 comment	@ * @;
 
+
+1.7
+date	2018.06.12.18.24.13;	author ndd;	state Exp;
+branches;
+next	1.6;
 
 1.6
 date	2018.06.06.13.46.48;	author ndd;	state Exp;
@@ -42,9 +47,9 @@ desc
 @
 
 
-1.6
+1.7
 log
-@added error return for checkUniform
+@a little code cleanup
 @
 text
 @/*
@@ -81,7 +86,7 @@ node *temp, *prev, *next;
 	 else{
 		prev = NULL;
 		next = head;
-		while (next && next->value <= num) {
+		while ((next != NULL) && next->value <= num) {
 			if (next->value == num) {
 				free(temp);
 				return(head);
@@ -151,7 +156,6 @@ node *headX, *headY, *headZ, *p;
 
 	for (i = 0; i < numNodes; i++) {
 		headX = insertSortedUnique(headX, pointsAndNodes[i].x);
-		fprintf(stderr, "couldn't allocate space for sort node\n");
 		headY = insertSortedUnique(headY, pointsAndNodes[i].y);
 		headZ = insertSortedUnique(headZ, pointsAndNodes[i].z);
 		if ((headX == NULL) || (headY == NULL) || (headZ == NULL)) {
@@ -193,7 +197,10 @@ node *headX, *headY, *headZ, *p;
 
 	if (debug) fprintf(stderr, "unique Z points %d\n", uniqueZpnts);
 
-	xDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+	if ((xDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for xdiffs\n");
+		return(0);
+		}
 
 	p = headX;
 
@@ -209,7 +216,10 @@ node *headX, *headY, *headZ, *p;
 		p = p->nextEntry;
 		}
 
-	yDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+	if ((yDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for ydiffs\n");
+		return(0);
+		}
 
 	p = headY;
 
@@ -225,7 +235,10 @@ node *headX, *headY, *headZ, *p;
 		p = p->nextEntry;
 		}
 
-	zDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+	if ((zDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for zdiffs\n");
+		return(0);
+		}
 
 	p = headZ;
 
@@ -267,9 +280,35 @@ node *headX, *headY, *headZ, *p;
 	free_list(headX);
 	free_list(headY);
 	free_list(headZ);
+	free_list(xDiffs);
+	free_list(yDiffs);
+	free_list(zDiffs);
 
 	return(1);
 }
+@
+
+
+1.6
+log
+@added error return for checkUniform
+@
+text
+@d35 1
+a35 1
+		while (next && next->value <= num) {
+a104 1
+		fprintf(stderr, "couldn't allocate space for sort node\n");
+d146 4
+a149 1
+	xDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+d165 4
+a168 1
+	yDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+d184 4
+a187 1
+	zDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1));
+d229 3
 @
 
 

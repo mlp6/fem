@@ -43,9 +43,9 @@ double *intensity;
  *	impulse length and character string
  *	pointsAndNodes, which is numNodes nodeEntry structs (one int,
  *		three doubles)
- *	int ROWS * no_elements * no_sub_y
- *	ThData, which is ROWS * no_elements * no_sub_y doubles. ROWS is a constant
- *		determined by the return of 'xdc_get, and no_elements, no_sub_y come
+ *	int ROWS * noElements * noSubY
+ *	ThData, which is ROWS * noElements * noSubY doubles. ROWS is a constant
+ *		determined by the return of 'xdc_get, and noElements, noSubY come
  *		from the probe description file. in our case, it appears that we only
  *		care about rectangles.
  */

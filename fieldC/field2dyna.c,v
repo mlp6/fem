@@ -1,10 +1,15 @@
-head	1.12;
+head	1.13;
 access;
 symbols;
 locks
-	ndd:1.12; strict;
+	ndd:1.13; strict;
 comment	@ * @;
 
+
+1.13
+date	2018.06.12.18.40.26;	author ndd;	state Exp;
+branches;
+next	1.12;
 
 1.12
 date	2018.06.06.16.09.07;	author ndd;	state Exp;
@@ -72,9 +77,9 @@ desc
 @
 
 
-1.12
+1.13
 log
-@put some of the error prints behind 'debug'
+@cleaned up the code a bit
 @
 text
 @/*
@@ -126,6 +131,7 @@ field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
 	double freq, char *transducer, char *impulse, int threads, int lowNslow,
 	char *elemName, int forceNonlinear)
 {
+int dynaField();
 int i, numNodes;
 int debug = 0;
 int isUniform;
@@ -257,6 +263,15 @@ int status;
 		}
 
 }
+@
+
+
+1.12
+log
+@put some of the error prints behind 'debug'
+@
+text
+@d50 1
 @
 
 
