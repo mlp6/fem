@@ -257,7 +257,7 @@ int xdcGetSize;
 
 	xdcGetSize = ROWS_RECT * noElements * noSubY;
 
-	if (debug) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
+	if (1) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
 
 	if ((params.ThData = (double *)malloc(xdcGetSize * sizeof(double))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for ThData\n");
@@ -373,7 +373,7 @@ int xdcGetSize;
  *
  */
 
-	if (debug) fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
+	if (1) fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
 
 	if (debug) field_info;
 
@@ -403,7 +403,7 @@ int xdcGetSize;
 		return(0);
 		}
 
-	if (debug) {
+	if (lowNslow) {
 		fprintf(stderr, "running low-n-slow\n");
 		for (i = 0; i < numNodes; i++) {
 			if (debug) fprintf(stderr, "i %d\n", i);
@@ -420,6 +420,7 @@ int xdcGetSize;
 				fprintf(stderr, "pressure %g\n", pressure[0]->data[j]);
 			for (j = 0; j < pressure[0]->no_samples; j++)
 				intensity[i] += pressure[0]->data[j] * pressure[0]->data[j];
+			free_signal(pressure[0]);
 			}
 		}
 	else {
@@ -438,7 +439,7 @@ int xdcGetSize;
 	if (debug) for (i = 0; i < numNodes; i++)
 		fprintf(stderr, "intensity %g\n", intensity[i]);
 
-	if (debug) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
+	if (1) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
 		pressure[0]->no_samples);
 
 	if (debug) for (j = 0; j < pressure[0]->no_samples; j++)
