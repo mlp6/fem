@@ -49,7 +49,7 @@ field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
 {
 int dynaField();
 int i, numNodes;
-int debug = 0;
+int debug = 1;
 int isUniform;
 double temp;
 struct nodeEntry *pointsAndNodes, *readMpn();
@@ -58,11 +58,20 @@ char nodeVolFileName[80];
 char calcNodeVolCmd[80];
 int status;
 
-	if (debug) fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
-	if (debug) fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
-	if (debug) fprintf(stderr, "in field2dyna, threads %d\n", threads);
-	if (debug) fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
-	if (debug) fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+	if (debug) {
+		fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n",
+			nodeName);
+		fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha,
+			fnum, freq);
+		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focus.x,
+			focus.y, focus.z);
+		fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+		fprintf(stderr, "in field2dyna, impulse %s\n", impulse);
+		fprintf(stderr, "in field2dyna, threads %d\n", threads);
+		fprintf(stderr, "in field2dyna, lowNslow %d\n", lowNslow);
+		fprintf(stderr, "in field2dyna, element name %s\n", elemName);
+		fprintf(stderr, "in field2dyna, forceNonlinear %d\n", forceNonlinear);
+		}
 
 	pointsAndNodes = readMpn(nodeName, &numNodes);
 	if (pointsAndNodes == NULL) {
