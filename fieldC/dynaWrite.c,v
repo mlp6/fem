@@ -1,10 +1,15 @@
-head	1.4;
+head	1.5;
 access;
 symbols;
 locks
-	ndd:1.4; strict;
+	ndd:1.5; strict;
 comment	@ * @;
 
+
+1.5
+date	2018.07.18.17.59.28;	author ndd;	state Exp;
+branches;
+next	1.4;
 
 1.4
 date	2018.06.06.16.08.29;	author ndd;	state Exp;
@@ -32,9 +37,9 @@ desc
 @
 
 
-1.4
+1.5
 log
-@changed to return error code instead of exiting
+@added verbose argument
 @
 text
 @#include <stdio.h>
@@ -42,12 +47,12 @@ text
 #include <string.h>
 #include "field.h"
 
-dynaWrite(char *outFileName, double *intensity, struct FieldParams params, int numNodes, int xdcGetSize)
+dynaWrite(char *outFileName, double *intensity, struct FieldParams params, int numNodes, int xdcGetSize, int verbose)
 {
 int i;
 FILE *outptr;
 
-fprintf(stderr, "output file %s\n", outFileName);
+	if (verbose == 1) fprintf(stderr, "output file %s\n", outFileName);
 
 /* open output file */
 
@@ -148,6 +153,20 @@ fprintf(stderr, "output file %s\n", outFileName);
 
 	return(1);
 }
+@
+
+
+1.4
+log
+@changed to return error code instead of exiting
+@
+text
+@d6 1
+a6 1
+dynaWrite(char *outFileName, double *intensity, struct FieldParams params, int numNodes, int xdcGetSize)
+d11 1
+a11 1
+fprintf(stderr, "output file %s\n", outFileName);
 @
 
 

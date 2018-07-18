@@ -1,43 +1,4 @@
-head	1.4;
-access;
-symbols;
-locks
-	ndd:1.4; strict;
-comment	@ * @;
-
-
-1.4
-date	2018.07.18.18.03.02;	author ndd;	state Exp;
-branches;
-next	1.3;
-
-1.3
-date	2018.07.18.17.32.41;	author ndd;	state Exp;
-branches;
-next	1.2;
-
-1.2
-date	2018.07.12.15.19.21;	author ndd;	state Exp;
-branches;
-next	1.1;
-
-1.1
-date	2018.07.12.14.26.21;	author ndd;	state Exp;
-branches;
-next	;
-
-
-desc
-@routine to call field2dyna, passing in arguments
-@
-
-
-1.4
-log
-@added verbose argument, changed 'debug' to 'verbose'; got rid of forceNonLinear
-@
-text
-@/* test routine */
+/* test routine */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,7 +18,7 @@ const char *usage[] = {
 	"Usage: field2dyna [verbosity] inputFileName\n",
 	"Options:\n",
 	"\t-v[vv]            amount of verbosity\n",
-	0};
+	};
 
 main(int argc, char **argv)
 {
@@ -67,25 +28,33 @@ FILE *input;
 cJSON *focusParams, *probeInfo;
 char *field2dyna();
 char *data;
-char inputFileName[128];
+char *inputFileName;
 point_type focus;
 char *nodeFileName, *elemsFileName, *transducer, *impulse;
 double alpha, fnum, freq;
-int threads, lowNslow;
+int threads, lowNslow, forceNonlinear;
 
 	if (argc <= 1) {
 		fprintf(stderr, "the routine requires a JSON file as an argument!\n");
 		exit(0);
 		}
 
+					for (j = 0; j < 3; j++)
+						fprintf(stderr, "first usage %d %s", j, usage[j]);
+
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-')
 			switch(argv[i][1]) {
 				default:
-					fprintf(stderr, "\nbad arg: %s\n\n", argv[i]);
-					for (j = 0; usage[j]; j++)
-						fprintf(stderr, "%s", usage[j]);
-					fprintf(stderr, "\n");
+/* 					fprintf(stderr, "bad arg: %s\n", argv[i]); */
+					fprintf(stderr, "oops\n");
+					/*
+fprintf(stderr, "usage 0 %s", usage[0]);
+fprintf(stderr, "usage 1 %s", usage[1]);
+fprintf(stderr, "usage 2 %s", usage[2]);
+					for (j = 0; j < 3; j++)
+						fprintf(stderr, "usage %d %s\n", j, usage[j]);
+					*/
 					exit(0);
 
 				case 'v':       /*  verbose*/
@@ -100,6 +69,8 @@ int threads, lowNslow;
 
 /* get info from JSON */
 	input = fopen(inputFileName, "rb");
+fprintf(stderr, "verbose %d input file %s\n", verbose, inputFileName);
+exit(0);
 
 	fseek(input, 0, SEEK_END);
 	len = ftell(input);
@@ -133,10 +104,12 @@ int threads, lowNslow;
 
 	elemsFileName = cJSON_GetObjectItem(probeInfo, "elemsFileName")->valuestring;
 
+	forceNonlinear = cJSON_GetObjectItem(probeInfo, "forceNonlinear")->valueint;
+
 	field2dyna(nodeFileName, alpha, fnum,
 		focus, freq, transducer, impulse,
 		threads, lowNslow,
-	    elemsFileName, verbose);
+	    elemsFileName, forceNonlinear);
 
 /*
 	field2dyna(char *nodeFileName, double alpha, double fnum,
@@ -149,80 +122,3 @@ field2dyna("./myNodes.dyn", .5, 1.3, focus, 7.2, "vf105", "gaussian", 1, 0,
 */
 
 }
-@
-
-
-1.3
-log
-@added better argument processing, including verbosity.
-@
-text
-@d35 1
-a35 1
-int threads, lowNslow, forceNonlinear;
-a96 2
-	forceNonlinear = cJSON_GetObjectItem(probeInfo, "forceNonlinear")->valueint;
-
-d100 1
-a100 1
-	    elemsFileName, forceNonlinear);
-@
-
-
-1.2
-log
-@changed to require a json input file rather than having to recompile
-@
-text
-@d4 2
-d12 3
-a14 2
- * main takes one argument, the name of a JSON file that has the parameters
- * to be passed to field2dyna. if there's no file name, we'll exit.
-d17 6
-d25 2
-a26 1
-int i, len;
-d31 1
-d37 1
-a37 1
-	if (argc != 2) {
-d42 20
-d63 7
-a69 6
-	input = fopen(argv[1],"rb");
-	fseek(input,0,SEEK_END);
-	len=ftell(input );
-	fseek(input,0,SEEK_SET);
-	data=(char*)malloc(len+1);
-	fread(data,1,len,input);
-@
-
-
-1.1
-log
-@Initial revision
-@
-text
-@d5 1
-d9 6
-a14 1
-main()
-d16 3
-a18 1
-int i;
-d20 1
-d22 32
-d55 16
-a70 3
-	focus.x = 0;
-	focus.y = 0;
-	focus.z = 0.02;
-d73 4
-a76 4
-field2dyna(char *nodeName, double alpha, double fnum, struct Focus focus,
-    double freq, char *transducer, char *impulse, int threads, int lowNslow,
-	    char *elemName, int forceNonlinear)
-*/
-d80 1
-@

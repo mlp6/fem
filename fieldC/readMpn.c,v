@@ -1,10 +1,15 @@
-head	1.6;
+head	1.7;
 access;
 symbols;
 locks
-	ndd:1.6; strict;
+	ndd:1.7; strict;
 comment	@ * @;
 
+
+1.7
+date	2018.07.18.18.01.50;	author ndd;	state Exp;
+branches;
+next	1.6;
 
 1.6
 date	2018.06.12.18.41.34;	author ndd;	state Exp;
@@ -42,9 +47,9 @@ desc
 @
 
 
-1.6
+1.7
 log
-@cleaned up the code a bit
+@added verbose argument, changed 'debug' to 'verbose'
 @
 text
 @/*
@@ -70,10 +75,9 @@ text
 #define LINE 160			/* space for input line */
 
 struct nodeEntry *
-readMpn(char *NodeName, int *numNodes)
+readMpn(char *NodeName, int *numNodes, int verbose)
 {
 int i;
-int debug;
 int ret;
 FILE *nodesDyn;
 char *buf;
@@ -94,7 +98,7 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
 
 /*
  * going to make two passes through the data because I need the number of
@@ -109,7 +113,7 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
 	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);
@@ -142,6 +146,25 @@ struct nodeEntry *nodes;
 
 	return(nodes);
 }
+@
+
+
+1.6
+log
+@cleaned up the code a bit
+@
+text
+@d24 1
+a24 1
+readMpn(char *NodeName, int *numNodes)
+a26 1
+int debug;
+d47 1
+a47 1
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
+d62 1
+a62 1
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
 @
 
 

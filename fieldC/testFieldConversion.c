@@ -20,6 +20,7 @@ void
 main(int argc, char **argv)
 {
 int i;
+int verbose = 0;
 struct nodeEntry *pointsAndNodes, *readMpn();
 char *nodeName = "./myNodesShort.dyn";
 char cmd[50];
@@ -39,7 +40,7 @@ FILE *checkResult;
 
 /* check number of nodes first */
 
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 		fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
 		sprintf(cmd, "grep '^[0-9]' %s | wc -l", nodeName);
 /* 		fprintf(stderr, "cmd %s\n", cmd); */
@@ -68,14 +69,14 @@ FILE *checkResult;
 	else if (strcmp(argv[1], "checkOnAxis") == 0) {
 		fprintf(stderr, "test is checkOnAxis\n");
 		nodeName = "./myNodes.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		if (checkOnAxis(pointsAndNodes, numNodes) == 1)
 			fprintf(stderr, "checkOnAxis correct for good node list\n");
 		else fprintf(stderr, "checkOnAxis wrong for good node list\n");
 
 		nodeName = "./myNodesBadAxis.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		if (checkOnAxis(pointsAndNodes, numNodes) == 0)
 			fprintf(stderr, "checkOnAxis correct for bad node list\n");
@@ -84,7 +85,7 @@ FILE *checkResult;
 	else if (strcmp(argv[1], "checkUniform") == 0) {
 		fprintf(stderr, "test is checkUniform\n");
 		nodeName = "./myNodes.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		i = checkUniform(pointsAndNodes, numNodes, 0);
 
@@ -95,7 +96,7 @@ FILE *checkResult;
 		else fprintf(stderr, "checkUniform wrong for good node list\n");
 
 		nodeName = "./myNodesNonUniform.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		i = checkUniform(pointsAndNodes, numNodes, 0);
 

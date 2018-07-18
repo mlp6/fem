@@ -11,7 +11,7 @@
 #include <limits.h>
 
 double
-correctAxialLens(double *thData, int rows, int numPoints, int debug)
+correctAxialLens(double *thData, int rows, int numPoints, int verbose)
 {
 int i;
 /*
@@ -25,7 +25,7 @@ int indexMin = -1;
 
 /* find center element */
 
-	if (debug) fprintf(stderr, "in correctAxialLens, rows %d, numPoints %d\n",
+	if (verbose == 1) fprintf(stderr, "in correctAxialLens, rows %d, numPoints %d\n",
 		rows, numPoints);
 
 	for (i = 0; i < numPoints; i++) {
@@ -40,11 +40,11 @@ int indexMin = -1;
 		return(-1);
 		}
 
-	if (debug) fprintf(stderr, "in correctAxialLens, indexMin %d\n", indexMin);
+	if (verbose == 1) fprintf(stderr, "in correctAxialLens, indexMin %d\n", indexMin);
 
 	correction = thData[rows * indexMin + zPosLoc];
 
-	if (debug) fprintf(stderr, "in correctAxialLens, correction %g\n", correction);
+	if (verbose == 1) fprintf(stderr, "in correctAxialLens, correction %g\n", correction);
 
 	return(correction);
 }

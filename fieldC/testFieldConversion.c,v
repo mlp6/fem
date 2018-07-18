@@ -1,10 +1,15 @@
-head	1.5;
+head	1.6;
 access;
 symbols;
 locks
-	ndd:1.5; strict;
+	ndd:1.6; strict;
 comment	@ * @;
 
+
+1.6
+date	2018.07.18.18.02.21;	author ndd;	state Exp;
+branches;
+next	1.5;
 
 1.5
 date	2018.06.06.13.45.50;	author ndd;	state Exp;
@@ -37,9 +42,9 @@ desc
 @
 
 
-1.5
+1.6
 log
-@added error return for checkUniform
+@added verbose to readMpn
 @
 text
 @#include <stdio.h>
@@ -64,6 +69,7 @@ void
 main(int argc, char **argv)
 {
 int i;
+int verbose = 0;
 struct nodeEntry *pointsAndNodes, *readMpn();
 char *nodeName = "./myNodesShort.dyn";
 char cmd[50];
@@ -83,7 +89,7 @@ FILE *checkResult;
 
 /* check number of nodes first */
 
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 		fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
 		sprintf(cmd, "grep '^[0-9]' %s | wc -l", nodeName);
 /* 		fprintf(stderr, "cmd %s\n", cmd); */
@@ -112,14 +118,14 @@ FILE *checkResult;
 	else if (strcmp(argv[1], "checkOnAxis") == 0) {
 		fprintf(stderr, "test is checkOnAxis\n");
 		nodeName = "./myNodes.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		if (checkOnAxis(pointsAndNodes, numNodes) == 1)
 			fprintf(stderr, "checkOnAxis correct for good node list\n");
 		else fprintf(stderr, "checkOnAxis wrong for good node list\n");
 
 		nodeName = "./myNodesBadAxis.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		if (checkOnAxis(pointsAndNodes, numNodes) == 0)
 			fprintf(stderr, "checkOnAxis correct for bad node list\n");
@@ -128,7 +134,7 @@ FILE *checkResult;
 	else if (strcmp(argv[1], "checkUniform") == 0) {
 		fprintf(stderr, "test is checkUniform\n");
 		nodeName = "./myNodes.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		i = checkUniform(pointsAndNodes, numNodes, 0);
 
@@ -139,7 +145,7 @@ FILE *checkResult;
 		else fprintf(stderr, "checkUniform wrong for good node list\n");
 
 		nodeName = "./myNodesNonUniform.dyn";
-	    pointsAndNodes = readMpn(nodeName, &numNodes);
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
 		i = checkUniform(pointsAndNodes, numNodes, 0);
 
@@ -150,6 +156,30 @@ FILE *checkResult;
 		else fprintf(stderr, "checkUniform wrong for bad node list\n");
 		}
 }
+@
+
+
+1.5
+log
+@added error return for checkUniform
+@
+text
+@d23 1
+d43 1
+a43 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d72 1
+a72 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d79 1
+a79 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d88 1
+a88 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d99 1
+a99 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
 @
 
 

@@ -7,7 +7,7 @@ main()
 int debug = 0, numNodes, ret;
 struct nodeEntry *pointsAndNodes, *readMpn();
 
-	pointsAndNodes = readMpn("./myNodesNonUniform.dyn", &numNodes);
+	pointsAndNodes = readMpn("./myNodesNonUniform.dyn", &numNodes, debug);
 	if (pointsAndNodes == NULL) {
 		fprintf(stderr, "didn't get enough values from readMpn\n");
 		exit(0);

@@ -21,10 +21,9 @@
 #define LINE 160			/* space for input line */
 
 struct nodeEntry *
-readMpn(char *NodeName, int *numNodes)
+readMpn(char *NodeName, int *numNodes, int verbose)
 {
 int i;
-int debug;
 int ret;
 FILE *nodesDyn;
 char *buf;
@@ -45,7 +44,7 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
 
 /*
  * going to make two passes through the data because I need the number of
@@ -60,7 +59,7 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
 	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);

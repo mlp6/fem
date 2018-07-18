@@ -88,7 +88,7 @@ void free_list(node *head)
  */
 
 int
-checkUniform(struct nodeEntry *pointsAndNodes, int numNodes, int debug)
+checkUniform(struct nodeEntry *pointsAndNodes, int numNodes, int verbose)
 {
 int i;
 int uniqueXpnts = 0, uniqueYpnts = 0, uniqueZpnts = 0;
@@ -111,37 +111,37 @@ node *headX, *headY, *headZ, *p;
 		}
 
 	p = headX;
-	if (debug) fprintf(stderr, "\nThe X numbers are:\n");
+	if (verbose == 3) fprintf(stderr, "\nThe X numbers are:\n");
 
 	while (p != NULL) {
-		if (debug) fprintf(stderr, "%f\n", p->value);
+		if (verbose == 3) fprintf(stderr, "%f\n", p->value);
 		uniqueXpnts++;
 		p = p->nextEntry;
 		}
 
-	if (debug) fprintf(stderr, "unique X points %d\n", uniqueXpnts);
+	if (verbose == 3) fprintf(stderr, "unique X points %d\n", uniqueXpnts);
 
 	p = headY;
-	if (debug) fprintf(stderr, "\nThe Y numbers are:\n");
+	if (verbose == 3) fprintf(stderr, "\nThe Y numbers are:\n");
 
 	while (p != NULL) {
-		if (debug) fprintf(stderr, "%f\n", p->value);
+		if (verbose == 3) fprintf(stderr, "%f\n", p->value);
 		uniqueYpnts++;
 		p = p->nextEntry;
 		}
 
-	if (debug) fprintf(stderr, "unique Y points %d\n", uniqueYpnts);
+	if (verbose == 3) fprintf(stderr, "unique Y points %d\n", uniqueYpnts);
 
 	p = headZ;
-	if (debug) fprintf(stderr, "\nThe Z numbers are:\n");
+	if (verbose == 3) fprintf(stderr, "\nThe Z numbers are:\n");
 
 	while (p != NULL) {
-		if (debug) fprintf(stderr, "%f\n", p->value);
+		if (verbose == 3) fprintf(stderr, "%f\n", p->value);
 		uniqueZpnts++;
 		p = p->nextEntry;
 		}
 
-	if (debug) fprintf(stderr, "unique Z points %d\n", uniqueZpnts);
+	if (verbose == 3) fprintf(stderr, "unique Z points %d\n", uniqueZpnts);
 
 	if ((xDiffs = (double *)malloc(sizeof(double) * (uniqueXpnts - 1))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for xdiffs\n");
@@ -156,7 +156,7 @@ node *headX, *headY, *headZ, *p;
 		if (p->nextEntry != NULL) {
 			xDiffs[i] = (p->nextEntry)->value - p->value;
 			if (i == 0) xSecondLessFirst = xDiffs[i];
-			if (debug) fprintf(stderr, "x 2 - 1 %f\n", xDiffs[i]);
+			if (verbose == 3) fprintf(stderr, "x 2 - 1 %f\n", xDiffs[i]);
 			i++;
 			}
 		p = p->nextEntry;
@@ -175,7 +175,7 @@ node *headX, *headY, *headZ, *p;
 		if (p->nextEntry != NULL) {
 			yDiffs[i] = (p->nextEntry)->value - p->value;
 			if (i == 0) ySecondLessFirst = yDiffs[i];
-			if (debug) fprintf(stderr, "y 2 - 1 %f\n", yDiffs[i]);
+			if (verbose == 3) fprintf(stderr, "y 2 - 1 %f\n", yDiffs[i]);
 			i++;
 			}
 		p = p->nextEntry;
@@ -194,7 +194,7 @@ node *headX, *headY, *headZ, *p;
 		if (p->nextEntry != NULL) {
 			zDiffs[i] = (p->nextEntry)->value - p->value;
 			if (i == 0) zSecondLessFirst = zDiffs[i];
-			if (debug) fprintf(stderr, "z 2 - 1 %f\n", zDiffs[i]);
+			if (verbose == 3) fprintf(stderr, "z 2 - 1 %f\n", zDiffs[i]);
 			i++;
 			}
 		p = p->nextEntry;
@@ -203,21 +203,21 @@ node *headX, *headY, *headZ, *p;
 /* if any of the diffs aren't less than 10E-9 the mesh isn't uniform */
 
 	for (i = 0; i < uniqueXpnts - 1; i++) {
-		if (debug) fprintf(stderr, "testing %f %f %f ratio %f\n", xDiffs[i],
+		if (verbose == 3) fprintf(stderr, "testing %f %f %f ratio %f\n", xDiffs[i],
 			xSecondLessFirst, xDiffs[i] / xSecondLessFirst,
 			fabs((xDiffs[i] / xSecondLessFirst) - 1));
 		if (fabs((xDiffs[i] / xSecondLessFirst) - 1) > 10E-9) return(0);
 		}
 
 	for (i = 0; i < uniqueYpnts - 1; i++) {
-		if (debug) fprintf(stderr, "testing %f %f %f ratio %f\n", yDiffs[i],
+		if (verbose == 3) fprintf(stderr, "testing %f %f %f ratio %f\n", yDiffs[i],
 			ySecondLessFirst, yDiffs[i] / ySecondLessFirst,
 			fabs((xDiffs[i] / xSecondLessFirst) - 1));
 		if (fabs((yDiffs[i] / ySecondLessFirst) - 1) > 10E-9) return(0);
 		}
 
 	for (i = 0; i < uniqueZpnts - 1; i++) {
-		if (debug) fprintf(stderr, "testing %f %f %f ratio %f\n", zDiffs[i],
+		if (verbose == 3) fprintf(stderr, "testing %f %f %f ratio %f\n", zDiffs[i],
 			zSecondLessFirst, zDiffs[i] / zSecondLessFirst,
 			fabs((xDiffs[i] / xSecondLessFirst) - 1));
 		if (fabs((zDiffs[i] / zSecondLessFirst) - 1) > 10E-9) return(0);

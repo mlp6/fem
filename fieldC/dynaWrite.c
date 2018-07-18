@@ -3,12 +3,12 @@
 #include <string.h>
 #include "field.h"
 
-dynaWrite(char *outFileName, double *intensity, struct FieldParams params, int numNodes, int xdcGetSize)
+dynaWrite(char *outFileName, double *intensity, struct FieldParams params, int numNodes, int xdcGetSize, int verbose)
 {
 int i;
 FILE *outptr;
 
-fprintf(stderr, "output file %s\n", outFileName);
+	if (verbose == 1) fprintf(stderr, "output file %s\n", outFileName);
 
 /* open output file */
 

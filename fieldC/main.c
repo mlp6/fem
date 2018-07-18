@@ -1,40 +1,72 @@
 /* test routine */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "field.h"
 #include "cJSON.h"
 
 sys_con_type   *sys_con;
 
 /*
- * main takes one argument, the name of a JSON file that has the parameters
- * to be passed to field2dyna. if there's no file name, we'll exit.
+ * main requires at least one argument, the name of a JSON file that has the
+ * parameters to be passed to field2dyna. if there's no file name, we'll exit.
+ * there's also an optional 'verbose' flag.
  */
+
+const char *usage[] = {
+	"Usage: field2dyna [verbosity] inputFileName\n",
+	"Options:\n",
+	"\t-v[vv]            amount of verbosity\n",
+	0};
 
 main(int argc, char **argv)
 {
-int i, len;
+int i, j, len;
+int verbose = 0;
 FILE *input;
 cJSON *focusParams, *probeInfo;
 char *field2dyna();
 char *data;
+char inputFileName[128];
 point_type focus;
 char *nodeFileName, *elemsFileName, *transducer, *impulse;
 double alpha, fnum, freq;
-int threads, lowNslow, forceNonlinear;
+int threads, lowNslow;
 
-	if (argc != 2) {
+	if (argc <= 1) {
 		fprintf(stderr, "the routine requires a JSON file as an argument!\n");
 		exit(0);
 		}
 
+	for (i = 1; i < argc; i++) {
+		if (argv[i][0] == '-')
+			switch(argv[i][1]) {
+				default:
+					fprintf(stderr, "\nbad arg: %s\n\n", argv[i]);
+					for (j = 0; usage[j]; j++)
+						fprintf(stderr, "%s", usage[j]);
+					fprintf(stderr, "\n");
+					exit(0);
+
+				case 'v':       /*  verbose*/
+					fprintf(stderr, "arg length %d\n", strlen(argv[i]));
+					verbose = strlen(argv[i]) - 1;
+					break;
+				}
+		else {
+			strcpy(inputFileName, argv[i]);
+			}
+		}
+
 /* get info from JSON */
-	input = fopen(argv[1],"rb");
-	fseek(input,0,SEEK_END);
-	len=ftell(input );
-	fseek(input,0,SEEK_SET);
-	data=(char*)malloc(len+1);
-	fread(data,1,len,input);
+	input = fopen(inputFileName, "rb");
+
+	fseek(input, 0, SEEK_END);
+	len = ftell(input);
+	fseek(input, 0, SEEK_SET);
+	data = (char *)malloc(len + 1);
+	fread(data, 1, len, input);
 	fclose(input);
 
 	probeInfo = cJSON_Parse(data);
@@ -62,12 +94,10 @@ int threads, lowNslow, forceNonlinear;
 
 	elemsFileName = cJSON_GetObjectItem(probeInfo, "elemsFileName")->valuestring;
 
-	forceNonlinear = cJSON_GetObjectItem(probeInfo, "forceNonlinear")->valueint;
-
 	field2dyna(nodeFileName, alpha, fnum,
 		focus, freq, transducer, impulse,
 		threads, lowNslow,
-	    elemsFileName, forceNonlinear);
+	    elemsFileName, verbose);
 
 /*
 	field2dyna(char *nodeFileName, double alpha, double fnum,

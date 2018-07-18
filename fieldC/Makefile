@@ -12,8 +12,8 @@ else ifeq ($(OS),LinuxMint)
 	CFLAGS=-no-pie
 endif
 
-main: checkOnAxis.o checkUniform.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c
-	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o checkUniform.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c cJSON.c $(FIELD_INCLUDE)/lib_Field_II.a -lpthread -lm
+main: checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c
+	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o main.c cJSON.c $(FIELD_INCLUDE)/lib_Field_II.a -lpthread -lm
 
 checkOnAxis.o: checkOnAxis.c field.h
 	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) -c checkOnAxis.c

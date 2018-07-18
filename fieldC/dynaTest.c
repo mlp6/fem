@@ -7,6 +7,7 @@ int numNodes;
 struct FieldParams params;
 struct nodeEntry *pointsAndNodes, *readMpn();
 point_type focus;
+int verbose = 0;
 
 	params.impulse = "gaussian";
 	params.samplingFrequency = 100E6;
@@ -26,7 +27,7 @@ point_type focus;
 
 	params.soundSpeed = 1540;
 
-	params.pointsAndNodes = readMpn("./myNodes.dyn", &numNodes);
+	params.pointsAndNodes = readMpn("./myNodes.dyn", &numNodes, verbose);
 	if (params.pointsAndNodes == NULL) {
 		fprintf(stderr, "didn't get enough values from readMpn\n");
 		exit(0);
