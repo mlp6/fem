@@ -1,10 +1,15 @@
-head	1.5;
+head	1.6;
 access;
 symbols;
 locks
-	ndd:1.5; strict;
+	ndd:1.6; strict;
 comment	@ * @;
 
+
+1.6
+date	2018.07.19.14.30.58;	author ndd;	state Exp;
+branches;
+next	1.5;
 
 1.5
 date	2018.07.18.17.59.28;	author ndd;	state Exp;
@@ -37,9 +42,9 @@ desc
 @
 
 
-1.5
+1.6
 log
-@added verbose argument
+@had to make a logic change to verbose check
 @
 text
 @#include <stdio.h>
@@ -52,7 +57,7 @@ dynaWrite(char *outFileName, double *intensity, struct FieldParams params, int n
 int i;
 FILE *outptr;
 
-	if (verbose == 1) fprintf(stderr, "output file %s\n", outFileName);
+	if (verbose >= 1) fprintf(stderr, "output file %s\n", outFileName);
 
 /* open output file */
 
@@ -153,6 +158,17 @@ FILE *outptr;
 
 	return(1);
 }
+@
+
+
+1.5
+log
+@added verbose argument
+@
+text
+@d11 1
+a11 1
+	if (verbose == 1) fprintf(stderr, "output file %s\n", outFileName);
 @
 
 

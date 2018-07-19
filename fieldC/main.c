@@ -50,7 +50,6 @@ int threads, lowNslow;
 					exit(0);
 
 				case 'v':       /*  verbose*/
-					fprintf(stderr, "arg length %d\n", strlen(argv[i]));
 					verbose = strlen(argv[i]) - 1;
 					break;
 				}

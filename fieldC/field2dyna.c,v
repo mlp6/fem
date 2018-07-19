@@ -1,10 +1,15 @@
-head	1.16;
+head	1.17;
 access;
 symbols;
 locks
-	ndd:1.16; strict;
+	ndd:1.17; strict;
 comment	@ * @;
 
+
+1.17
+date	2018.07.19.14.30.47;	author ndd;	state Exp;
+branches;
+next	1.16;
 
 1.16
 date	2018.07.18.18.01.12;	author ndd;	state Exp;
@@ -92,9 +97,9 @@ desc
 @
 
 
-1.16
+1.17
 log
-@added verbose argument, changed 'debug' to 'verbose'
+@had to make a logic change to verbose check
 @
 text
 @/*
@@ -154,7 +159,9 @@ char nodeVolFileName[80];
 char calcNodeVolCmd[80];
 int status;
 
-	if (verbose == 1) {
+	fprintf(stderr, "in field2dyna, verbose %d\n", verbose);
+
+	if (verbose >= 1) {
 		fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n",
 			nodeName);
 		fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha,
@@ -175,7 +182,7 @@ int status;
 		exit(0);
 		}
 
-	if (verbose == 1) fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+	if (verbose >= 1) fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
 
 	if (verbose == 3) for (i = 0; i < 13; i++)
 	    fprintf(stderr, "field2dyna 1, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
@@ -227,15 +234,35 @@ int status;
 	fieldParams.samplingFrequency = 100e6;
 	fieldParams.threads = threads;
 
-	if (verbose == 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
 
 /* call dynaField here */
 
-	if (dynaField(fieldParams, threads, numNodes, lowNslow) == 0) {
+	if (dynaField(fieldParams, threads, numNodes, lowNslow, verbose) == 0) {
 		fprintf(stderr, "in field2dyna, call to dynaField failed\n");
 		exit(0);
 		}
 }
+@
+
+
+1.16
+log
+@added verbose argument, changed 'debug' to 'verbose'
+@
+text
+@d58 3
+a60 1
+	if (verbose == 1) {
+d81 1
+a81 1
+	if (verbose == 1) fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+d133 1
+a133 1
+	if (verbose == 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+d137 1
+a137 1
+	if (dynaField(fieldParams, threads, numNodes, lowNslow) == 0) {
 @
 
 

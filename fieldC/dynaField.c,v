@@ -1,10 +1,15 @@
-head	1.29;
+head	1.30;
 access;
 symbols;
 locks
-	ndd:1.29; strict;
+	ndd:1.30; strict;
 comment	@ * @;
 
+
+1.30
+date	2018.07.19.14.30.16;	author ndd;	state Exp;
+branches;
+next	1.29;
 
 1.29
 date	2018.07.18.18.00.03;	author ndd;	state Exp;
@@ -157,10 +162,9 @@ desc
 @
 
 
-1.29
+1.30
 log
-@added verbose argument
-changed 'debug' to 'verbose'
+@had to make a logic change to verbose check
 @
 text
 @/*
@@ -256,7 +260,9 @@ int xdcGetSize;
 
 /* set transducer-independent parameters */
 
-	if (verbose == 1) {
+	fprintf(stderr, "in dynaField verbose %d\n", verbose);
+
+	if (verbose >= 1) {
 		fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
 		fprintf(stderr, "alpha %f\n", params.alpha);
 		fprintf(stderr, "fnum %f\n", params.fnum);
@@ -278,7 +284,7 @@ int xdcGetSize;
 
 	set_field("threads", params.threads);
 
-	if (verbose == 1) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n",
+	if (verbose >= 1) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n",
 		threads, params.threads);
 
 /* get info from JSON */
@@ -317,17 +323,17 @@ int xdcGetSize;
 		free(out);
 		}
 
-	if (verbose == 2) fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
+	if (verbose >= 2) fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
 
 	noElements = cJSON_GetObjectItem(probeInfo, "noElements")->valueint;
 	noSubX = cJSON_GetObjectItem(probeInfo, "noSubX")->valueint;
 	noSubY = cJSON_GetObjectItem(probeInfo, "noSubY")->valueint;
 
-	if (verbose == 2) fprintf(stderr, "elements %d subX %d subY %d\n", noElements,
+	if (verbose >= 2) fprintf(stderr, "elements %d subX %d subY %d\n", noElements,
 		noSubX, noSubY);
 
 	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
-	if (verbose == 2) fprintf(stderr, "width %f\n", width);
+	if (verbose >= 2) fprintf(stderr, "width %f\n", width);
 
 	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
 	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
@@ -338,18 +344,18 @@ int xdcGetSize;
 
 	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
 
-	if (verbose == 2) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probeType")->valuestring);
+	if (verbose >= 2) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probeType")->valuestring);
 
 	commands = cJSON_GetObjectItem(probeInfo, "commands");
 	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
 
-	if (verbose == 2) fprintf(stderr, "Th command %s\n", thCmd);
+	if (verbose >= 2) fprintf(stderr, "Th command %s\n", thCmd);
 
 /* set aperture. as of now, there are only 3 xdc calls for this */
 
 	if (strstr(thCmd, "xdc_concave") != NULL) {
 /* optical piston only? should this be handled differently? */
-		if (verbose == 1) fprintf(stderr, "calling xdc_concave\n");
+		if (verbose >= 1) fprintf(stderr, "calling xdc_concave\n");
 		Th = xdc_concave(9.5E-3, 38E-3, 0.5E-3);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_concave\n");
@@ -358,8 +364,8 @@ int xdcGetSize;
 		}
 
 	else if (strstr(thCmd, "xdc_convex_focused_array") != NULL) {
-		if (verbose == 1) fprintf(stderr, "calling xdc_convex_focused_array\n");
-		if (verbose == 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
+		if (verbose >= 1) fprintf(stderr, "calling xdc_convex_focused_array\n");
+		if (verbose >= 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
 			noElements,width,height,kerf,Rconvex, Rfocus,noSubX,
 			noSubY,params.focus.x, params.focus.y, params.focus.z);
 
@@ -369,13 +375,13 @@ int xdcGetSize;
 			fprintf(stderr, "error calling xdc_convex_focused_array\n");
 			return(0);
 			}
-		if (verbose == 2) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
+		if (verbose >= 2) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
 			Th->information.name, Th->information.create_date);
 		}
 
 	else if (strstr(thCmd, "xdc_focused_multirow") != NULL) {
 /* linear only? should this be handled differently? */
-		if (verbose == 1) fprintf(stderr, "calling xdc_focused_multirow\n");
+		if (verbose >= 1) fprintf(stderr, "calling xdc_focused_multirow\n");
 		noElementsY = 1;
 		heights = height;
 		Th = xdc_focused_multirow(noElements,width,noElementsY,&heights,
@@ -388,7 +394,7 @@ int xdcGetSize;
 
 	else fprintf(stderr, "unknown aperture command\n");
 
-	if (verbose == 2) fprintf(stderr, "impulse response command %s\n",
+	if (verbose >= 2) fprintf(stderr, "impulse response command %s\n",
 		cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
 
 	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
@@ -415,7 +421,7 @@ int xdcGetSize;
 
 	xdcGetSize = ROWS_RECT * noElements * noSubY;
 
-	if (verbose == 1) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
+	if (verbose >= 1) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
 
 	if ((params.ThData = (double *)malloc(xdcGetSize * sizeof(double))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for ThData\n");
@@ -424,7 +430,7 @@ int xdcGetSize;
 
 	xdc_get(Th, info, params.ThData);
 
-	if (verbose == 2) {
+	if (verbose >= 2) {
 		fprintf(stderr, "num apertures from sys_con %d\n",
 			sys_con->No_apertures);
 		fprintf(stderr, "rect? %d\n", sys_con->Use_rectangles);
@@ -449,22 +455,22 @@ int xdcGetSize;
  * have to tell correctAxialLens() how many data points we have
  */
 	
-	if (verbose == 1) fprintf(stderr, "calling cAL\n");
+	if (verbose >= 1) fprintf(stderr, "calling cAL\n");
 
 	lensCorrection = correctAxialLens(params.ThData, ROWS_RECT,
 		noElements * noSubY, verbose); 
 
 	if (lensCorrection == -1) return(0);
 
-	if (verbose == 1) fprintf(stderr, "back from cAL, correction %g\n", lensCorrection);
+	if (verbose >= 1) fprintf(stderr, "back from cAL, correction %g\n", lensCorrection);
 
-	if (verbose == 2) for (i = 0; i < 10; i++)
+	if (verbose >= 2) for (i = 0; i < 10; i++)
 		fprintf(stderr, "uncorrected z %g\n", params.pointsAndNodes[i].z);
 
 	for (i = 0; i < numNodes; i++)
 		params.pointsAndNodes[i].z += lensCorrection;
 	
-	if (verbose == 2) for (i = 0; i < 10; i++)
+	if (verbose >= 2) for (i = 0; i < 10; i++)
 		fprintf(stderr, "corrected z %g\n", params.pointsAndNodes[i].z);
 
 /* define the impulse response */
@@ -474,7 +480,7 @@ int xdcGetSize;
 	exciteFreq = params.frequency * 1000000;
 	stepSize = 1.0 / params.samplingFrequency;
 
-	if (verbose == 1) fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g\n",
+	if (verbose >= 1) fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g\n",
 		params.frequency, exciteFreq, stepSize);
 
 	numSteps = (int )ceil ((double )numCYC / exciteFreq / stepSize);
@@ -486,30 +492,34 @@ int xdcGetSize;
 		return(0);
 		}
 
-	if (verbose == 1) fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
+	if (verbose >= 1) fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
 
 	temp = 2 * M_PI * exciteFreq * stepSize;
 
 	for (i = 0; i < numSteps; i++) {
 		excitationPulse->data[i] = sin(i * temp);
-		if (verbose == 2) fprintf(stderr, "data %g\n", excitationPulse->data[i]);
+		if (verbose >= 2) fprintf(stderr, "data %g\n", excitationPulse->data[i]);
 		}
 
-	if (verbose == 1) fprintf(stderr, "calling excitation\n");
-	if (verbose == 1) fprintf(stderr, "before call %d %d\n",
-		Th->excitation->allocated, Th->excitation->no_samples);
+	if (verbose >= 1) fprintf(stderr, "calling excitation\n");
+	if (verbose >= 2) {
+		fprintf(stderr, "before call %d %d\n", Th->excitation->allocated,
+			Th->excitation->no_samples);
 
-	if (verbose == 2) for (i = 0; i < 30; i++)
-		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+		for (i = 0; i < 30; i++)
+			fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+		}
 
 	xdc_excitation(Th, excitationPulse);
 
-	if (verbose == 1) fprintf(stderr, "back from excitation\n");
-	if (verbose == 1) fprintf(stderr, "got %d %d\n", Th->excitation->allocated,
-		Th->excitation->no_samples);
+	if (verbose >= 1) fprintf(stderr, "back from excitation\n");
+	if (verbose >= 2) {
+		fprintf(stderr, "got %d %d\n", Th->excitation->allocated,
+			Th->excitation->no_samples);
 
-	if (verbose == 2 > 1) for (i = 0; i < Th->excitation->no_samples; i++)
-		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+		for (i = 0; i < Th->excitation->no_samples; i++)
+			fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+		}
 
 	freqAtt = params.alpha * 100 / 1E6; /* frequency atten. in dB/cm/MHz */
 
@@ -520,7 +530,7 @@ int xdcGetSize;
 	set_field("att_f0", attF0);
 	set_field("use_att", 1);
 
-	if (verbose == 1) fprintf(stderr, "freqAtt %g attF0 %g att %g\n", freqAtt, attF0,
+	if (verbose >= 1) fprintf(stderr, "freqAtt %g attF0 %g att %g\n", freqAtt, attF0,
 		att);
 
 /*
@@ -531,9 +541,9 @@ int xdcGetSize;
  *
  */
 
-	if (verbose == 1) fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
+	if (verbose >= 1) fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
 
-	if (verbose == 2) field_info;
+	if (verbose >= 2) field_info;
 
 /*
  * calc_hp just wants the xyz coordinates, but pointsAndNodes includes the
@@ -550,7 +560,7 @@ int xdcGetSize;
 		points[i].y = params.pointsAndNodes[i].y;
 		points[i].z = params.pointsAndNodes[i].z;
 		
-		if (verbose == 2) fprintf(stderr, "x %f, y %f, z %f\n", points[i].x,
+		if (verbose >= 2) fprintf(stderr, "x %f, y %f, z %f\n", points[i].x,
 			points[i].y, points[i].z);
 		}
 
@@ -562,9 +572,9 @@ int xdcGetSize;
 		}
 
 	if (lowNslow) {
-		if (verbose == 1) fprintf(stderr, "running low-n-slow\n");
+		if (verbose >= 1) fprintf(stderr, "running low-n-slow\n");
 		for (i = 0; i < numNodes; i++) {
-			if (verbose == 2) fprintf(stderr, "i %d\n", i);
+			if (verbose >= 2) fprintf(stderr, "i %d\n", i);
 
 			pressure = calc_hp(Th, 1, &points[i]);
 			if (pressure == NULL) {
@@ -594,10 +604,10 @@ int xdcGetSize;
 				intensity[i] += pressure[i]->data[j] * pressure[i]->data[j];
 		}
 
-	if (verbose == 2) for (i = 0; i < numNodes; i++)
+	if (verbose >= 2) for (i = 0; i < numNodes; i++)
 		fprintf(stderr, "intensity %g\n", intensity[i]);
 
-	if (verbose == 1) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
+	if (verbose >= 1) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
 		pressure[0]->no_samples);
 
 	if (verbose == 3) for (j = 0; j < pressure[0]->no_samples; j++)
@@ -643,7 +653,7 @@ int xdcGetSize;
 	sprintf(outFileName, "dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.new",
 		params.frequency, params.fnum, params.focus.z, params.alpha);
 
-	if (verbose == 1) fprintf(stderr, "file name %s\n", outFileName);
+	if (verbose >= 1) fprintf(stderr, "file name %s\n", outFileName);
 
 	if (dynaWrite(outFileName, intensity, params, numNodes, xdcGetSize, verbose) == -1) {
 		fprintf(stderr, "dynaWrite failed\n");
@@ -653,6 +663,124 @@ int xdcGetSize;
 	return(1);
 
 }
+@
+
+
+1.29
+log
+@added verbose argument
+changed 'debug' to 'verbose'
+@
+text
+@d94 3
+a96 1
+	if (verbose == 1) {
+d118 1
+a118 1
+	if (verbose == 1) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n",
+d157 1
+a157 1
+	if (verbose == 2) fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
+d163 1
+a163 1
+	if (verbose == 2) fprintf(stderr, "elements %d subX %d subY %d\n", noElements,
+d167 1
+a167 1
+	if (verbose == 2) fprintf(stderr, "width %f\n", width);
+d178 1
+a178 1
+	if (verbose == 2) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probeType")->valuestring);
+d183 1
+a183 1
+	if (verbose == 2) fprintf(stderr, "Th command %s\n", thCmd);
+d189 1
+a189 1
+		if (verbose == 1) fprintf(stderr, "calling xdc_concave\n");
+d198 2
+a199 2
+		if (verbose == 1) fprintf(stderr, "calling xdc_convex_focused_array\n");
+		if (verbose == 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
+d209 1
+a209 1
+		if (verbose == 2) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
+d215 1
+a215 1
+		if (verbose == 1) fprintf(stderr, "calling xdc_focused_multirow\n");
+d228 1
+a228 1
+	if (verbose == 2) fprintf(stderr, "impulse response command %s\n",
+d255 1
+a255 1
+	if (verbose == 1) fprintf(stderr, "calling xdc_get; size is %d\n", xdcGetSize);
+d264 1
+a264 1
+	if (verbose == 2) {
+d289 1
+a289 1
+	if (verbose == 1) fprintf(stderr, "calling cAL\n");
+d296 1
+a296 1
+	if (verbose == 1) fprintf(stderr, "back from cAL, correction %g\n", lensCorrection);
+d298 1
+a298 1
+	if (verbose == 2) for (i = 0; i < 10; i++)
+d304 1
+a304 1
+	if (verbose == 2) for (i = 0; i < 10; i++)
+d314 1
+a314 1
+	if (verbose == 1) fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g\n",
+d326 1
+a326 1
+	if (verbose == 1) fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
+d332 1
+a332 1
+		if (verbose == 2) fprintf(stderr, "data %g\n", excitationPulse->data[i]);
+d335 4
+a338 3
+	if (verbose == 1) fprintf(stderr, "calling excitation\n");
+	if (verbose == 1) fprintf(stderr, "before call %d %d\n",
+		Th->excitation->allocated, Th->excitation->no_samples);
+d340 3
+a342 2
+	if (verbose == 2) for (i = 0; i < 30; i++)
+		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+d346 4
+a349 3
+	if (verbose == 1) fprintf(stderr, "back from excitation\n");
+	if (verbose == 1) fprintf(stderr, "got %d %d\n", Th->excitation->allocated,
+		Th->excitation->no_samples);
+d351 3
+a353 2
+	if (verbose == 2 > 1) for (i = 0; i < Th->excitation->no_samples; i++)
+		fprintf(stderr, "got %f\n", Th->excitation->data[i]);
+d364 1
+a364 1
+	if (verbose == 1) fprintf(stderr, "freqAtt %g attF0 %g att %g\n", freqAtt, attF0,
+d375 1
+a375 1
+	if (verbose == 1) fprintf(stderr, "calling calc_hp; numNodes %d\n", numNodes);
+d377 1
+a377 1
+	if (verbose == 2) field_info;
+d394 1
+a394 1
+		if (verbose == 2) fprintf(stderr, "x %f, y %f, z %f\n", points[i].x,
+d406 1
+a406 1
+		if (verbose == 1) fprintf(stderr, "running low-n-slow\n");
+d408 1
+a408 1
+			if (verbose == 2) fprintf(stderr, "i %d\n", i);
+d438 1
+a438 1
+	if (verbose == 2) for (i = 0; i < numNodes; i++)
+d441 1
+a441 1
+	if (verbose == 1) fprintf(stderr, "done with calc_hp; num samples at 0 %d\n",
+d487 1
+a487 1
+	if (verbose == 1) fprintf(stderr, "file name %s\n", outFileName);
 @
 
 

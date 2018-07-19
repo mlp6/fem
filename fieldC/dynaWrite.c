@@ -8,7 +8,7 @@ dynaWrite(char *outFileName, double *intensity, struct FieldParams params, int n
 int i;
 FILE *outptr;
 
-	if (verbose == 1) fprintf(stderr, "output file %s\n", outFileName);
+	if (verbose >= 1) fprintf(stderr, "output file %s\n", outFileName);
 
 /* open output file */
 

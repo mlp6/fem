@@ -1,10 +1,15 @@
-head	1.7;
+head	1.8;
 access;
 symbols;
 locks
-	ndd:1.7; strict;
+	ndd:1.8; strict;
 comment	@ * @;
 
+
+1.8
+date	2018.07.19.14.29.41;	author ndd;	state Exp;
+branches;
+next	1.7;
 
 1.7
 date	2018.07.18.18.01.50;	author ndd;	state Exp;
@@ -47,9 +52,9 @@ desc
 @
 
 
-1.7
+1.8
 log
-@added verbose argument, changed 'debug' to 'verbose'
+@had to make a logic change to verbose check
 @
 text
 @/*
@@ -98,7 +103,6 @@ struct nodeEntry *nodes;
 		}
 
 	*numNodes = 0;
-	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
 
 /*
  * going to make two passes through the data because I need the number of
@@ -113,7 +117,8 @@ struct nodeEntry *nodes;
 		}
 /* allocate space for nodes */
 
-	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
+	if (verbose >= 1) fprintf(stderr, "in readMpn, numNodes %d\n", *numNodes);
+
 	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
 		fprintf(stderr, "couldn't allocate space for nodes\n");
 		exit(EXIT_FAILURE);
@@ -146,6 +151,19 @@ struct nodeEntry *nodes;
 
 	return(nodes);
 }
+@
+
+
+1.7
+log
+@added verbose argument, changed 'debug' to 'verbose'
+@
+text
+@a46 1
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
+d61 2
+a62 1
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
 @
 
 

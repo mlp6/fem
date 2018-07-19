@@ -55,7 +55,9 @@ char nodeVolFileName[80];
 char calcNodeVolCmd[80];
 int status;
 
-	if (verbose == 1) {
+	fprintf(stderr, "in field2dyna, verbose %d\n", verbose);
+
+	if (verbose >= 1) {
 		fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n",
 			nodeName);
 		fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha,
@@ -76,7 +78,7 @@ int status;
 		exit(0);
 		}
 
-	if (verbose == 1) fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+	if (verbose >= 1) fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
 
 	if (verbose == 3) for (i = 0; i < 13; i++)
 	    fprintf(stderr, "field2dyna 1, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
@@ -128,11 +130,11 @@ int status;
 	fieldParams.samplingFrequency = 100e6;
 	fieldParams.threads = threads;
 
-	if (verbose == 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
 
 /* call dynaField here */
 
-	if (dynaField(fieldParams, threads, numNodes, lowNslow) == 0) {
+	if (dynaField(fieldParams, threads, numNodes, lowNslow, verbose) == 0) {
 		fprintf(stderr, "in field2dyna, call to dynaField failed\n");
 		exit(0);
 		}

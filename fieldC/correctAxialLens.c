@@ -25,7 +25,7 @@ int indexMin = -1;
 
 /* find center element */
 
-	if (verbose == 1) fprintf(stderr, "in correctAxialLens, rows %d, numPoints %d\n",
+	if (verbose >= 1) fprintf(stderr, "in correctAxialLens, rows %d, numPoints %d\n",
 		rows, numPoints);
 
 	for (i = 0; i < numPoints; i++) {
@@ -40,11 +40,11 @@ int indexMin = -1;
 		return(-1);
 		}
 
-	if (verbose == 1) fprintf(stderr, "in correctAxialLens, indexMin %d\n", indexMin);
+	if (verbose >= 1) fprintf(stderr, "in correctAxialLens, indexMin %d\n", indexMin);
 
 	correction = thData[rows * indexMin + zPosLoc];
 
-	if (verbose == 1) fprintf(stderr, "in correctAxialLens, correction %g\n", correction);
+	if (verbose >= 1) fprintf(stderr, "in correctAxialLens, correction %g\n", correction);
 
 	return(correction);
 }
