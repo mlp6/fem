@@ -87,7 +87,7 @@ FILE *checkResult;
 		nodeName = "./myNodes.dyn";
 	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
-		i = checkUniform(pointsAndNodes, numNodes, 0);
+		i = checkUniform(pointsAndNodes, numNodes, verbose);
 
 		if (i == -1)
 			fprintf(stderr, "couldn't allocate node space\n");
@@ -98,7 +98,7 @@ FILE *checkResult;
 		nodeName = "./myNodesNonUniform.dyn";
 	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
-		i = checkUniform(pointsAndNodes, numNodes, 0);
+		i = checkUniform(pointsAndNodes, numNodes, verbose);
 
 		if (i == -1)
 			fprintf(stderr, "couldn't allocate node space\n");

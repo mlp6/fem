@@ -1,10 +1,15 @@
-head	1.6;
+head	1.7;
 access;
 symbols;
 locks
-	ndd:1.6; strict;
+	ndd:1.7; strict;
 comment	@ * @;
 
+
+1.7
+date	2018.07.20.16.48.58;	author ndd;	state Exp;
+branches;
+next	1.6;
 
 1.6
 date	2018.07.18.18.02.21;	author ndd;	state Exp;
@@ -42,9 +47,9 @@ desc
 @
 
 
-1.6
+1.7
 log
-@added verbose to readMpn
+@added verbose flag to checkUniform call
 @
 text
 @#include <stdio.h>
@@ -136,7 +141,7 @@ FILE *checkResult;
 		nodeName = "./myNodes.dyn";
 	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
-		i = checkUniform(pointsAndNodes, numNodes, 0);
+		i = checkUniform(pointsAndNodes, numNodes, verbose);
 
 		if (i == -1)
 			fprintf(stderr, "couldn't allocate node space\n");
@@ -147,7 +152,7 @@ FILE *checkResult;
 		nodeName = "./myNodesNonUniform.dyn";
 	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
 
-		i = checkUniform(pointsAndNodes, numNodes, 0);
+		i = checkUniform(pointsAndNodes, numNodes, verbose);
 
 		if (i == -1)
 			fprintf(stderr, "couldn't allocate node space\n");
@@ -156,6 +161,20 @@ FILE *checkResult;
 		else fprintf(stderr, "checkUniform wrong for bad node list\n");
 		}
 }
+@
+
+
+1.6
+log
+@added verbose to readMpn
+@
+text
+@d90 1
+a90 1
+		i = checkUniform(pointsAndNodes, numNodes, 0);
+d101 1
+a101 1
+		i = checkUniform(pointsAndNodes, numNodes, 0);
 @
 
 

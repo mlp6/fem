@@ -1,10 +1,15 @@
-head	1.30;
+head	1.31;
 access;
 symbols;
 locks
-	ndd:1.30; strict;
+	ndd:1.31; strict;
 comment	@ * @;
 
+
+1.31
+date	2018.07.20.18.41.19;	author ndd;	state Exp;
+branches;
+next	1.30;
 
 1.30
 date	2018.07.19.14.30.16;	author ndd;	state Exp;
@@ -162,9 +167,9 @@ desc
 @
 
 
-1.30
+1.31
 log
-@had to make a logic change to verbose check
+@mostly added error checking for cJSON_GetObjectItem
 @
 text
 @/*
@@ -224,6 +229,7 @@ int i, j;
 aperture_type *Th = NULL;
 int32 info;
 cJSON *commands, *impulseCmd, *probeInfo;
+cJSON *jsonTemp;
 FILE *jsonInput;
 char jsonFileName[128];
 long len;
@@ -325,29 +331,86 @@ int xdcGetSize;
 
 	if (verbose >= 2) fprintf(stderr, "array size %d\n", cJSON_GetArraySize(probeInfo));
 
-	noElements = cJSON_GetObjectItem(probeInfo, "noElements")->valueint;
-	noSubX = cJSON_GetObjectItem(probeInfo, "noSubX")->valueint;
-	noSubY = cJSON_GetObjectItem(probeInfo, "noSubY")->valueint;
+/* if any of the requested items is missing, it's a fatal error. */
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "noElements")) == NULL) {
+		fprintf(stderr, "couldn't find noElements in probe file\n");
+		return(0);
+		}
+	noElements = jsonTemp->valueint;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "noSubX")) == NULL) {
+		fprintf(stderr, "couldn't find noSubX in probe file\n");
+		return(0);
+		}
+	noSubX = jsonTemp->valueint;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "noSubY")) == NULL) {
+		fprintf(stderr, "couldn't find noSubY in probe file\n");
+		return(0);
+		}
+	noSubY = jsonTemp->valueint;
 
 	if (verbose >= 2) fprintf(stderr, "elements %d subX %d subY %d\n", noElements,
 		noSubX, noSubY);
 
-	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "width")) == NULL) {
+		fprintf(stderr, "couldn't find width in probe file\n");
+		return(0);
+		}
+	width = jsonTemp->valuedouble;
+
 	if (verbose >= 2) fprintf(stderr, "width %f\n", width);
 
-	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
-	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
-	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
-	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "height")) == NULL) {
+		fprintf(stderr, "couldn't find height in probe file\n");
+		return(0);
+		}
+	height = jsonTemp->valuedouble;
 
-	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "kerf")) == NULL) {
+		fprintf(stderr, "couldn't find kerf in probe file\n");
+		return(0);
+		}
+	kerf = jsonTemp->valuedouble;
 
-	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "Rconvex")) == NULL) {
+		fprintf(stderr, "couldn't find Rconvex in probe file\n");
+		return(0);
+		}
+	Rconvex = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "Rfocus")) == NULL) {
+		fprintf(stderr, "couldn't find Rfocus in probe file\n");
+		return(0);
+		}
+	Rfocus = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")) == NULL) {
+		fprintf(stderr, "couldn't find fractBandwidth in probe file\n");
+		return(0);
+		}
+	fractBandwidth = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "centerFrequency")) == NULL) {
+		fprintf(stderr, "couldn't find centerFreq in probe file\n");
+		return(0);
+		}
+	centerFreq = jsonTemp->valuedouble;
 
 	if (verbose >= 2) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probeType")->valuestring);
 
-	commands = cJSON_GetObjectItem(probeInfo, "commands");
-	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "commands")) == NULL) {
+		fprintf(stderr, "couldn't find commands in probe file\n");
+		return(0);
+		}
+	commands = jsonTemp;
+
+	if ((jsonTemp = cJSON_GetObjectItem(commands, "Th")) == NULL) {
+		fprintf(stderr, "couldn't find Th in probe file\n");
+		return(0);
+		}
+	thCmd = jsonTemp->valuestring;
 
 	if (verbose >= 2) fprintf(stderr, "Th command %s\n", thCmd);
 
@@ -366,11 +429,11 @@ int xdcGetSize;
 	else if (strstr(thCmd, "xdc_convex_focused_array") != NULL) {
 		if (verbose >= 1) fprintf(stderr, "calling xdc_convex_focused_array\n");
 		if (verbose >= 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
-			noElements,width,height,kerf,Rconvex, Rfocus,noSubX,
-			noSubY,params.focus.x, params.focus.y, params.focus.z);
+			noElements, width, height, kerf, Rconvex, Rfocus, noSubX,
+			noSubY, params.focus.x, params.focus.y, params.focus.z);
 
-		Th = xdc_convex_focused_array(noElements,width,height,kerf,Rconvex,
-			Rfocus,noSubX,noSubY,params.focus);
+		Th = xdc_convex_focused_array(noElements, width, height, kerf, Rconvex,
+			Rfocus, noSubX, noSubY, params.focus);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_convex_focused_array\n");
 			return(0);
@@ -384,8 +447,8 @@ int xdcGetSize;
 		if (verbose >= 1) fprintf(stderr, "calling xdc_focused_multirow\n");
 		noElementsY = 1;
 		heights = height;
-		Th = xdc_focused_multirow(noElements,width,noElementsY,&heights,
-			kerf,kerf, Rfocus,noSubX,noSubY,params.focus);
+		Th = xdc_focused_multirow(noElements, width, noElementsY, &heights,
+			kerf, kerf, Rfocus, noSubX, noSubY, params.focus);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_focused_multirow\n");
 			return(0);
@@ -394,10 +457,14 @@ int xdcGetSize;
 
 	else fprintf(stderr, "unknown aperture command\n");
 
+/*
+ * this next segment seems unused
+ *
 	if (verbose >= 2) fprintf(stderr, "impulse response command %s\n",
 		cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
 
 	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
+ */
 
 /*
  * I think the next thing is to set impulse. this seems to be the same for
@@ -663,6 +730,53 @@ int xdcGetSize;
 	return(1);
 
 }
+@
+
+
+1.30
+log
+@had to make a logic change to verbose check
+@
+text
+@d58 1
+d160 19
+a178 3
+	noElements = cJSON_GetObjectItem(probeInfo, "noElements")->valueint;
+	noSubX = cJSON_GetObjectItem(probeInfo, "noSubX")->valueint;
+	noSubY = cJSON_GetObjectItem(probeInfo, "noSubY")->valueint;
+d183 6
+a188 1
+	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
+d191 17
+a207 4
+	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
+	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
+	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
+	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
+d209 5
+a213 1
+	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
+d215 11
+a225 1
+	centerFreq = cJSON_GetObjectItem(probeInfo, "centerFrequency")->valuedouble;
+d229 11
+a239 2
+	commands = cJSON_GetObjectItem(probeInfo, "commands");
+	thCmd = cJSON_GetObjectItem(commands, "Th")->valuestring;
+d258 2
+a259 2
+			noElements,width,height,kerf,Rconvex, Rfocus,noSubX,
+			noSubY,params.focus.x, params.focus.y, params.focus.z);
+d261 2
+a262 2
+		Th = xdc_convex_focused_array(noElements,width,height,kerf,Rconvex,
+			Rfocus,noSubX,noSubY,params.focus);
+d276 2
+a277 2
+		Th = xdc_focused_multirow(noElements,width,noElementsY,&heights,
+			kerf,kerf, Rfocus,noSubX,noSubY,params.focus);
+d286 3
+d293 1
 @
 
 

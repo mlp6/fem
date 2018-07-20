@@ -171,37 +171,22 @@ int xdcGetSize;
 		}
 	noSubX = jsonTemp->valueint;
 
-	if (verbose >= 2) fprintf(stderr, "elements %d subX %d subY %d\n",
-		noElements, noSubX, noSubY);
-
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "width")) == NULL) {
-		fprintf(stderr, "couldn't find width in probe file\n");
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "noSubY")) == NULL) {
+		fprintf(stderr, "couldn't find noSubY in probe file\n");
 		return(0);
 		}
-	width = jsonTemp->valuedouble;
+	noSubY = jsonTemp->valueint;
 
+	if (verbose >= 1) fprintf(stderr, "elements %d subX %d subY %d\n", noElements,
+		noSubX, noSubY);
+
+	width = cJSON_GetObjectItem(probeInfo, "width")->valuedouble;
 	if (verbose >= 2) fprintf(stderr, "width %f\n", width);
 
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "height")) == NULL) {
-		fprintf(stderr, "couldn't find height in probe file\n");
-		return(0);
-		}
-
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "kerf")) == NULL) {
-		fprintf(stderr, "couldn't find kerf in probe file\n");
-		return(0);
-		}
-
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "Rconvex")) == NULL) {
-		fprintf(stderr, "couldn't find Rconvex in probe file\n");
-		return(0);
-		}
-
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "Rfocus")) == NULL) {
-		fprintf(stderr, "couldn't find Rfocus in probe file\n");
-		return(0);
-		}
-
+	height = cJSON_GetObjectItem(probeInfo, "height")->valuedouble;
+	kerf = cJSON_GetObjectItem(probeInfo, "kerf")->valuedouble;
+	Rconvex = cJSON_GetObjectItem(probeInfo, "Rconvex")->valuedouble;
+	Rfocus = cJSON_GetObjectItem(probeInfo, "Rfocus")->valuedouble;
 
 	fractBandwidth = cJSON_GetObjectItem(probeInfo, "fractionalBandwidth")->valuedouble;
 
@@ -229,11 +214,11 @@ int xdcGetSize;
 	else if (strstr(thCmd, "xdc_convex_focused_array") != NULL) {
 		if (verbose >= 1) fprintf(stderr, "calling xdc_convex_focused_array\n");
 		if (verbose >= 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
-			noElements,width,height,kerf,Rconvex, Rfocus,noSubX,
-			noSubY,params.focus.x, params.focus.y, params.focus.z);
+			noElements, width, height, kerf, Rconvex, Rfocus, noSubX,
+			noSubY, params.focus.x, params.focus.y, params.focus.z);
 
-		Th = xdc_convex_focused_array(noElements,width,height,kerf,Rconvex,
-			Rfocus,noSubX,noSubY,params.focus);
+		Th = xdc_convex_focused_array(noElements, width, height, kerf, Rconvex,
+			Rfocus, noSubX, noSubY, params.focus);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_convex_focused_array\n");
 			return(0);
@@ -247,8 +232,8 @@ int xdcGetSize;
 		if (verbose >= 1) fprintf(stderr, "calling xdc_focused_multirow\n");
 		noElementsY = 1;
 		heights = height;
-		Th = xdc_focused_multirow(noElements,width,noElementsY,&heights,
-			kerf,kerf, Rfocus,noSubX,noSubY,params.focus);
+		Th = xdc_focused_multirow(noElements, width, noElementsY, &heights,
+			kerf, kerf, Rfocus, noSubX, noSubY, params.focus);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_focused_multirow\n");
 			return(0);

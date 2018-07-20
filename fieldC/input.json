@@ -11,7 +11,7 @@
 	"transducer": "vf105",
 	"impulse": "gaussian",
 	"threads": 1,
-	"lowNslow": 1,
+	"lowNslow": 0,
 	"elemsFileName": "../tests/elems.dyn",
 	"forceNonlinear": 1
 }
