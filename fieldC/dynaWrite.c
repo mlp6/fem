@@ -32,18 +32,18 @@ FILE *outptr;
 		return(-1);
 		}
 
-	if (fwrite(&params.soundSpeed, sizeof(int), 1, outptr) != 1) {
+	if (fwrite(&params.soundSpeed_MperSec, sizeof(int), 1, outptr) != 1) {
 		fprintf(stderr, "dynaWrite: failed to write soundSpeed\n");
 		return(-1);
 		}
 
-	if (fwrite(&params.samplingFrequency, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "dynaWrite: failed to write samplingFrequency\n");
+	if (fwrite(&params.samplingFrequencyHz, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "dynaWrite: failed to write samplingFrequencyHz\n");
 		return(-1);
 		}
 
-	if (fwrite(&params.alpha, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "dynaWrite: failed to write alpha\n");
+	if (fwrite(&params.alpha_dBcmMHz, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "dynaWrite: failed to write alpha_dBcmMHz\n");
 		return(-1);
 		}
 
@@ -52,12 +52,12 @@ FILE *outptr;
 		return(-1);
 		}
 
-	if (fwrite(&params.focus, sizeof(point_type), 1, outptr) != 1) {
+	if (fwrite(&params.focusM, sizeof(point_type), 1, outptr) != 1) {
 		fprintf(stderr, "dynaWrite: failed to write focus\n");
 		return(-1);
 		}
 
-	if (fwrite(&params.frequency, sizeof(double), 1, outptr) != 1) {
+	if (fwrite(&params.frequencyMHz, sizeof(double), 1, outptr) != 1) {
 		fprintf(stderr, "dynaWrite: failed to write frequency\n");
 		return(-1);
 		}

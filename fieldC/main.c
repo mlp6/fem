@@ -30,9 +30,9 @@ cJSON *jsonTemp;
 char *field2dyna();
 char *data;
 char inputFileName[128];
-point_type focus;
+point_type focusM;
 char *nodeFileName, *elemsFileName, *transducer, *impulse;
-double alpha, fnum, freq;
+double alpha_dBcmMHz, fnum, freqMHz;
 int threads, lowNslow;
 
 	if (argc <= 1) {
@@ -81,11 +81,11 @@ int threads, lowNslow;
 		}
 	nodeFileName = jsonTemp->valuestring;
 
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "alpha")) == NULL) {
-		fprintf(stderr, "couldn't find alpha in probe file\n");
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "alpha_dBcmMHz")) == NULL) {
+		fprintf(stderr, "couldn't find alpha_dBcmMHz in probe file\n");
 		return(0);
 		}
-	alpha = jsonTemp->valuedouble;
+	alpha_dBcmMHz = jsonTemp->valuedouble;
 
 	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "fnum")) == NULL) {
 		fprintf(stderr, "couldn't find fnum in probe file\n");
@@ -93,8 +93,8 @@ int threads, lowNslow;
 		}
 	fnum = jsonTemp->valuedouble;
 
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "focus")) == NULL) {
-		fprintf(stderr, "couldn't find focus in probe file\n");
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "focusM")) == NULL) {
+		fprintf(stderr, "couldn't find focusM in probe file\n");
 		return(0);
 		}
 	focusParams = jsonTemp;
@@ -103,26 +103,26 @@ int threads, lowNslow;
 		fprintf(stderr, "couldn't find x in probe file\n");
 		return(0);
 		}
-	focus.x = jsonTemp->valuedouble;
+	focusM.x = jsonTemp->valuedouble;
 
 	if ((jsonTemp = cJSON_GetObjectItem(focusParams, "y")) == NULL) {
 		fprintf(stderr, "couldn't find y in probe file\n");
 		return(0);
 		}
-	focus.y = jsonTemp->valuedouble;
+	focusM.y = jsonTemp->valuedouble;
 
 	if ((jsonTemp = cJSON_GetObjectItem(focusParams, "z")) == NULL) {
 		fprintf(stderr, "couldn't find z in probe file\n");
 		return(0);
 		}
-	focus.z = jsonTemp->valuedouble;
+	focusM.z = jsonTemp->valuedouble;
 
 
-	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "freq")) == NULL) {
-		fprintf(stderr, "couldn't find freq in probe file\n");
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "freqMHz")) == NULL) {
+		fprintf(stderr, "couldn't find freqMHz in probe file\n");
 		return(0);
 		}
-	freq = jsonTemp->valuedouble;
+	freqMHz = jsonTemp->valuedouble;
 
 	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "transducer")) == NULL) {
 		fprintf(stderr, "couldn't find transducer in probe file\n");
@@ -154,19 +154,9 @@ int threads, lowNslow;
 		}
 	elemsFileName = jsonTemp->valuestring;
 
-	field2dyna(nodeFileName, alpha, fnum,
-		focus, freq, transducer, impulse,
+	field2dyna(nodeFileName, alpha_dBcmMHz, fnum,
+		focusM, freqMHz, transducer, impulse,
 		threads, lowNslow,
 	    elemsFileName, verbose);
-
-/*
-	field2dyna(char *nodeFileName, double alpha, double fnum,
-		struct Focus focus, double freq, char *transducer, char *impulse,
-		int threads, int lowNslow,
-	    char *elemFileName, int forceNonlinear)
-
-field2dyna("./myNodes.dyn", .5, 1.3, focus, 7.2, "vf105", "gaussian", 1, 0,
-	"../tests/elems.dyn", 1);
-*/
 
 }

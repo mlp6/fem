@@ -1,10 +1,20 @@
-head	1.6;
+head	1.8;
 access;
 symbols;
 locks
-	ndd:1.6; strict;
+	ndd:1.8; strict;
 comment	@ * @;
 
+
+1.8
+date	2018.07.25.17.00.54;	author ndd;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.07.24.17.42.48;	author ndd;	state Exp;
+branches;
+next	1.6;
 
 1.6
 date	2018.07.19.14.30.58;	author ndd;	state Exp;
@@ -42,9 +52,9 @@ desc
 @
 
 
-1.6
+1.8
 log
-@had to make a logic change to verbose check
+@added more units to params variables
 @
 text
 @#include <stdio.h>
@@ -81,18 +91,18 @@ FILE *outptr;
 		return(-1);
 		}
 
-	if (fwrite(&params.soundSpeed, sizeof(int), 1, outptr) != 1) {
+	if (fwrite(&params.soundSpeed_MperSec, sizeof(int), 1, outptr) != 1) {
 		fprintf(stderr, "dynaWrite: failed to write soundSpeed\n");
 		return(-1);
 		}
 
-	if (fwrite(&params.samplingFrequency, sizeof(int), 1, outptr) != 1) {
-		fprintf(stderr, "dynaWrite: failed to write samplingFrequency\n");
+	if (fwrite(&params.samplingFrequencyHz, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "dynaWrite: failed to write samplingFrequencyHz\n");
 		return(-1);
 		}
 
-	if (fwrite(&params.alpha, sizeof(double), 1, outptr) != 1) {
-		fprintf(stderr, "dynaWrite: failed to write alpha\n");
+	if (fwrite(&params.alpha_dBcmMHz, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "dynaWrite: failed to write alpha_dBcmMHz\n");
 		return(-1);
 		}
 
@@ -101,12 +111,12 @@ FILE *outptr;
 		return(-1);
 		}
 
-	if (fwrite(&params.focus, sizeof(point_type), 1, outptr) != 1) {
+	if (fwrite(&params.focusM, sizeof(point_type), 1, outptr) != 1) {
 		fprintf(stderr, "dynaWrite: failed to write focus\n");
 		return(-1);
 		}
 
-	if (fwrite(&params.frequency, sizeof(double), 1, outptr) != 1) {
+	if (fwrite(&params.frequencyMHz, sizeof(double), 1, outptr) != 1) {
 		fprintf(stderr, "dynaWrite: failed to write frequency\n");
 		return(-1);
 		}
@@ -158,6 +168,39 @@ FILE *outptr;
 
 	return(1);
 }
+@
+
+
+1.7
+log
+@started including units in variable names.
+@
+text
+@d35 1
+a35 1
+	if (fwrite(&params.soundSpeed, sizeof(int), 1, outptr) != 1) {
+d45 2
+a46 2
+	if (fwrite(&params.alpha, sizeof(double), 1, outptr) != 1) {
+		fprintf(stderr, "dynaWrite: failed to write alpha\n");
+d55 1
+a55 1
+	if (fwrite(&params.focus, sizeof(point_type), 1, outptr) != 1) {
+@
+
+
+1.6
+log
+@had to make a logic change to verbose check
+@
+text
+@d40 2
+a41 2
+	if (fwrite(&params.samplingFrequency, sizeof(int), 1, outptr) != 1) {
+		fprintf(stderr, "dynaWrite: failed to write samplingFrequency\n");
+d60 1
+a60 1
+	if (fwrite(&params.frequency, sizeof(double), 1, outptr) != 1) {
 @
 
 

@@ -19,7 +19,7 @@ double fv, power, ref;
 double tc, delta, tv;
 double impulse, stepSize;
 signal_type *impulseResponse = NULL;
-double freq;
+double freqHz;
 double ye;
 int i, numSteps;
 
@@ -59,11 +59,11 @@ int i, numSteps;
 		tc = sqrt(-2 * tv * log(delta));
 		if (verbose >= 2) fprintf(stderr, "tc %g\n", tc);
 
-		if (verbose >= 2) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
-		numSteps = (int )ceil((tc * params.samplingFrequency) * 2);
-		freq = (double) params.samplingFrequency;
+		if (verbose >= 2) fprintf(stderr, "sampling freqHz %d\n", params.samplingFrequencyHz);
+		numSteps = (int )ceil((tc * params.samplingFrequencyHz) * 2);
+		freqHz = (double) params.samplingFrequencyHz;
 
-		if (verbose >= 2) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
+		if (verbose >= 2) fprintf(stderr, "freqHz %g, numSteps %d\n", freqHz, numSteps);
 
 		impulseResponse = alloc_signal(numSteps, 0);
 
@@ -72,7 +72,7 @@ int i, numSteps;
 			return(NULL);
 			}
 
-		stepSize = 1.0/params.samplingFrequency;
+		stepSize = 1.0/params.samplingFrequencyHz;
 
 		impulse = -tc;
 		if (verbose >= 2) fprintf(stderr, "starting loop, stepSize %e\n", stepSize);

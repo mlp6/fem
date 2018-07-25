@@ -1,13 +1,13 @@
 {
 	"nodeFileName": "/work/ndd/dyna/nodesMark.dyn",
-	"alpha": 0.5,
+	"alpha_dBcmMHz": 0.5,
 	"fnum": 1.0,
-	"focus": {
+	"focusM": {
 		"x": 0,
 		"y": 0,
 		"z": 0.055
 		},
-	"freq": 3.5,
+	"freqMHz": 3.5,
 	"transducer": "su102",
 	"impulse": "gaussian",
 	"threads": 1,

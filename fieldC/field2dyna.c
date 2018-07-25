@@ -6,9 +6,9 @@
 %   NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs
 %                       to be a comma-delimited file with header/footer lines
 %                       that start with '*'
-%   alpha - 0.5, 1.0, etc. (dB/cm/MHz)
+%   alpha_dBcmMHz - 0.5, 1.0, etc. (dB/cm/MHz)
 %   Fnum - F/# (e.g. 1.3)
-%   focus - [x y z] (m) "Field" coordinates
+%   focusM - [x y z] (meters) "Field" coordinates
 %   Frequency - excitation frequency (MHz)
 %   Transducer (string) - 'vf105','vf73'
 %   Impulse (string) - 'gaussian','exp'
@@ -41,8 +41,8 @@
 int checkOnAxis();
 
 char *
-field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
-	double freq, char *transducer, char *impulse, int threads, int lowNslow,
+field2dyna(char *nodeName, double alpha_dBcmMHz, double fnum, point_type focusM,
+	double freqMHz, char *transducer, char *impulse, int threads, int lowNslow,
 	char *elemName, int verbose)
 {
 int dynaField();
@@ -60,10 +60,10 @@ int status;
 	if (verbose >= 1) {
 		fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n",
 			nodeName);
-		fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha,
-			fnum, freq);
-		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focus.x,
-			focus.y, focus.z);
+		fprintf(stderr, "in field2dyna, alpha_dBcmMHz %f fnum %f freqMHz %f\n",
+			alpha_dBcmMHz, fnum, freqMHz);
+		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focusM.x,
+			focusM.y, focusM.z);
 		fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
 		fprintf(stderr, "in field2dyna, impulse %s\n", impulse);
 		fprintf(stderr, "in field2dyna, threads %d\n", threads);
@@ -120,17 +120,17 @@ int status;
 /* populate structure for dynaField */
 
 	fieldParams.pointsAndNodes = pointsAndNodes;
-	fieldParams.alpha = alpha;
+	fieldParams.alpha_dBcmMHz = alpha_dBcmMHz;
 	fieldParams.fnum = fnum;
-	fieldParams.focus = focus;
-	fieldParams.frequency = freq;
+	fieldParams.focusM = focusM;
+	fieldParams.frequencyMHz = freqMHz;
 	fieldParams.transducer = transducer;
 	fieldParams.impulse = impulse;
-	fieldParams.soundSpeed = 1540;
-	fieldParams.samplingFrequency = 100e6;
+	fieldParams.soundSpeed_MperSec = 1540;
+	fieldParams.samplingFrequencyHz = 100e6;
 	fieldParams.threads = threads;
 
-	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focusM.x, fieldParams.focusM.y, fieldParams.focusM.z);
 
 /* call dynaField here */
 

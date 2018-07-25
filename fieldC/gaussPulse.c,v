@@ -1,10 +1,15 @@
-head	1.13;
+head	1.14;
 access;
 symbols;
 locks
-	ndd:1.13; strict;
+	ndd:1.14; strict;
 comment	@ * @;
 
+
+1.14
+date	2018.07.24.17.43.35;	author ndd;	state Exp;
+branches;
+next	1.13;
 
 1.13
 date	2018.07.19.14.30.32;	author ndd;	state Exp;
@@ -77,9 +82,9 @@ desc
 @
 
 
-1.13
+1.14
 log
-@had to make a logic change to verbose check
+@started including units in variable names.
 @
 text
 @/*
@@ -103,7 +108,7 @@ double fv, power, ref;
 double tc, delta, tv;
 double impulse, stepSize;
 signal_type *impulseResponse = NULL;
-double freq;
+double freqHz;
 double ye;
 int i, numSteps;
 
@@ -143,11 +148,11 @@ int i, numSteps;
 		tc = sqrt(-2 * tv * log(delta));
 		if (verbose >= 2) fprintf(stderr, "tc %g\n", tc);
 
-		if (verbose >= 2) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
-		numSteps = (int )ceil((tc * params.samplingFrequency) * 2);
-		freq = (double) params.samplingFrequency;
+		if (verbose >= 2) fprintf(stderr, "sampling freqHz %d\n", params.samplingFrequencyHz);
+		numSteps = (int )ceil((tc * params.samplingFrequencyHz) * 2);
+		freqHz = (double) params.samplingFrequencyHz;
 
-		if (verbose >= 2) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
+		if (verbose >= 2) fprintf(stderr, "freqHz %g, numSteps %d\n", freqHz, numSteps);
 
 		impulseResponse = alloc_signal(numSteps, 0);
 
@@ -156,7 +161,7 @@ int i, numSteps;
 			return(NULL);
 			}
 
-		stepSize = 1.0/params.samplingFrequency;
+		stepSize = 1.0/params.samplingFrequencyHz;
 
 		impulse = -tc;
 		if (verbose >= 2) fprintf(stderr, "starting loop, stepSize %e\n", stepSize);
@@ -182,6 +187,28 @@ int i, numSteps;
 	return(impulseResponse);
 }
 			
+@
+
+
+1.13
+log
+@had to make a logic change to verbose check
+@
+text
+@d22 1
+a22 1
+double freq;
+d62 3
+a64 3
+		if (verbose >= 2) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
+		numSteps = (int )ceil((tc * params.samplingFrequency) * 2);
+		freq = (double) params.samplingFrequency;
+d66 1
+a66 1
+		if (verbose >= 2) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
+d75 1
+a75 1
+		stepSize = 1.0/params.samplingFrequency;
 @
 
 

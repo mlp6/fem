@@ -1,10 +1,20 @@
-head	1.17;
+head	1.19;
 access;
 symbols;
 locks
-	ndd:1.17; strict;
+	ndd:1.19; strict;
 comment	@ * @;
 
+
+1.19
+date	2018.07.25.17.01.12;	author ndd;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2018.07.24.17.42.36;	author ndd;	state Exp;
+branches;
+next	1.17;
 
 1.17
 date	2018.07.19.14.30.47;	author ndd;	state Exp;
@@ -97,9 +107,9 @@ desc
 @
 
 
-1.17
+1.19
 log
-@had to make a logic change to verbose check
+@added more units to params variables
 @
 text
 @/*
@@ -110,9 +120,9 @@ text
 %   NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs
 %                       to be a comma-delimited file with header/footer lines
 %                       that start with '*'
-%   alpha - 0.5, 1.0, etc. (dB/cm/MHz)
+%   alpha_dBcmMHz - 0.5, 1.0, etc. (dB/cm/MHz)
 %   Fnum - F/# (e.g. 1.3)
-%   focus - [x y z] (m) "Field" coordinates
+%   focusM - [x y z] (meters) "Field" coordinates
 %   Frequency - excitation frequency (MHz)
 %   Transducer (string) - 'vf105','vf73'
 %   Impulse (string) - 'gaussian','exp'
@@ -145,8 +155,8 @@ text
 int checkOnAxis();
 
 char *
-field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
-	double freq, char *transducer, char *impulse, int threads, int lowNslow,
+field2dyna(char *nodeName, double alpha_dBcmMHz, double fnum, point_type focusM,
+	double freqMHz, char *transducer, char *impulse, int threads, int lowNslow,
 	char *elemName, int verbose)
 {
 int dynaField();
@@ -164,10 +174,10 @@ int status;
 	if (verbose >= 1) {
 		fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n",
 			nodeName);
-		fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha,
-			fnum, freq);
-		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focus.x,
-			focus.y, focus.z);
+		fprintf(stderr, "in field2dyna, alpha_dBcmMHz %f fnum %f freqMHz %f\n",
+			alpha_dBcmMHz, fnum, freqMHz);
+		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focusM.x,
+			focusM.y, focusM.z);
 		fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
 		fprintf(stderr, "in field2dyna, impulse %s\n", impulse);
 		fprintf(stderr, "in field2dyna, threads %d\n", threads);
@@ -224,17 +234,17 @@ int status;
 /* populate structure for dynaField */
 
 	fieldParams.pointsAndNodes = pointsAndNodes;
-	fieldParams.alpha = alpha;
+	fieldParams.alpha_dBcmMHz = alpha_dBcmMHz;
 	fieldParams.fnum = fnum;
-	fieldParams.focus = focus;
-	fieldParams.frequency = freq;
+	fieldParams.focusM = focusM;
+	fieldParams.frequencyMHz = freqMHz;
 	fieldParams.transducer = transducer;
 	fieldParams.impulse = impulse;
-	fieldParams.soundSpeed = 1540;
-	fieldParams.samplingFrequency = 100e6;
+	fieldParams.soundSpeed_MperSec = 1540;
+	fieldParams.samplingFrequencyHz = 100e6;
 	fieldParams.threads = threads;
 
-	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focusM.x, fieldParams.focusM.y, fieldParams.focusM.z);
 
 /* call dynaField here */
 
@@ -243,6 +253,62 @@ int status;
 		exit(0);
 		}
 }
+@
+
+
+1.18
+log
+@started including units in variable names.
+@
+text
+@d9 1
+a9 1
+%   alpha - 0.5, 1.0, etc. (dB/cm/MHz)
+d11 1
+a11 1
+%   focus - [x y z] (m) "Field" coordinates
+d44 1
+a44 1
+field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
+d63 4
+a66 4
+		fprintf(stderr, "in field2dyna, alpha %f fnum %f freqMHz %f\n", alpha,
+			fnum, freqMHz);
+		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focus.x,
+			focus.y, focus.z);
+d123 1
+a123 1
+	fieldParams.alpha = alpha;
+d125 1
+a125 1
+	fieldParams.focus = focus;
+d129 1
+a129 1
+	fieldParams.soundSpeed = 1540;
+d133 1
+a133 1
+	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+@
+
+
+1.17
+log
+@had to make a logic change to verbose check
+@
+text
+@d45 1
+a45 1
+	double freq, char *transducer, char *impulse, int threads, int lowNslow,
+d63 2
+a64 2
+		fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha,
+			fnum, freq);
+d126 1
+a126 1
+	fieldParams.frequency = freq;
+d130 1
+a130 1
+	fieldParams.samplingFrequency = 100e6;
 @
 
 

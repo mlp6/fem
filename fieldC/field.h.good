@@ -9,13 +9,13 @@ struct nodeEntry {
 	};
 
 struct FieldParams {
+	int threads;
+	int soundSpeed, samplingFrequencyHz;
 	double alpha;
-	struct nodeEntry *pointsAndNodes;
 	double fnum;
 	point_type focus;
-	double frequency;
+	double frequencyMHz;
 	char *transducer, *impulse;
-	int threads;
-	int soundSpeed, samplingFrequency;
+	struct nodeEntry *pointsAndNodes;
 	double *ThData;
 	};

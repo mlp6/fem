@@ -6,26 +6,26 @@ main()
 int numNodes;
 struct FieldParams params;
 struct nodeEntry *pointsAndNodes, *readMpn();
-point_type focus;
+point_type focusM;
 int verbose = 0;
 
 	params.impulse = "gaussian";
 	params.samplingFrequency = 100E6;
 
-	focus.x = 0;
-	focus.y = 0;
-	focus.z = 0.02;
+	focusM.x = 0;
+	focusM.y = 0;
+	focusM.z = 0.02;
 
 /*
 */
-	params.alpha = 0.5;
+	params.alpha_dBcmMHz = 0.5;
 	params.fnum = 1.3;
-	params.focus = focus;
+	params.focusM = focusM;
 	params.frequency = 7.2;
 	params.transducer = "vf105";
 	params.threads = 1;
 
-	params.soundSpeed = 1540;
+	params.soundSpeed_MperSec = 1540;
 
 	params.pointsAndNodes = readMpn("./myNodes.dyn", &numNodes, verbose);
 	if (params.pointsAndNodes == NULL) {

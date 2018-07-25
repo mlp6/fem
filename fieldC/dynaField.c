@@ -66,7 +66,7 @@ double width, height, kerf, Rconvex, Rfocus;
 double heights;
 double fractBandwidth, centerFreq;
 point_type *points;
-double exciteFreq;
+double exciteFreqHz;
 signal_type *excitationPulse = NULL;
 signal_type *impulseResponse = NULL, *gaussPulse();
 signal_type **pressure = NULL;
@@ -95,10 +95,10 @@ int xdcGetSize;
 	fprintf(stderr, "in dynaField verbose %d\n", verbose);
 
 	if (verbose >= 1) {
-		fprintf(stderr, "sampling frequency %d\n", params.samplingFrequency);
-		fprintf(stderr, "alpha %f\n", params.alpha);
+		fprintf(stderr, "sampling frequency %d\n", params.samplingFrequencyHz);
+		fprintf(stderr, "alpha_dBcmMHz %f\n", params.alpha_dBcmMHz);
 		fprintf(stderr, "fnum %f\n", params.fnum);
-		fprintf(stderr, "frequency %f\n", params.frequency);
+		fprintf(stderr, "frequency %f\n", params.frequencyMHz);
 		fprintf(stderr, "points %f %f %f\n",
 			params.pointsAndNodes[0].x,
 			params.pointsAndNodes[0].y,
@@ -111,8 +111,8 @@ int xdcGetSize;
  * clearer without the cast.
  */
 
-	set_field("c", params.soundSpeed);
-	set_field("fs", params.samplingFrequency);
+	set_field("c", params.soundSpeed_MperSec);
+	set_field("fs", params.samplingFrequencyHz);
 
 	set_field("threads", params.threads);
 
@@ -120,7 +120,8 @@ int xdcGetSize;
 		threads, params.threads);
 
 /* get info from JSON */
-	strcpy(jsonFileName, "./c52.json");
+/* 	strcpy(jsonFileName, "./c52.json"); */
+	sprintf(jsonFileName, "./%s.json", params.transducer);
 
 	if ((jsonInput = fopen(jsonFileName, "rb")) == NULL) {
 		fprintf(stderr, "couldn't open json file %s\n", jsonFileName);
@@ -256,10 +257,10 @@ int xdcGetSize;
 		if (verbose >= 1) fprintf(stderr, "calling xdc_convex_focused_array\n");
 		if (verbose >= 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
 			noElements, width, height, kerf, Rconvex, Rfocus, noSubX,
-			noSubY, params.focus.x, params.focus.y, params.focus.z);
+			noSubY, params.focusM.x, params.focusM.y, params.focusM.z);
 
 		Th = xdc_convex_focused_array(noElements, width, height, kerf, Rconvex,
-			Rfocus, noSubX, noSubY, params.focus);
+			Rfocus, noSubX, noSubY, params.focusM);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_convex_focused_array\n");
 			return(0);
@@ -274,7 +275,7 @@ int xdcGetSize;
 		noElementsY = 1;
 		heights = height;
 		Th = xdc_focused_multirow(noElements, width, noElementsY, &heights,
-			kerf, kerf, Rfocus, noSubX, noSubY, params.focus);
+			kerf, kerf, Rfocus, noSubX, noSubY, params.focusM);
 		if (Th == NULL) {
 			fprintf(stderr, "error calling xdc_focused_multirow\n");
 			return(0);
@@ -370,13 +371,13 @@ int xdcGetSize;
 
 	xdc_impulse(Th, impulseResponse);
 
-	exciteFreq = params.frequency * 1000000;
-	stepSize = 1.0 / params.samplingFrequency;
+	exciteFreqHz = params.frequencyMHz * 1000000;
+	stepSize = 1.0 / params.samplingFrequencyHz;
 
-	if (verbose >= 1) fprintf(stderr, "params.frequency %f exciteFreq %f stepSize %g\n",
-		params.frequency, exciteFreq, stepSize);
+	if (verbose >= 1) fprintf(stderr, "params.frequencyMHz %f exciteFreqHz %f stepSize %g\n",
+		params.frequencyMHz, exciteFreqHz, stepSize);
 
-	numSteps = (int )ceil ((double )numCYC / exciteFreq / stepSize);
+	numSteps = (int )ceil ((double )numCYC / exciteFreqHz / stepSize);
 
 	excitationPulse = alloc_signal(numSteps, 0);
 
@@ -387,7 +388,7 @@ int xdcGetSize;
 
 	if (verbose >= 1) fprintf(stderr, "setting excitationPulse; numSteps %d\n", numSteps);
 
-	temp = 2 * M_PI * exciteFreq * stepSize;
+	temp = 2 * M_PI * exciteFreqHz * stepSize;
 
 	for (i = 0; i < numSteps; i++) {
 		excitationPulse->data[i] = sin(i * temp);
@@ -414,9 +415,10 @@ int xdcGetSize;
 			fprintf(stderr, "got %f\n", Th->excitation->data[i]);
 		}
 
-	freqAtt = params.alpha * 100 / 1E6; /* frequency atten. in dB/cm/MHz */
+/* frequency atten. in dB/m/Hz */
+	freqAtt = params.alpha_dBcmMHz * 100 / 1E6;
 
-	attF0 = exciteFreq;
+	attF0 = exciteFreqHz;
 	att = freqAtt * attF0; /* set non freq. dep. to be centered here */
 	set_field("att", att);
 	set_field("Freq_att", freqAtt);
@@ -524,11 +526,11 @@ int xdcGetSize;
  * fieldParams:
  *
  *  int threads
- *	int soundSpeed
- *	int samplingFrequency
- *	double alpha
+ *	int soundSpeed_MperSec
+ *	int samplingFrequencyHz
+ *	double alpha_dBcmMHz
  *	double fnum
- *	point_type focus (struct of three doubles)
+ *	point_type focusM (struct of three doubles)
  *	double frequency
  *  length of transducer character string, int
  *  transducer, character string
@@ -544,7 +546,7 @@ int xdcGetSize;
  */
 
 	sprintf(outFileName, "dyna-I-f%.2f-F%.1f-FD%.3f-a%.2f.new",
-		params.frequency, params.fnum, params.focus.z, params.alpha);
+		params.frequencyMHz, params.fnum, params.focusM.z, params.alpha_dBcmMHz);
 
 	if (verbose >= 1) fprintf(stderr, "file name %s\n", outFileName);
 

@@ -35,9 +35,9 @@ double *intensity;
  *  int threads
  *	int soundSpeed
  *	int samplingFrequency
- *	double alpha
+ *	double alpha_dBcmMHz
  *	double fnum
- *	point_type focus (struct of three doubles)
+ *	point_type focusM (struct of three doubles)
  *	double frequency
  *	transducer length and character string
  *	impulse length and character string
@@ -82,29 +82,29 @@ double *intensity;
 
 	fprintf(stderr, "params.threads %d\n", params.threads);
 
-	if (fread(&params.soundSpeed, sizeof(int), 1, inptr) != 1) {
+	if (fread(&params.soundSpeed_MperSec, sizeof(int), 1, inptr) != 1) {
 		fprintf(stderr, "failed to read soundSpeed\n");
 		exit(EXIT_FAILURE);
 		}
 
-	fprintf(stderr, "params.soundSpeed %d\n", params.soundSpeed);
+	fprintf(stderr, "params.soundSpeed_MperSec %d\n", params.soundSpeed_MperSec);
 
-	if (fread(&params.samplingFrequency, sizeof(int), 1, inptr) != 1) {
-		fprintf(stderr, "failed to read samplingFrequency\n");
+	if (fread(&params.samplingFrequencyHz, sizeof(int), 1, inptr) != 1) {
+		fprintf(stderr, "failed to read samplingFrequencyHz\n");
 		exit(EXIT_FAILURE);
 		}
 
-	fprintf(stderr, "params.samplingFrequency %d\n", params.samplingFrequency);
+	fprintf(stderr, "params.samplingFrequencyHz %d\n", params.samplingFrequencyHz);
 
 	for (i = 0; i < numNodes; i++)
 		fprintf(stderr, "intensity %g\n", intensity[i]);
 
-	if (fread(&params.alpha, sizeof(double), 1, inptr) != 1) {
-		fprintf(stderr, "failed to read alpha\n");
+	if (fread(&params.alpha_dBcmMHz, sizeof(double), 1, inptr) != 1) {
+		fprintf(stderr, "failed to read alpha_dBcmMHz\n");
 		exit(EXIT_FAILURE);
 		}
 
-	fprintf(stderr, "params.alpha %f\n", params.alpha);
+	fprintf(stderr, "params.alpha_dBcmMHz %f\n", params.alpha_dBcmMHz);
 
 	if (fread(&params.fnum, sizeof(double), 1, inptr) != 1) {
 		fprintf(stderr, "failed to read fnum\n");
@@ -113,20 +113,20 @@ double *intensity;
 
 	fprintf(stderr, "params.fnum %f\n", params.fnum);
 
-	if (fread(&params.focus, sizeof(point_type), 1, inptr) != 1) {
+	if (fread(&params.focusM, sizeof(point_type), 1, inptr) != 1) {
 		fprintf(stderr, "failed to read focus\n");
 		exit(EXIT_FAILURE);
 		}
 
-	fprintf(stderr, "params.focus %f %f %f\n", params.focus.x, params.focus.y,
-		params.focus.z);
+	fprintf(stderr, "params.focusM %f %f %f\n", params.focusM.x, params.focusM.y,
+		params.focusM.z);
 
-	if (fread(&params.frequency, sizeof(double), 1, inptr) != 1) {
+	if (fread(&params.frequencyMHz, sizeof(double), 1, inptr) != 1) {
 		fprintf(stderr, "failed to read frequency\n");
 		exit(EXIT_FAILURE);
 		}
 
-	fprintf(stderr, "params.frequency %f\n", params.frequency);
+	fprintf(stderr, "params.frequencyMHz %f\n", params.frequencyMHz);
 
 	if (fread(&length, sizeof(int), 1, inptr) != 1) {
 		fprintf(stderr, "failed to read transducer length\n");
