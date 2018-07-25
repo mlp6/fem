@@ -42,8 +42,8 @@ int checkOnAxis();
 
 char *
 field2dyna(char *nodeName, double alpha_dBcmMHz, double fnum, point_type focusM,
-	double freqMHz, char *transducer, char *impulse, int threads, int lowNslow,
-	char *elemName, int verbose)
+	double freqMHz, char *transducer, char *transducerType, char *impulse,
+	int threads, int lowNslow, char *elemName, int verbose)
 {
 int dynaField();
 int i, numNodes;
@@ -65,6 +65,7 @@ int status;
 		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focusM.x,
 			focusM.y, focusM.z);
 		fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+		fprintf(stderr, "in field2dyna, transducerType %s\n", transducerType);
 		fprintf(stderr, "in field2dyna, impulse %s\n", impulse);
 		fprintf(stderr, "in field2dyna, threads %d\n", threads);
 		fprintf(stderr, "in field2dyna, lowNslow %d\n", lowNslow);
@@ -125,6 +126,7 @@ int status;
 	fieldParams.focusM = focusM;
 	fieldParams.frequencyMHz = freqMHz;
 	fieldParams.transducer = transducer;
+	fieldParams.transducerType = transducerType;
 	fieldParams.impulse = impulse;
 	fieldParams.soundSpeed_MperSec = 1540;
 	fieldParams.samplingFrequencyHz = 100e6;

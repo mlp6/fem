@@ -31,7 +31,7 @@ char *field2dyna();
 char *data;
 char inputFileName[128];
 point_type focusM;
-char *nodeFileName, *elemsFileName, *transducer, *impulse;
+char *nodeFileName, *elemsFileName, *transducer, *transducerType, *impulse;
 double alpha_dBcmMHz, fnum, freqMHz;
 int threads, lowNslow;
 
@@ -130,6 +130,12 @@ int threads, lowNslow;
 		}
 	transducer = jsonTemp->valuestring;
 
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "transducerType")) == NULL) {
+		fprintf(stderr, "couldn't find transducerType in probe file\n");
+		return(0);
+		}
+	transducerType = jsonTemp->valuestring;
+
 	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "impulse")) == NULL) {
 		fprintf(stderr, "couldn't find impulse in probe file\n");
 		return(0);
@@ -155,7 +161,7 @@ int threads, lowNslow;
 	elemsFileName = jsonTemp->valuestring;
 
 	field2dyna(nodeFileName, alpha_dBcmMHz, fnum,
-		focusM, freqMHz, transducer, impulse,
+		focusM, freqMHz, transducer, transducerType, impulse,
 		threads, lowNslow,
 	    elemsFileName, verbose);
 

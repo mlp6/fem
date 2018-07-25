@@ -15,7 +15,7 @@ struct FieldParams {
 	double fnum;
 	point_type focusM;
 	double frequencyMHz;
-	char *transducer, *impulse;
+	char *transducer, *transducerType, *impulse;
 	struct nodeEntry *pointsAndNodes;
 	double *ThData;
 	};

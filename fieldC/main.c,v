@@ -1,10 +1,15 @@
-head	1.7;
+head	1.8;
 access;
 symbols;
 locks
-	ndd:1.7; strict;
+	ndd:1.8; strict;
 comment	@ * @;
 
+
+1.8
+date	2018.07.25.20.02.01;	author ndd;	state Exp;
+branches;
+next	1.7;
 
 1.7
 date	2018.07.25.17.01.22;	author ndd;	state Exp;
@@ -47,9 +52,9 @@ desc
 @
 
 
-1.7
+1.8
 log
-@added more units to params variables
+@added transducer type as an argument
 @
 text
 @/* test routine */
@@ -85,7 +90,7 @@ char *field2dyna();
 char *data;
 char inputFileName[128];
 point_type focusM;
-char *nodeFileName, *elemsFileName, *transducer, *impulse;
+char *nodeFileName, *elemsFileName, *transducer, *transducerType, *impulse;
 double alpha_dBcmMHz, fnum, freqMHz;
 int threads, lowNslow;
 
@@ -184,6 +189,12 @@ int threads, lowNslow;
 		}
 	transducer = jsonTemp->valuestring;
 
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "transducerType")) == NULL) {
+		fprintf(stderr, "couldn't find transducerType in probe file\n");
+		return(0);
+		}
+	transducerType = jsonTemp->valuestring;
+
 	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "impulse")) == NULL) {
 		fprintf(stderr, "couldn't find impulse in probe file\n");
 		return(0);
@@ -209,11 +220,26 @@ int threads, lowNslow;
 	elemsFileName = jsonTemp->valuestring;
 
 	field2dyna(nodeFileName, alpha_dBcmMHz, fnum,
-		focusM, freqMHz, transducer, impulse,
+		focusM, freqMHz, transducer, transducerType, impulse,
 		threads, lowNslow,
 	    elemsFileName, verbose);
 
 }
+@
+
+
+1.7
+log
+@added more units to params variables
+@
+text
+@d34 1
+a34 1
+char *nodeFileName, *elemsFileName, *transducer, *impulse;
+d133 6
+d164 1
+a164 1
+		focusM, freqMHz, transducer, impulse,
 @
 
 
