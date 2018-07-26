@@ -9,7 +9,7 @@
 		},
 	"freqMHz": 7.2,
 	"transducer": "vf105",
-	"transducerType": "focused_multirow",
+	"transducerType": "focused_array",
 	"impulse": "gaussian",
 	"threads": 1,
 	"lowNslow": 0,

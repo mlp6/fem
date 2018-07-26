@@ -477,13 +477,13 @@ int xdcGetSize;
 			noElements, width, height, kerf, Rconvex, Rfocus, noSubX,
 			noSubY, params.focusM.x, params.focusM.y, params.focusM.z);
 
-		Th = xdc_convex_focused_array(noElements, width, height, kerf, Rconvex,
+		Th = xdc_focused_array(noElements, width, height, kerf,
 			Rfocus, noSubX, noSubY, params.focusM);
 		if (Th == NULL) {
-			fprintf(stderr, "error calling xdc_convex_focused_array\n");
+			fprintf(stderr, "error calling xdc_focused_array\n");
 			return(0);
 			}
-		if (verbose >= 2) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
+		if (verbose >= 2) fprintf(stderr, "xdc_focused_array; info: %s %s\n",
 			Th->information.name, Th->information.create_date);
 		}
 

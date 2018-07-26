@@ -1,10 +1,15 @@
-head	1.35;
+head	1.36;
 access;
 symbols;
 locks
-	ndd:1.35; strict;
+	ndd:1.36; strict;
 comment	@ * @;
 
+
+1.36
+date	2018.07.26.20.08.09;	author ndd;	state Exp;
+branches;
+next	1.35;
 
 1.35
 date	2018.07.25.19.59.42;	author ndd;	state Exp;
@@ -187,11 +192,10 @@ desc
 @
 
 
-1.35
+1.36
 log
-@since different probes have different parameters, I moved the reading of
-the probe file to be under the transducer type. that does cause some
-duplication of code, but I think it's the clearest way.
+@I was calling xdc_convex_focused_array where I should have been calling
+xdc_focused_array
 @
 text
 @/*
@@ -673,13 +677,13 @@ int xdcGetSize;
 			noElements, width, height, kerf, Rconvex, Rfocus, noSubX,
 			noSubY, params.focusM.x, params.focusM.y, params.focusM.z);
 
-		Th = xdc_convex_focused_array(noElements, width, height, kerf, Rconvex,
+		Th = xdc_focused_array(noElements, width, height, kerf,
 			Rfocus, noSubX, noSubY, params.focusM);
 		if (Th == NULL) {
-			fprintf(stderr, "error calling xdc_convex_focused_array\n");
+			fprintf(stderr, "error calling xdc_focused_array\n");
 			return(0);
 			}
-		if (verbose >= 2) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
+		if (verbose >= 2) fprintf(stderr, "xdc_focused_array; info: %s %s\n",
 			Th->information.name, Th->information.create_date);
 		}
 
@@ -959,6 +963,25 @@ int xdcGetSize;
 	return(1);
 
 }
+@
+
+
+1.35
+log
+@since different probes have different parameters, I moved the reading of
+the probe file to be under the transducer type. that does cause some
+duplication of code, but I think it's the clearest way.
+@
+text
+@d480 1
+a480 1
+		Th = xdc_convex_focused_array(noElements, width, height, kerf, Rconvex,
+d483 1
+a483 1
+			fprintf(stderr, "error calling xdc_convex_focused_array\n");
+d486 1
+a486 1
+		if (verbose >= 2) fprintf(stderr, "xdc_convex_focused_array; info: %s %s\n",
 @
 
 
