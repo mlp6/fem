@@ -26,20 +26,37 @@ Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
 1992.](http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=139123)
 
 ## Installation
+These tools have been developed in a Linux environment, which is the
+recommended platform for usage.  Many of the Python and some of the C code will
+work on Windows and Mac platforms, but build tools for these systems is not
+outlined here and robust testing does not exist for those environments (i.e.,
+use at your own risk).  The Python tools require a version >= 3.4; 3.6.x is
+recommended.
+
 There are three different methods to use/install this package:
-1. Install this with pip in a local virtualenv (recommended): `pip install
+1. *[RECOMMENDED]* Install this with `pip` in a local virtualenv (make sure the
+   virtualenv is activated!): `pip install
    git+https://github.com/mlp6/fem.git`.
 1. Clone this source directory and manually install it in your local
    virtualenv: `python setup.py install`
 1. Clone this source directory and work directly with it by defining
    `PYTHONPATH` to include the root directory this repository was cloned into.
    This is the easiest method if you are planning to actively edit/develop the
-   codebase.
+   codebase.  You can do this on-the-fly for a given interactive `ipython`
+   session with syntax like: `PYTHONPATH=$HOME/fem ipython`.
 
 ## Documentation
 The latest documentation is automatically generated using Sphinx and can be
 built in ``docs/``.  The same documentation is also built and rendered
 automatically at https://mlp6.github.io/fem/.
+
+To build the documentation:
+1. Make sure that `PYTHONPATH` includes the `fem` package.
+1. Make sure that the virtualenv in activated, which includes the
+   `sphinx-build` package.
+1. Within the `docs/` directory: `make html`
+1. Run `docs/rsync_build.sh` to bring the newly-built HTML files and associated
+   source files into `docs/`.
 
 ## Issues
 Please file any bug reports, features requests, etc. using the GitHub

@@ -17,3 +17,4 @@ env/
 build/
 dist/
 fem.egg-info
+.venv/
