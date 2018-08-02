@@ -22,5 +22,6 @@ setup(
     install_requires=['h5py', 'ipython', 'jupyter', 'matplotlib', 'numpy',
                       'pytest', 'pytest-pep8', 'scipy', 'sphinx',
                       'sphinxcontrib-napoleon', 'pyevtk'],
+    package_data={'fem': ['*.md', 'examples/*', 'docs/*']},
     include_package_data=True,
 )
