@@ -84,3 +84,6 @@ See the git commit history for an effective change log pre-v6.3.1
 ## v7.3.0
 * Add examples, docs and Markdown files to pip setup-installed package.
 * Update installation documents to reflect pip / virtualenv practices.
+
+## v7.3.1
+* update `setup.py`
