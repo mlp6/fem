@@ -87,3 +87,6 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v7.3.1
 * update `setup.py`
+
+## v7.3.2
+* add `package_data` to `setup.py` to capture examples and docs in `pip install`
