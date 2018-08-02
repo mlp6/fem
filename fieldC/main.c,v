@@ -1,0 +1,425 @@
+head	1.8;
+access;
+symbols;
+locks
+	ndd:1.8; strict;
+comment	@ * @;
+
+
+1.8
+date	2018.07.25.20.02.01;	author ndd;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.07.25.17.01.22;	author ndd;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.07.24.17.43.20;	author ndd;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.07.20.18.40.30;	author ndd;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.07.18.18.03.02;	author ndd;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.07.18.17.32.41;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.07.12.15.19.21;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.07.12.14.26.21;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@routine to call field2dyna, passing in arguments
+@
+
+
+1.8
+log
+@added transducer type as an argument
+@
+text
+@/* test routine */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "field.h"
+#include "cJSON.h"
+
+sys_con_type   *sys_con;
+
+/*
+ * main requires at least one argument, the name of a JSON file that has the
+ * parameters to be passed to field2dyna. if there's no file name, we'll exit.
+ * there's also an optional 'verbose' flag.
+ */
+
+const char *usage[] = {
+	"Usage: field2dyna [verbosity] inputFileName\n",
+	"Options:\n",
+	"\t-v[vv]            amount of verbosity\n",
+	0};
+
+main(int argc, char **argv)
+{
+int i, j, len;
+int verbose = 0;
+FILE *input;
+cJSON *focusParams, *probeInfo;
+cJSON *jsonTemp;
+char *field2dyna();
+char *data;
+char inputFileName[128];
+point_type focusM;
+char *nodeFileName, *elemsFileName, *transducer, *transducerType, *impulse;
+double alpha_dBcmMHz, fnum, freqMHz;
+int threads, lowNslow;
+
+	if (argc <= 1) {
+		fprintf(stderr, "the routine requires a JSON file as an argument!\n");
+		exit(0);
+		}
+
+	for (i = 1; i < argc; i++) {
+		if (argv[i][0] == '-')
+			switch(argv[i][1]) {
+				default:
+					fprintf(stderr, "\nbad arg: %s\n\n", argv[i]);
+					for (j = 0; usage[j]; j++)
+						fprintf(stderr, "%s", usage[j]);
+					fprintf(stderr, "\n");
+					exit(0);
+
+				case 'v':       /*  verbose*/
+					verbose = strlen(argv[i]) - 1;
+					break;
+				}
+		else {
+			strcpy(inputFileName, argv[i]);
+			}
+		}
+
+/* get info from JSON */
+	input = fopen(inputFileName, "rb");
+
+	fseek(input, 0, SEEK_END);
+	len = ftell(input);
+	fseek(input, 0, SEEK_SET);
+	data = (char *)malloc(len + 1);
+	fread(data, 1, len, input);
+	fclose(input);
+
+	probeInfo = cJSON_Parse(data);
+	if (!probeInfo) {
+		printf("Error before: [%s]\n",cJSON_GetErrorPtr());
+		exit(0);
+		}
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "nodeFileName")) == NULL) {
+		fprintf(stderr, "couldn't find nodeFileName in probe file\n");
+		return(0);
+		}
+	nodeFileName = jsonTemp->valuestring;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "alpha_dBcmMHz")) == NULL) {
+		fprintf(stderr, "couldn't find alpha_dBcmMHz in probe file\n");
+		return(0);
+		}
+	alpha_dBcmMHz = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "fnum")) == NULL) {
+		fprintf(stderr, "couldn't find fnum in probe file\n");
+		return(0);
+		}
+	fnum = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "focusM")) == NULL) {
+		fprintf(stderr, "couldn't find focusM in probe file\n");
+		return(0);
+		}
+	focusParams = jsonTemp;
+
+	if ((jsonTemp = cJSON_GetObjectItem(focusParams, "x")) == NULL) {
+		fprintf(stderr, "couldn't find x in probe file\n");
+		return(0);
+		}
+	focusM.x = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(focusParams, "y")) == NULL) {
+		fprintf(stderr, "couldn't find y in probe file\n");
+		return(0);
+		}
+	focusM.y = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(focusParams, "z")) == NULL) {
+		fprintf(stderr, "couldn't find z in probe file\n");
+		return(0);
+		}
+	focusM.z = jsonTemp->valuedouble;
+
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "freqMHz")) == NULL) {
+		fprintf(stderr, "couldn't find freqMHz in probe file\n");
+		return(0);
+		}
+	freqMHz = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "transducer")) == NULL) {
+		fprintf(stderr, "couldn't find transducer in probe file\n");
+		return(0);
+		}
+	transducer = jsonTemp->valuestring;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "transducerType")) == NULL) {
+		fprintf(stderr, "couldn't find transducerType in probe file\n");
+		return(0);
+		}
+	transducerType = jsonTemp->valuestring;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "impulse")) == NULL) {
+		fprintf(stderr, "couldn't find impulse in probe file\n");
+		return(0);
+		}
+	impulse = jsonTemp->valuestring;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "threads")) == NULL) {
+		fprintf(stderr, "couldn't find threads in probe file\n");
+		return(0);
+		}
+	threads = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "lowNslow")) == NULL) {
+		fprintf(stderr, "couldn't find lowNslow in probe file\n");
+		return(0);
+		}
+	lowNslow = jsonTemp->valuedouble;
+
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "elemsFileName")) == NULL) {
+		fprintf(stderr, "couldn't find elemsFileName in probe file\n");
+		return(0);
+		}
+	elemsFileName = jsonTemp->valuestring;
+
+	field2dyna(nodeFileName, alpha_dBcmMHz, fnum,
+		focusM, freqMHz, transducer, transducerType, impulse,
+		threads, lowNslow,
+	    elemsFileName, verbose);
+
+}
+@
+
+
+1.7
+log
+@added more units to params variables
+@
+text
+@d34 1
+a34 1
+char *nodeFileName, *elemsFileName, *transducer, *impulse;
+d133 6
+d164 1
+a164 1
+		focusM, freqMHz, transducer, impulse,
+@
+
+
+1.6
+log
+@started including units in variable names.
+@
+text
+@d33 1
+a33 1
+point_type focus;
+d35 1
+a35 1
+double alpha, fnum, freqMHz;
+d84 2
+a85 2
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "alpha")) == NULL) {
+		fprintf(stderr, "couldn't find alpha in probe file\n");
+d88 1
+a88 1
+	alpha = jsonTemp->valuedouble;
+d96 2
+a97 2
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "focus")) == NULL) {
+		fprintf(stderr, "couldn't find focus in probe file\n");
+d106 1
+a106 1
+	focus.x = jsonTemp->valuedouble;
+d112 1
+a112 1
+	focus.y = jsonTemp->valuedouble;
+d118 1
+a118 1
+	focus.z = jsonTemp->valuedouble;
+d157 2
+a158 2
+	field2dyna(nodeFileName, alpha, fnum,
+		focus, freqMHz, transducer, impulse,
+a160 10
+
+/*
+	field2dyna(char *nodeFileName, double alpha, double fnum,
+		struct Focus focus, double freq, char *transducer, char *impulse,
+		int threads, int lowNslow,
+	    char *elemFileName, int forceNonlinear)
+
+field2dyna("./myNodes.dyn", .5, 1.3, focus, 7.2, "vf105", "gaussian", 1, 0,
+	"../tests/elems.dyn", 1);
+*/
+@
+
+
+1.5
+log
+@added error checking for cJSON_GetObjectItem
+@
+text
+@d35 1
+a35 1
+double alpha, fnum, freq;
+d121 2
+a122 2
+	if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "freq")) == NULL) {
+		fprintf(stderr, "couldn't find freq in probe file\n");
+d125 1
+a125 1
+	freq = jsonTemp->valuedouble;
+d158 1
+a158 1
+		focus, freq, transducer, impulse,
+@
+
+
+1.4
+log
+@added verbose argument, changed 'debug' to 'verbose'; got rid of forceNonLinear
+@
+text
+@d29 1
+a53 1
+					fprintf(stderr, "arg length %d\n", strlen(argv[i]));
+d78 5
+a82 3
+	nodeFileName = cJSON_GetObjectItem(probeInfo, "nodeFileName")->valuestring;
+	alpha = cJSON_GetObjectItem(probeInfo, "alpha")->valuedouble;
+	fnum = cJSON_GetObjectItem(probeInfo, "fnum")->valuedouble;
+d84 5
+a88 4
+	focusParams = cJSON_GetObjectItem(probeInfo, "focus");
+	focus.x = cJSON_GetObjectItem(focusParams, "x")->valuedouble;
+	focus.y = cJSON_GetObjectItem(focusParams, "y")->valuedouble;
+	focus.z = cJSON_GetObjectItem(focusParams, "z")->valuedouble;
+d90 5
+a94 1
+	freq = cJSON_GetObjectItem(probeInfo, "freq")->valuedouble;
+d96 5
+a100 2
+	transducer = cJSON_GetObjectItem(probeInfo, "transducer")->valuestring;
+	impulse = cJSON_GetObjectItem(probeInfo, "impulse")->valuestring;
+d102 5
+a106 2
+	threads = cJSON_GetObjectItem(probeInfo, "threads")->valueint;
+	lowNslow = cJSON_GetObjectItem(probeInfo, "lowNslow")->valueint;
+d108 48
+a155 1
+	elemsFileName = cJSON_GetObjectItem(probeInfo, "elemsFileName")->valuestring;
+@
+
+
+1.3
+log
+@added better argument processing, including verbosity.
+@
+text
+@d35 1
+a35 1
+int threads, lowNslow, forceNonlinear;
+a96 2
+	forceNonlinear = cJSON_GetObjectItem(probeInfo, "forceNonlinear")->valueint;
+
+d100 1
+a100 1
+	    elemsFileName, forceNonlinear);
+@
+
+
+1.2
+log
+@changed to require a json input file rather than having to recompile
+@
+text
+@d4 2
+d12 3
+a14 2
+ * main takes one argument, the name of a JSON file that has the parameters
+ * to be passed to field2dyna. if there's no file name, we'll exit.
+d17 6
+d25 2
+a26 1
+int i, len;
+d31 1
+d37 1
+a37 1
+	if (argc != 2) {
+d42 20
+d63 7
+a69 6
+	input = fopen(argv[1],"rb");
+	fseek(input,0,SEEK_END);
+	len=ftell(input );
+	fseek(input,0,SEEK_SET);
+	data=(char*)malloc(len+1);
+	fread(data,1,len,input);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d5 1
+d9 6
+a14 1
+main()
+d16 3
+a18 1
+int i;
+d20 1
+d22 32
+d55 16
+a70 3
+	focus.x = 0;
+	focus.y = 0;
+	focus.z = 0.02;
+d73 4
+a76 4
+field2dyna(char *nodeName, double alpha, double fnum, struct Focus focus,
+    double freq, char *transducer, char *impulse, int threads, int lowNslow,
+	    char *elemName, int forceNonlinear)
+*/
+d80 1
+@

@@ -1,0 +1,304 @@
+head	1.8;
+access;
+symbols;
+locks
+	ndd:1.8; strict;
+comment	@ * @;
+
+
+1.8
+date	2018.07.19.14.29.41;	author ndd;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.07.18.18.01.50;	author ndd;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.06.12.18.41.34;	author ndd;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.04.07.21.44.21;	author ndd;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.03.30.16.58.08;	author ndd;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.03.07.21.56.09;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.03.07.19.08.32;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.07.18.41.06;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@C version of read_mpn matlab code
+@
+
+
+1.8
+log
+@had to make a logic change to verbose check
+@
+text
+@/*
+% function [mpn] = readMpn(NodeName)
+% 
+% Read nodes.dyn and extract points & nodes, skipping the header lines,
+% including *NODE, and ending when the 4 column fscanf is broken (by *END).
+%
+% INPUTS:   NodeName ('nodes.dyn')
+%
+% OUPUTS:   mpn (array of nodeID, x, y, z coords)
+%
+% Mark Palmeri
+% mlp6@@duke.edu
+%
+% Ned Danieley
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include "field.h"
+
+#define LINE 160			/* space for input line */
+
+struct nodeEntry *
+readMpn(char *NodeName, int *numNodes, int verbose)
+{
+int i;
+int ret;
+FILE *nodesDyn;
+char *buf;
+size_t lineLength = LINE;
+int numChars;
+struct nodeEntry *nodes;
+
+/* open input file */
+
+    if ((nodesDyn = fopen(NodeName, "r")) == NULL) {
+		fprintf(stderr, "couldn't open input file %s\n", NodeName);
+		exit(EXIT_FAILURE);
+		}
+
+	if ((buf = (char *) malloc(lineLength + 1)) == NULL) {
+		fprintf(stderr, "couldn't allocate space for line\n");
+		exit(EXIT_FAILURE);
+		}
+
+	*numNodes = 0;
+
+/*
+ * going to make two passes through the data because I need the number of
+ * nodes to allocate space. might try using realloc instead once it's
+ * working.
+ */
+	while ((numChars = getline(&buf, &lineLength, nodesDyn)) != -1) {
+		if (buf[0] == '$') continue;
+		if (buf[0] == '*') continue;
+
+		(*numNodes)++;
+		}
+/* allocate space for nodes */
+
+	if (verbose >= 1) fprintf(stderr, "in readMpn, numNodes %d\n", *numNodes);
+
+	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry))) == NULL) {
+		fprintf(stderr, "couldn't allocate space for nodes\n");
+		exit(EXIT_FAILURE);
+		}
+
+/* have to rewind input file before reading data */
+
+	if (fseek(nodesDyn, 0, SEEK_SET) != 0) {
+		fprintf(stderr, "couldn't seek input file\n");
+		exit(EXIT_FAILURE);
+		}
+
+	i = 0;
+
+	while ((numChars = getline(&buf, &lineLength, nodesDyn)) != -1) {
+		if (buf[0] == '$') continue;
+		if (buf[0] == '*') continue;
+		ret = sscanf(buf, "%d,%lf,%lf,%lf", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+
+		if (ret != 4) {
+			fprintf(stderr, "wrong return from sscanf\n");
+			return(NULL);
+			}
+		i++;
+		}
+
+	fclose(nodesDyn);
+
+	free(buf);
+
+	return(nodes);
+}
+@
+
+
+1.7
+log
+@added verbose argument, changed 'debug' to 'verbose'
+@
+text
+@a46 1
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
+d61 2
+a62 1
+	if (verbose == 1) fprintf(stderr, "numNodes %d\n", *numNodes);
+@
+
+
+1.6
+log
+@cleaned up the code a bit
+@
+text
+@d24 1
+a24 1
+readMpn(char *NodeName, int *numNodes)
+a26 1
+int debug;
+d47 1
+a47 1
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
+d62 1
+a62 1
+	if (debug) fprintf(stderr, "numNodes %d\n", *numNodes);
+@
+
+
+1.5
+log
+@corrected error in sscanf
+@
+text
+@d27 1
+d48 1
+a48 1
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+d63 1
+a63 1
+/* 	fprintf(stderr, "numNodes %d\n", *numNodes); */
+d82 1
+@
+
+
+1.4
+log
+@cleaned up a little.
+@
+text
+@d27 1
+d47 1
+a47 1
+	fprintf(stderr, "numNodes %d\n", *numNodes);
+d62 1
+a62 1
+	fprintf(stderr, "numNodes %d\n", *numNodes);
+d80 5
+a84 3
+/* 		fprintf(stderr, "%s\n", buf); */
+		sscanf(buf, "%d,%f,%f,%f", &nodes[i].nodeID, &nodes[i].x, &nodes[i].y, &nodes[i].z);
+/* 		fprintf(stderr, "%d %f %f %f\n", nodes[i].nodeID, nodes[i].x, nodes[i].y, nodes[i].z); */
+d89 2
+@
+
+
+1.3
+log
+@seems to be working
+@
+text
+@d19 1
+a22 5
+struct nodeEntry {
+	int nodeID;
+	float x, y, z;
+	};
+
+d62 1
+a62 1
+	if ((nodes = (struct nodeEntry *)malloc(*numNodes * sizeof(struct nodeEntry)))== NULL) {
+@
+
+
+1.2
+log
+@seems to be working; needs to return result
+@
+text
+@a18 2
+#include <string.h>
+#include <unistd.h>
+d27 2
+a28 1
+void readMpn(char *NodeName)
+d34 1
+a34 1
+int numChars, numNodes;
+d49 2
+a50 1
+	numNodes = 0;
+d61 1
+a61 1
+		numNodes++;
+d65 2
+a66 2
+	fprintf(stderr, "numNodes %d\n", numNodes);
+	if ((nodes = (struct nodeEntry *)malloc(numNodes * sizeof(struct nodeEntry)))== NULL) {
+d78 2
+d86 1
+d90 2
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a49 5
+/* skip first two lines */
+
+	getline(&buf, &lineLength, nodesDyn);
+	getline(&buf, &lineLength, nodesDyn);
+
+d52 5
+d58 3
+a60 4
+		if (strstr(buf, "*END")) {
+			fprintf(stderr, "hit end of file; got %d nodes\n", numNodes);
+			break;
+			}
+d78 7
+a84 2
+	getline(&buf, &lineLength, nodesDyn);
+	getline(&buf, &lineLength, nodesDyn);
+d86 1
+a86 6
+	for (i = 0; i < numNodes; i++) {
+		numChars = getline(&buf, &lineLength, nodesDyn);
+		fprintf(stderr, "%s\n", buf);
+		sscanf(buf, "%d %f %f %f", nodes[i].nodeID, nodes[i].x, nodes[i].y, nodes[i].z);
+		fprintf(stderr, "%d %f %f %f\n", nodes[i].nodeID, nodes[i].x, nodes[i].y, nodes[i].z);
+		}
+@

@@ -24,7 +24,7 @@ int debug = 0;
 int legacyNodes = 0;
 
 char *usage[] = {
-	"Usage: processDyna [options]\n",
+	"Usage: create_disp_dat [options]\n",
 	"Options:\n",
 	"\t-d debug level               1 or 2\n",
 	"\t-i input file\n",
@@ -54,16 +54,15 @@ void
 create_disp_dat(char *inFileName, char *outFileName, int debug, int legacyNodes)
 {
 int i;
+int linesRead = 0;
 FILE *nodout;
 size_t lineLength = LINE;
 char *buf;
 char *ptr;
 int numChars;
 int timestepRead = 0;
-int timestepCount = 0;
 char nodeID[NUM_CHARS], *xdisp, *ydisp, *zdisp;
 int numNodes = -1;
-int totalNumValsPerStep;
 float *dispVals[NUM_VALS_PER_LINE], header[HEADER_SIZE];
 FILE *outptr;
 int nodeCnt, currStep, dispValsIndex;
@@ -99,14 +98,13 @@ int nodeCnt, currStep, dispValsIndex;
 		}
 
 /*
- * get number of nodeIDs, timesteps. I tried to think of a way to avoid
+ * get number of nodeIDs. I tried to think of a way to avoid
  * reading the file twice, but unless I allocate space to store the entire
  * first timestep, I can't do that
  */
 
 	numNodes = countNodeIDs(nodout);
 
-	totalNumValsPerStep = NUM_VALS_PER_LINE * numNodes;
 	for (i = 0; i < 3; i++) {
 		dispVals[i] = (float *)malloc(sizeof(float) * numNodes);
 		memset(dispVals[i], 0, numNodes * sizeof(float));
@@ -142,8 +140,10 @@ int nodeCnt, currStep, dispValsIndex;
 
 	while ((numChars = getline(&buf, &lineLength, nodout)) != -1) {
 
+		linesRead++;
+
 		if (debug == 2) {
-			fprintf(stderr, "got %s\n", buf);
+			fprintf(stderr, "at line %d got %s\n", linesRead, buf);
 			fprintf(stderr, "numChars %d\n", numChars);
 			}
 
@@ -218,7 +218,6 @@ int nodeCnt, currStep, dispValsIndex;
 				if ((ptr = strchr(zdisp, 'E')) == NULL) correctE(zdisp);
 				dispVals[2][dispValsIndex++] = atof(zdisp);
 
-/* write current values */
 				nodeCnt++;
 				}
 			}

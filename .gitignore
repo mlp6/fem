@@ -17,4 +17,3 @@ nodout
 build/
 dist/
 fem.egg-info
-.venv/

@@ -1,0 +1,24 @@
+fid=fopen('dyna-I-f7.20-F1.3-FD0.020-a0.50.ned');
+numNodes=fread(fid, 1, 'int');
+intensity=fread(fid, numNodes, 'double');
+disp(intensity);
+threads=fread(fid, 1, 'int');
+soundSpeed=fread(fid, 1, 'int');
+samplingFrequency=fread(fid, 1, 'int');
+alpha=fread(fid, 1, 'double');
+fnum=fread(fid, 1, 'double');
+focus.x=fread(fid, 1, 'double');
+focus.y=fread(fid, 1, 'double');
+focus.z=fread(fid, 1, 'double');
+disp(focus);
+frequency=fread(fid, 1, 'double');
+length=fread(fid, 1, 'int');
+transducer=fread(fid, length, 'char');
+length=fread(fid, 1, 'int');
+impulse=fread(fix, length, 'string');
+impulse=fread(fid, length, 'string');
+fseek(fid, 9, 'cof');
+impulse=fread(fid, length, 'uint8=&gt;char');
+disp(impulse);
+disp(impulse(0))
+disp(impulse(1))

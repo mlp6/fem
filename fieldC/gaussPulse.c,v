@@ -1,0 +1,535 @@
+head	1.14;
+access;
+symbols;
+locks
+	ndd:1.14; strict;
+comment	@ * @;
+
+
+1.14
+date	2018.07.24.17.43.35;	author ndd;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2018.07.19.14.30.32;	author ndd;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2018.07.18.18.02.04;	author ndd;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2018.06.12.18.40.41;	author ndd;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2018.06.06.16.09.53;	author ndd;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2018.04.17.19.44.55;	author ndd;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2018.04.16.19.42.02;	author ndd;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.04.16.16.12.48;	author ndd;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.04.07.21.44.54;	author ndd;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.03.15.16.51.16;	author ndd;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.03.13.18.41.20;	author ndd;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.03.13.17.55.47;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.03.13.13.50.24;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.12.20.03.47;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@correctly calculates the cutoff frequency
+@
+
+
+1.14
+log
+@started including units in variable names.
+@
+text
+@/*
+ * try to compute the gaussian-modulated sinusoidal
+ *
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "field.h"
+
+#define BWR -6.0
+#define TPR -40.0
+
+signal_type *
+gaussPulse(double fbw, double fc, struct FieldParams params, int verbose)
+{
+double fv, power, ref;
+double tc, delta, tv;
+double impulse, stepSize;
+signal_type *impulseResponse = NULL;
+double freqHz;
+double ye;
+int i, numSteps;
+
+	if (verbose >= 1) {
+		fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
+		fprintf(stderr, "in pulse; params.impulse %s\n", params.impulse);
+		}
+
+/*
+ * if the impulse is gaussian, we compute the cutoff time and then the
+ * gaussian response.
+ */
+
+	if (strstr(params.impulse, "gaussian")) {
+
+/* first calculate the cutoff time */
+
+/* Ref level (fraction of max peak) */
+		power = BWR / 20;
+		ref = pow(10.0, power);
+
+/* variance is fv, mean is fc */
+
+		fv = -pow((fc * fbw), 2) / (8.0 * log(ref));
+
+/* Determine corresponding time-domain parameters: */
+
+		tv = 1 / (4 * M_PI * M_PI * fv);
+
+/* don't know what delta is */
+
+		power = TPR / 20;
+		delta = pow(10.0, power);
+
+		if (verbose >= 2) fprintf(stderr, "got gaussian; ref %f, delta %f, fv %f, tv %g\n", ref, delta, fv, tv);
+
+		tc = sqrt(-2 * tv * log(delta));
+		if (verbose >= 2) fprintf(stderr, "tc %g\n", tc);
+
+		if (verbose >= 2) fprintf(stderr, "sampling freqHz %d\n", params.samplingFrequencyHz);
+		numSteps = (int )ceil((tc * params.samplingFrequencyHz) * 2);
+		freqHz = (double) params.samplingFrequencyHz;
+
+		if (verbose >= 2) fprintf(stderr, "freqHz %g, numSteps %d\n", freqHz, numSteps);
+
+		impulseResponse = alloc_signal(numSteps, 0);
+
+		if (impulseResponse == NULL) {
+			fprintf(stderr, "error allocating impulseResponse\n");
+			return(NULL);
+			}
+
+		stepSize = 1.0/params.samplingFrequencyHz;
+
+		impulse = -tc;
+		if (verbose >= 2) fprintf(stderr, "starting loop, stepSize %e\n", stepSize);
+
+		impulse = -tc;
+		ye = exp(-impulse * impulse / (2 * tv));
+		impulseResponse->data[0] = ye * cos(2 * M_PI * fc * impulse);
+
+		if (verbose >= 2) fprintf(stderr, "step 0 response %f\n", impulseResponse->data[0]);
+		for (i = 1; i < numSteps; i++) {
+			impulse = -tc + i * stepSize;
+			ye = exp(-impulse * impulse / (2 * tv));
+			impulseResponse->data[i] = ye * cos(2 * M_PI * fc * impulse);
+			if (verbose == 3) fprintf(stderr, "step %d response %f\n", i, impulseResponse->data[i]);
+			}
+		if (verbose >= 2) fprintf(stderr, "finished loop\n");
+		}
+
+	if (strstr(params.impulse, "exp")) {
+		fprintf(stderr, "got exp\n");
+		}
+
+	return(impulseResponse);
+}
+			
+@
+
+
+1.13
+log
+@had to make a logic change to verbose check
+@
+text
+@d22 1
+a22 1
+double freq;
+d62 3
+a64 3
+		if (verbose >= 2) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
+		numSteps = (int )ceil((tc * params.samplingFrequency) * 2);
+		freq = (double) params.samplingFrequency;
+d66 1
+a66 1
+		if (verbose >= 2) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
+d75 1
+a75 1
+		stepSize = 1.0/params.samplingFrequency;
+@
+
+
+1.12
+log
+@added verbose argument, changed 'debug' to 'verbose'
+@
+text
+@d26 4
+a29 4
+	if (verbose == 1) fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
+	if (verbose == 1) fprintf(stderr, "in pulse; params.impulse %s\n", params.impulse);
+/*
+ */
+d57 1
+a57 1
+		if (verbose == 2) fprintf(stderr, "got gaussian; ref %f, delta %f, fv %f, tv %g\n", ref, delta, fv, tv);
+d60 1
+a60 1
+		if (verbose == 2) fprintf(stderr, "tc %g\n", tc);
+d62 1
+a62 1
+		if (verbose == 2) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
+d66 1
+a66 1
+		if (verbose == 2) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
+d78 1
+a78 1
+		if (verbose == 2) fprintf(stderr, "starting loop, stepSize %e\n", stepSize);
+d84 1
+a84 1
+		if (verbose == 2) fprintf(stderr, "step 0 response %f\n", impulseResponse->data[0]);
+d91 1
+a91 1
+		if (verbose == 2) fprintf(stderr, "finished loop\n");
+@
+
+
+1.11
+log
+@cleaned up the code a bit
+@
+text
+@d16 1
+a16 1
+gaussPulse(double fbw, double fc, struct FieldParams params, int debug)
+d26 2
+a27 2
+	if (debug) fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
+	if (debug) fprintf(stderr, "in pulse; params.impulse %s\n", params.impulse);
+d57 1
+a57 1
+		if (debug) fprintf(stderr, "got gaussian; ref %f, delta %f, fv %f, tv %g\n", ref, delta, fv, tv);
+d60 1
+a60 1
+		if (debug) fprintf(stderr, "tc %g\n", tc);
+d62 1
+a62 1
+		if (debug) fprintf(stderr, "sampling freq %d\n", params.samplingFrequency);
+d66 1
+a66 1
+		if (debug) fprintf(stderr, "freq %g, numSteps %d\n", freq, numSteps);
+d78 1
+a78 1
+		if (debug) fprintf(stderr, "starting loop, stepSize %e\n", stepSize);
+d84 1
+a84 1
+		if (debug) fprintf(stderr, "step 0 response %f\n", impulseResponse->data[0]);
+d89 1
+a89 1
+			if (debug) fprintf(stderr, "step %d response %f\n", i, impulseResponse->data[i]);
+d91 1
+a91 1
+		if (debug) fprintf(stderr, "finished loop\n");
+@
+
+
+1.10
+log
+@added error check
+@
+text
+@d23 1
+a23 1
+double ye, yc;
+d63 1
+a63 1
+		numSteps = ceil((tc * params.samplingFrequency) * 2);
+@
+
+
+1.9
+log
+@cleaned up some error messages
+@
+text
+@d21 1
+a21 1
+signal_type *impulseResponse;
+d69 5
+@
+
+
+1.8
+log
+@had to change to return signal_type *, fixed numSteps
+@
+text
+@d26 2
+a27 2
+	fprintf(stderr, "in pulse; fbw %f fc %f\n", fbw, fc);
+	fprintf(stderr, "in pulse; params.impulse %s\n", params.impulse);
+@
+
+
+1.7
+log
+@fixed an error in calculating numSteps, cleaned and commented a bit
+@
+text
+@d15 1
+a15 1
+double *
+d20 2
+a21 1
+double impulse, *impulseResponse, stepSize;
+d63 1
+a63 1
+		numSteps = ceilf((tc * params.samplingFrequency) * 2);
+d68 2
+a69 1
+		impulseResponse = (double *)malloc(numSteps * sizeof(double));
+d77 1
+a77 1
+		impulseResponse[0] = ye * cos(2 * M_PI * fc * impulse);
+d79 1
+a79 1
+		if (debug) fprintf(stderr, "step 0 response %f\n", impulseResponse[0]);
+d83 2
+a84 2
+			impulseResponse[i] = ye * cos(2 * M_PI * fc * impulse);
+			if (debug) fprintf(stderr, "step %d response %f\n", i, impulseResponse[i]);
+@
+
+
+1.6
+log
+@fixed up debug statements, changed to return impulse response
+@
+text
+@d3 1
+d12 3
+a24 1
+/*
+d27 6
+d37 1
+a37 1
+/* first calculate the cutoff frequency */
+d39 2
+a40 1
+		power = -6.0/20;
+d43 1
+a43 2
+		power = -40./20;
+		delta = pow(10.0, power);
+d46 3
+d51 6
+a56 1
+		if (debug) fprintf(stderr, "got gaussian; ref %f, delta %f, a %f\n", ref, delta, fv);
+d62 1
+a62 1
+		numSteps = (int) (tc * params.samplingFrequency) * 2;
+d77 1
+a77 1
+		if (debug) fprintf(stderr, "impulse %f, ye %f, yc %f\n", impulse, ye, impulseResponse[0]);
+d82 1
+a82 1
+/* 			fprintf(stderr, "impulse %f, ye %f, yc %f\n", impulse, ye, impulseResponse[i]); */
+@
+
+
+1.5
+log
+@making progress towards returning the impulse array
+@
+text
+@d11 2
+a12 1
+gaussPulse(double fbw, double fc, struct FieldParams params)
+d39 1
+a39 1
+		fprintf(stderr, "got gaussian; ref %f, delta %f, a %f\n", ref, delta, fv);
+d42 1
+a42 1
+		fprintf(stderr, "tc %f\n", tc);
+d44 1
+a44 1
+/* 		params.samplingFrequency = 5000; */
+d48 1
+a48 1
+		fprintf(stderr, "freq %f, numSteps %d\n", freq, numSteps);
+d54 1
+a54 1
+		fprintf(stderr, "starting loop, stepSize %e\n", stepSize);
+d60 1
+a60 1
+		fprintf(stderr, "impulse %f, ye %f, yc %f\n", impulse, ye, impulseResponse[0]);
+d65 1
+a65 1
+			fprintf(stderr, "impulse %f, ye %f, yc %f\n", impulse, ye, impulseResponse[i]);
+d67 1
+a67 1
+		fprintf(stderr, "finished loop\n");
+d73 2
+@
+
+
+1.4
+log
+@should be the last of the code; need to clean up and return proper values.
+@
+text
+@d15 1
+a15 1
+double *impulseVector, *impulseResponse, stepSize;
+d43 1
+a48 1
+		impulseVector = (double *)malloc(numSteps * sizeof(double));
+d52 1
+a52 1
+		impulseVector[0] = -tc;
+d55 5
+d61 4
+a64 4
+			impulseVector[i] = -tc + i * stepSize;
+			ye = exp(-impulseVector[i] * impulseVector[i] / (2 * tv));
+			yc = ye * cos(2 * M_PI * fc * impulseVector[i]);
+/* 			fprintf(stderr, "i %d, vec %f\n", i, impulseVector[i]); */
+d66 1
+a66 1
+		fprintf(stderr, "finished loop; value %f %f %f\n", impulseVector[0], impulseVector[20000], impulseVector[numSteps-2]);
+@
+
+
+1.3
+log
+@seems to be working for gaussian, need to set up return value.
+@
+text
+@d15 1
+a15 1
+double *impulseVector, stepSize;
+d17 1
+d20 1
+d23 1
+a25 7
+/*
+ * python says
+ *
+ * exp(-a * t * t) * cos(2 * pi * fc * t)
+ * a = -(pi * fc * bw) ** 2 / (4.0 * log(ref))
+ * ref = pow(10.0, bwr / 20.0)
+ */
+d35 1
+a35 2
+/* 		fv = -pow((fc * fbw), 2) / (8.0 * log(ref)); */
+		fv = -(fc * fc * fbw * fbw) / (8.0 * log(ref));
+d49 1
+d57 2
+@
+
+
+1.2
+log
+@moving to using the field params struct
+@
+text
+@d6 1
+d13 5
+a17 3
+double a, power, ref;
+double tc, tref;
+int numSteps;
+d24 2
+d36 2
+a37 2
+		power = -60./20;
+		tref = pow(10.0, power);
+d39 3
+a41 1
+		a = -pow((M_PI * fc * fbw), 2) / (4.0 * log(ref));
+d43 1
+a43 1
+		fprintf(stderr, "got gaussian; ref %f, tref %f, a %f\n", ref, tref, a);
+d45 1
+a45 1
+		tc = sqrt(-log(tref) / a);
+d48 16
+a63 2
+		numSteps = (int) (tc * (double )params.samplingFrequency) * 2;
+		fprintf(stderr, "numSteps %d\n", numSteps);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d10 1
+a10 1
+gaussPulse(double fbw, double fc, char *params)
+d14 1
+d17 1
+a17 1
+	fprintf(stderr, "in pulse; params %s\n", params);
+d19 1
+a19 1
+	if (strstr(params, "gaussian")) {
+d40 3
+d45 1
+a45 1
+	if (strstr(params, "exp")) {
+@

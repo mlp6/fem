@@ -1,0 +1,17 @@
+{
+	"nodeFileName": "/work/ndd/dyna/nodesMark.dyn",
+	"alpha_dBcmMHz": 0.5,
+	"fnum": 1.0,
+	"focusM": {
+		"x": 0,
+		"y": 0,
+		"z": 0.055
+		},
+	"freqMHz": 3.5,
+	"transducer": "su102",
+	"impulse": "gaussian",
+	"threads": 1,
+	"lowNslow": 1,
+	"elemsFileName": "/work/ndd/dyna/elemsMark.dyn",
+	"forceNonlinear": 1
+}

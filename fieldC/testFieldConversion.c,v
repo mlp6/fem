@@ -1,0 +1,275 @@
+head	1.7;
+access;
+symbols;
+locks
+	ndd:1.7; strict;
+comment	@ * @;
+
+
+1.7
+date	2018.07.20.16.48.58;	author ndd;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.07.18.18.02.21;	author ndd;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.06.06.13.45.50;	author ndd;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.05.10.18.39.08;	author ndd;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.04.18.16.04.29;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.04.18.15.23.22;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.30.16.58.27;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@working on tests for the converted field2dyna routines
+@
+
+
+1.7
+log
+@added verbose flag to checkUniform call
+@
+text
+@#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "field.h"
+
+struct nodeEntry testDyn[] = {
+1,-1.000000,0.000000,-1.000000,
+2,-0.900000,0.000000,-1.000000,
+3,-0.800000,0.000000,-1.000000,
+4,-0.700000,0.000000,-1.000000,
+5,-0.600000,0.000000,-1.000000,
+6,-0.500000,0.000000,-1.000000,
+7,-0.400000,0.000000,-1.000000,
+8,-0.300000,0.000000,-1.000000,
+9,-0.200000,0.000000,-1.000000,
+10,-0.100000,0.000000,-1.000000
+};
+
+void
+main(int argc, char **argv)
+{
+int i;
+int verbose = 0;
+struct nodeEntry *pointsAndNodes, *readMpn();
+char *nodeName = "./myNodesShort.dyn";
+char cmd[50];
+int numNodes;
+int correctNumNodes;
+FILE *checkResult;
+
+	if ((argc == 1) || (strcmp(argv[1], "readMpn") == 0)) {
+		fprintf(stderr, "test is readMpn\n");
+
+/*
+ * have to test that I read the correct number of nodes AND that I get the
+ * correct point values.
+ */
+
+		fprintf(stderr, "testing, calling readMpn; node name %s\n", nodeName);
+
+/* check number of nodes first */
+
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
+		fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+		sprintf(cmd, "grep '^[0-9]' %s | wc -l", nodeName);
+/* 		fprintf(stderr, "cmd %s\n", cmd); */
+		checkResult = popen(cmd, "r");
+		fscanf(checkResult, "%d", &correctNumNodes);
+		fclose(checkResult);
+		fprintf(stderr, "after system; correctNumNodes %d\n", correctNumNodes);
+		if (numNodes != correctNumNodes) {
+			fprintf(stderr, "readMpn test failed: wrong num nodes\n");
+			exit(0);
+			}
+
+/* now check values */
+		for (i = 0; i < numNodes; i++) {
+			fprintf(stderr, "%f %f %f %f\n", pointsAndNodes[i].nodeID,
+				pointsAndNodes[i].x, pointsAndNodes[i].y,
+				pointsAndNodes[i].z);
+			if ((testDyn[i].x != pointsAndNodes[i].x) ||
+				(testDyn[i].y != pointsAndNodes[i].y) ||
+				(testDyn[i].z != pointsAndNodes[i].z)) {
+					fprintf(stderr, "readMpn test failed: values didn't match\n");
+					exit(0);
+					}
+			}
+		}
+	else if (strcmp(argv[1], "checkOnAxis") == 0) {
+		fprintf(stderr, "test is checkOnAxis\n");
+		nodeName = "./myNodes.dyn";
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
+
+		if (checkOnAxis(pointsAndNodes, numNodes) == 1)
+			fprintf(stderr, "checkOnAxis correct for good node list\n");
+		else fprintf(stderr, "checkOnAxis wrong for good node list\n");
+
+		nodeName = "./myNodesBadAxis.dyn";
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
+
+		if (checkOnAxis(pointsAndNodes, numNodes) == 0)
+			fprintf(stderr, "checkOnAxis correct for bad node list\n");
+		else fprintf(stderr, "checkOnAxis wrong for bad node list\n");
+		}
+	else if (strcmp(argv[1], "checkUniform") == 0) {
+		fprintf(stderr, "test is checkUniform\n");
+		nodeName = "./myNodes.dyn";
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
+
+		i = checkUniform(pointsAndNodes, numNodes, verbose);
+
+		if (i == -1)
+			fprintf(stderr, "couldn't allocate node space\n");
+		else if (i == 1)
+			fprintf(stderr, "checkUniform correct for good node list\n");
+		else fprintf(stderr, "checkUniform wrong for good node list\n");
+
+		nodeName = "./myNodesNonUniform.dyn";
+	    pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
+
+		i = checkUniform(pointsAndNodes, numNodes, verbose);
+
+		if (i == -1)
+			fprintf(stderr, "couldn't allocate node space\n");
+		else if (i == 0)
+			fprintf(stderr, "checkUniform correct for bad node list\n");
+		else fprintf(stderr, "checkUniform wrong for bad node list\n");
+		}
+}
+@
+
+
+1.6
+log
+@added verbose to readMpn
+@
+text
+@d90 1
+a90 1
+		i = checkUniform(pointsAndNodes, numNodes, 0);
+d101 1
+a101 1
+		i = checkUniform(pointsAndNodes, numNodes, 0);
+@
+
+
+1.5
+log
+@added error return for checkUniform
+@
+text
+@d23 1
+d43 1
+a43 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d72 1
+a72 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d79 1
+a79 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d88 1
+a88 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+d99 1
+a99 1
+	    pointsAndNodes = readMpn(nodeName, &numNodes);
+@
+
+
+1.4
+log
+@added test for checkUniform
+@
+text
+@d89 5
+a93 1
+		if (checkUniform(pointsAndNodes, numNodes, 0) == 1)
+d100 5
+a104 1
+		if (checkUniform(pointsAndNodes, numNodes, 0) == 0)
+@
+
+
+1.3
+log
+@added check on values from readMpn
+@
+text
+@d57 3
+d72 1
+d76 1
+d79 1
+d83 16
+@
+
+
+1.2
+log
+@progress on checking readMpn and checkOnAxis
+@
+text
+@d2 1
+d6 13
+d22 1
+d24 2
+a25 2
+char *nodeName;
+char *cmd;
+d32 10
+a41 2
+		nodeName = "./myNodes.dyn";
+/* 		fprintf(stderr, "testing, calling readMpn; node name %s\n", nodeName); */
+d43 3
+a45 2
+/* 		fprintf(stderr, "after readMpn; numNodes %d\n", numNodes); */
+		cmd = "grep '^[0-9]' ./myNodes.dyn | wc -l";
+d49 15
+a63 4
+/* 		fprintf(stderr, "after system; correctNumNodes %d\n", correctNumNodes); */
+		if (numNodes == correctNumNodes)
+			fprintf(stderr, "readMpn test successful\n");
+		else fprintf(stderr, "readMpn test failed\n");
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d18 1
+a18 1
+		fprintf(stderr, "testing, calling readMpn; node name %s\n", nodeName);
+d20 1
+a20 1
+		fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+d25 17
+a41 1
+		fprintf(stderr, "after system; correctNumNodes %d\n", correctNumNodes);
+@
