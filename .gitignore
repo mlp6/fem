@@ -12,6 +12,8 @@ elems.dyn
 bc.dyn
 d3*
 nodout
-env/
-.pytest_cache/
 .venv/
+.pytest_cache/
+build/
+dist/
+fem.egg-info

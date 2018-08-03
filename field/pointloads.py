@@ -11,7 +11,7 @@ class PointLoads:
         """ """
         import numpy as np
 
-        self.pt_loads = np.loadtxt('PointLoads-f1.80-F1.0-FD0.120-a0.50.dyn',
+        self.pt_loads = np.loadtxt(self.loadfile,
                                    comments=['$', '*'],
                                    delimiter=',',
                                    dtype={'names': ('NID', 'Direction', 'LCID',
@@ -49,8 +49,18 @@ class PointLoads:
                 b = np.where(self.pt_loads['NID'] == nid)
                 try:
                     image_plane_loads[m][n] = self.pt_loads['Magnitude'][b[0]]
+                # TODO: raise more explicit exceptions
                 except:
                     pass
 
-        plt.imshow(np.flipud(image_plane_loads.transpose()))
+
+        # TODO: add colorbar
+        fig, axes = plt.subplots()
+        axes.pcolormesh(self.axes[1] * 10, -self.axes[2] * 10,
+                        image_plane_loads.transpose())
+        axes.set_aspect('equal')
+        axes.set_xlabel('Lateral (mm)')
+        axes.set_ylabel('Axial (mm)')
+        axes.invert_yaxis()
+        axes.set_title('Intensity Distribution')
         plt.show()

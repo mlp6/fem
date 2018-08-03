@@ -69,10 +69,12 @@ def parse_line(line):
         xdisp = float(line[10:22])
     except ValueError:
         xdisp = 0.0
+
     try:
         ydisp = float(line[22:34])
     except ValueError:
         ydisp = 0.0
+
     try:
         zdisp = float(line[34:46])
     except ValueError:
@@ -136,25 +138,22 @@ def generate_header(data, outfile):
     return header
 
 
-def count_timesteps(outfile):
+def count_timesteps(outfile, use_grep=True):
     """Count timesteps written to nodout.
 
-    searches for 'time' in lines, and then removes 1 extra entry that occurs
-    for t = 0
-
-    grep will be used on linux systems (way faster)
+    Searches for 'time' in lines, and then removes 1 extra entry that occurs
+    for t = 0.  `grep` will be used on linux systems (way faster).
 
     Args:
-        outfile (str): usually 'nodout'
+        outfile (str): usually nodout
+        use_grep (Boolean): use grep (faster) instead of Python line loop
 
     Returns:
-        ts_count (int):
+        ts_count (int): number of time steps counted - 1
 
     """
-    from sys import platform
-
     print("Reading number of time steps... ", end="", flush=True)
-    if platform == "linux":
+    if use_grep:  # this is significantly faster
         from subprocess import PIPE, Popen
         p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
         ts_count = int(p.communicate()[0].strip().decode())
@@ -206,9 +205,6 @@ def process_timestep_data(data, outfile, writenode):
         writenode (Boolean): Boolean if the node IDs should be written to save
             ~25% of the disp.dat file size
 
-    Returns:
-        None
-
     """
     from struct import pack
 
@@ -248,7 +244,7 @@ def correct_neg(line):
     """Add space before negative coefficient numbers.
 
     Args:
-        line (str0:
+        line (str): raw read line
 
     Returns:
         line (str): line with space(s) added before negative coefficients

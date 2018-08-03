@@ -48,3 +48,35 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v6.10.0
 * Working `setup.py` for `pip git+` installs.
+
+## v7.0.0
+* Refactor `create_res_sim_mat` to now be `create_res_sim` with more options to
+  output HDF5 and PVD timeseries VTR data.  Legacy calls to
+  `create_res_sim_mat` syntax (specifically `run()`) should still work, but the
+  name of the module has been changed to reflect the new functionality under
+  the hood.
+* Paraview PVD / VTR (rectilinear grid) timeseries data files can now be
+  generated.
+* Unit tests for MATv5, HDF5 and PVD/VTR files added.
+* General refactoring of code and clean-up for Google Style docstrings.
+
+## v7.0.1
+* Fix Sphinx documentation to render Google Style docstrings correctly.
+
+## v7.0.2
+* Relax python3 compatibility to now work with >=3.4
+
+## v7.0.3
+* Fix writing of PVD XML file.
+
+## v7.1.0
+* add more custimization to ResSim methods
+* add ability to re-number PVD timeframes
+* augment docstrings
+
+## v7.2.0
+* shuffle HDF5 data on save for more effective compression
+* refactor `create_res_sim.py` for more explicit file closure, detailed
+  docstrings
+* update installation instructions
+* fix ResSim class (`self.filename`)

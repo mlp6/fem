@@ -1,17 +1,14 @@
-"""
-:mod:`CreateStructure` -- define structures in meshes
-=====================================================
+"""define structures in meshes
 
-.. module:: CreateStructure
-   :synopsis: define structures in meshes
-
-.. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
+Examples:
+    The following is a CLI example:
+    >>> python3 CreateStructure.py --nefile elems_sphere.dyn --sphere
+                                   --sopts 0.0 0.0 -1.0 0.5
 
 """
 
 
 def main():
-    """ """
     args = parse_cli()
 
     struct_type = define_struct_type(args)
@@ -77,12 +74,12 @@ def parse_cli():
 def findStructNodeIDs(nodefile, struct_type, sopts):
     """find nodes in given geometry
 
-    Find node IDs that fall within a specified geometry (sphere, layer, cube,
-    ellipsoid).
+    Find node IDs that fall within a specified geometry (sphere, layer,
+    cube, ellipsoid).
 
     Args:
-      str: nodefile: (default: nodes.dyn)
-      str: struct_type: sphere, layer, ellipsoid, cube
+      nodefile (str): nodes.dyn
+      struct_type (str): sphere, layer, ellipsoid, cube
       sopts: struct-specific parameters
       nodefile:
       struct_type:
@@ -189,13 +186,13 @@ def findStructElemIDs(elefile, structNodeIDs):
     """find elements that contain nodes in structNodeIDs
 
     Args:
-      str: elefile: element filename
-      ndarray: structNodeIDs:
+      elefile (str): element filename
+      structNodeIDs:
       elefile:
       structNodeIDs:
 
     Returns:
-      elems, structElemIds)
+      (elems, structElemIds)
 
     """
     from fem.mesh.fem_mesh import load_elems
@@ -219,59 +216,51 @@ def findStructElemIDs(elefile, structNodeIDs):
 
 
 def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
-    """Write new elements files with structure elements assigned a new part ID.
-
-    Write new elements files with structure elements assigned a new part ID.
+    """Write new elem files with structure elems assigned a new part ID.
 
     Args:
-      str: nefile: new element file
-      int: partid: new Part ID
+      nefile (str): new element file
+      partid (int): new Part ID
       structNodeIDs: param structElemIDs:
-      nefile:
-      partid:
       elems:
-      structElemIDs:
-
-    Returns:
-      None
 
     """
-    NEFILE = open(nefile, 'w')
-    NEFILE.write('$ # Structure Nodes = %i\n' % len(structNodeIDs))
-    NEFILE.write('$ # Structure Elements = %i\n' % len(structElemIDs))
-    NEFILE.write('*ELEMENT_SOLID\n')
-    for i in elems:
-        if i[0] in structElemIDs:
-            i[1] = partid
-        j = i.tolist()
-        NEFILE.write('%s\n' % ','.join('%i' % val for val in j[0:10]))
-    NEFILE.write('*END')
-    NEFILE.close()
+    with open(nefile, 'w') as NEFILE:
+        NEFILE.write('$ # Struct Nodes = {}\n'.format(len(structNodeIDs)))
+        NEFILE.write('$ # Struct Elements = {}\n'.format(len(structElemIDs)))
+        NEFILE.write('*ELEMENT_SOLID\n')
+        for i in elems:
+            if i[0] in structElemIDs:
+                i[1] = partid
+            j = i.tolist()
+            NEFILE.write('{}\n'.format(','.join('{}'.format(val)
+                                                for val in j[0:10])))
+        NEFILE.write('*END')
 
 
 def define_struct_type(args):
-    """Determine the type of structure being defined from the Boolean input
-    arguments
+    """Determine the type of structure being defined from the Boolean
+       input arguments
 
     Args:
-      args: type of geometry
+      args (obj): type of geometry
 
     Returns:
-      struct_type
+      struct_type (str)
 
     """
-    import sys
 
-    if args.sphere:
-        struct_type = "sphere"
-    elif args.layer:
-        struct_type = "layer"
-    elif args.cube:
-        struct_type = "cube"
-    elif args.ellipsoid:
-        struct_type = "ellipsoid"
-    else:
-        sys.exit('ERROR: The specified structure is not defined')
+    try:
+        if args.sphere:
+            struct_type = "sphere"
+        elif args.layer:
+            struct_type = "layer"
+        elif args.cube:
+            struct_type = "cube"
+        elif args.ellipsoid:
+            struct_type = "ellipsoid"
+    except:
+        raise ValueError('Specified structure is not defined (yet).')
 
     return struct_type
 
