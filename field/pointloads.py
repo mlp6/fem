@@ -49,14 +49,15 @@ class PointLoads:
                 b = np.where(self.pt_loads['NID'] == nid)
                 try:
                     image_plane_loads[m][n] = self.pt_loads['Magnitude'][b[0]]
-                # TODO: include more explicit exceptions that could be raised here
+                # TODO: raise more explicit exceptions
                 except:
                     pass
 
 
         # TODO: add colorbar
         fig, axes = plt.subplots()
-        axes.pcolormesh(self.axes[1]*10, -self.axes[2]*10, image_plane_loads.transpose())
+        axes.pcolormesh(self.axes[1] * 10, -self.axes[2] * 10,
+                        image_plane_loads.transpose())
         axes.set_aspect('equal')
         axes.set_xlabel('Lateral (mm)')
         axes.set_ylabel('Axial (mm)')
