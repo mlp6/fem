@@ -46,9 +46,11 @@ There are three different methods to use/install this package:
    session with syntax like: `PYTHONPATH=$HOME/fem ipython`.
 
 ## Documentation
-The latest documentation is automatically generated using Sphinx and can be
-built in ``docs/``.  The same documentation is also built and rendered
-automatically at https://mlp6.github.io/fem/.
+The latest documentation is automatically generated from package docstrings
+using Sphinx and can be built in ``docs/``.  That directory also contains
+static HTML files that can be included in the documentation, as defined in
+`docs/index.rst`.  The documentation synced to the root `docs/` directory level
+are also rendered at https://mlp6.github.io/fem/.
 
 To build the documentation:
 1. Make sure that `PYTHONPATH` includes the `fem` package.
@@ -57,6 +59,8 @@ To build the documentation:
 1. Within the `docs/` directory: `make html`
 1. Run `docs/rsync_build.sh` to bring the newly-built HTML files and associated
    source files into `docs/`.
+
+The Travis CI testing also tests the documentation build with a dummy process.
 
 ## Issues
 Please file any bug reports, features requests, etc. using the GitHub
