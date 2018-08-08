@@ -1,10 +1,15 @@
-head	1.36;
+head	1.37;
 access;
 symbols;
 locks
-	ndd:1.36; strict;
+	ndd:1.37; strict;
 comment	@ * @;
 
+
+1.37
+date	2018.08.08.13.48.00;	author ndd;	state Exp;
+branches;
+next	1.36;
 
 1.36
 date	2018.07.26.20.08.09;	author ndd;	state Exp;
@@ -192,10 +197,9 @@ desc
 @
 
 
-1.36
+1.37
 log
-@I was calling xdc_convex_focused_array where I should have been calling
-xdc_focused_array
+@started to add code to deal with the experimental impulse
 @
 text
 @/*
@@ -254,7 +258,7 @@ int dynaWrite();
 int i, j;
 aperture_type *Th = NULL;
 int32 info;
-cJSON *commands, *impulseCmd, *probeInfo;
+cJSON *commands, *probeInfo;
 cJSON *jsonTemp;
 FILE *jsonInput;
 char jsonFileName[128];
@@ -274,7 +278,6 @@ double stepSize;
 double freqAtt, attF0, att;
 int numCYC = 50;
 int numSteps;
-char *thCmd;
 double lensCorrection, correctAxialLens();
 double temp;
 char outFileName[80];
@@ -319,6 +322,14 @@ int xdcGetSize;
 
 	if (verbose >= 1) fprintf(stderr, "PARALLEL THREADS: %d param threads %d\n",
 		threads, params.threads);
+
+/*
+ * okay. I think this is what is going on. we have to compute 'Th', which
+ * comes from one of the xdc calls in fieldII, and we have to compute
+ * 'impulseResponse'. impulseResponse is either computed as a gaussian, or
+ * computed from experimental data read in from a probe file. at this point
+ * it's not clear what other info I'll need from the probe file.
+ */
 
 /* get info from JSON; this assumes that the JSON probe file is local */
 /* 	strcpy(jsonFileName, "./c52.json"); */
@@ -486,20 +497,6 @@ int xdcGetSize;
 
 		if (verbose >= 2) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probeType")->valuestring);
 
-		if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "commands")) == NULL) {
-			fprintf(stderr, "couldn't find commands in probe file\n");
-			return(0);
-			}
-		commands = jsonTemp;
-
-		if ((jsonTemp = cJSON_GetObjectItem(commands, "Th")) == NULL) {
-			fprintf(stderr, "couldn't find Th in probe file\n");
-			return(0);
-			}
-		thCmd = jsonTemp->valuestring;
-
-		if (verbose >= 2) fprintf(stderr, "Th command %s\n", thCmd);
-
 
 		if (verbose >= 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
 			noElements, width, height, kerf, Rconvex, Rfocus, noSubX,
@@ -658,20 +655,6 @@ int xdcGetSize;
 
 		if (verbose >= 2) fprintf(stderr, "type %s\n", cJSON_GetObjectItem(probeInfo, "probeType")->valuestring);
 
-		if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "commands")) == NULL) {
-			fprintf(stderr, "couldn't find commands in probe file\n");
-			return(0);
-			}
-		commands = jsonTemp;
-
-		if ((jsonTemp = cJSON_GetObjectItem(commands, "Th")) == NULL) {
-			fprintf(stderr, "couldn't find Th in probe file\n");
-			return(0);
-			}
-		thCmd = jsonTemp->valuestring;
-
-		if (verbose >= 2) fprintf(stderr, "Th command %s\n", thCmd);
-
 
 		if (verbose >= 2) fprintf(stderr, "%d %f %f %f %f %f %d %d %f %f %f\n",
 			noElements, width, height, kerf, Rconvex, Rfocus, noSubX,
@@ -689,14 +672,6 @@ int xdcGetSize;
 
 	else fprintf(stderr, "unknown aperture command\n");
 
-/*
- * this next segment seems unused
- *
-	if (verbose >= 2) fprintf(stderr, "impulse response command %s\n",
-		cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
-
-	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
- */
 
 /*
  * I think the next thing is to set impulse. this seems to be the same for
@@ -705,11 +680,25 @@ int xdcGetSize;
  * I'm going to skip defineImpulseResponse()
  */
 
-	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params, verbose);
+	if (strcmp(params.impulse, "gaussian") == 0) {
+		impulseResponse = gaussPulse(fractBandwidth, centerFreq, params,
+			verbose);
 
-	if (impulseResponse == NULL) {
-		fprintf(stderr, "error calling gaussPulse\n");
-		return(0);
+		if (impulseResponse == NULL) {
+			fprintf(stderr, "error calling gaussPulse\n");
+			return(0);
+			}
+		}
+
+	else if (strcmp(params.impulse, "exp") == 0) {
+/* 		impulseResponse = readExpData(probeInfo); */
+		fprintf(stderr, "calling readExpData\n");
+		readExpData(probeInfo);
+
+		if (impulseResponse == NULL) {
+			fprintf(stderr, "error calling readExpData\n");
+			return(0);
+			}
 		}
 
 	info = RECT;
@@ -963,6 +952,68 @@ int xdcGetSize;
 	return(1);
 
 }
+@
+
+
+1.36
+log
+@I was calling xdc_convex_focused_array where I should have been calling
+xdc_focused_array
+@
+text
+@d57 1
+a57 1
+cJSON *commands, *impulseCmd, *probeInfo;
+a76 1
+char *thCmd;
+d122 8
+a295 14
+		if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "commands")) == NULL) {
+			fprintf(stderr, "couldn't find commands in probe file\n");
+			return(0);
+			}
+		commands = jsonTemp;
+
+		if ((jsonTemp = cJSON_GetObjectItem(commands, "Th")) == NULL) {
+			fprintf(stderr, "couldn't find Th in probe file\n");
+			return(0);
+			}
+		thCmd = jsonTemp->valuestring;
+
+		if (verbose >= 2) fprintf(stderr, "Th command %s\n", thCmd);
+
+a453 14
+		if ((jsonTemp = cJSON_GetObjectItem(probeInfo, "commands")) == NULL) {
+			fprintf(stderr, "couldn't find commands in probe file\n");
+			return(0);
+			}
+		commands = jsonTemp;
+
+		if ((jsonTemp = cJSON_GetObjectItem(commands, "Th")) == NULL) {
+			fprintf(stderr, "couldn't find Th in probe file\n");
+			return(0);
+			}
+		thCmd = jsonTemp->valuestring;
+
+		if (verbose >= 2) fprintf(stderr, "Th command %s\n", thCmd);
+
+a470 8
+/*
+ * this next segment seems unused
+ *
+	if (verbose >= 2) fprintf(stderr, "impulse response command %s\n",
+		cJSON_GetObjectItem(commands, "impulseResponse")->valuestring);
+
+	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
+ */
+d479 14
+a492 1
+	impulseResponse = gaussPulse(fractBandwidth, centerFreq, params, verbose);
+d494 4
+a497 3
+	if (impulseResponse == NULL) {
+		fprintf(stderr, "error calling gaussPulse\n");
+		return(0);
 @
 
 

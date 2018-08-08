@@ -5,9 +5,6 @@
 main(int argc, char **argv)
 {
 cJSON *probeInfo;
-cJSON *impulseCmd;
-cJSON *time, *times;
-cJSON *voltage, *voltages;
 FILE *input;
 long len;
 char *data, *out;
@@ -26,26 +23,9 @@ char *data, *out;
 		printf("Error before: [%s]\n",cJSON_GetErrorPtr());
 		}
 
-/*
 	else {
 		out=cJSON_Print(probeInfo);
 		printf("%s\n",out);
 		free(out);
-		}
-*/
-
-	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
-	printf(cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
-
-	times = cJSON_GetObjectItem(impulseCmd, "time");
-
-	cJSON_ArrayForEach(time, times) {
-		printf("%e\n", time->valuedouble);
-		}
-
-	voltages = cJSON_GetObjectItem(impulseCmd, "voltage");
-
-	cJSON_ArrayForEach(voltage, voltages) {
-		printf("%e\n", voltage->valuedouble);
 		}
 }

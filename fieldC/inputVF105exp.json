@@ -1,0 +1,18 @@
+{
+	"nodeFileName": "myNodes.dyn",
+	"alpha_dBcmMHz": 0.5,
+	"fnum": 1.3,
+	"focusM": {
+		"x": 0,
+		"y": 0,
+		"z": 0.02
+		},
+	"freqMHz": 7.2,
+	"transducer": "vf105",
+	"transducerType": "focused_multirow",
+	"impulse": "exp",
+	"threads": 1,
+	"lowNslow": 0,
+	"elemsFileName": "../tests/elems.dyn",
+	"forceNonlinear": 1
+}
