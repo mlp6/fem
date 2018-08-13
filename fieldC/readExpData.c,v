@@ -1,4 +1,44 @@
-#include <stdio.h>
+head	1.4;
+access;
+symbols;
+locks
+	ndd:1.4; strict;
+comment	@ * @;
+
+
+1.4
+date	2018.08.13.15.40.54;	author ndd;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.08.13.14.09.16;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.08.10.16.26.46;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.08.08.15.05.01;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@routine to read in experimental data from probe file
+@
+
+
+1.4
+log
+@better matches the code in formatExpImpResp.m. I'm going to break the
+formatting part out of the reading part next.
+@
+text
+@#include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
 #include <math.h>
@@ -142,3 +182,80 @@ int startIndex, stopIndex;
 
 	fprintf(stderr, "startIndex %d, stopIndex %d\n", startIndex, stopIndex);
 }
+@
+
+
+1.3
+log
+@fixed an error in centering the time axis
+@
+text
+@d7 3
+d22 1
+d25 1
+a25 1
+	printf(cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
+d56 1
+a56 1
+		if (i < 20) printf("%e\n", time->valuedouble);
+d70 1
+a70 1
+/* find the max voltage and min and max times */
+a72 4
+		if (minTime > timeValues[i]) minTime = timeValues[i];
+
+		if (maxTime < timeValues[i]) maxTime = timeValues[i];
+
+a78 1
+	fprintf(stderr, "min time %e max time %e\n", minTime, maxTime);
+d100 9
+d125 19
+a143 2
+				newTimeValues[i] = minTime + i * stepSize;
+				}
+@
+
+
+1.2
+log
+@making progress on implementing formatExpImpResp.m in C
+@
+text
+@d13 1
+a64 4
+/*
+	for (i = 0; i < 20; i++)
+		fprintf(stderr, "time %e voltage %e\n", timeValues[i], voltageValues[i]);
+*/
+d87 1
+d91 3
+a93 1
+ * that, so I skipped it.
+d96 1
+a96 2
+	for (i = 0; i < numPnts; i++)
+		timeValues[i] = timeValues[i] - timeValues[maxVoltageIndex];
+a97 2
+/*
+*/
+d99 1
+a99 1
+		fprintf(stderr, "%e\n", timeValues[i]);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 2
+d7 1
+a7 1
+readExpData(cJSON *probeInfo)
+d12 6
+a17 2
+double *timeValues, *voltageValues;
+int i, numPnts = 0;
+d68 54
+@

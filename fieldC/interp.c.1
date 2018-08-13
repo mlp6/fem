@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <gsl/gsl_interp.h>
+
+int main (void)
+{
+//sample data
+//double x[4] = { 1970, 1980, 1990, 2000 };
+//double y[4] = {   12,   11,   14,   13 };
+double x[500], y[500];
+FILE *input;
+
+	input = fopen("times1", "r");
+
+	fread(x, sizeof(double), 500, input);
+
+	fclose(input);
+
+	input = fopen("volts", "r");
+
+	fread(y, sizeof(double), 500, input);
+
+	fclose(input);
+
+//initialise and allocate the gsl objects
+
+	gsl_interp *interpolation = gsl_interp_alloc (gsl_interp_linear,500);
+
+	gsl_interp_init(interpolation, x, y, 500);
+	gsl_interp_accel * accelerator =  gsl_interp_accel_alloc();
+
+//get interpolation for x = 1981
+
+	double value = gsl_interp_eval(interpolation, x, y, 250, accelerator);
+
+
+	printf("\n%g",value);
+
+//output:
+//11.3
+
+return 0;
+}

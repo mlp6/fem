@@ -35,13 +35,17 @@ char *nodeFileName, *elemsFileName, *transducer, *transducerType, *impulse;
 double alpha_dBcmMHz, fnum, freqMHz;
 int threads, lowNslow;
 
-	if (argc <= 1) {
+	if (argc < 2) {
 		fprintf(stderr, "the routine requires a JSON file as an argument!\n");
 		exit(0);
 		}
 
 	for (i = 1; i < argc; i++) {
-		if (argv[i][0] == '-')
+		if (argv[i][0] == '-') {
+			if (argc < 3) {
+				fprintf(stderr, "the routine requires a JSON file as an argument!\n");
+				exit(0);
+				}
 			switch(argv[i][1]) {
 				default:
 					fprintf(stderr, "\nbad arg: %s\n\n", argv[i]);
@@ -54,6 +58,7 @@ int threads, lowNslow;
 					verbose = strlen(argv[i]) - 1;
 					break;
 				}
+			}
 		else {
 			strcpy(inputFileName, argv[i]);
 			}
@@ -164,5 +169,4 @@ int threads, lowNslow;
 		focusM, freqMHz, transducer, transducerType, impulse,
 		threads, lowNslow,
 	    elemsFileName, verbose);
-
 }

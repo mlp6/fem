@@ -1,10 +1,15 @@
-head	1.37;
+head	1.38;
 access;
 symbols;
 locks
-	ndd:1.37; strict;
+	ndd:1.38; strict;
 comment	@ * @;
 
+
+1.38
+date	2018.08.10.16.26.12;	author ndd;	state Exp;
+branches;
+next	1.37;
 
 1.37
 date	2018.08.08.13.48.00;	author ndd;	state Exp;
@@ -197,9 +202,9 @@ desc
 @
 
 
-1.37
+1.38
 log
-@started to add code to deal with the experimental impulse
+@have to pass sampling frequency to readExpData
 @
 text
 @/*
@@ -691,9 +696,9 @@ int xdcGetSize;
 		}
 
 	else if (strcmp(params.impulse, "exp") == 0) {
-/* 		impulseResponse = readExpData(probeInfo); */
+/* 		impulseResponse = readExpData(probeInfo, params.samplingFrequencyHz); */
 		fprintf(stderr, "calling readExpData\n");
-		readExpData(probeInfo);
+		readExpData(probeInfo, params.samplingFrequencyHz);
 
 		if (impulseResponse == NULL) {
 			fprintf(stderr, "error calling readExpData\n");
@@ -952,6 +957,20 @@ int xdcGetSize;
 	return(1);
 
 }
+@
+
+
+1.37
+log
+@started to add code to deal with the experimental impulse
+@
+text
+@d490 1
+a490 1
+/* 		impulseResponse = readExpData(probeInfo); */
+d492 1
+a492 1
+		readExpData(probeInfo);
 @
 
 

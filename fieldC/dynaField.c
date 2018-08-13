@@ -487,9 +487,9 @@ int xdcGetSize;
 		}
 
 	else if (strcmp(params.impulse, "exp") == 0) {
-/* 		impulseResponse = readExpData(probeInfo); */
+/* 		impulseResponse = readExpData(probeInfo, params.samplingFrequencyHz); */
 		fprintf(stderr, "calling readExpData\n");
-		readExpData(probeInfo);
+		readExpData(probeInfo, params.samplingFrequencyHz);
 
 		if (impulseResponse == NULL) {
 			fprintf(stderr, "error calling readExpData\n");
