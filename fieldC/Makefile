@@ -12,8 +12,8 @@ else ifeq ($(OS),LinuxMint)
 	CFLAGS=-no-pie
 endif
 
-main: checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o readExpData.o main.c
-	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o readExpData.o main.c cJSON.c $(FIELD_INCLUDE)/lib_Field_II.a -lpthread -lm -o field2dyna
+main: checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o readExpData.o formatExpImpResp.o main.c
+	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o readExpData.o formatExpImpResp.o main.c cJSON.c $(FIELD_INCLUDE)/lib_Field_II.a -lpthread -lm -o field2dyna
 
 checkOnAxis.o: checkOnAxis.c field.h
 	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) -c checkOnAxis.c
@@ -65,6 +65,9 @@ uniformTest: uniformTest.o checkUniform.o readMpn.o
 
 readExpData.o: readExpData.c
 	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) -c readExpData.c
+
+formatExpImpResp.o: formatExpImpResp.c
+	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) -c formatExpImpResp.c
 
 clean:
 	rm *.o a.out

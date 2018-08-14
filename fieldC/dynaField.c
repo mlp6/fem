@@ -73,11 +73,13 @@ double *intensity;
 double stepSize;
 double freqAtt, attF0, att;
 int numCYC = 50;
+int numExpPnts;
 int numSteps;
 double lensCorrection, correctAxialLens();
 double temp;
 char outFileName[80];
 int xdcGetSize;
+double *timeValues, *voltageValues;
 
 /* how do I do check_add_probes? */
 
@@ -487,9 +489,14 @@ int xdcGetSize;
 		}
 
 	else if (strcmp(params.impulse, "exp") == 0) {
-/* 		impulseResponse = readExpData(probeInfo, params.samplingFrequencyHz); */
+/* 		impulseResponse = readExpData(probeInfo, timeValues, voltageValues); */
 		fprintf(stderr, "calling readExpData\n");
-		readExpData(probeInfo, params.samplingFrequencyHz);
+		numExpPnts = readExpData(probeInfo, &timeValues, &voltageValues);
+		fprintf(stderr, "numExpPnts %d\n", numExpPnts);
+		for (i = 0; i < numExpPnts; i++)
+			fprintf(stderr, "%e\n", voltageValues[i]);
+		impulseResponse = formatExpImpResp(numExpPnts, timeValues,
+			voltageValues, params.samplingFrequencyHz);
 
 		if (impulseResponse == NULL) {
 			fprintf(stderr, "error calling readExpData\n");

@@ -1,10 +1,15 @@
-head	1.4;
+head	2.1;
 access;
 symbols;
 locks
-	ndd:1.4; strict;
+	ndd:2.1; strict;
 comment	@ * @;
 
+
+2.1
+date	2018.08.14.18.16.12;	author ndd;	state Exp;
+branches;
+next	1.4;
 
 1.4
 date	2018.08.13.15.40.54;	author ndd;	state Exp;
@@ -32,41 +37,28 @@ desc
 @
 
 
-1.4
+2.1
 log
-@better matches the code in formatExpImpResp.m. I'm going to break the
-formatting part out of the reading part next.
+@changed routine to just read in the times and voltages; moving formatting
+to another routine.
 @
 text
 @#include <stdio.h>
 #include <stdlib.h>
-#include <float.h>
-#include <math.h>
 #include "cJSON.h"
 
-#define StartTest -4E-7
-#define StopTest 4E-7
-
-readExpData(cJSON *probeInfo, int samplingFrequencyHz)
+readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues)
 {
 cJSON *impulseCmd;
 cJSON *time, *times;
 cJSON *voltage, *voltages;
-double *newTimeValues, *timeValues, *voltageValues;
-double timeAtMaxIntensity;
-double minTime = DBL_MIN;
-double maxTime = -DBL_MIN;
-double maxVoltage = -DBL_MIN;
-double stepSize;
-int i, maxVoltageIndex, numPnts = 0, numSteps;
-int startIndex, stopIndex;
+int i, numPnts = 0;
 
 	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
 	fprintf(stderr, "%s\n", cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
 
 	times = cJSON_GetObjectItem(impulseCmd, "time");
 
-	fprintf(stderr, "getting times\n");
 /*
  * we don't know ahead of time how many data points there are, so I'll make
  * an initial pass through the data to get a count. interestly, it doesn't
@@ -80,19 +72,20 @@ int startIndex, stopIndex;
 
 	fprintf(stderr, "num points %d\n", numPnts);
 
-	if ((timeValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+	if ((*timeValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
 		fprintf(stderr, "in readExpData, couldn't allocate space for times\n");
 		return(0);
 		}
 
-	if ((voltageValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+	if ((*voltageValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
 		fprintf(stderr, "in readExpData, couldn't allocate space for voltages\n");
 		return(0);
 		}
 
 	i = 0;
+
 	cJSON_ArrayForEach(time, times) {
-		timeValues[i++] = time->valuedouble;
+		(*timeValues)[i++] = time->valuedouble;
 /* 		if (i < 20) printf("%e\n", time->valuedouble); */
 		}
 
@@ -102,10 +95,57 @@ int startIndex, stopIndex;
 
 	i = 0;
 	cJSON_ArrayForEach(voltage, voltages) {
-		voltageValues[i++] = voltage->valuedouble;
+		(*voltageValues)[i++] = voltage->valuedouble;
 /* 		printf("%e\n", voltage->valuedouble); */
 		}
 
+	return(numPnts);
+}
+@
+
+
+1.4
+log
+@better matches the code in formatExpImpResp.m. I'm going to break the
+formatting part out of the reading part next.
+@
+text
+@a2 2
+#include <float.h>
+#include <math.h>
+d5 1
+a5 4
+#define StartTest -4E-7
+#define StopTest 4E-7
+
+readExpData(cJSON *probeInfo, int samplingFrequencyHz)
+d10 1
+a10 8
+double *newTimeValues, *timeValues, *voltageValues;
+double timeAtMaxIntensity;
+double minTime = DBL_MIN;
+double maxTime = -DBL_MIN;
+double maxVoltage = -DBL_MIN;
+double stepSize;
+int i, maxVoltageIndex, numPnts = 0, numSteps;
+int startIndex, stopIndex;
+a16 1
+	fprintf(stderr, "getting times\n");
+d30 1
+a30 1
+	if ((timeValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+d35 1
+a35 1
+	if ((voltageValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+d41 1
+d43 1
+a43 1
+		timeValues[i++] = time->valuedouble;
+d53 1
+a53 1
+		voltageValues[i++] = voltage->valuedouble;
+d57 1
+a57 75
 
 /* find the max voltage */
 
@@ -181,7 +221,6 @@ int startIndex, stopIndex;
 			}
 
 	fprintf(stderr, "startIndex %d, stopIndex %d\n", startIndex, stopIndex);
-}
 @
 
 
