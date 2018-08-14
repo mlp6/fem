@@ -1,7 +1,0 @@
-/*-------------------------------------------------------*/
-/* Calculation of emitted field from aperture */
-/*-------------------------------------------------------*/
-signal_type **calc_hp (sys_con_type *sys_con, /* System constants and variables */
-aperture_type *aperture, /* The emit aperture */
-int32 no_points, /* Number of points for calculation */
-point_type *points); /* The field point for the calculation */
