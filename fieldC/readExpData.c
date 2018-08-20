@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include "cJSON.h"
 
-readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues)
+readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues,
+	int verbose)
 {
 cJSON *impulseCmd;
 cJSON *time, *times;
@@ -10,7 +11,8 @@ cJSON *voltage, *voltages;
 int i, numPnts = 0;
 
 	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
-	fprintf(stderr, "%s\n", cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
+	if (verbose >= 1) fprintf(stderr, "%s\n",
+		cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
 
 	times = cJSON_GetObjectItem(impulseCmd, "time");
 
@@ -25,7 +27,7 @@ int i, numPnts = 0;
 /* 		if (numPnts < 30) printf("%e\n", time->valuedouble); */
 		}
 
-	fprintf(stderr, "num points %d\n", numPnts);
+	if (verbose >= 1) fprintf(stderr, "num points %d\n", numPnts);
 
 	if ((*timeValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
 		fprintf(stderr, "in readExpData, couldn't allocate space for times\n");
@@ -46,7 +48,7 @@ int i, numPnts = 0;
 
 	voltages = cJSON_GetObjectItem(impulseCmd, "voltage");
 
-	fprintf(stderr, "getting voltages\n");
+	if (verbose >= 1) fprintf(stderr, "getting voltages\n");
 
 	i = 0;
 	cJSON_ArrayForEach(voltage, voltages) {

@@ -13,7 +13,7 @@ else ifeq ($(OS),LinuxMint)
 endif
 
 main: checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o readExpData.o formatExpImpResp.o main.c
-	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o readExpData.o formatExpImpResp.o main.c cJSON.c $(FIELD_INCLUDE)/lib_Field_II.a -lpthread -lm -o field2dyna
+	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) checkOnAxis.o correctAxialLens.o dynaField.o dynaWrite.o field2dyna.o gaussPulse.o readMpn.o readExpData.o formatExpImpResp.o main.c cJSON.c $(FIELD_INCLUDE)/lib_Field_II.a -lpthread -lm -lgsl -o field2dyna
 
 checkOnAxis.o: checkOnAxis.c field.h
 	cc $(CFLAGS) -I $(INCLUDE) -I $(FIELD_INCLUDE) -c checkOnAxis.c

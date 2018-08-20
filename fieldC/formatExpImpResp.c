@@ -2,21 +2,27 @@
 #include <stdlib.h>
 #include <float.h>
 #include <math.h>
+#include <gsl/gsl_interp.h>
+#include "field.h"
 
 #define StartTest -4E-7
 #define StopTest 4E-7
 
+signal_type *
 formatExpImpResp(int numPnts, double *timeValues, double *voltageValues,
-	int samplingFrequencyHz)
+	int samplingFrequencyHz, int verbose)
 {
 double *newTimeValues;
+double *newVoltageValues;
 double timeAtMaxIntensity;
 double minTime = DBL_MIN;
 double maxTime = -DBL_MIN;
 double maxVoltage = -DBL_MIN;
 double stepSize;
-int i, maxVoltageIndex, numSteps;
+int i, j, maxVoltageIndex, numSteps;
 int startIndex, stopIndex;
+signal_type *impulseResponse;
+int pntsSampled;
 
 /* find the max voltage */
 
@@ -27,7 +33,8 @@ int startIndex, stopIndex;
 			}
 		}
 
-	fprintf(stderr, "index %d max voltage %e\n", maxVoltageIndex, maxVoltage);
+	if (verbose >= 1) fprintf(stderr, "index %d max voltage %e\n",
+		maxVoltageIndex, maxVoltage);
 
 /* normalize the voltages */
 
@@ -56,16 +63,18 @@ int startIndex, stopIndex;
 		if (maxTime < timeValues[i]) maxTime = timeValues[i];
 		}
 
-	fprintf(stderr, "min time %e max time %e\n", minTime, maxTime);
+	if (verbose >= 1) fprintf(stderr, "min time %e max time %e\n", minTime,
+		maxTime);
+
 /* re-sample the data to match the Field II sampling frequency */
 
-	fprintf(stderr, "sampling %d\n", samplingFrequencyHz);
+	if (verbose >= 1) fprintf(stderr, "sampling %d\n", samplingFrequencyHz);
 	stepSize = 1.0 / samplingFrequencyHz;
 
-	fprintf(stderr, "diff %e\n", maxTime - minTime);
+	if (verbose >= 1) fprintf(stderr, "diff %e\n", maxTime - minTime);
 	numSteps = (int )ceil(((maxTime - minTime) * samplingFrequencyHz));
 
-	fprintf(stderr, "step size %e numSteps %d\n", stepSize, numSteps);
+	if (verbose >= 1) fprintf(stderr, "step size %e numSteps %d\n", stepSize, numSteps);
 
 	if ((newTimeValues = (double *)malloc(sizeof(double) * numSteps)) == NULL) {
 		fprintf(stderr, "in readExpData, couldn't allocate space for new times\n");
@@ -74,6 +83,33 @@ int startIndex, stopIndex;
 
 	for (i = 0; i < numSteps; i++) {
 		newTimeValues[i] = minTime + i * stepSize;
+		}
+
+/*
+ * now we find the voltage values at each of the new times by interpolating
+ * from the old times and voltages.
+ */
+
+/* initialize and allocate the gsl objects */
+
+	gsl_interp *interpolation = gsl_interp_alloc (gsl_interp_linear, numPnts);
+
+	gsl_interp_init(interpolation, timeValues, voltageValues, numPnts);
+
+	gsl_interp_accel * accelerator =  gsl_interp_accel_alloc();
+
+/* get interpolation the new times */
+
+	if ((newVoltageValues = (double *)malloc(sizeof(double) * numSteps)) == NULL) {
+		fprintf(stderr, "in readExpData, couldn't allocate space for new voltage\n");
+		return(0);
+		}
+
+	for (i = 0; i < numSteps; i++) {
+		newVoltageValues[i] = gsl_interp_eval(interpolation, timeValues,
+			voltageValues, newTimeValues[i], accelerator);
+
+		if (verbose >= 3) fprintf(stderr, "\n%e", newVoltageValues[i]);
 		}
 
 /* find the indices of NewTime to use for the Field II impulse response */
@@ -91,5 +127,18 @@ int startIndex, stopIndex;
 			break;
 			}
 
-	fprintf(stderr, "startIndex %d, stopIndex %d\n", startIndex, stopIndex);
+	pntsSampled = stopIndex - startIndex;
+
+	if (verbose >= 1) fprintf(stderr,
+		"\nstartIndex %d, stopIndex %d pntsSampled %d\n", startIndex,
+		stopIndex, pntsSampled);
+
+	impulseResponse = alloc_signal(pntsSampled, 0);
+
+	for (i = startIndex, j = 0; i < stopIndex; i++, j++) {
+		impulseResponse->data[j] = newVoltageValues[i];
+		if (verbose >= 3) fprintf(stderr, "%e\n", newVoltageValues[i]);
+		}
+
+	return(impulseResponse);
 }

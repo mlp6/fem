@@ -1,10 +1,20 @@
-head	2.1;
+head	2.3;
 access;
 symbols;
 locks
-	ndd:2.1; strict;
+	ndd:2.3; strict;
 comment	@ * @;
 
+
+2.3
+date	2018.08.20.19.31.22;	author ndd;	state Exp;
+branches;
+next	2.2;
+
+2.2
+date	2018.08.20.19.25.22;	author ndd;	state Exp;
+branches;
+next	2.1;
 
 2.1
 date	2018.08.14.18.17.34;	author ndd;	state Exp;
@@ -207,10 +217,9 @@ desc
 @
 
 
-2.1
+2.3
 log
-@setting up to read the experimental data in one subroutine and format it
-in another
+@added verbose flag for readExpData and formatExpImpResp
 @
 text
 @/*
@@ -282,7 +291,7 @@ double fractBandwidth, centerFreq;
 point_type *points;
 double exciteFreqHz;
 signal_type *excitationPulse = NULL;
-signal_type *impulseResponse = NULL, *gaussPulse();
+signal_type *impulseResponse = NULL, *formatExpImpResp(), *gaussPulse();
 signal_type **pressure = NULL;
 double *intensity;
 double stepSize;
@@ -704,17 +713,22 @@ double *timeValues, *voltageValues;
 		}
 
 	else if (strcmp(params.impulse, "exp") == 0) {
-/* 		impulseResponse = readExpData(probeInfo, timeValues, voltageValues); */
+
 		fprintf(stderr, "calling readExpData\n");
-		numExpPnts = readExpData(probeInfo, &timeValues, &voltageValues);
+		numExpPnts = readExpData(probeInfo, &timeValues, &voltageValues,
+			verbose);
+
 		fprintf(stderr, "numExpPnts %d\n", numExpPnts);
+/*
 		for (i = 0; i < numExpPnts; i++)
 			fprintf(stderr, "%e\n", voltageValues[i]);
+*/
+
 		impulseResponse = formatExpImpResp(numExpPnts, timeValues,
-			voltageValues, params.samplingFrequencyHz);
+			voltageValues, params.samplingFrequencyHz, verbose);
 
 		if (impulseResponse == NULL) {
-			fprintf(stderr, "error calling readExpData\n");
+			fprintf(stderr, "error calling formatExpImpResp\n");
 			return(0);
 			}
 		}
@@ -735,6 +749,8 @@ double *timeValues, *voltageValues;
 		}
 
 	xdc_get(Th, info, params.ThData);
+
+	if (verbose >= 1) fprintf(stderr, "back from xdc_get\n");
 
 	if (verbose >= 2) {
 		fprintf(stderr, "num apertures from sys_con %d\n",
@@ -970,6 +986,42 @@ double *timeValues, *voltageValues;
 	return(1);
 
 }
+@
+
+
+2.2
+log
+@correctly returning impulse response for 'exp' case
+@
+text
+@d494 2
+a495 1
+		numExpPnts = readExpData(probeInfo, &timeValues, &voltageValues);
+d504 1
+a504 1
+			voltageValues, params.samplingFrequencyHz);
+@
+
+
+2.1
+log
+@setting up to read the experimental data in one subroutine and format it
+in another
+@
+text
+@d70 1
+a70 1
+signal_type *impulseResponse = NULL, *gaussPulse();
+d492 1
+a492 1
+/* 		impulseResponse = readExpData(probeInfo, timeValues, voltageValues); */
+d495 1
+d497 1
+d500 2
+d506 1
+a506 1
+			fprintf(stderr, "error calling readExpData\n");
+d527 2
 @
 
 

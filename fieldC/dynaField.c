@@ -67,7 +67,7 @@ double fractBandwidth, centerFreq;
 point_type *points;
 double exciteFreqHz;
 signal_type *excitationPulse = NULL;
-signal_type *impulseResponse = NULL, *gaussPulse();
+signal_type *impulseResponse = NULL, *formatExpImpResp(), *gaussPulse();
 signal_type **pressure = NULL;
 double *intensity;
 double stepSize;
@@ -489,17 +489,22 @@ double *timeValues, *voltageValues;
 		}
 
 	else if (strcmp(params.impulse, "exp") == 0) {
-/* 		impulseResponse = readExpData(probeInfo, timeValues, voltageValues); */
+
 		fprintf(stderr, "calling readExpData\n");
-		numExpPnts = readExpData(probeInfo, &timeValues, &voltageValues);
+		numExpPnts = readExpData(probeInfo, &timeValues, &voltageValues,
+			verbose);
+
 		fprintf(stderr, "numExpPnts %d\n", numExpPnts);
+/*
 		for (i = 0; i < numExpPnts; i++)
 			fprintf(stderr, "%e\n", voltageValues[i]);
+*/
+
 		impulseResponse = formatExpImpResp(numExpPnts, timeValues,
-			voltageValues, params.samplingFrequencyHz);
+			voltageValues, params.samplingFrequencyHz, verbose);
 
 		if (impulseResponse == NULL) {
-			fprintf(stderr, "error calling readExpData\n");
+			fprintf(stderr, "error calling formatExpImpResp\n");
 			return(0);
 			}
 		}
@@ -520,6 +525,8 @@ double *timeValues, *voltageValues;
 		}
 
 	xdc_get(Th, info, params.ThData);
+
+	if (verbose >= 1) fprintf(stderr, "back from xdc_get\n");
 
 	if (verbose >= 2) {
 		fprintf(stderr, "num apertures from sys_con %d\n",

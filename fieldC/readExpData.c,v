@@ -1,10 +1,15 @@
-head	2.1;
+head	2.2;
 access;
 symbols;
 locks
-	ndd:2.1; strict;
+	ndd:2.2; strict;
 comment	@ * @;
 
+
+2.2
+date	2018.08.20.19.30.34;	author ndd;	state Exp;
+branches;
+next	2.1;
 
 2.1
 date	2018.08.14.18.16.12;	author ndd;	state Exp;
@@ -37,17 +42,17 @@ desc
 @
 
 
-2.1
+2.2
 log
-@changed routine to just read in the times and voltages; moving formatting
-to another routine.
+@added verbose flag for readExpData and formatExpImpResp
 @
 text
 @#include <stdio.h>
 #include <stdlib.h>
 #include "cJSON.h"
 
-readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues)
+readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues,
+	int verbose)
 {
 cJSON *impulseCmd;
 cJSON *time, *times;
@@ -55,7 +60,8 @@ cJSON *voltage, *voltages;
 int i, numPnts = 0;
 
 	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
-	fprintf(stderr, "%s\n", cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
+	if (verbose >= 1) fprintf(stderr, "%s\n",
+		cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
 
 	times = cJSON_GetObjectItem(impulseCmd, "time");
 
@@ -70,7 +76,7 @@ int i, numPnts = 0;
 /* 		if (numPnts < 30) printf("%e\n", time->valuedouble); */
 		}
 
-	fprintf(stderr, "num points %d\n", numPnts);
+	if (verbose >= 1) fprintf(stderr, "num points %d\n", numPnts);
 
 	if ((*timeValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
 		fprintf(stderr, "in readExpData, couldn't allocate space for times\n");
@@ -91,7 +97,7 @@ int i, numPnts = 0;
 
 	voltages = cJSON_GetObjectItem(impulseCmd, "voltage");
 
-	fprintf(stderr, "getting voltages\n");
+	if (verbose >= 1) fprintf(stderr, "getting voltages\n");
 
 	i = 0;
 	cJSON_ArrayForEach(voltage, voltages) {
@@ -101,6 +107,27 @@ int i, numPnts = 0;
 
 	return(numPnts);
 }
+@
+
+
+2.1
+log
+@changed routine to just read in the times and voltages; moving formatting
+to another routine.
+@
+text
+@d5 2
+a6 1
+readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues)
+d14 2
+a15 1
+	fprintf(stderr, "%s\n", cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
+d30 1
+a30 1
+	fprintf(stderr, "num points %d\n", numPnts);
+d51 1
+a51 1
+	fprintf(stderr, "getting voltages\n");
 @
 
 
