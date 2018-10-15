@@ -76,3 +76,4 @@ Please file any bug reports, features requests, etc. using the GitHub
 - Brian Bigler (brian.bigler@duke.edu)
 - Carl Herickhoff (cdh14@duke.edu)
 - Sam Lipman (sll16@duke.edu)
+- Anna Knight (aek27@duke.edu)
