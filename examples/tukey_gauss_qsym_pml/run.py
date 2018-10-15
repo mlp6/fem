@@ -33,7 +33,7 @@ bc.apply_pml(pml_elems, face_constraints, edge_constraints)
 
 generate_loads([0.1, 0.1, 0.75], [0.0, 0.0, -1.5], tukey_length=2.5)
 
-system('ls-dyna-d ncpu={} i={}'.format((NTASKS, DYNADECK)))
+system('ls-dyna-d ncpu={} i={}'.format(NTASKS, DYNADECK))
 
 create_disp_dat()
 
