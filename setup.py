@@ -9,7 +9,7 @@ setup(
     name='fem',
     packages=['fem', 'fem.mesh', 'fem.post', 'fem.field'],
     package_dir={'fem': '.'},
-    version='7.3.2',
+    version='7.3.3',
     license='Apache v2.0',
     author='Mark Palmeri',
     author_email='mlp6@duke.edu',

@@ -90,3 +90,6 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v7.3.2
 * add `package_data` to `setup.py` to capture examples and docs in `pip install`
+
+## v7.3.3
+* fix syntax in `examples/tukey_gauss_qsym_pml/run.py`
