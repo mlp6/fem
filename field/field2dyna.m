@@ -58,11 +58,11 @@ FIELD_PARAMS.soundSpeed=1540;
 FIELD_PARAMS.samplingFrequency = 100e6;
 
 % setup some input argument defaults
-if (nargin < 7),
+if (nargin < 8),
     threads = 1;
 end;
 
-if (nargin < 8),
+if (nargin < 9),
     lownslow = true;
 end;
 

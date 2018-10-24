@@ -45,8 +45,8 @@ set_field('fs', FIELD_PARAMS.samplingFrequency);
 if (nargin < 2),
     threads = feature('numCores');
 end
-set_field('threads', threads);
-disp(sprintf('PARALLEL THREADS: %d', threads));
+%set_field('threads', threads);
+%disp(sprintf('PARALLEL THREADS: %d', threads));
 
 % define transducer-dependent parameters
 eval(sprintf('[Th,impulseResponse] = %s(FIELD_PARAMS);', FIELD_PARAMS.Transducer));
