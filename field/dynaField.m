@@ -49,7 +49,7 @@ try
     set_field('threads', threads);
     disp(sprintf('PARALLEL THREADS: %d', threads));
 catch
-    disp('Non-Pro Version of Field Detected')
+    disp('Non-Pro Version of Field II Detected')
 end
 
 % define transducer-dependent parameters
