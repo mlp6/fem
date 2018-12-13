@@ -1,0 +1,15 @@
+name: fem
+dependencies:
+  - python=3.6
+  - numpy
+  - scipy
+  - pytest
+  - pytest-pep8
+  - pytest-cov
+  - h5py
+  - matplotlib
+  - jupyter
+  - sphinx
+  - sphinx-napoleon
+  - pyevtk
+
