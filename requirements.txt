@@ -1,6 +1,5 @@
 h5py
 ipython
-jupyter
 matplotlib
 numpy
 pytest
@@ -10,5 +9,3 @@ scipy
 sphinx
 sphinxcontrib-napoleon
 pyevtk
-pudb
-wheel
