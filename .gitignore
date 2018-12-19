@@ -1,6 +1,7 @@
 _build/
 .buildinfo
 *.pyc
+.idea/
 .ipynb_checkpoints
 *.bak
 scale_disp_dat
