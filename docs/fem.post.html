@@ -9,7 +9,7 @@
     <title>fem.post package &#8212; FEM v6.9.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
@@ -30,6 +30,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="fem-post-package">
@@ -70,7 +72,7 @@ we can convert to floats</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>(</strong><strong>str0</strong> (<em>line</em>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>str</em>) – raw read line</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">line with space(s) added before negative coefficients</td>
 </tr>
@@ -82,7 +84,7 @@ we can convert to floats</p>
 
 <dl class="function">
 <dt id="fem.post.create_disp_dat.count_timesteps">
-<code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">count_timesteps</code><span class="sig-paren">(</span><em>outfile</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.count_timesteps" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fem.post.create_disp_dat.</code><code class="descname">count_timesteps</code><span class="sig-paren">(</span><em>outfile</em>, <em>use_grep=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_disp_dat.count_timesteps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Count timesteps written to nodout.</p>
 <p>Searches for ‘time’ in lines, and then removes 1 extra entry that occurs
 for t = 0.  <cite>grep</cite> will be used on linux systems (way faster).</p>
@@ -90,11 +92,17 @@ for t = 0.  <cite>grep</cite> will be used on linux systems (way faster).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>outfile</strong> (<em>str</em>) – usually nodout</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>outfile</strong> (<em>str</em>) – usually nodout</li>
+<li><strong>use_grep</strong> (<em>Boolean</em>) – use grep (faster) instead of Python line loop</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">number of time steps counted - 1</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">number of time steps counted - 1</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ts_count (int)</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ts_count (int)</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -198,15 +206,12 @@ for t = 0.  <cite>grep</cite> will be used on linux systems (way faster).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>data</strong> (<em>ndarray</em>) – </li>
 <li><strong>outfile</strong> (<em>obj</em>) – output file object</li>
 <li><strong>writenode</strong> (<em>Boolean</em>) – Boolean if the node IDs should be written to save
 ~25% of the disp.dat file size</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
 </td>
 </tr>
 </tbody>
@@ -499,7 +504,23 @@ elevation position (mesh coordinates).</p>
 <dl class="function">
 <dt id="fem.post.create_res_sim.saveh5">
 <code class="descclassname">fem.post.create_res_sim.</code><code class="descname">saveh5</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.saveh5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save HDF5 file.</p>
+<dd><p>Save HDF5 file with gzip compression.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>arfidata</strong> (<em>float</em>) – 4D arfidata matrix</li>
+<li><strong>axial</strong> (<em>float</em>) – depth axis vector [mm]</li>
+<li><strong>lat</strong> (<em>float</em>) – lateral axis vector [mm]</li>
+<li><strong>elev</strong> (<em>float</em>) – elevation axis vector [mm]</li>
+<li><strong>t</strong> (<em>float</em>) – time vector (s)</li>
+<li><strong>resfile</strong> (<em>str</em>) – ‘res_sim.pvd’</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -510,7 +531,18 @@ elevation position (mesh coordinates).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> – arfidata &gt;4 GB</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>arfidata</strong> (<em>float</em>) – 4D arfidata matrix</li>
+<li><strong>axial</strong> (<em>float</em>) – depth axis vector [mm]</li>
+<li><strong>lat</strong> (<em>float</em>) – lateral axis vector [mm]</li>
+<li><strong>elev</strong> (<em>float</em>) – elevation axis vector [mm]</li>
+<li><strong>t</strong> (<em>float</em>) – time vector (s)</li>
+<li><strong>resfile</strong> (<em>str</em>) – ‘res_sim.pvd’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code> – arfidata &gt;4 GB</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -518,14 +550,25 @@ elevation position (mesh coordinates).</p>
 
 <dl class="function">
 <dt id="fem.post.create_res_sim.savepvd">
-<code class="descclassname">fem.post.create_res_sim.</code><code class="descname">savepvd</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.savepvd" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fem.post.create_res_sim.</code><code class="descname">savepvd</code><span class="sig-paren">(</span><em>ts_start=0</em>, <em>part=0</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.create_res_sim.savepvd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save Paraview PVD rectilinear (VTR) time series data.</p>
 <p>Paraview data formats: <a class="reference external" href="https://www.paraview.org/Wiki/ParaView/Data_formats">https://www.paraview.org/Wiki/ParaView/Data_formats</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ts_start</strong> (<em>int</em>) – override starting timestep index from 0 to this value</li>
+<li><strong>arfidata</strong> (<em>float</em>) – 4D arfidata matrix</li>
+<li><strong>axial</strong> (<em>float</em>) – depth axis vector [mm]</li>
+<li><strong>lat</strong> (<em>float</em>) – lateral axis vector [mm]</li>
+<li><strong>elev</strong> (<em>float</em>) – elevation axis vector [mm]</li>
+<li><strong>t</strong> (<em>float</em>) – time vector (s)</li>
+<li><strong>resfile</strong> (<em>str</em>) – ‘res_sim.pvd’</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
 <li><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code> – Not saving 3D time series data.</li>
 <li><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileExistsError</span></code> – PVD file directory cannot be created.</li>
 </ul>
@@ -603,6 +646,48 @@ elevation position (mesh coordinates).</p>
 <em class="property">class </em><code class="descclassname">fem.post.ressim.</code><code class="descname">ResSim</code><span class="sig-paren">(</span><em>filename='res_sim.mat'</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>plot and animate res_sim.mat simulation data</p>
+<dl class="attribute">
+<dt id="fem.post.ressim.ResSim.filename">
+<code class="descname">filename</code><a class="headerlink" href="#fem.post.ressim.ResSim.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – name of file to load in (MATv5)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fem.post.ressim.ResSim.arfidata">
+<code class="descname">arfidata</code><a class="headerlink" href="#fem.post.ressim.ResSim.arfidata" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float ndarray</em> – arfidata</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fem.post.ressim.ResSim.axial">
+<code class="descname">axial</code><a class="headerlink" href="#fem.post.ressim.ResSim.axial" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float ndarray</em> – depth</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fem.post.ressim.ResSim.lat">
+<code class="descname">lat</code><a class="headerlink" href="#fem.post.ressim.ResSim.lat" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float ndarray</em> – lateral</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fem.post.ressim.ResSim.t">
+<code class="descname">t</code><a class="headerlink" href="#fem.post.ressim.ResSim.t" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float ndarray</em> – time</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fem.post.ressim.ResSim.time_scale_factor">
+<code class="descname">time_scale_factor</code><a class="headerlink" href="#fem.post.ressim.ResSim.time_scale_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – time scale factor (e.g., s -&gt; ms)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="fem.post.ressim.ResSim.disp_scale_factor">
+<code class="descname">disp_scale_factor</code><a class="headerlink" href="#fem.post.ressim.ResSim.disp_scale_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – displacement scale factor</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="fem.post.ressim.ResSim.animate">
 <code class="descname">animate</code><span class="sig-paren">(</span><em>i</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.animate" title="Permalink to this definition">¶</a></dt>
@@ -610,7 +695,7 @@ elevation position (mesh coordinates).</p>
 
 <dl class="method">
 <dt id="fem.post.ressim.ResSim.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.load" title="Permalink to this definition">¶</a></dt>
+<code class="descname">load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>load MATv5 data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -618,48 +703,69 @@ elevation position (mesh coordinates).</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) – input filename</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">[lat, axial, t, arfidata]</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">attributes (ndarray)</td>
-</tr>
 </tbody>
 </table>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>Make compatible with v7.3 (HDF5) format files.</li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="fem.post.ressim.ResSim.play">
-<code class="descname">play</code><span class="sig-paren">(</span><em>timerange</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.play" title="Permalink to this definition">¶</a></dt>
+<code class="descname">play</code><span class="sig-paren">(</span><em>timerange</em>, <em>xlabel='Lateral (mm)'</em>, <em>ylabel='Axial (mm)'</em>, <em>show=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.play" title="Permalink to this definition">¶</a></dt>
 <dd><p>play an animation</p>
 <p>Strongly recommend not stepping though each timesteps; use some skips!</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timerange</strong> (<em>range</em>) – range generator of time steps to animate</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>timerange</strong> (<em>range</em>) – range generator of time steps to animate</li>
+<li><strong>xlabel</strong> (<em>str</em>) – </li>
+<li><strong>ylabel</strong> (<em>str</em>) – </li>
+<li><strong>show</strong> (<em>Boolean</em>) – show animation</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p>Returns:</p>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<ul class="last simple">
+<li>Add save option</li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="method">
 <dt id="fem.post.ressim.ResSim.plot">
-<code class="descname">plot</code><span class="sig-paren">(</span><em>timestep</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.plot" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot</code><span class="sig-paren">(</span><em>timestep</em>, <em>show=True</em>, <em>save=False</em>, <em>savename='file'</em>, <em>xlabel='Lateral (mm)'</em>, <em>ylabel='Axial (mm)'</em>, <em>title=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot arfidata at specified timestep.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>timestep</strong> (<em>int</em>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>timestep</strong> (<em>int</em>) – </li>
+<li><strong>show</strong> (<em>Boolean</em>) – show plot</li>
+<li><strong>save</strong> (<em>Boolean</em>) – save PNG (objectname_timestep.png)</li>
+<li><strong>savename</strong> (<em>str</em>) – saved PNG filename prefix</li>
+<li><strong>xlabel</strong> (<em>str</em>) – </li>
+<li><strong>ylabel</strong> (<em>str</em>) – </li>
+<li><strong>title</strong> (<em>str</em>) – </li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="fem.post.ressim.ResSim.timeplot">
-<code class="descname">timeplot</code><span class="sig-paren">(</span><em>axial</em>, <em>lat</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.timeplot" title="Permalink to this definition">¶</a></dt>
+<code class="descname">timeplot</code><span class="sig-paren">(</span><em>axial</em>, <em>lat</em>, <em>xlabel='Time (ms)'</em>, <em>ylabel='Displacement (\\mum)'</em>, <em>title=None</em>, <em>show=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fem.post.ressim.ResSim.timeplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>plot arfidata through time at specified ax and lat position (mm)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -668,6 +774,10 @@ elevation position (mesh coordinates).</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>axial</strong> (<em>ndarray</em>) – axial depth (mm)</li>
 <li><strong>lat</strong> (<em>ndarray</em>) – lateral position (mm)</li>
+<li><strong>xlabel</strong> (<em>str</em>) – </li>
+<li><strong>ylabel</strong> (<em>str</em>) – </li>
+<li><strong>title</strong> (<em>str</em>) – </li>
+<li><strong>show</strong> (<em>Boolean</em>) – show the plot</li>
 </ul>
 </td>
 </tr>
@@ -756,6 +866,7 @@ elevation position (mesh coordinates).</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -811,8 +922,8 @@ elevation position (mesh coordinates).</p>
       &copy;2018, Mark Palmeri.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
       <a href="_sources/fem.post.rst.txt"

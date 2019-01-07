@@ -80,3 +80,16 @@ See the git commit history for an effective change log pre-v6.3.1
   docstrings
 * update installation instructions
 * fix ResSim class (`self.filename`)
+
+## v7.3.0
+* Add examples, docs and Markdown files to pip setup-installed package.
+* Update installation documents to reflect pip / virtualenv practices.
+
+## v7.3.1
+* update `setup.py`
+
+## v7.3.2
+* add `package_data` to `setup.py` to capture examples and docs in `pip install`
+
+## v7.3.3
+* fix syntax in `examples/tukey_gauss_qsym_pml/run.py`

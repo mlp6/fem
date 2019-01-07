@@ -25,12 +25,19 @@ check_start_Field_II;
 set_field('c', FIELD_PARAMS.sound_speed_m_s);
 set_field('fs', FIELD_PARAMS.sampling_freq_Hz);
 
-set_field('threads', FIELD_PARAMS.threads);
-disp(sprintf('PARALLEL THREADS: %d', FIELD_PARAMS.threads));
-
 % define the transducer definition
 probe = read_probe_json(FIELD_PARAMS.probe_params);
 Th = genTh(probe, FIELD_PARAMS);
+
+if (nargin < 2),
+    threads = feature('numCores');
+end
+try
+    set_field('threads', threads);
+    disp(sprintf('PARALLEL THREADS: %d', threads));
+catch
+    disp('Non-Pro Version of Field II Detected')
+end
 
 % compute or load the experimentally-measured impulse response
 impulseResponse = defineImpResp(probe.fractionalBandwidth, probe.centerFrequency, FIELD_PARAMS);

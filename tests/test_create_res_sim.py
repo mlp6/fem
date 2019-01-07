@@ -5,12 +5,12 @@ sys.path.insert(0, os.path.join(myPath, '../post/'))
 
 
 def test_preallocate_arfidata(sorted_nodes, axes):
-    from create_res_sim import preallocate_arfidata
+    from create_res_sim import __preallocate_arfidata
 
     from create_res_sim import extract_image_plane
     image_plane = extract_image_plane(sorted_nodes, axes, 0.0)
 
-    arfidata = preallocate_arfidata(image_plane, 3)
+    arfidata = __preallocate_arfidata(image_plane, 3)
 
     assert arfidata.shape == (11, 11, 3)
 
@@ -30,9 +30,9 @@ def test_extract_image_plane(sorted_nodes, axes):
 def test_get_t():
     """test generation of time vector
     """
-    from create_res_sim import gen_t
+    from create_res_sim import __gen_t
 
-    t = gen_t(0.1, 10)
+    t = __gen_t(0.1, 10)
 
     assert len(t) == 10
     assert t[0] == 0.0

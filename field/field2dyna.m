@@ -40,6 +40,14 @@ measurementPointsandNodes(:,2:4)=measurementPointsandNodes(:,2:4)/100;
 FIELD_PARAMS = read_json(field_params_json);
 
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
+% setup some input argument defaults
+if (nargin < 8),
+    threads = 1;
+end;
+
+if (nargin < 9),
+    lownslow = true;
+end;
 
 % perform the field calculation
 [intensity, FIELD_PARAMS] = dynaField(FIELD_PARAMS);
