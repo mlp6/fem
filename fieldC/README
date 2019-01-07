@@ -1,0 +1,10 @@
+
+4/16/18: saved dynaField.c.5, which is part way from rcs version 1.12 to
+version 1.13. I think that dynaField.c.4 has changes from 1.13.
+
+when I add a call to xdc_impulse, calc_hp runs forever. I suspect it's
+because my gaussian code is returning a vector of doubles rather than a
+pointer to signal_type, which is what xdc_impulse really wants.
+
+4/17/18: version 6 is an attempt to get back to a working version, but it
+crashes in gaussPulse

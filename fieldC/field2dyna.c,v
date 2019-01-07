@@ -1,0 +1,686 @@
+head	1.20;
+access;
+symbols;
+locks
+	ndd:1.20; strict;
+comment	@ * @;
+
+
+1.20
+date	2018.07.25.20.02.25;	author ndd;	state Exp;
+branches;
+next	1.19;
+
+1.19
+date	2018.07.25.17.01.12;	author ndd;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	2018.07.24.17.42.36;	author ndd;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	2018.07.19.14.30.47;	author ndd;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	2018.07.18.18.01.12;	author ndd;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	2018.07.18.16.16.03;	author ndd;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	2018.07.18.16.15.02;	author ndd;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	2018.06.12.18.40.26;	author ndd;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	2018.06.06.16.09.07;	author ndd;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	2018.06.06.15.19.34;	author ndd;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	2018.06.06.13.46.26;	author ndd;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2018.05.09.18.06.30;	author ndd;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2018.05.09.17.31.15;	author ndd;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2018.04.17.19.44.33;	author ndd;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2018.04.17.14.09.29;	author ndd;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2018.04.13.16.21.57;	author ndd;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.04.03.17.08.19;	author ndd;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.03.19.15.43.50;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.03.07.21.55.37;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.03.07.21.41.55;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@converting from matlab to C
+@
+
+
+1.20
+log
+@added transducer type as an argument
+@
+text
+@/*
+% function [dynaImat] = field2dyna(NodeName, alpha, Fnum, focus, Frequency,
+%	Transducer, Impulse, threads, lownslow, ElemName, verbose)
+%
+% INPUT:
+%   NodeName (string) - file name to read nodes from (e.g., nodes.dyn); needs
+%                       to be a comma-delimited file with header/footer lines
+%                       that start with '*'
+%   alpha_dBcmMHz - 0.5, 1.0, etc. (dB/cm/MHz)
+%   Fnum - F/# (e.g. 1.3)
+%   focusM - [x y z] (meters) "Field" coordinates
+%   Frequency - excitation frequency (MHz)
+%   Transducer (string) - 'vf105','vf73'
+%   Impulse (string) - 'gaussian','exp'
+%   threads (int) - number of parallel threads to use for Field II Pro
+%   lownslow (bool) - low memory footprint, or faster parallel (high RAM)
+%		[default = 0]
+%   ElemName (string) - file name to read elements from (default: elems.dyn);
+%                       like node file, needs to be comma-delimited.
+%
+% OUTPUT:
+%   dyna-I-*.mat file is saved to CWD and filename string returned
+%
+% EXAMPLE:
+% dynaImatfile = field2dyna('nodes.dyn', 0.5, 1.3, [0 0 0.02], 7.2, 'vf105',
+%	'gaussian', ..., 12, 'elems.dyn', 1);
+%
+% Mark Palmeri
+% mlp6@@duke.edu
+% 2015-03-17
+%
+* Ned Danieley
+*
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include "field.h"
+
+int checkOnAxis();
+
+char *
+field2dyna(char *nodeName, double alpha_dBcmMHz, double fnum, point_type focusM,
+	double freqMHz, char *transducer, char *transducerType, char *impulse,
+	int threads, int lowNslow, char *elemName, int verbose)
+{
+int dynaField();
+int i, numNodes;
+int isUniform;
+double temp;
+struct nodeEntry *pointsAndNodes, *readMpn();
+struct FieldParams fieldParams;
+char nodeVolFileName[80];
+char calcNodeVolCmd[80];
+int status;
+
+	fprintf(stderr, "in field2dyna, verbose %d\n", verbose);
+
+	if (verbose >= 1) {
+		fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n",
+			nodeName);
+		fprintf(stderr, "in field2dyna, alpha_dBcmMHz %f fnum %f freqMHz %f\n",
+			alpha_dBcmMHz, fnum, freqMHz);
+		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focusM.x,
+			focusM.y, focusM.z);
+		fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+		fprintf(stderr, "in field2dyna, transducerType %s\n", transducerType);
+		fprintf(stderr, "in field2dyna, impulse %s\n", impulse);
+		fprintf(stderr, "in field2dyna, threads %d\n", threads);
+		fprintf(stderr, "in field2dyna, lowNslow %d\n", lowNslow);
+		fprintf(stderr, "in field2dyna, element name %s\n", elemName);
+		fprintf(stderr, "in field2dyna, verbose %d\n", verbose);
+		}
+
+	pointsAndNodes = readMpn(nodeName, &numNodes, verbose);
+	if (pointsAndNodes == NULL) {
+		fprintf(stderr, "didn't get enough values from readMpn\n");
+		exit(0);
+		}
+
+	if (verbose >= 1) fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+
+	if (verbose == 3) for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 1, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+
+	if (!checkOnAxis(pointsAndNodes, numNodes)) {
+		fprintf(stderr, "There are no nodes in the lateral / elevation plane = 0 (imaging plane).\n");
+		fprintf(stderr, "This can lead to inaccurate representations of the intensity fields!!')\n");
+		}
+
+	if (verbose == 3) for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 2, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+
+/* invert the z axis */
+	for (i = 0; i < numNodes; i++) pointsAndNodes[i].z = -pointsAndNodes[i].z;
+
+	if (verbose == 3) for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 3, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+
+/* switch x and y */
+	for (i = 0; i < numNodes; i++) {
+		temp = pointsAndNodes[i].x;
+		pointsAndNodes[i].x = pointsAndNodes[i].y;
+		pointsAndNodes[i].y = temp;
+		}
+	if (verbose == 3) for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 4, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+
+
+/* change from centimeters to meters */
+	for (i = 0; i < numNodes; i++) {
+		pointsAndNodes[i].x /= 100;
+		pointsAndNodes[i].y /= 100;
+		pointsAndNodes[i].z /= 100;
+		}
+
+	if (verbose == 3) for (i = 0; i < 13; i++)
+	    fprintf(stderr, "field2dyna 5, node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+
+/* populate structure for dynaField */
+
+	fieldParams.pointsAndNodes = pointsAndNodes;
+	fieldParams.alpha_dBcmMHz = alpha_dBcmMHz;
+	fieldParams.fnum = fnum;
+	fieldParams.focusM = focusM;
+	fieldParams.frequencyMHz = freqMHz;
+	fieldParams.transducer = transducer;
+	fieldParams.transducerType = transducerType;
+	fieldParams.impulse = impulse;
+	fieldParams.soundSpeed_MperSec = 1540;
+	fieldParams.samplingFrequencyHz = 100e6;
+	fieldParams.threads = threads;
+
+	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focusM.x, fieldParams.focusM.y, fieldParams.focusM.z);
+
+/* call dynaField here */
+
+	if (dynaField(fieldParams, threads, numNodes, lowNslow, verbose) == 0) {
+		fprintf(stderr, "in field2dyna, call to dynaField failed\n");
+		exit(0);
+		}
+}
+@
+
+
+1.19
+log
+@added more units to params variables
+@
+text
+@d45 2
+a46 2
+	double freqMHz, char *transducer, char *impulse, int threads, int lowNslow,
+	char *elemName, int verbose)
+d68 1
+d129 1
+@
+
+
+1.18
+log
+@started including units in variable names.
+@
+text
+@d9 1
+a9 1
+%   alpha - 0.5, 1.0, etc. (dB/cm/MHz)
+d11 1
+a11 1
+%   focus - [x y z] (m) "Field" coordinates
+d44 1
+a44 1
+field2dyna(char *nodeName, double alpha, double fnum, point_type focus,
+d63 4
+a66 4
+		fprintf(stderr, "in field2dyna, alpha %f fnum %f freqMHz %f\n", alpha,
+			fnum, freqMHz);
+		fprintf(stderr, "in field2dyna, focus x %f y %f z %f \n", focus.x,
+			focus.y, focus.z);
+d123 1
+a123 1
+	fieldParams.alpha = alpha;
+d125 1
+a125 1
+	fieldParams.focus = focus;
+d129 1
+a129 1
+	fieldParams.soundSpeed = 1540;
+d133 1
+a133 1
+	if (verbose >= 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+@
+
+
+1.17
+log
+@had to make a logic change to verbose check
+@
+text
+@d45 1
+a45 1
+	double freq, char *transducer, char *impulse, int threads, int lowNslow,
+d63 2
+a64 2
+		fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha,
+			fnum, freq);
+d126 1
+a126 1
+	fieldParams.frequency = freq;
+d130 1
+a130 1
+	fieldParams.samplingFrequency = 100e6;
+@
+
+
+1.16
+log
+@added verbose argument, changed 'debug' to 'verbose'
+@
+text
+@d58 3
+a60 1
+	if (verbose == 1) {
+d81 1
+a81 1
+	if (verbose == 1) fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+d133 1
+a133 1
+	if (verbose == 1) fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+d137 1
+a137 1
+	if (dynaField(fieldParams, threads, numNodes, lowNslow) == 0) {
+@
+
+
+1.15
+log
+@got rid of call to calcNodeVol, at least for now.
+@
+text
+@d3 1
+a3 1
+%	Transducer, Impulse, threads, lownslow, ElemName, ForceNonlinear)
+a19 2
+%   ForceNonlinear(int) - optional input argument. Set as 1 if you want to
+%                         force nodal volumes to be calculated.
+d41 1
+a41 1
+int checkOnAxis(), checkUniform();
+d46 1
+a46 1
+	char *elemName, int forceNonlinear)
+a49 1
+int debug = 1;
+d58 1
+a58 1
+	if (debug) {
+d70 1
+a70 1
+		fprintf(stderr, "in field2dyna, forceNonlinear %d\n", forceNonlinear);
+d73 1
+a73 1
+	pointsAndNodes = readMpn(nodeName, &numNodes);
+d79 1
+a79 1
+	fprintf(stderr, "after readMpn; numNodes %d\n", numNodes);
+d81 1
+a81 2
+/*
+	for (i = 0; i < 13; i++)
+a82 1
+*/
+d89 1
+a89 2
+/*
+	for (i = 0; i < 13; i++)
+a91 1
+*/
+d95 1
+a95 2
+/*
+	for (i = 0; i < 13; i++)
+a97 1
+*/
+d104 1
+a104 2
+/*
+	for (i = 0; i < 13; i++)
+a105 1
+*/
+d115 1
+a115 2
+/*
+	for (i = 0; i < 13; i++)
+a116 1
+*/
+d131 1
+a131 1
+	fprintf(stderr, "in field2dyna, focus x %f y %f z %f\n", fieldParams.focus.x, fieldParams.focus.y, fieldParams.focus.z);
+@
+
+
+1.14
+log
+@redid some of the debug statements
+@
+text
+@a151 38
+
+/* % check if non-uniform force scaling must be done */
+
+	isUniform = checkUniform(pointsAndNodes, numNodes, debug);
+
+	fprintf(stderr, "in field2dyna, isUniform %d\n", isUniform);
+
+	if (isUniform == -1) {
+		fprintf(stderr, "in field2dyna, call to checkUniform failed\n");
+		exit(0);
+		}
+
+	if (!isUniform || forceNonlinear) {
+		/* run calcNodeVol.py */
+		fprintf(stderr, "This is a non-linear mesh. Generating node volume file.\n");
+/*
+		sprintf(nodeVolFileName, "NodeVolume_%s_%s.txt",
+			nodeName, elemName);
+*/
+		sprintf(nodeVolFileName, "nodeVolFile");
+
+		fprintf(stderr, "nodeVolFileName %s\n", nodeVolFileName);
+
+		if (access(nodeVolFileName, F_OK) == -1) {
+
+/* 			sprintf(calcNodeVolCmd, "python calcNodeVol.py --nodefile %s --elefile %s --nodevolfile %s", nodeName, elemName, nodeVolFileName); */
+
+			sprintf(calcNodeVolCmd, "python calcNodeVol.py --nodefile myNodes.dyn --elefile elems.dyn --nodevolfile %s", nodeVolFileName);
+
+			fprintf(stderr, "calcNodeVolCmd %s\n", calcNodeVolCmd);
+
+			status = system(calcNodeVolCmd);
+
+			fprintf(stderr, "status %d\n", status);
+			if (status == -1) fprintf(stderr, "problem with call to calcNodeVol\n");
+			}
+		}
+
+@
+
+
+1.13
+log
+@cleaned up the code a bit
+@
+text
+@d52 1
+a52 1
+int debug = 0;
+d61 14
+a74 5
+	if (debug) fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
+	if (debug) fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
+	if (debug) fprintf(stderr, "in field2dyna, threads %d\n", threads);
+	if (debug) fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
+	if (debug) fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+@
+
+
+1.12
+log
+@put some of the error prints behind 'debug'
+@
+text
+@d50 1
+@
+
+
+1.11
+log
+@added error check for dynaField
+@
+text
+@d60 5
+a64 5
+	fprintf(stderr, "in field2dyna, focus x %f y %f z %f fnum %f freq %f\n", focus.x, focus.y, focus.z, fnum, freq);
+	fprintf(stderr, "in field2dyna, alpha %f fnum %f freq %f\n", alpha, fnum, freq);
+	fprintf(stderr, "in field2dyna, threads %d\n", threads);
+	fprintf(stderr, "in field2dyna, calling readMpn; node name %s\n", nodeName);
+	fprintf(stderr, "in field2dyna, transducer %s\n", transducer);
+@
+
+
+1.10
+log
+@added error return for checkUniform
+@
+text
+@d138 4
+a141 1
+	dynaField(fieldParams, threads, numNodes, lowNslow);
+@
+
+
+1.9
+log
+@trying to add call to calcNodeVol.py
+@
+text
+@d146 5
+@
+
+
+1.8
+log
+@added call to checkUniform
+@
+text
+@d40 1
+d56 3
+d140 2
+d145 27
+@
+
+
+1.7
+log
+@fixed a bad comment
+@
+text
+@d42 1
+a42 1
+int checkOnAxis();
+d50 2
+d135 4
+@
+
+
+1.6
+log
+@added lowNslow back in
+@
+text
+@d100 1
+a100 1
+e/
+@
+
+
+1.5
+log
+@some cleanup
+@
+text
+@a35 2
+* note that there's no use for low-n-slow because C can't do the whole
+* calculation at once.
+d46 1
+a46 1
+	double freq, char *transducer, char *impulse, int threads,
+d68 1
+a70 1
+/*
+d132 1
+a132 1
+	dynaField(fieldParams, threads, numNodes);
+@
+
+
+1.4
+log
+@a couple of small changes, mostly debugging statements
+@
+text
+@d56 1
+a56 1
+	fprintf(stderr, "in field2dyna, focus x %f fnum %f freq %f\n", focus.x, fnum, freq);
+d63 4
+a69 1
+/*
+d72 1
+d130 1
+a130 5
+/*
+ * at this point the matlab code sets up some defaults, because apparently
+ * you can call a matlab function without passing all the arguments that it
+ * excepts. can't do that in C.
+ */
+@
+
+
+1.3
+log
+@added some more code, ready to work on dynaField
+@
+text
+@d34 4
+a37 1
+% Ned Danieley
+d39 1
+d47 3
+a49 3
+field2dyna(char *nodeName, float alpha, float fnum, struct Focus focus,
+	float freq, char *transducer, char *impulse, int threads,
+	int lowNslow, char *elemName, int forceNonlinear)
+d52 1
+a52 1
+float temp;
+d56 5
+a60 1
+	fprintf(stderr, "calling readMpn; node name %s\n", nodeName);
+d66 1
+d68 2
+a69 1
+	    fprintf(stderr, "node %d is %d, %f, %f, %f\n", i, pointsAndNodes[i].nodeID, pointsAndNodes[i].x, pointsAndNodes[i].y, pointsAndNodes[i].z);
+d76 5
+d84 5
+d95 5
+d108 5
+d124 1
+d133 2
+@
+
+
+1.2
+log
+@moved structs to field.h, got checkOnAxis working.
+@
+text
+@d50 1
+d80 1
+d82 20
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d38 1
+a38 19
+
+struct nodeEntry {
+	int nodeID;
+	float x, y, z;
+	} *readMpn();
+
+struct Focus {
+	int x, y, z;
+	};
+
+struct FieldParams {
+	float alpha;
+	struct nodeEntry *pointsAndNodes;
+	float fnum;
+	struct Focus focus;
+	float frequency;
+	char *transducer, *impulse;
+	int threads, lowNslow;
+	};
+d49 1
+a49 1
+struct nodeEntry *pointsAndNodes;
+d60 4
+a63 1
+	checkOnAxis();
+@

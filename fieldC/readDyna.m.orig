@@ -1,0 +1,27 @@
+<command execution_time="8">fid=fopen('dyna-I-f7.20-F1.3-FD0.020-a0.50.ned');</command>
+<command execution_time="8">numNodes=fread(fid, 1, 'int');</command>
+<command execution_time="13">intensity=fread(fid, numNodes, 'double');</command>
+<command execution_time="10">disp(intensity);</command>
+<command error="true" execution_time="217">threads=fread(fid, 1, 'int);</command>
+<command execution_time="9">threads=fread(fid, 1, 'int');</command>
+<command execution_time="9">soundSpeed=fread(fid, 1, 'int');</command>
+<command execution_time="10">samplingFrequency=fread(fid, 1, 'int');</command>
+<command execution_time="11">alpha=fread(fid, 1, 'double');</command>
+<command execution_time="8">fnum=fread(fid, 1, 'double');</command>
+<command execution_time="9">focus.x=fread(fid, 1, 'double');</command>
+<command execution_time="9">focus.y=fread(fid, 1, 'double');</command>
+<command execution_time="9">focus.z=fread(fid, 1, 'double');</command>
+<command execution_time="11">disp(focus);</command>
+<command execution_time="9">frequency=fread(fid, 1, 'double');</command>
+<command execution_time="9">length=fread(fid, 1, 'int');</command>
+<command execution_time="8">transducer=fread(fid, length, 'char');</command>
+<command execution_time="9">length=fread(fid, 1, 'int');</command>
+<command error="true" execution_time="55">impulse=fread(fix, length, 'string');</command>
+<command error="true" execution_time="34">impulse=fread(fid, length, 'string');</command>
+<command execution_time="11">fseek(fid, 9, 'cof');</command>
+<command execution_time="8">impulse=fread(fid, length, 'uint8=&gt;char');</command>
+<command execution_time="12">disp(impulse);</command>
+<command error="true" execution_time="103">disp(impulse(0))</command>
+<command execution_time="10">disp(impulse(1))</command>
+</session>
+</history>

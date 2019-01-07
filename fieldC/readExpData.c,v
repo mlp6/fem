@@ -1,0 +1,327 @@
+head	2.2;
+access;
+symbols;
+locks
+	ndd:2.2; strict;
+comment	@ * @;
+
+
+2.2
+date	2018.08.20.19.30.34;	author ndd;	state Exp;
+branches;
+next	2.1;
+
+2.1
+date	2018.08.14.18.16.12;	author ndd;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2018.08.13.15.40.54;	author ndd;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2018.08.13.14.09.16;	author ndd;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2018.08.10.16.26.46;	author ndd;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2018.08.08.15.05.01;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@routine to read in experimental data from probe file
+@
+
+
+2.2
+log
+@added verbose flag for readExpData and formatExpImpResp
+@
+text
+@#include <stdio.h>
+#include <stdlib.h>
+#include "cJSON.h"
+
+readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues,
+	int verbose)
+{
+cJSON *impulseCmd;
+cJSON *time, *times;
+cJSON *voltage, *voltages;
+int i, numPnts = 0;
+
+	impulseCmd = cJSON_GetObjectItem(probeInfo, "impulseResponse");
+	if (verbose >= 1) fprintf(stderr, "%s\n",
+		cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
+
+	times = cJSON_GetObjectItem(impulseCmd, "time");
+
+/*
+ * we don't know ahead of time how many data points there are, so I'll make
+ * an initial pass through the data to get a count. interestly, it doesn't
+ * look like I need to reset the 'times' variable to do the second count.
+ */
+
+	cJSON_ArrayForEach(time, times) {
+		numPnts++;
+/* 		if (numPnts < 30) printf("%e\n", time->valuedouble); */
+		}
+
+	if (verbose >= 1) fprintf(stderr, "num points %d\n", numPnts);
+
+	if ((*timeValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+		fprintf(stderr, "in readExpData, couldn't allocate space for times\n");
+		return(0);
+		}
+
+	if ((*voltageValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+		fprintf(stderr, "in readExpData, couldn't allocate space for voltages\n");
+		return(0);
+		}
+
+	i = 0;
+
+	cJSON_ArrayForEach(time, times) {
+		(*timeValues)[i++] = time->valuedouble;
+/* 		if (i < 20) printf("%e\n", time->valuedouble); */
+		}
+
+	voltages = cJSON_GetObjectItem(impulseCmd, "voltage");
+
+	if (verbose >= 1) fprintf(stderr, "getting voltages\n");
+
+	i = 0;
+	cJSON_ArrayForEach(voltage, voltages) {
+		(*voltageValues)[i++] = voltage->valuedouble;
+/* 		printf("%e\n", voltage->valuedouble); */
+		}
+
+	return(numPnts);
+}
+@
+
+
+2.1
+log
+@changed routine to just read in the times and voltages; moving formatting
+to another routine.
+@
+text
+@d5 2
+a6 1
+readExpData(cJSON *probeInfo, double **timeValues, double **voltageValues)
+d14 2
+a15 1
+	fprintf(stderr, "%s\n", cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
+d30 1
+a30 1
+	fprintf(stderr, "num points %d\n", numPnts);
+d51 1
+a51 1
+	fprintf(stderr, "getting voltages\n");
+@
+
+
+1.4
+log
+@better matches the code in formatExpImpResp.m. I'm going to break the
+formatting part out of the reading part next.
+@
+text
+@a2 2
+#include <float.h>
+#include <math.h>
+d5 1
+a5 4
+#define StartTest -4E-7
+#define StopTest 4E-7
+
+readExpData(cJSON *probeInfo, int samplingFrequencyHz)
+d10 1
+a10 8
+double *newTimeValues, *timeValues, *voltageValues;
+double timeAtMaxIntensity;
+double minTime = DBL_MIN;
+double maxTime = -DBL_MIN;
+double maxVoltage = -DBL_MIN;
+double stepSize;
+int i, maxVoltageIndex, numPnts = 0, numSteps;
+int startIndex, stopIndex;
+a16 1
+	fprintf(stderr, "getting times\n");
+d30 1
+a30 1
+	if ((timeValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+d35 1
+a35 1
+	if ((voltageValues = (double *)malloc(sizeof(double) * numPnts)) == NULL) {
+d41 1
+d43 1
+a43 1
+		timeValues[i++] = time->valuedouble;
+d53 1
+a53 1
+		voltageValues[i++] = voltage->valuedouble;
+d57 1
+a57 75
+
+/* find the max voltage */
+
+	for (i = 0; i < numPnts; i++) {
+		if (maxVoltage < voltageValues[i]) {
+			maxVoltage = voltageValues[i];
+			maxVoltageIndex = i;
+			}
+		}
+
+	fprintf(stderr, "index %d max voltage %e\n", maxVoltageIndex, maxVoltage);
+
+/* normalize the voltages */
+
+	for (i = 0; i < numPnts; i++)
+		voltageValues[i] /= maxVoltage;
+
+
+/*
+ * center the time axis around the max intensity. the matlab code recalculated
+ * the index of the maximum value, but the normalization shouldn't change
+ * that, so I skipped it. note that I have to save the time associated with
+ * the max intensity, because in the time array, it goes to 0 as I do the
+ * centering.
+ */
+
+	timeAtMaxIntensity = timeValues[maxVoltageIndex];
+
+	for (i = 0; i < numPnts; i++)
+		timeValues[i] = timeValues[i] - timeAtMaxIntensity;
+
+/* now find the min and max times */
+
+	for (i = 0; i < numPnts; i++) {
+		if (minTime > timeValues[i]) minTime = timeValues[i];
+
+		if (maxTime < timeValues[i]) maxTime = timeValues[i];
+		}
+
+	fprintf(stderr, "min time %e max time %e\n", minTime, maxTime);
+/* re-sample the data to match the Field II sampling frequency */
+
+	fprintf(stderr, "sampling %d\n", samplingFrequencyHz);
+	stepSize = 1.0 / samplingFrequencyHz;
+
+	fprintf(stderr, "diff %e\n", maxTime - minTime);
+	numSteps = (int )ceil(((maxTime - minTime) * samplingFrequencyHz));
+
+	fprintf(stderr, "step size %e numSteps %d\n", stepSize, numSteps);
+
+	if ((newTimeValues = (double *)malloc(sizeof(double) * numSteps)) == NULL) {
+		fprintf(stderr, "in readExpData, couldn't allocate space for new times\n");
+		return(0);
+		}
+
+	for (i = 0; i < numSteps; i++) {
+		newTimeValues[i] = minTime + i * stepSize;
+		}
+
+/* find the indices of NewTime to use for the Field II impulse response */
+
+	for (i = 0; i < numSteps; i++) {
+		if (newTimeValues[i] > StartTest) {
+			startIndex = i;
+			break;
+			}
+		}
+
+	for (i = 0; i < numSteps; i++)
+		if (newTimeValues[i] > StopTest) {
+			stopIndex = i;
+			break;
+			}
+
+	fprintf(stderr, "startIndex %d, stopIndex %d\n", startIndex, stopIndex);
+@
+
+
+1.3
+log
+@fixed an error in centering the time axis
+@
+text
+@d7 3
+d22 1
+d25 1
+a25 1
+	printf(cJSON_GetObjectItem(impulseCmd, "wavetype")->valuestring);
+d56 1
+a56 1
+		if (i < 20) printf("%e\n", time->valuedouble);
+d70 1
+a70 1
+/* find the max voltage and min and max times */
+a72 4
+		if (minTime > timeValues[i]) minTime = timeValues[i];
+
+		if (maxTime < timeValues[i]) maxTime = timeValues[i];
+
+a78 1
+	fprintf(stderr, "min time %e max time %e\n", minTime, maxTime);
+d100 9
+d125 19
+a143 2
+				newTimeValues[i] = minTime + i * stepSize;
+				}
+@
+
+
+1.2
+log
+@making progress on implementing formatExpImpResp.m in C
+@
+text
+@d13 1
+a64 4
+/*
+	for (i = 0; i < 20; i++)
+		fprintf(stderr, "time %e voltage %e\n", timeValues[i], voltageValues[i]);
+*/
+d87 1
+d91 3
+a93 1
+ * that, so I skipped it.
+d96 1
+a96 2
+	for (i = 0; i < numPnts; i++)
+		timeValues[i] = timeValues[i] - timeValues[maxVoltageIndex];
+a97 2
+/*
+*/
+d99 1
+a99 1
+		fprintf(stderr, "%e\n", timeValues[i]);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 2
+d7 1
+a7 1
+readExpData(cJSON *probeInfo)
+d12 6
+a17 2
+double *timeValues, *voltageValues;
+int i, numPnts = 0;
+d68 54
+@

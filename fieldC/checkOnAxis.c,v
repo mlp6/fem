@@ -1,0 +1,46 @@
+head	1.1;
+access;
+symbols;
+locks
+	ndd:1.1; strict;
+comment	@ * @;
+
+
+1.1
+date	2018.06.12.17.49.22;	author ndd;	state Exp;
+branches;
+next	;
+
+
+desc
+@routine to check to see if there's a point in the mesh where x & y are
+both zero
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@/*
+ * the requirement is that there exists at least one point in the mesh
+ * where both x and y are zero.
+ */
+
+#include "field.h"
+
+int
+checkOnAxis(struct nodeEntry *pointsAndNodes, int numNodes)
+{
+int i, found = 0;
+
+	for (i = 0; i < numNodes; i++)
+		if (pointsAndNodes[i].x == 0 && pointsAndNodes[i].y == 0) {
+			found = 1;
+			break;
+			}
+
+	return(found);
+}
+@

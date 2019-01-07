@@ -1,0 +1,7 @@
+
+gnuplot -e 'plot "filename"' -p
+
+or
+
+gnuplot
+> plot "foo"

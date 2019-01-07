@@ -1,0 +1,13 @@
+s/no_sub_y/noSubY/g
+s/probe_type/probeType/g
+s/image_mode/imageMode/g
+s/no_sub_x/noSubX/g
+s/no_elements/noElements/g
+s/no_elements_y/noElementsY/g
+s/no_elements_x/noElementsX/g
+s/impulse_response/impulseResponse/g
+s/kerf_y/kerfY/g
+s/kerf_x/kerfX/g
+s/elv_focus/elvFocus/g
+s/convex_radius/convexRadius/g
+s/ele_size/eleSize/g

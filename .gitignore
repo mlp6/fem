@@ -13,7 +13,7 @@ elems.dyn
 bc.dyn
 d3*
 nodout
-env/
+.venv/
 .pytest_cache/
 build/
 dist/
