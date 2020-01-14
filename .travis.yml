@@ -11,7 +11,6 @@ install:
       - pip install pipenv
       - pipenv install
 script: 
-      - pipenv shell
       - pytest -v --pep8
       - PYTHONPATH=.. sphinx-build -nT -b dummy docs/ docs/_build/html
       - cd post

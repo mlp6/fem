@@ -2,4 +2,4 @@ test:python37:
     image: python:3.7
     script: 
     - pipenv install
-    - pipenv run py.test -v --cov --pep8
+    - py.test -v --cov --pep8
