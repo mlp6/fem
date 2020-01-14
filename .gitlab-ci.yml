@@ -1,12 +1,5 @@
-test:python36:
-    image: python:3.6
+test:python37:
+    image: python:3.7
     script: 
-    - pip install -r requirements.txt  
-    - py.test -v --cov --pep8
-
-test:miniconda3:
-    image: continuumio/miniconda3
-    script: 
-    - conda env create -f environment.yml
-    - source activate fem
-    - py.test -v --cov --pep8
+    - pipenv install
+    - pipenv run py.test -v --cov --pep8
