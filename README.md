@@ -34,8 +34,7 @@ use at your own risk).  The Python tools require a version >= 3.4; 3.6.x is
 recommended.
 
 There are three different methods to use/install this package:
-1. *[RECOMMENDED]* Install this with `pip` in a local virtualenv (make sure the
-   virtualenv is activated!): `pip install
+1. *[RECOMMENDED]* Install this with `pipenv` in a local virtualenv: `pipenv install -e 
    git+https://github.com/mlp6/fem.git`.
 1. Clone this source directory and manually install it in your local
    virtualenv: `python setup.py install`
