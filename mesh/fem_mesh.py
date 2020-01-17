@@ -2,19 +2,18 @@
 
 
 def check_version():
-    """check at least python2.7
-
-    Needed for argparse compatibility
+    """check Python version >=3.7
 
     Args:
-
+        None
     Returns:
+        None
 
     """
     from sys import version_info, exit
 
-    if version_info[:2] < (2, 7):
-        exit("ERROR: Requires Python >= 2.7")
+    if version_info[:2] < (3, 7):
+        exit("ERROR: Requires Python >= 3.7")
 
 
 def strip_comments(nodefile):
