@@ -46,7 +46,7 @@ def count_header_comment_skips(nodefile):
 
     """
     import re
-    node = re.compile('\*')
+    node = re.compile(r'\*', re.UNICODE)
     count = 1
     try:
         with open(nodefile) as f:
