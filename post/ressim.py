@@ -38,7 +38,7 @@ class ResSim:
         try:
             d = loadmat(self.filename)
         except:
-            print('{} most likely not MATv5 format'.format(self.filename))
+            print(f'{self.filename} most likely not MATv5 format')
 
         self.lat = d['lat'].squeeze()
         self.axial = d['axial'].squeeze()
@@ -68,14 +68,14 @@ class ResSim:
         axes.set_xlabel(xlabel)
         axes.set_ylabel(ylabel)
         if title is None:
-            axes.set_title('t = {:.2f} ms'.format(self.t[timestep]))
+            axes.set_title(f't = {self.t[timestep]:.2f} ms')
         else:
             axes.set_title(title)
         axes.invert_yaxis()
         if save:
-            filename = '{}_{:04d}.png'.format(savename, timestep)
+            filename = f'{savename}_{timestep:04d}.png'
             fig.savefig(filename)
-            print('Saved plot: {}'.format(filename))
+            print(f'Saved plot: {filename}')
         if show:
             fig.show()
 
@@ -107,8 +107,7 @@ class ResSim:
         axes.set_xlabel(xlabel)
         axes.set_ylabel(ylabel)
         if title is None:
-            axes.set_title('Axial = {:.1f} mm, Lateral = {:.1f} mm'.
-                           format(self.axial[axInd], self.lat[latInd]))
+            axes.set_title(f'Axial = {self.axial[axInd]:.1f} mm, Lateral = {self.lat[latInd]:.1f} mm')
         else:
             axes.set_title(title)
 
@@ -151,4 +150,4 @@ class ResSim:
     def animate(self, i):
         import matplotlib.pyplot as plt
         plt.pcolormesh(self.lat, self.axial, self.arfidata[:, :, i])
-        plt.title('t = {:.2f} ms'.format(self.t[i]))
+        plt.title(f't = {self.t[i]:.2f} ms')

@@ -15,7 +15,9 @@ def main():
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
-    """
+    """helper function to run high-level, 2D plane extraction
+
+    look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
 
     Args:
         dynadeck (str): main dyna input deck
@@ -83,7 +85,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
 
         arfidata = __preallocate_arfidata(image_plane, header['num_timesteps'])
 
-        print('Total Timesteps: {}'.format(header['num_timesteps']))
+        print(f"Total Timesteps: {header['num_timesteps']}")
         print('Extracting timestep:', end=' ')
 
         for t in trange:
@@ -232,7 +234,7 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     if axis_scale[2] < 1:
         axial = axial[::-1]
 
-    print('Saving data to: {}'.format(resfile), flush=True)
+    print(f'Saving data to: {resfile}', flush=True)
 
     kwargs = {'resfile': resfile,
               'arfidata': arfidata,
@@ -360,13 +362,11 @@ def savepvd(ts_start=0, part=0, **kwargs):
                                                     [:, :, :, ts])).transpose()
 
             timestep = ts_start + ts
-            vtrfilename = '{}_T{:04d}'.format(resfileprefix, ts)
+            vtrfilename = f'{resfileprefix}_T{ts:04d}'
 
-            pvd.write('        <DataSet timestep="{}" group="" part="{}" '
-                      'file="{}.vtr"/>\n'.format(timestep, part, os.path.
-                                                 basename(vtrfilename)))
+            pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{os.path.basename(vtrfilename)}.vtr"/>\n')
 
-            gridToVTK('{}'.format(vtrfilename),
+            gridToVTK(f'{vtrfilename}',
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),
                       kwargs['axial'].ravel(),

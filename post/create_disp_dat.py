@@ -168,7 +168,7 @@ def count_timesteps(outfile, use_grep=True):
 
     ts_count -= 1  # rm extra time count
 
-    print('there are {}.'.format(ts_count), flush=True)
+    print(f'there are {ts_count}.', flush=True)
 
     return ts_count
 

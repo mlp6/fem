@@ -61,14 +61,13 @@ class SaveVTK:
                           .format(*self.origin))
             vtkfile.write("SPACING    {:.3f}   {:.3f}   {:.3f}\n\n"
                           .format(*self.spacing))
-            vtkfile.write("POINT_DATA   {:d}\n"
-                          .format(np.prod(self.data.shape)))
-            vtkfile.write("SCALARS {} float\n".format(dataname))
+            vtkfile.write(f"POINT_DATA   {np.prod(self.data.shape):d}\n")
+            vtkfile.write(f"SCALARS {dataname} float\n")
             vtkfile.write("LOOKUP_TABLE default\n\n")
             for x in range(0, self.data.shape[0]):
                 for y in range(0, self.data.shape[1]):
                     for z in range(0, self.data.shape[2]):
-                        vtkfile.write("{:.6e} ".format(self.data[x, y, z]))
+                        vtkfile.write(f"{self.data[x, y, z]:.6e} ")
                     vtkfile.write(" \n")
 
     def save_vector(self, filename, dataname="vectors", header_comment=None):
@@ -96,14 +95,13 @@ class SaveVTK:
             vtkfile.write("SPACING   {:.3f}   {:.3f}   {:.3f}\n"
                           .format(*self.spacing))
             vtkfile.write('\n')
-            vtkfile.write('POINT_DATA   {:d}\n'
-                          .format(np.prod(self.data['x'].shape)))
-            vtkfile.write('VECTORS {} float\n'.format(dataname))
+            vtkfile.write(f"POINT_DATA   {np.prod(self.data['x'].shape):d}\n")
+            vtkfile.write(f'VECTORS {dataname} float\n')
             vtkfile.write('\n')
             for a in range(0, self.data['x'].shape[0]):
                 for b in range(0, self.data['x'].shape[1]):
                     for c in range(0, self.data['x'].shape[2]):
-                        vtkfile.write('{:f} '.format(self.data['x'][a, b, c]))
-                        vtkfile.write('{:f} '.format(self.data['y'][a, b, c]))
-                        vtkfile.write('{:f} '.format(self.data['z'][a, b, c]))
+                        vtkfile.write(f"{self.data['x'][a, b, c]:f} ")
+                        vtkfile.write(f"{self.data['y'][a, b, c]:f} ")
+                        vtkfile.write(f"{self.data['z'][a, b, c]:f} ")
                     vtkfile.write('\n')
