@@ -44,17 +44,16 @@ def test_savemat(tmpdir):
     from scipy.io import loadmat
 
     matfile = tmpdir.join('res_sim_test.mat')
-    valid_data_path = '{}/../examples/gauss_qsym_pml'.format(myPath)
+    valid_data_path = f'{myPath}/../examples/gauss_qsym_pml'
 
-    run(dynadeck='{}/gauss_qsym_pml.dyn'.format(valid_data_path),
-        dispout='{}/disp.dat.xz'.format(valid_data_path),
-        nodedyn='{}/nodes.dyn'.format(valid_data_path), ressim=matfile.strpath)
+    run(dynadeck=f'{valid_data_path}/gauss_qsym_pml.dyn',
+        dispout=f'{valid_data_path}/disp.dat.xz',
+        nodedyn=f'{valid_data_path}/nodes.dyn', ressim=matfile.strpath)
 
-    valid_data = loadmat('{}/res_sim_valid.mat'.format(valid_data_path))
+    valid_data = loadmat(f'{valid_data_path}/res_sim_valid.mat')
     test_data = loadmat(matfile.strpath)
 
-    assert (test_data['arfidata'][10, 10, 2] ==
-            valid_data['arfidata'][10, 10, 2])
+    assert (test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2])
 
 
 def test_saveh5(tmpdir):
@@ -62,17 +61,15 @@ def test_saveh5(tmpdir):
     import h5py
 
     h5file = tmpdir.join('res_sim_test.h5')
-    valid_data_path = '{}/../examples/gauss_qsym_pml'.format(myPath)
+    valid_data_path = f'{myPath}/../examples/gauss_qsym_pml'
 
-    run(dynadeck='{}/gauss_qsym_pml.dyn'.format(valid_data_path),
-        dispout='{}/disp.dat.xz'.format(valid_data_path),
-        nodedyn='{}/nodes.dyn'.format(valid_data_path), ressim=h5file.strpath)
+    run(dynadeck=f'{valid_data_path}/gauss_qsym_pml.dyn', dispout=f'{valid_data_path}/disp.dat.xz',
+        nodedyn=f'{valid_data_path}/nodes.dyn', ressim=h5file.strpath)
 
     valid_data = h5py.File(f'{valid_data_path}/res_sim_valid.h5', 'r')
     test_data = h5py.File(h5file.strpath, 'r')
 
-    assert (test_data['arfidata'][10, 10, 2] ==
-            valid_data['arfidata'][10, 10, 2])
+    assert (test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2])
 
 
 def test_savepvd(tmpdir):
@@ -81,13 +78,14 @@ def test_savepvd(tmpdir):
     import filecmp
 
     pvdfile = tmpdir.join('res_sim.pvd')
-    valid_data_path = '{}/../examples/gauss_qsym_pml'.format(myPath)
+    valid_data_path = f'{myPath}/../examples/gauss_qsym_pml'
 
-    run(dynadeck='{}/gauss_qsym_pml.dyn'.format(valid_data_path),
-        dispout='{}/disp.dat.xz'.format(valid_data_path),
-        nodedyn='{}/nodes.dyn'.format(valid_data_path), ressim=pvdfile.strpath)
+    run(dynadeck=f'{valid_data_path}/gauss_qsym_pml.dyn',
+        dispout=f'{valid_data_path}/disp.dat.xz',
+        nodedyn=f'{valid_data_path}/nodes.dyn',
+        ressim=pvdfile.strpath)
 
-    valid_pvd = '{}/res_sim.pvd'.format(valid_data_path)
+    valid_pvd = f'{valid_data_path}/res_sim.pvd'
     test_pvd = pvdfile.strpath
 
     assert filecmp.cmp(valid_pvd, test_pvd)

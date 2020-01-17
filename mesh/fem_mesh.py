@@ -6,6 +6,10 @@ def check_version():
 
     Args:
         None
+
+    Raises:
+        ImportError: Python < 3.7
+
     Returns:
         None
 
@@ -13,30 +17,29 @@ def check_version():
     from sys import version_info, exit
 
     if version_info[:2] < (3, 7):
-        exit("ERROR: Requires Python >= 3.7")
+        raise ImportError("Python >= 3.7 required.")
 
 
 def strip_comments(nodefile):
-    """strip comments
-    string comment lines starting with $
+    """string comment lines starting with $
 
     Args:
       nodefile: keyword filename
 
     Returns:
+        nodefile_nocmt (str): nodefile stripped of comments
 
     """
     from os import system
-    nodefile_nocmt = '%s.tmp' % nodefile
-    system("egrep -v '(^\*|^\$)' %s > %s" % (nodefile, nodefile_nocmt))
+
+    nodefile_nocmt = f'{nodefile}.tmp'
+    system(f"egrep -v '(^\\*|^\\$)' {nodefile} > {nodefile_nocmt}")
 
     return nodefile_nocmt
 
 
 def count_header_comment_skips(nodefile):
-    """count file head comments lines
-
-    ..synopsis:: count comments lines to skip before the first keyword (*)
+    """count comments lines to skip before the first keyword (*)
 
     Args:
       nodefile: node keyword filename
@@ -56,7 +59,7 @@ def count_header_comment_skips(nodefile):
                 else:
                     count = count + 1
     except FileNotFoundError:
-        raise FileNotFoundError("Cannot open {}.".format(nodefile))
+        raise FileNotFoundError(f"Cannot open {nodefile}.")
 
 
 def rm_tmp_file(nodefile_nocmt):
