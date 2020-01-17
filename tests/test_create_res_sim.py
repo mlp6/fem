@@ -68,8 +68,8 @@ def test_saveh5(tmpdir):
         dispout='{}/disp.dat.xz'.format(valid_data_path),
         nodedyn='{}/nodes.dyn'.format(valid_data_path), ressim=h5file.strpath)
 
-    valid_data = h5py.File('{}/res_sim_valid.h5'.format(valid_data_path))
-    test_data = h5py.File(h5file.strpath)
+    valid_data = h5py.File(f'{valid_data_path}/res_sim_valid.h5', 'r')
+    test_data = h5py.File(h5file.strpath, 'r')
 
     assert (test_data['arfidata'][10, 10, 2] ==
             valid_data['arfidata'][10, 10, 2])
