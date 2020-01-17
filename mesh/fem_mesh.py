@@ -47,6 +47,9 @@ def count_header_comment_skips(nodefile):
     Raises:
         FileNotFoundError: Cannot open the specified node file.
 
+    Returns:
+        count (int): number of comment lines before first keyword
+
     """
     import re
     node = re.compile(r'\*', re.UNICODE)
@@ -63,19 +66,24 @@ def count_header_comment_skips(nodefile):
 
 
 def rm_tmp_file(nodefile_nocmt):
-    """
+    """remove temporary pytest nodefile
 
     Args:
-      nodefile_nocmt:
+      nodefile_nocmt (str): pytest temporary nodefile
+
+    Raises:
+        OSError: cannot remove temporary pytest nodefile
 
     Returns:
+        None
 
     """
     from os import remove
+
     try:
         remove(nodefile_nocmt)
-    except OSError as e:
-        print(('ERROR: %s - %s.' % (e.argsfilename, e.argsstrerror)))
+    except OSError:
+        raise OSError
 
 
 def extractPlane(snic, axes, plane):
@@ -85,16 +93,18 @@ def extractPlane(snic, axes, plane):
     coordinate 3D array.
 
     Args:
-      snic: sorted node IDs & coordinates array
-      axes: list of unique coordinates in the x, y, and z dimensions
-      list: plane:
-    + index - index of the plane to extract (x=0, y=1, z=2)
-    + coord - coordinate of the plane (must exist in axes list)
-      plane:
+        snic (ndarray): sorted node IDs & coordinates array
+        axes (list): list of unique coordinates in the x, y, and z dimensions
+        plane (list): indices of the plane to extract (x=0, y=1, z=2)
+
+    Raises:
+        IndexError: specified plane index does not exist
 
     Returns:
-      planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
-      :example: planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
+        planeNodeIDs (spatially-sorted 2D node IDs on specified plane)
+
+    Examples:
+        planeNodeIDs = extractPlane(snic,axes,(0,-0.1))
 
     """
     from sys import exit
@@ -108,7 +118,7 @@ def extractPlane(snic, axes, plane):
     elif plane[0] == 2:
         planeNodeIDs = snic['id'][:, :, plane_axis_index[0]]
     else:
-        exit("ERROR: Specified plane index to extract does not exist")
+        raise IndexError("Specified plane index to extract does not exist.")
 
     planeNodeIDs = planeNodeIDs.squeeze()
     return planeNodeIDs
@@ -120,7 +130,7 @@ def SortNodeIDs(nic, sort=False):
     Args:
         nic (ndarray): nodeIDcoords [# nodes x 4, dtype = i4,f4,f4,f4]
         sort (Boolean): False (assume node ordering)
-                      True (spatially sort)
+                        True (spatially sort)
 
     Returns:
         SortedNodeIDs (ndarray): n matrix (x,y,z), axes
@@ -154,17 +164,17 @@ def SortElems(elems, axes):
     """spatially sort node IDs into 3D matrix
 
     Args:
-      elems: element definitions, as read from elems.dyn
-      axes: lists of x, y, z axis positions
+        elems (ndarray): element definitions, as read from elems.dyn
+        axes (list): lists of x, y, z axis positions
 
     Returns:
-      sorted_elems
+        sorted_elems (ndarray)
 
     """
     sorted_elems = elems.reshape((axes[0].size - 1,
                                   axes[1].size - 1,
                                   axes[2].size - 1),
-                                 order='F')
+                                  order='F')
 
     return sorted_elems
 
@@ -175,10 +185,10 @@ def load_nodeIDs_coords(nodefile="nodes.dyn"):
     Exclude '*' keyword lines
 
     Args:
-      nodefile: node filename (nodes.dyn) (Default value = "nodes.dyn")
+        nodefile (str): node filename (nodes.dyn) (Default value = "nodes.dyn")
 
     Returns:
-      nodeIDcoords (numpy array)
+        nodeIDcoords (ndarray)
 
     """
     from numpy import loadtxt
@@ -193,13 +203,13 @@ def load_nodeIDs_coords(nodefile="nodes.dyn"):
 
 
 def load_elems(elefile="elems.dyn"):
-    """
+    """load element definitions
 
     Args:
-      elefile: elems.dyn (Default value = "elems.dyn")
+      elefile (str): elems.dyn (Default value = "elems.dyn")
 
     Returns:
-      elems
+      elems (ndarray)
 
     """
     from numpy import loadtxt
