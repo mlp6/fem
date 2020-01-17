@@ -1,5 +1,0 @@
-test:python37:
-    image: python:3.7
-    script: 
-    - pipenv install
-    - py.test -v --cov --pep8
