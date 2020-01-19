@@ -2,17 +2,16 @@
 """
 
 import sys
-import os
+from pathlib import Path
 
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../mesh/')
-
+meshPath = Path(__file__).parents[1] / "mesh"
+testPath = Path(__file__).parent
+sys.path.insert(0, str(meshPath))
 
 def test_loadnodeidscoords():
     from fem_mesh import load_nodeIDs_coords
-    nodefile = '%s/nodes.dyn' % myPath
 
-    nodeIDcoords = load_nodeIDs_coords(nodefile)
+    nodeIDcoords = load_nodeIDs_coords(testPath / 'nodes.dyn')
 
     assert nodeIDcoords[0][1] == -1.0
     assert nodeIDcoords[-1][0] == 1331
@@ -21,8 +20,8 @@ def test_loadnodeidscoords():
 
 def test_loadelems():
     from fem_mesh import load_elems
-    elefile = '%s/elems.dyn' % myPath
-    elems = load_elems(elefile)
+
+    elems = load_elems(testPath / "elems.dyn")
 
     assert elems[0][0] == 1
     assert elems[0][-1] == 133

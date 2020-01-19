@@ -1,11 +1,12 @@
 """test_GaussExc.py
 """
 
-import os
 import sys
 import pytest
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath + '/../mesh/')
+from pathlib import Path
+
+meshPath = Path(__file__).parents[1] / "mesh"
+sys.path.insert(0, str(meshPath))
 
 center = [0.0, 0.0, -2.0]
 sigma = [0.25, 0.25, 0.25]
