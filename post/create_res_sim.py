@@ -356,10 +356,14 @@ def savepvd(ts_start=0, part=0, **kwargs):
                   'compressor="vtkZLibDataCompressor">\n')
         pvd.write('    <Collection>\n')
 
+        veldata_calc = np.diff(np.asfortranarray(kwargs['arfidata']), axis=3, prepend=0)
+
         for ts, time in enumerate(kwargs['t']):
 
             arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata']
                                                     [:, :, :, ts])).transpose()
+
+            veldata = np.asfortranarray(np.squeeze(veldata_calc[:, :, :, ts])).transpose()
 
             timestep = ts_start + ts
             vtrfilename = f'{resfileprefix}_T{ts:04d}'
@@ -370,7 +374,8 @@ def savepvd(ts_start=0, part=0, **kwargs):
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),
                       kwargs['axial'].ravel(),
-                      pointData={'arfidata': arfidata})
+                      pointData={'arfidata': arfidata,
+                                 'veldata': veldata})
         pvd.write('    </Collection>\n')
         pvd.write('</VTKFile>\n')
 
