@@ -138,28 +138,28 @@ def generate_header(data, outfile):
     return header
 
 
-def count_timesteps(outfile, use_grep=True):
-    """Count timesteps written to nodout.
+def count_timesteps(outfile: str = 'nodout') -> int:
+    """Count timesteps in to outfile.
 
     Searches for 'time' in lines, and then removes 1 extra entry that occurs
     for t = 0.  `grep` will be used on linux systems (way faster).
 
     Args:
-        outfile (str): usually nodout
-        use_grep (Boolean): use grep (faster) instead of Python line loop
+        outfile (str): usually 'nodout'
 
     Returns:
         ts_count (int): number of time steps counted - 1
 
     """
+    import platform
+
     print("Reading number of time steps... ", end="", flush=True)
-    if use_grep:  # this is significantly faster
+    if platform.system() == 'Linux':  # this is significantly faster
         from subprocess import PIPE, Popen
         p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
         ts_count = int(p.communicate()[0].strip().decode())
     else:
-        print("Non-linux OS detected -> using slower python implementation",
-              flush=True)
+        print(f"Non-linux OS ({platform.system()}) detected: using slower python implementation", flush=True)
         ts_count = 0
         with open(outfile, 'r') as f:
             for line in f:
