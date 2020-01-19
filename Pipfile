@@ -13,10 +13,10 @@ numpy = "*"
 pytest = "*"
 pytest-cov = "*"
 pytest-pep8 = "*"
+pyevtk = "*"
 scipy = "*"
 sphinxcontrib-napoleon = "*"
-pyevtk = "*"
 Sphinx = "*"
+pyyaml = "*"
+atomicwrites = "*"
 
-[requires]
-python_version = "3.7"
