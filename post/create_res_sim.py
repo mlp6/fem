@@ -1,6 +1,5 @@
 """Create res_sim.mat from disp.dat.
 """
-import logging
 
 def main():
     """ """
@@ -86,11 +85,11 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
 
         arfidata = __preallocate_arfidata(image_plane, header['num_timesteps'])
 
-        logging.info(f"Total Timesteps: {header['num_timesteps']}")
-        logging.info('Extracting timestep:', end=' ')
+        print(f"Total Timesteps: {header['num_timesteps']}")
+        print('Extracting timestep:', end=' ')
 
         for t in trange:
-            logging.info(f'{t}', end=' ', flush=True)
+            print(f'{t}', end=' ', flush=True)
             if (t == 1) or legacynodes:
                 fmt = 'f' * int(first_timestep_words)
                 fid.seek(header_bytes + first_timestep_bytes * (t - 1), 0)
@@ -129,7 +128,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
             else:
                 raise IndexError("Unexpected # of dimensions for arfidata.")
 
-        logging.info('\nDone extracting all timesteps.')
+        print('\nDone extracting all timesteps.')
 
     # ndenumerate only iterates in C-ordering, so flip this over to match the
     # F-ordering of Matlab-like code
@@ -235,7 +234,7 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
     if axis_scale[2] < 1:
         axial = axial[::-1]
 
-    logging.info(f'Saving data to: {resfile}')
+    print(f'Saving data to: {resfile}')
 
     kwargs = {'resfile': resfile,
               'arfidata': arfidata,
