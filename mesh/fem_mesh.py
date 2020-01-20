@@ -182,23 +182,24 @@ def SortElems(elems, axes):
 def load_nodeIDs_coords(nodefile="nodes.dyn"):
     """load in node IDs and coordinates
 
-    Exclude '*' keyword lines
+    Exclude '*' keyword lines.
 
     Args:
-        nodefile (str): node filename (nodes.dyn) (Default value = "nodes.dyn")
+        nodefile (str): 'nodes.dyn'
 
     Returns:
         nodeIDcoords (ndarray)
 
     """
-    from numpy import loadtxt
+    import numpy as np
     header_comment_skips = count_header_comment_skips(nodefile)
-    nodeIDcoords = loadtxt(nodefile,
-                           delimiter=',',
-                           comments='*',
-                           skiprows=header_comment_skips,
-                           dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
-                                  ('z', 'f4')])
+    nodeIDcoords = np.loadtxt(nodefile,
+                              delimiter=',',
+                              comments='*',
+                              skiprows=header_comment_skips,
+                              dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
+                                     ('z', 'f4')])
+
     return nodeIDcoords
 
 
@@ -206,7 +207,7 @@ def load_elems(elefile="elems.dyn"):
     """load element definitions
 
     Args:
-      elefile (str): elems.dyn (Default value = "elems.dyn")
+      elefile (str): 'elems.dyn'
 
     Returns:
       elems (ndarray)

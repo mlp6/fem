@@ -47,9 +47,9 @@ def test_savemat(tmpdir):
     matfile = tmpdir.join('res_sim_test.mat')
     gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
 
-    run(dynadeck=str(gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn"),
-        dispout=str(gauss_qsym_pml_example_path / "disp.dat.xz"),
-        nodedyn=str(gauss_qsym_pml_example_path / "nodes.dyn"),
+    run(dynadeck=gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn",
+        dispout=gauss_qsym_pml_example_path / "disp.dat.xz",
+        nodedyn=gauss_qsym_pml_example_path / "nodes.dyn",
         ressim=matfile.strpath)
 
     valid_data = loadmat(gauss_qsym_pml_example_path / "res_sim_valid.mat")
@@ -65,9 +65,9 @@ def test_saveh5(tmpdir):
     h5file = tmpdir.join('res_sim_test.h5')
     gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
 
-    run(dynadeck=str(gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn"),
-        dispout=str(gauss_qsym_pml_example_path / "disp.dat.xz"),
-        nodedyn=str(gauss_qsym_pml_example_path / "nodes.dyn"),
+    run(dynadeck=gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn",
+        dispout=gauss_qsym_pml_example_path / "disp.dat.xz",
+        nodedyn=gauss_qsym_pml_example_path / "nodes.dyn",
         ressim=h5file.strpath)
 
     valid_data = h5py.File(gauss_qsym_pml_example_path / "res_sim_valid.h5", 'r')
@@ -84,9 +84,9 @@ def test_savepvd(tmpdir):
     pvdfile = tmpdir.join('res_sim.pvd')
     gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
 
-    run(dynadeck=str(gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn"),
-        dispout=str(gauss_qsym_pml_example_path / "disp.dat.xz"),
-        nodedyn=str(gauss_qsym_pml_example_path / "nodes.dyn"),
+    run(dynadeck=gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn",
+        dispout=gauss_qsym_pml_example_path / "disp.dat.xz",
+        nodedyn=gauss_qsym_pml_example_path / "nodes.dyn",
         ressim=pvdfile.strpath)
 
     assert filecmp.cmp(gauss_qsym_pml_example_path / "res_sim.pvd", pvdfile.strpath)

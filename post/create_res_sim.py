@@ -381,26 +381,28 @@ def savepvd(ts_start=0, part=0, **kwargs):
         pvd.write('</VTKFile>\n')
 
 
-def read_header(dispout):
-    """Read header (first 3 words) from disp.dat
+def read_header(dispout, word_size_bytes: int = 4):
+    """Read header (first 3 words) from dispout
 
     Args:
       dispout: disp.dat filename
+      word_size_bytes (int): 4
 
     Returns:
-      header (num_nodes, num_dims, num_timesteps)
+      header (dict): keys: num_nodes, num_dims, num_timesteps
 
     """
     import struct
 
-    word_size = 4  # bytes
-    d = open_dispout(dispout)
-    num_nodes = struct.unpack('f', d.read(word_size))
-    num_dims = struct.unpack('f', d.read(word_size))
-    num_timesteps = struct.unpack('f', d.read(word_size))
+    with open_dispout(dispout) as d:
+        num_nodes = struct.unpack('f', d.read(word_size_bytes))
+        num_dims = struct.unpack('f', d.read(word_size_bytes))
+        num_timesteps = struct.unpack('f', d.read(word_size_bytes))
+
     header = {'num_nodes': int(num_nodes[0]),
               'num_dims': int(num_dims[0]),
               'num_timesteps': int(num_timesteps[0])}
+
     return header
 
 
@@ -434,30 +436,42 @@ def extract_dt(dyn_file):
 
 
 def open_dispout(dispout):
-    """open dispout file for reading
+    """open dispout file for reading, potentially using lzma
 
     Args:
-      dispout: str) dispout filename (disp.dat)
+      dispout (pathlib / str): dispout file
+
+    Raises:
+        FileNotFoundError
 
     Returns:
-      dispout file object
+        dispout (obj): open file object
 
     """
-    if dispout.endswith('.xz'):
-        import lzma
-        dispout = lzma.open(dispout, 'rb')
+    import lzma
+    from pathlib import Path
+
+    dispout = Path(dispout)
+    if dispout.name.endswith('.xz'):
+        try:
+            dispout = lzma.open(dispout, 'rb')
+        except FileNotFoundError:
+            raise FileNotFoundError
     else:
-        dispout = open(dispout, 'rb')
+        try:
+            dispout = open(dispout, 'rb')
+        except FileNotFoundError:
+            raise FileNotFoundError
 
     return dispout
 
 
-def __preallocate_arfidata(image_plane, num_timesteps):
+def __preallocate_arfidata(image_plane, num_timesteps: int):
     """pre-allocate arfidata array
 
     Args:
       image_plane: sorted node IDs on selected imaging plane
-      num_timesteps: number of timesteps to extract
+      num_timesteps (int): number of timesteps to extract
 
     Returns:
       arfidata
@@ -483,7 +497,7 @@ def __preallocate_arfidata(image_plane, num_timesteps):
     return arfidata
 
 
-def __gen_t(dt, num_timesteps):
+def __gen_t(dt: float, num_timesteps: int) -> list:
     """generate time vector, starting at 0
 
     Args:
@@ -491,7 +505,7 @@ def __gen_t(dt, num_timesteps):
         num_timesteps (int): number of total timesteps
 
     Returns:
-        t (list):
+        t (list): list of times
 
     """
     t = [float(x) * dt for x in range(0, num_timesteps)]
@@ -519,7 +533,6 @@ def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
     sys.path.insert(0, str(meshPath))
 
     import fem_mesh
-    import numpy as np
 
     if not ressim.endswith(('.mat', '.h5', '.pvd')):
         raise NameError('Output res_sim filename not supported')
