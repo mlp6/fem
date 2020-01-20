@@ -1,9 +1,4 @@
 from setuptools import setup
-import sys
-
-if sys.version_info.major != 3 or (sys.version_info.major == 3 and
-                                   sys.version_info.minor < 4):
-    sys.exit('You must use python >=3.4')
 
 setup(
     name='fem',
@@ -19,9 +14,10 @@ setup(
     url='https://github.com/mlp6/fem',
     download_url='https://github.com/mlp6/fem/archive/v7.3.4.tar.gz',
     classifiers=[],
-    install_requires=['h5py', 'ipython', 'jupyter', 'matplotlib', 'numpy',
+    install_requires=['h5py', 'ipython', 'jupyter', 'matplotlib', 'numpy>=1.16',
                       'pytest', 'pytest-pep8', 'scipy', 'sphinx',
                       'sphinxcontrib-napoleon', 'pyevtk', 'pyyaml'],
+    python_requires=">3.7",
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
 )
