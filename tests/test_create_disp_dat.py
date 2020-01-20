@@ -1,7 +1,9 @@
 import sys
-import os
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(myPath, '../post/'))
+from pathlib import Path
+
+postPath = Path(__file__).parents[1] / "post"
+testPath = Path(__file__).parent
+sys.path.insert(0, str(postPath))
 
 
 def test_parse_nodoutR61():
@@ -9,7 +11,7 @@ def test_parse_nodoutR61():
     """
     from create_disp_dat import parse_line
 
-    nodout = open("tests/nodout", "r")
+    nodout = open(testPath / "nodout", "r")
     n = nodout.readlines()
     line = n[8]
     raw_data = parse_line(line)
@@ -24,7 +26,7 @@ def test_parse_nodoutR8():
     """
     from create_disp_dat import parse_line
 
-    nodout = open("tests/nodout", "r")
+    nodout = open(testPath / "nodout", "r")
     n = nodout.readlines()
     line = n[10]
     raw_data = parse_line(line)
@@ -39,7 +41,7 @@ def test_correct_Enot():
     """
     from create_disp_dat import parse_line
 
-    nodout = open("tests/nodout", "r")
+    nodout = open(testPath / "nodout", "r")
     n = nodout.readlines()
     line = n[9]
 
@@ -53,7 +55,7 @@ def test_count_timesteps():
     """
     from create_disp_dat import count_timesteps
 
-    ts_count = count_timesteps("tests/nodout")
+    ts_count = count_timesteps(testPath / "nodout")
 
     assert ts_count == 2
 
@@ -71,9 +73,8 @@ def test_write_header(tmpdir):
               }
 
     fname = tmpdir.join('testheader.dat')
-    dispout = open_dispout(fname.strpath)
-    write_headers(dispout, header)
-    dispout.close()
+    with open_dispout(fname.strpath) as dispout:
+        write_headers(dispout, header)
 
     with open(fname.strpath, 'rb') as dispout:
         h = struct.unpack('fff', dispout.read(4 * 3))
@@ -92,12 +93,11 @@ def test_write_data(tmpdir):
     from pytest import approx
 
     fname = tmpdir.join('testdata.dat')
-    dispout = open_dispout(fname.strpath)
-    data = []
-    data.append([float(0.0), float(0.1), float(0.2), float(0.3)])
-    data.append([float(1.0), float(1.1), float(1.2), float(1.3)])
-    process_timestep_data(data, dispout, writenode=True)
-    dispout.close()
+    with open_dispout(fname.strpath) as dispout:
+        data = []
+        data.append([float(0.0), float(0.1), float(0.2), float(0.3)])
+        data.append([float(1.0), float(1.1), float(1.2), float(1.3)])
+        process_timestep_data(data, dispout, writenode=True)
 
     with open(fname.strpath, 'rb') as f:
         d = struct.unpack(8 * 'f', f.read(4 * 8))

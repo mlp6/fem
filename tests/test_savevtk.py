@@ -1,8 +1,9 @@
 import pytest
-import os
 import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(myPath, '../post/'))
+from pathlib import Path
+
+postPath = Path(__file__).parents[1] / "post"
+sys.path.insert(0, str(postPath))
 
 
 def test_savevtk_data_nparray(savevtk_data):

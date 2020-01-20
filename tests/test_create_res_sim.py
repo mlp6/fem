@@ -1,8 +1,9 @@
-import os
 import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(myPath, '../post/'))
+from pathlib import Path
 
+postPath = Path(__file__).parents[1] / "post"
+examplesPath = Path(__file__).parents[1] / "examples"
+sys.path.insert(0, str(postPath))
 
 def test_preallocate_arfidata(sorted_nodes, axes):
     from create_res_sim import __preallocate_arfidata
@@ -44,13 +45,14 @@ def test_savemat(tmpdir):
     from scipy.io import loadmat
 
     matfile = tmpdir.join('res_sim_test.mat')
-    valid_data_path = f'{myPath}/../examples/gauss_qsym_pml'
+    gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
 
-    run(dynadeck=f'{valid_data_path}/gauss_qsym_pml.dyn',
-        dispout=f'{valid_data_path}/disp.dat.xz',
-        nodedyn=f'{valid_data_path}/nodes.dyn', ressim=matfile.strpath)
+    run(dynadeck=str(gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn"),
+        dispout=str(gauss_qsym_pml_example_path / "disp.dat.xz"),
+        nodedyn=str(gauss_qsym_pml_example_path / "nodes.dyn"),
+        ressim=matfile.strpath)
 
-    valid_data = loadmat(f'{valid_data_path}/res_sim_valid.mat')
+    valid_data = loadmat(gauss_qsym_pml_example_path / "res_sim_valid.mat")
     test_data = loadmat(matfile.strpath)
 
     assert (test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2])
@@ -61,12 +63,14 @@ def test_saveh5(tmpdir):
     import h5py
 
     h5file = tmpdir.join('res_sim_test.h5')
-    valid_data_path = f'{myPath}/../examples/gauss_qsym_pml'
+    gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
 
-    run(dynadeck=f'{valid_data_path}/gauss_qsym_pml.dyn', dispout=f'{valid_data_path}/disp.dat.xz',
-        nodedyn=f'{valid_data_path}/nodes.dyn', ressim=h5file.strpath)
+    run(dynadeck=str(gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn"),
+        dispout=str(gauss_qsym_pml_example_path / "disp.dat.xz"),
+        nodedyn=str(gauss_qsym_pml_example_path / "nodes.dyn"),
+        ressim=h5file.strpath)
 
-    valid_data = h5py.File(f'{valid_data_path}/res_sim_valid.h5', 'r')
+    valid_data = h5py.File(gauss_qsym_pml_example_path / "res_sim_valid.h5", 'r')
     test_data = h5py.File(h5file.strpath, 'r')
 
     assert (test_data['arfidata'][10, 10, 2] == valid_data['arfidata'][10, 10, 2])
@@ -78,14 +82,11 @@ def test_savepvd(tmpdir):
     import filecmp
 
     pvdfile = tmpdir.join('res_sim.pvd')
-    valid_data_path = f'{myPath}/../examples/gauss_qsym_pml'
+    gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
 
-    run(dynadeck=f'{valid_data_path}/gauss_qsym_pml.dyn',
-        dispout=f'{valid_data_path}/disp.dat.xz',
-        nodedyn=f'{valid_data_path}/nodes.dyn',
+    run(dynadeck=str(gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn"),
+        dispout=str(gauss_qsym_pml_example_path / "disp.dat.xz"),
+        nodedyn=str(gauss_qsym_pml_example_path / "nodes.dyn"),
         ressim=pvdfile.strpath)
 
-    valid_pvd = f'{valid_data_path}/res_sim.pvd'
-    test_pvd = pvdfile.strpath
-
-    assert filecmp.cmp(valid_pvd, test_pvd)
+    assert filecmp.cmp(gauss_qsym_pml_example_path / "res_sim.pvd", pvdfile.strpath)

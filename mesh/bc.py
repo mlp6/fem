@@ -5,11 +5,11 @@ Todo:
 
 """
 
-import os
 import sys
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, myPath)
+from pathlib import Path
 
+thisPath = Path(__file__)
+sys.path.insert(0, str(thisPath))
 
 def main():
     """apply prescribed boundary conditions to nodes/face segments"""

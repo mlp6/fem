@@ -2,16 +2,18 @@
 """
 
 import sys
-import os
 import pytest
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(myPath, '/../mesh/'))
+from pathlib import Path
+
+meshPath = Path(__file__).parents[1] / "mesh"
+testPath = Path(__file__).parent
+sys.path.insert(0, str(meshPath))
 
 
 def test_extract_top_plane_nodes():
     from TopLoad import extract_top_plane_nodes
 
-    nodefile = '%s/nodes.dyn' % myPath
+    nodefile = testPath / "nodes.dyn"
     planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile,
                                            top_face=[0, 0, 0, 0, 0, 1])
 

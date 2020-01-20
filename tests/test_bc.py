@@ -2,10 +2,11 @@
 """
 
 import sys
-import os
 import pytest
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(myPath, '/../mesh/'))
+from pathlib import Path
+
+meshPath = Path(__file__).parents[1] / "mesh"
+sys.path.insert(0, str(meshPath))
 
 
 def test_write_pml_elems(tmpdir, sorted_elems):

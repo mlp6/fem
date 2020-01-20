@@ -2,10 +2,12 @@
 """
 
 import sys
-import os
 import pytest
-myPath = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(myPath, '/../mesh/'))
+from pathlib import Path
+
+meshPath = Path(__file__).parents[1] / "mesh"
+testPath = Path(__file__).parent
+sys.path.insert(0, str(meshPath))
 
 
 @pytest.fixture
@@ -15,9 +17,8 @@ def nodeIDcoords():
     :returns: [snic, axes]
     """
     from fem_mesh import load_nodeIDs_coords
-    nodefile = '%s/nodes.dyn' % myPath
 
-    nodeIDcoords = load_nodeIDs_coords(nodefile)
+    nodeIDcoords = load_nodeIDs_coords(testPath / "nodes.dyn")
 
     return nodeIDcoords
 
@@ -31,8 +32,7 @@ def sorted_elems(nodeIDcoords):
     from fem_mesh import load_elems
     from fem_mesh import SortElems
     from fem_mesh import SortNodeIDs
-    elefile = '%s/elems.dyn' % myPath
-    elems = load_elems(elefile)
+    elems = load_elems(testPath / "elems.dyn")
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     sorted_elems = SortElems(elems, axes)
 
@@ -58,7 +58,6 @@ def axes(nodeIDcoords):
     :returns: axes
     """
     from fem_mesh import SortNodeIDs
-    elefile = '%s/elems.dyn' % myPath
     [sorted_nodes, axes] = SortNodeIDs(nodeIDcoords, sort=False)
 
     return axes
@@ -79,7 +78,7 @@ def mktmpdir(tmpdir_factory):
 def savevtk_data():
     from scipy.io import loadmat
 
-    d = loadmat('{}/savevtk_data.mat'.format(myPath))
+    d = loadmat(testPath / "savevtk_data.mat")
     savevtk_data = d['data']
 
     return savevtk_data

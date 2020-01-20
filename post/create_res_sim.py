@@ -29,10 +29,11 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         legacynodes (Boolean): node IDs written with each timestep in dispout
 
     """
-    import os
     import sys
-    myPath = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, myPath + '/../mesh/')
+    from pathlib import Path
+
+    meshPath = Path(__file__).parents[1] / "mesh"
+    sys.path.insert(0, str(meshPath))
 
     import fem_mesh
 
@@ -511,10 +512,11 @@ def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
         nodedyn (str): node input file
         dispout (str): binary displacement data
     """
-    import os
     import sys
-    myPath = os.path.dirname(os.path.abspath(__file__))
-    sys.path.insert(0, myPath + '/../mesh/')
+    from pathlib import Path
+
+    meshPath = Path(__file__).parents[1] / "mesh"
+    sys.path.insert(0, str(meshPath))
 
     import fem_mesh
     import numpy as np
