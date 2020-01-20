@@ -5,12 +5,6 @@ Todo:
 
 """
 
-import sys
-from pathlib import Path
-
-thisPath = Path(__file__)
-sys.path.insert(0, str(thisPath))
-
 def main():
     """apply prescribed boundary conditions to nodes/face segments"""
     opts = read_cli()
@@ -305,7 +299,7 @@ def assign_node_constraints(snic, axes, face_constraints):
       bcdict - dictionary of node BC to be written to bc.dyn
 
     """
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
     from numpy import ndenumerate
 
     bcdict = {}
@@ -339,7 +333,7 @@ def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
       bcdict
 
     """
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
     from numpy import ndenumerate
 
     # look for x symmetry face
@@ -378,7 +372,7 @@ def assign_edge_sym_constraints(bcdict, snic, axes, edge_constraints):
 
     """
     from warnings import warn
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import extractPlane
 
     # look for edge shared with an x face
     axis = 0

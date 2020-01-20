@@ -1,17 +1,14 @@
 """test_TopLoad.py
 """
 
-import sys
 import pytest
 from pathlib import Path
 
-meshPath = Path(__file__).parents[1] / "mesh"
 testPath = Path(__file__).parent
-sys.path.insert(0, str(meshPath))
 
 
 def test_extract_top_plane_nodes():
-    from TopLoad import extract_top_plane_nodes
+    from fem.mesh.TopLoad import extract_top_plane_nodes
 
     nodefile = testPath / "nodes.dyn"
     planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile,
@@ -22,7 +19,7 @@ def test_extract_top_plane_nodes():
 
 
 def test_writeNodeLoads_disp(tmpdir):
-    from TopLoad import writeNodeLoads
+    from fem.mesh.TopLoad import writeNodeLoads
     f = tmpdir.join("topload.dyn")
     writeNodeLoads(loadfile=f.strpath, planeNodeIDs=[[1, 2, 3], [4, 5, 6]],
                    loadtype='disp', direction=2, amplitude=-1.0, lcid=1)
@@ -33,7 +30,7 @@ def test_writeNodeLoads_disp(tmpdir):
 
 
 def test_writeNodeLoads_force(tmpdir):
-    from TopLoad import writeNodeLoads
+    from fem.mesh.TopLoad import writeNodeLoads
     f = tmpdir.join("topload.dyn")
     writeNodeLoads(loadfile=f.strpath, planeNodeIDs=[[1, 2, 3], [4, 5, 6]],
                    loadtype='force', direction=2, amplitude=-1.0, lcid=1)
@@ -44,7 +41,7 @@ def test_writeNodeLoads_force(tmpdir):
 
 
 def test_read_cli():
-    from TopLoad import read_cli
+    from fem.mesh.TopLoad import read_cli
     import sys
 
     sys.argv = ['TopLoad.py', '--amplitude', '-5.0']

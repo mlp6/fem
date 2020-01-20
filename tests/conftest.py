@@ -5,9 +5,7 @@ import sys
 import pytest
 from pathlib import Path
 
-meshPath = Path(__file__).parents[1] / "mesh"
 testPath = Path(__file__).parent
-sys.path.insert(0, str(meshPath))
 
 
 @pytest.fixture
@@ -16,7 +14,7 @@ def nodeIDcoords():
 
     :returns: [snic, axes]
     """
-    from fem_mesh import load_nodeIDs_coords
+    from fem.mesh.fem_mesh import load_nodeIDs_coords
 
     nodeIDcoords = load_nodeIDs_coords(testPath / "nodes.dyn")
 
@@ -29,9 +27,9 @@ def sorted_elems(nodeIDcoords):
 
     :returns: sorted_elems
     """
-    from fem_mesh import load_elems
-    from fem_mesh import SortElems
-    from fem_mesh import SortNodeIDs
+    from fem.mesh.fem_mesh import load_elems
+    from fem.mesh.fem_mesh import SortElems
+    from fem.mesh.fem_mesh import SortNodeIDs
     elems = load_elems(testPath / "elems.dyn")
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     sorted_elems = SortElems(elems, axes)
@@ -45,7 +43,7 @@ def sorted_nodes(nodeIDcoords):
 
     :returns: sorted_nodes
     """
-    from fem_mesh import SortNodeIDs
+    from fem.mesh.fem_mesh import SortNodeIDs
     [sorted_nodes, axes] = SortNodeIDs(nodeIDcoords, sort=False)
 
     return sorted_nodes
@@ -57,7 +55,7 @@ def axes(nodeIDcoords):
 
     :returns: axes
     """
-    from fem_mesh import SortNodeIDs
+    from fem.mesh.fem_mesh import SortNodeIDs
     [sorted_nodes, axes] = SortNodeIDs(nodeIDcoords, sort=False)
 
     return axes

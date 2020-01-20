@@ -1,15 +1,12 @@
 """test_fem_mesh.py
 """
 
-import sys
 from pathlib import Path
 
-meshPath = Path(__file__).parents[1] / "mesh"
 testPath = Path(__file__).parent
-sys.path.insert(0, str(meshPath))
 
 def test_loadnodeidscoords():
-    from fem_mesh import load_nodeIDs_coords
+    from fem.mesh.fem_mesh import load_nodeIDs_coords
 
     nodeIDcoords = load_nodeIDs_coords(testPath / 'nodes.dyn')
 
@@ -19,7 +16,7 @@ def test_loadnodeidscoords():
 
 
 def test_loadelems():
-    from fem_mesh import load_elems
+    from fem.mesh.fem_mesh import load_elems
 
     elems = load_elems(testPath / "elems.dyn")
 
@@ -32,7 +29,7 @@ def test_loadelems():
 def test_sortnodeids(nodeIDcoords):
     """test node ID sorting by both order and coordinate locations
     """
-    from fem_mesh import SortNodeIDs
+    from fem.mesh.fem_mesh import SortNodeIDs
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
 
     assert axes[0][0] == -1.0
@@ -89,8 +86,8 @@ def test_SortElems(sorted_elems):
 def test_extractPlane(nodeIDcoords):
     """test all that all 6 planes are extracted as expected
     """
-    from fem_mesh import SortNodeIDs
-    from fem_mesh import extractPlane
+    from fem.mesh.fem_mesh import SortNodeIDs
+    from fem.mesh.fem_mesh import extractPlane
 
     [snic, axes] = SortNodeIDs(nodeIDcoords)
 

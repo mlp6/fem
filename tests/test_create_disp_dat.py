@@ -1,15 +1,11 @@
-import sys
 from pathlib import Path
 
-postPath = Path(__file__).parents[1] / "post"
 testPath = Path(__file__).parent
-sys.path.insert(0, str(postPath))
-
 
 def test_parse_nodoutR61():
     """correctly parse data from R6.1 nodout files
     """
-    from create_disp_dat import parse_line
+    from fem.post.create_disp_dat import parse_line
 
     nodout = open(testPath / "nodout", "r")
     n = nodout.readlines()
@@ -24,7 +20,7 @@ def test_parse_nodoutR61():
 def test_parse_nodoutR8():
     """correctly parse data from R8 nodout files
     """
-    from create_disp_dat import parse_line
+    from fem.post.create_disp_dat import parse_line
 
     nodout = open(testPath / "nodout", "r")
     n = nodout.readlines()
@@ -39,7 +35,7 @@ def test_parse_nodoutR8():
 def test_correct_Enot():
     """test fix -??? -> E-100
     """
-    from create_disp_dat import parse_line
+    from fem.post.create_disp_dat import parse_line
 
     nodout = open(testPath / "nodout", "r")
     n = nodout.readlines()
@@ -53,7 +49,7 @@ def test_correct_Enot():
 def test_count_timesteps():
     """test counting time steps in nodout
     """
-    from create_disp_dat import count_timesteps
+    from fem.post.create_disp_dat import count_timesteps
 
     ts_count = count_timesteps(testPath / "nodout")
 
@@ -63,8 +59,8 @@ def test_count_timesteps():
 def test_write_header(tmpdir):
     """test writing disp.dat header
     """
-    from create_disp_dat import open_dispout
-    from create_disp_dat import write_headers
+    from fem.post.create_disp_dat import open_dispout
+    from fem.post.create_disp_dat import write_headers
     import struct
 
     header = {'numnodes': 4,
@@ -87,8 +83,8 @@ def test_write_header(tmpdir):
 def test_write_data(tmpdir):
     """test writing data to disp.dat
     """
-    from create_disp_dat import open_dispout
-    from create_disp_dat import process_timestep_data
+    from fem.post.create_disp_dat import open_dispout
+    from fem.post.create_disp_dat import process_timestep_data
     import struct
     from pytest import approx
 

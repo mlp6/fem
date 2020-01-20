@@ -1,16 +1,5 @@
-"""test_bc.py
-"""
-
-import sys
-import pytest
-from pathlib import Path
-
-meshPath = Path(__file__).parents[1] / "mesh"
-sys.path.insert(0, str(meshPath))
-
-
 def test_write_pml_elems(tmpdir, sorted_elems):
-    from bc import write_pml_elems
+    from fem.mesh.bc import write_pml_elems
 
     f = tmpdir.join("elems_pml.dyn")
     write_pml_elems(sorted_elems, pmlfile=f.strpath)
@@ -23,8 +12,8 @@ def test_write_pml_elems(tmpdir, sorted_elems):
 
 
 def test_assign_node_constraints(nodeIDcoords):
-    from fem_mesh import SortNodeIDs
-    from bc import assign_node_constraints
+    from fem.mesh.fem_mesh import SortNodeIDs
+    from fem.mesh.bc import assign_node_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     face_constraints = (('1,1,1,1,1,1', '2,2,2,2,2,2'),
                         ('3,3,3,3,3,3', '4,4,4,4,4,4'),
@@ -35,8 +24,8 @@ def test_assign_node_constraints(nodeIDcoords):
 
 
 def test_assign_edge_sym_constraints(nodeIDcoords):
-    from fem_mesh import SortNodeIDs
-    from bc import assign_edge_sym_constraints
+    from fem.mesh.fem_mesh import SortNodeIDs
+    from fem.mesh.bc import assign_edge_sym_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
     edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
@@ -47,8 +36,8 @@ def test_assign_edge_sym_constraints(nodeIDcoords):
 
 
 def test_exclude_zminmax_edge_sym_constraints(nodeIDcoords):
-    from fem_mesh import SortNodeIDs
-    from bc import assign_edge_sym_constraints
+    from fem.mesh.fem_mesh import SortNodeIDs
+    from fem.mesh.bc import assign_edge_sym_constraints
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
     edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
@@ -61,8 +50,8 @@ def test_exclude_zminmax_edge_sym_constraints(nodeIDcoords):
 def test_constrain_sym_pml_nodes(nodeIDcoords):
     """THIS FUNCTION IS NOT NEEDED!!
     """
-    from fem_mesh import SortNodeIDs
-    from bc import constrain_sym_pml_nodes
+    from fem.mesh.fem_mesh import SortNodeIDs
+    from fem.mesh.bc import constrain_sym_pml_nodes
     [snic, axes] = SortNodeIDs(nodeIDcoords, sort=False)
     bcdict = {}
     edge_constraints = (((0, 1), (1, 0), (0, 0)), '1,1,0,1,1,1')
@@ -82,7 +71,7 @@ def test_constrain_sym_pml_nodes(nodeIDcoords):
 
 
 def test_assign_pml_elems(sorted_elems):
-    from bc import assign_pml_elems
+    from fem.mesh.bc import assign_pml_elems
 
     pml_elems = ((3, 0), (0, 1), (2, 3))
 
@@ -125,7 +114,7 @@ def test_assign_pml_elems(sorted_elems):
 
 
 def test_write_bc(tmpdir):
-    from bc import write_bc
+    from fem.mesh.bc import write_bc
     bcdict = {1: '1,1,1,0,0,0', 2: '0,1,0,0,1,0'}
     f = tmpdir.join("bc.dyn")
     write_bc(bcdict, bc=f.strpath)
@@ -139,7 +128,7 @@ def test_write_bc(tmpdir):
 
 
 def test_read_cli():
-    from bc import read_cli
+    from fem.mesh.bc import read_cli
     import sys
 
     sys.argv = ['bc.py', '--nonreflect']

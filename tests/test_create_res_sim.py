@@ -1,14 +1,11 @@
-import sys
 from pathlib import Path
 
-postPath = Path(__file__).parents[1] / "post"
 examplesPath = Path(__file__).parents[1] / "examples"
-sys.path.insert(0, str(postPath))
 
 def test_preallocate_arfidata(sorted_nodes, axes):
-    from create_res_sim import __preallocate_arfidata
+    from fem.post.create_res_sim import __preallocate_arfidata
 
-    from create_res_sim import extract_image_plane
+    from fem.post.create_res_sim import extract_image_plane
     image_plane = extract_image_plane(sorted_nodes, axes, 0.0)
 
     arfidata = __preallocate_arfidata(image_plane, 3)
@@ -17,7 +14,7 @@ def test_preallocate_arfidata(sorted_nodes, axes):
 
 
 def test_extract_image_plane(sorted_nodes, axes):
-    from create_res_sim import extract_image_plane
+    from fem.post.create_res_sim import extract_image_plane
 
     image_plane = extract_image_plane(sorted_nodes, axes, 0.0)
 
@@ -31,7 +28,7 @@ def test_extract_image_plane(sorted_nodes, axes):
 def test_get_t():
     """test generation of time vector
     """
-    from create_res_sim import __gen_t
+    from fem.post.create_res_sim import __gen_t
 
     t = __gen_t(0.1, 10)
 
@@ -41,7 +38,7 @@ def test_get_t():
 
 
 def test_savemat(tmpdir):
-    from create_res_sim import run
+    from fem.post.create_res_sim import run
     from scipy.io import loadmat
 
     matfile = tmpdir.join('res_sim_test.mat')
@@ -59,7 +56,7 @@ def test_savemat(tmpdir):
 
 
 def test_saveh5(tmpdir):
-    from create_res_sim import run
+    from fem.post.create_res_sim import run
     import h5py
 
     h5file = tmpdir.join('res_sim_test.h5')
@@ -78,7 +75,7 @@ def test_saveh5(tmpdir):
 
 def test_savepvd(tmpdir):
     """Test the PVD/VTR files written correctly."""
-    from create_res_sim import extract3Darfidata as run
+    from fem.post.create_res_sim import extract3Darfidata as run
     import filecmp
 
     pvdfile = tmpdir.join('res_sim.pvd')

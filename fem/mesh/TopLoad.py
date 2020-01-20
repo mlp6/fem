@@ -47,7 +47,7 @@ def extract_top_plane_nodes(nodefile, top_face):
 
     """
     import numpy as np
-    import fem_mesh
+    from fem.mesh import fem_mesh
 
     top_face = np.array(top_face)
 

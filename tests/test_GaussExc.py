@@ -1,12 +1,7 @@
 """test_GaussExc.py
 """
 
-import sys
 import pytest
-from pathlib import Path
-
-meshPath = Path(__file__).parents[1] / "mesh"
-sys.path.insert(0, str(meshPath))
 
 center = [0.0, 0.0, -2.0]
 sigma = [0.25, 0.25, 0.25]
@@ -16,7 +11,7 @@ amp = 1.0
 def test_calc_gauss_amp():
     """test node assigmnet of Gaussian amplitude under all symmetry conditions
     """
-    from GaussExc import calc_gauss_amp
+    from fem.mesh.GaussExc import calc_gauss_amp
 
     node_xyz = [1, 0.0, 0.0, -2.0]
 
@@ -37,7 +32,7 @@ def test_calc_gauss_amp():
 def test_calc_tukey_amp():
     """test node assignment of Tukey amplitude under all symmetry conditions
     """
-    from GaussExc import calc_tukey_amp
+    from fem.mesh.GaussExc import calc_tukey_amp
 
     node_xyz = [1, 0.0, 0.0, -2.0]
 
@@ -59,7 +54,7 @@ def test_calc_tukey_amp():
 
 
 def test_tukey_z_scale():
-    from GaussExc import tukey_z_scale
+    from fem.mesh.GaussExc import tukey_z_scale
 
     z_scale = tukey_z_scale(z=2.0, center=2.0, length=1.0, alpha=0.25,
                             points=101)
@@ -75,7 +70,7 @@ def test_tukey_z_scale():
 def test_sym_scale_amp():
     """test symmetry scaling of point load
     """
-    from GaussExc import sym_scale_amp
+    from fem.mesh.GaussExc import sym_scale_amp
 
     assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'qsym') == 2.0
     assert sym_scale_amp([1, 0.0, 0.0, -2.0], 8.0, 'hsym') == 4.0
@@ -85,7 +80,7 @@ def test_sym_scale_amp():
 def test_check_num_fields():
     """test that error is raised
     """
-    from GaussExc import check_num_fields
+    from fem.mesh.GaussExc import check_num_fields
 
     assert check_num_fields([1.0, 1.0, 2.0, 3.0]) == 0
     with pytest.raises(SyntaxError) as excinfo:
@@ -105,7 +100,7 @@ def test_read_process_nodes():
 def test_write_load_file(tmpdir):
     """write_load_file
     """
-    from GaussExc import write_load_file
+    from fem.mesh.GaussExc import write_load_file
 
     f = tmpdir.join("loads.dyn")
     load_nodeID_amp = [(1, 2.0), (3, 4.0)]

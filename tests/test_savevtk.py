@@ -1,10 +1,4 @@
 import pytest
-import sys
-from pathlib import Path
-
-postPath = Path(__file__).parents[1] / "post"
-sys.path.insert(0, str(postPath))
-
 
 def test_savevtk_data_nparray(savevtk_data):
     """test that nparray data read in correctly
@@ -17,7 +11,7 @@ def test_savevtk_data_nparray(savevtk_data):
 
 
 def test_savevtk_data_nparray_attribute(savevtk_data):
-    from savevtk import SaveVTK
+    from fem.post.savevtk import SaveVTK
 
     vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
 
@@ -25,7 +19,7 @@ def test_savevtk_data_nparray_attribute(savevtk_data):
 
 
 def test_savevtk_data_origin(savevtk_data):
-    from savevtk import SaveVTK
+    from fem.post.savevtk import SaveVTK
 
     vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
 
@@ -35,7 +29,7 @@ def test_savevtk_data_origin(savevtk_data):
 
 
 def test_savevtk_data_origin(savevtk_data):
-    from savevtk import SaveVTK
+    from fem.post.savevtk import SaveVTK
 
     vtkobj = SaveVTK(savevtk_data, (0.0, 1.0, 2.0), (0.1, 0.2, 0.3))
 
@@ -45,7 +39,7 @@ def test_savevtk_data_origin(savevtk_data):
 
 
 def test_savevtk_data_3D_tuple(savevtk_data):
-    from savevtk import SaveVTK
+    from fem.post.savevtk import SaveVTK
 
     data3d = (savevtk_data, savevtk_data, savevtk_data)
 
@@ -57,7 +51,7 @@ def test_savevtk_data_3D_tuple(savevtk_data):
 
 
 def test_savevtk_raise_3D_exception(savevtk_data):
-    from savevtk import SaveVTK
+    from fem.post.savevtk import SaveVTK
 
     data3d = (savevtk_data, savevtk_data, savevtk_data[:, :, 0:2])
 
@@ -66,7 +60,7 @@ def test_savevtk_raise_3D_exception(savevtk_data):
 
 
 def test_write_scalar(savevtk_data, tmpdir):
-    from savevtk import SaveVTK
+    from fem.post.savevtk import SaveVTK
 
     fname = tmpdir.join('scalar.vtk')
 
@@ -89,7 +83,7 @@ def test_write_scalar(savevtk_data, tmpdir):
 
 
 def test_write_vector(savevtk_data, tmpdir):
-    from savevtk import SaveVTK
+    from fem.post.savevtk import SaveVTK
 
     fname = tmpdir.join('vector.vtk')
 
