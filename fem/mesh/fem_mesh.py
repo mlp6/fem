@@ -1,6 +1,6 @@
 """fem_mesh.py - ubiquitous functions for many meshing operations"""
 import logging
-logging.basicConfig()
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def check_version():

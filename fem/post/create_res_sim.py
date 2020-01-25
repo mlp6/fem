@@ -1,7 +1,7 @@
 """create_res_sim.py - extract data for display in different formats from disp.dat binary"""
 import logging
 import sys
-logging.basicConfig(stream=sys.stdout)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def main():
@@ -89,10 +89,10 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
         arfidata = __preallocate_arfidata(image_plane, header['num_timesteps'])
 
         logger.info(f"Total Timesteps: {header['num_timesteps']}")
-        logger.info('Extracting timestep:', end=' ')
+        logger.info('Extracting timestep:')
 
         for t in trange:
-            logger.info(f'{t}', end=' ', flush=True)
+            logger.info(f'{t}')
             if (t == 1) or legacynodes:
                 fmt = 'f' * int(first_timestep_words)
                 fid.seek(header_bytes + first_timestep_bytes * (t - 1), 0)

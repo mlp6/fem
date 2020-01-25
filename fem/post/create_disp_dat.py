@@ -1,6 +1,6 @@
 """create_disp_dat.py - generate disp.dat binary from nodout ASCII"""
 import logging
-logging.basicConfig()
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def main():
@@ -38,16 +38,16 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
                             header = generate_header(data, nodout)
                             write_headers(dispout, header)
                             header_written = True
-                            logger.info('Time Step: ', end="", flush=True)
+                            logger.info('Time Step: ')
                         if timestep_count > 1 and not legacynodes:
                             writenode = False
-                        logger.info("%i, " % timestep_count, end="", flush=True)
+                        logger.info(f"{timestep_count}, ")
                         process_timestep_data(data, dispout, writenode)
                     else:
                         raw_data = parse_line(line)
                         data.append(list(raw_data))
 
-    logger.info("done.", flush=True)
+    logger.info("done.")
 
     return 0
 
@@ -154,7 +154,7 @@ def count_timesteps(outfile: str = 'nodout') -> int:
     """
     import platform
 
-    logger.info("Reading number of time steps... ", end="", flush=True)
+    logger.info("Reading number of time steps... ")
     if platform.system() == 'Linux':  # this is significantly faster
         from subprocess import PIPE, Popen
         p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
@@ -169,7 +169,7 @@ def count_timesteps(outfile: str = 'nodout') -> int:
 
     ts_count -= 1  # rm extra time count
 
-    logger.info(f'there are {ts_count}.', flush=True)
+    logger.info(f'there are {ts_count}.')
 
     return ts_count
 

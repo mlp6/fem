@@ -1,6 +1,6 @@
 """bc.py - apply boundary conditions to rectangular solid meshes """
 import logging
-logging.basicConfig()
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def main():

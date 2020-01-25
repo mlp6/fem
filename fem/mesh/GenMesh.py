@@ -7,7 +7,7 @@
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """
 import logging
-logging.basicConfig()
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -159,19 +159,19 @@ def writeNodes(pos, nodefile="nodes.dyn",
     """
     nodesTotal = len(pos[0]) * len(pos[1]) * len(pos[2])
 
-    NODEFILE = open(nodefile, 'w')
-    NODEFILE.write("%s\n" % (header_comment))
-    NODEFILE.write("*NODE\n")
+    with open(nodefile, 'w') as NODEFILE:
+        NODEFILE.write(f"{header_comment}\n")
+        NODEFILE.write("*NODE\n")
 
-    NodeID = 0
-    for z in pos[2]:
-        for y in pos[1]:
-            for x in pos[0]:
-                NodeID += 1
-                NODEFILE.write("%i,%.6f,%.6f,%.6f\n" % (NodeID, x, y, z))
-    NODEFILE.write("*END\n")
-    NODEFILE.close()
-    logger.info(("%i/%i nodes written to %s" % (NodeID, nodesTotal, nodefile)))
+        NodeID = 0
+        for z in pos[2]:
+            for y in pos[1]:
+                for x in pos[0]:
+                    NodeID += 1
+                    NODEFILE.write(f"{NodeID},{x:.6f},{y:.6f},{z:.6f}\n")
+        NODEFILE.write("*END\n")
+
+    logger.info(f"{NodeID}/{nodesTotal} nodes written to {nodefile}")
 
 
 def writeElems(numElem, partid=1, elefile="elems.dyn",
@@ -194,44 +194,34 @@ def writeElems(numElem, partid=1, elefile="elems.dyn",
     # calculate total number of expected elements
     elemTotal = numElem[0] * numElem[1] * numElem[2]
 
-    ELEMFILE = open(elefile, 'w')
-    ELEMFILE.write("%s\n" % (header_comment))
-    ELEMFILE.write('*ELEMENT_SOLID\n')
+    with open(elefile, 'w') as ELEMFILE:
+        ELEMFILE.write("%s\n" % (header_comment))
+        ELEMFILE.write('*ELEMENT_SOLID\n')
 
-    # defining the elements with outward normals w/ right-hand convention
-    # assuming node ID ordering as was used to write the nodes.dyn file
-    # (saves lots of RAM instead of saving that massive array)
-    ElemID = 0
-    yplane = 0
-    zplane = 0
-    for z in range(1, (numElem[2] + 1)):
-        for y in range(1, (numElem[1] + 1)):
-            for x in range(1, (numElem[0] + 1)):
-                ElemID += 1
-                n1 = (yplane + zplane) * (numElem[0] + 1) + x
-                n2 = n1 + 1
-                n4 = n1 + (numElem[0] + 1)
-                n3 = n4 + 1
-                n5 = (numElem[0] + 1) * (numElem[1] + 1) + n1
-                n6 = n5 + 1
-                n7 = n6 + (numElem[0] + 1)
-                n8 = n7 - 1
-                ELEMFILE.write("%i,%i,%i,%i,%i,%i,%i,%i,%i,%i\n" %
-                               (ElemID,
-                                partid,
-                                n1,
-                                n2,
-                                n3,
-                                n4,
-                                n5,
-                                n6,
-                                n7,
-                                n8))
-            yplane += 1
-        zplane += 1
-    ELEMFILE.write("*END\n")
-    ELEMFILE.close()
-    logger.info(("%i/%i elements written to %s" % (ElemID, elemTotal, elefile)))
+        # defining the elements with outward normals w/ right-hand convention
+        # assuming node ID ordering as was used to write the nodes.dyn file
+        # (saves lots of RAM instead of saving that massive array)
+        ElemID = 0
+        yplane = 0
+        zplane = 0
+        for z in range(1, (numElem[2] + 1)):
+            for y in range(1, (numElem[1] + 1)):
+                for x in range(1, (numElem[0] + 1)):
+                    ElemID += 1
+                    n1 = (yplane + zplane) * (numElem[0] + 1) + x
+                    n2 = n1 + 1
+                    n4 = n1 + (numElem[0] + 1)
+                    n3 = n4 + 1
+                    n5 = (numElem[0] + 1) * (numElem[1] + 1) + n1
+                    n6 = n5 + 1
+                    n7 = n6 + (numElem[0] + 1)
+                    n8 = n7 - 1
+                    ELEMFILE.write(f"{ElemID},{partid},{n1},{n2},{n3},{n4},{n5},{n6},{n7},{n8}\n")
+                yplane += 1
+            zplane += 1
+        ELEMFILE.write("*END\n")
+
+    logger.info(f"{ElemID}/{elemTotal} elements written to {elefile}")
 
 
 def check_x0_y0(pos):
