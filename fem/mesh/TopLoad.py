@@ -1,12 +1,14 @@
-"""Generate compression loads on top surface.
-"""
+"""Generate compression loads on top surface."""
 import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
 def main():
-    """way too complicated for now"""
+    """
+
+    TODO: way too complicated for now; refactor this
+    """
 
     opts = read_cli()
     generate_loads(loadtype=opts.loadtype, direction=opts.direction,
@@ -32,10 +34,8 @@ def generate_loads(loadtype='disp', direction=2, amplitude=-1.0,
 
     """
 
-    planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile,
-                                           top_face=top_face)
-    writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
-                   amplitude, lcid)
+    planeNodeIDs = extract_top_plane_nodes(nodefile=nodefile, top_face=top_face)
+    writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction, amplitude, lcid)
 
 
 def extract_top_plane_nodes(nodefile, top_face):
@@ -85,36 +85,34 @@ def writeNodeLoads(loadfile, planeNodeIDs, loadtype, direction,
         None
 
     """
-    import sys
 
     # shift 0-2 -> 1-3
     direction += 1
 
-    LOADFILE = open(loadfile, 'w')
+    with open(loadfile, 'w') as LOADFILE:
 
-    if loadtype == 'disp' or loadtype == 'vel' or loadtype == 'accel':
-        LOADFILE.write("*BOUNDARY_PRESCRIBED_MOTION_NODE\n")
-    elif loadtype == 'force':
-        LOADFILE.write("*LOAD_NODE_POINT\n")
-    else:
-        sys.exit('ERROR: Invalid loadtype specified (can only be disp, '
-                 'force, vel or accel)')
+        if loadtype == 'disp' or loadtype == 'vel' or loadtype == 'accel':
+            LOADFILE.write("*BOUNDARY_PRESCRIBED_MOTION_NODE\n")
+        elif loadtype == 'force':
+            LOADFILE.write("*LOAD_NODE_POINT\n")
+        else:
+            logger.error("Invalid load type specified; can only be disp, force, vel or accel.")
+            raise ValueError("Invalid load type specified; can only be disp, force, vel or accel.")
 
-    if loadtype == 'disp':
-        dofs = '%i,2,%i,%f' % (direction, lcid, amplitude)
-    elif loadtype == 'vel':
-        dofs = '%i,0,%i,%f' % (direction, lcid, amplitude)
-    elif loadtype == 'accel':
-        dofs = '%i,1,%i,%f' % (direction, lcid, amplitude)
-    elif loadtype == 'force':
-        dofs = '%i,%i,%f' % (direction, lcid, amplitude)
+        if loadtype == 'disp':
+            dofs = f'{direction},2,{lcid},{amplitude:.6f}'
+        elif loadtype == 'vel':
+            dofs = f'{direction},0,{lcid},{amplitude:.6f}'
+        elif loadtype == 'accel':
+            dofs = f'{direction},1,{lcid},{amplitude:.6f}'
+        elif loadtype == 'force':
+            dofs = f'{direction},{lcid},{amplitude:.6f}'
 
-    for i in planeNodeIDs:
-        for j in i:
-            LOADFILE.write("%i,%s\n" % (j, dofs))
+        for i in planeNodeIDs:
+            for j in i:
+                LOADFILE.write(f"{j},{dofs}\n")
 
-    LOADFILE.write("*END\n")
-    LOADFILE.close()
+        LOADFILE.write("*END\n")
 
 
 def read_cli():

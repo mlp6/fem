@@ -1,3 +1,4 @@
+"""create_disp_dat.py - generate disp.dat binary from nodout ASCII"""
 import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)

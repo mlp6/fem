@@ -226,8 +226,8 @@ def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
 
     """
     with open(nefile, 'w') as NEFILE:
-        NEFILE.write('$ # Struct Nodes = {}\n'.format(len(structNodeIDs)))
-        NEFILE.write('$ # Struct Elements = {}\n'.format(len(structElemIDs)))
+        NEFILE.write(f'$ # Struct Nodes = {len(structNodeIDs)}\n')
+        NEFILE.write(f'$ # Struct Elements = {len(structElemIDs)}\n')
         NEFILE.write('*ELEMENT_SOLID\n')
         for i in elems:
             if i[0] in structElemIDs:

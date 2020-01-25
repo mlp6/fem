@@ -1,5 +1,7 @@
+"""create_res_sim.py - extract data for display in different formats from disp.dat binary"""
 import logging
-logging.basicConfig()
+import sys
+logging.basicConfig(stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 def main():

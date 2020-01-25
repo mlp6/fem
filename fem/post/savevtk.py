@@ -52,7 +52,7 @@ class SaveVTK:
         with open(filename, 'w') as vtkfile:
             vtkfile.write("# vtk DataFile Version 2.0\n")
             if header_comment:
-                vtkfile.write("%s\n" % (header_comment))
+                vtkfile.write(f"{header_comment}\n")
             vtkfile.write("ASCII\n\n")
             vtkfile.write("DATASET STRUCTURED_POINTS\n")
             vtkfile.write("DIMENSIONS    {:d}   {:d}   {:d}\n\n"
@@ -83,7 +83,7 @@ class SaveVTK:
         with open(filename, 'w') as vtkfile:
             vtkfile.write('# vtk DataFile Version 2.0\n')
             if header_comment:
-                vtkfile.write("%s\n" % (header_comment))
+                vtkfile.write(f"{header_comment}\n")
             vtkfile.write('ASCII\n')
             vtkfile.write('\n')
             vtkfile.write('DATASET STRUCTURED_POINTS\n')

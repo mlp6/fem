@@ -1,3 +1,4 @@
+"""fem_mesh.py - ubiquitous functions for many meshing operations"""
 import logging
 logging.basicConfig()
 logger = logging.getLogger(__name__)
