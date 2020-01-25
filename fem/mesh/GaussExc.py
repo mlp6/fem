@@ -1,6 +1,8 @@
 """Generate Gaussian distribution of point loads.
 """
-
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 def main():
     """ """

@@ -1,6 +1,6 @@
-"""Generate disp.dat binary from nodout ASCII.
-"""
-
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 def main():
     args = parse_cli()
@@ -37,16 +37,16 @@ def create_dat(nodout="nodout", dispout="disp.dat", legacynodes=False):
                             header = generate_header(data, nodout)
                             write_headers(dispout, header)
                             header_written = True
-                            print('Time Step: ', end="", flush=True)
+                            logger.info('Time Step: ', end="", flush=True)
                         if timestep_count > 1 and not legacynodes:
                             writenode = False
-                        print("%i, " % timestep_count, end="", flush=True)
+                        logger.info("%i, " % timestep_count, end="", flush=True)
                         process_timestep_data(data, dispout, writenode)
                     else:
                         raw_data = parse_line(line)
                         data.append(list(raw_data))
 
-    print("done.", flush=True)
+    logger.info("done.", flush=True)
 
     return 0
 
@@ -153,13 +153,13 @@ def count_timesteps(outfile: str = 'nodout') -> int:
     """
     import platform
 
-    print("Reading number of time steps... ", end="", flush=True)
+    logger.info("Reading number of time steps... ", end="", flush=True)
     if platform.system() == 'Linux':  # this is significantly faster
         from subprocess import PIPE, Popen
         p = Popen('grep time %s | wc -l' % outfile, shell=True, stdout=PIPE)
         ts_count = int(p.communicate()[0].strip().decode())
     else:
-        print(f"Non-linux OS ({platform.system()}) detected: using slower python implementation", flush=True)
+        logger.warning(f"Non-linux OS ({platform.system()}) detected: using slower python implementation")
         ts_count = 0
         with open(outfile, 'r') as f:
             for line in f:
@@ -168,7 +168,7 @@ def count_timesteps(outfile: str = 'nodout') -> int:
 
     ts_count -= 1  # rm extra time count
 
-    print(f'there are {ts_count}.', flush=True)
+    logger.info(f'there are {ts_count}.', flush=True)
 
     return ts_count
 

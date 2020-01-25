@@ -6,6 +6,9 @@
 
 .. moduleauthor:: Mark Palmeri <mlp6@duke.edu>
 """
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -168,7 +171,7 @@ def writeNodes(pos, nodefile="nodes.dyn",
                 NODEFILE.write("%i,%.6f,%.6f,%.6f\n" % (NodeID, x, y, z))
     NODEFILE.write("*END\n")
     NODEFILE.close()
-    print(("%i/%i nodes written to %s" % (NodeID, nodesTotal, nodefile)))
+    logger.info(("%i/%i nodes written to %s" % (NodeID, nodesTotal, nodefile)))
 
 
 def writeElems(numElem, partid=1, elefile="elems.dyn",
@@ -228,7 +231,7 @@ def writeElems(numElem, partid=1, elefile="elems.dyn",
         zplane += 1
     ELEMFILE.write("*END\n")
     ELEMFILE.close()
-    print(("%i/%i elements written to %s" % (ElemID, elemTotal, elefile)))
+    logger.info(("%i/%i elements written to %s" % (ElemID, elemTotal, elefile)))
 
 
 def check_x0_y0(pos):
@@ -243,10 +246,9 @@ def check_x0_y0(pos):
       0/1 (1 = fail)
 
     """
-    import warnings as w
     if 0.0 not in pos[0] and 0.0 not in pos[1]:
-        w.warn("Your mesh does not contain nodes at (x, y) = (0, 0)!  This "
-               "could lead to poor representation of your ARF focus.")
+        logger.warning("Your mesh does not contain nodes at (x, y) = (0, 0)!  This "
+                       "could lead to poor representation of your ARF focus.")
         return 1
     else:
         return 0

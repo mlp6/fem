@@ -1,5 +1,6 @@
-"""Generic functions for all meshing functions."""
-
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 def check_version():
     """check Python version >=3.7

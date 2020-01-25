@@ -20,3 +20,4 @@ dist/
 fem.egg-info
 .venv/
 Pipfile.lock
+.vscode/

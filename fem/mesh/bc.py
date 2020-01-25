@@ -1,9 +1,7 @@
-"""Apply boundary conditions to rectangular, solid meshes
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
-Todo:
-    * clean up function docstrings
-
-"""
 
 def main():
     """apply prescribed boundary conditions to nodes/face segments"""

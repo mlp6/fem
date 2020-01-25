@@ -1,5 +1,8 @@
 """Generate compression loads on top surface.
 """
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 
 def main():

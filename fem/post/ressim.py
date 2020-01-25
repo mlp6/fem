@@ -1,3 +1,8 @@
+import logging
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+
+
 class ResSim:
     """plot and animate res_sim.mat simulation data
 
@@ -38,7 +43,7 @@ class ResSim:
         try:
             d = loadmat(self.filename)
         except:
-            print(f'{self.filename} most likely not MATv5 format')
+            logger.exception(f'{self.filename} most likely not MATv5 format')
 
         self.lat = d['lat'].squeeze()
         self.axial = d['axial'].squeeze()
@@ -75,7 +80,7 @@ class ResSim:
         if save:
             filename = f'{savename}_{timestep:04d}.png'
             fig.savefig(filename)
-            print(f'Saved plot: {filename}')
+            logger.info(f'Saved plot: {filename}')
         if show:
             fig.show()
 
