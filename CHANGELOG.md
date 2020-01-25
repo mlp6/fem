@@ -93,3 +93,10 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v7.3.3
 * fix syntax in `examples/tukey_gauss_qsym_pml/run.py`
+
+## v8.0.2
+* introduce new package directory layout to make tests work by importing the fem package
+* default to using `pipenv` `Pipfile` for virtualenv management
+* update minimum Python to >= 3.7
+* rm legacy Gitlab CI and Docker configurations
+
