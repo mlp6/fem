@@ -3,26 +3,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-def check_version():
-    """check Python version >=3.7
 
-    Args:
-        None
-
-    Raises:
-        ImportError: Python < 3.7
-
-    Returns:
-        None
-
-    """
-    from sys import version_info, exit
-
-    if version_info[:2] < (3, 7):
-        raise ImportError("Python >= 3.7 required.")
-
-
-def strip_comments(nodefile):
+def strip_comments(nodefile: str) -> str:
     """string comment lines starting with $
 
     Args:
@@ -40,7 +22,7 @@ def strip_comments(nodefile):
     return nodefile_nocmt
 
 
-def count_header_comment_skips(nodefile):
+def count_header_comment_skips(nodefile: str):
     """count comments lines to skip before the first keyword (*)
 
     Args:
@@ -64,10 +46,11 @@ def count_header_comment_skips(nodefile):
                 else:
                     count = count + 1
     except FileNotFoundError:
+        logger.error(f"Cannot open {nodefile}.")
         raise FileNotFoundError(f"Cannot open {nodefile}.")
 
 
-def rm_tmp_file(nodefile_nocmt):
+def rm_tmp_file(nodefile_nocmt: str):
     """remove temporary pytest nodefile
 
     Args:
@@ -80,10 +63,10 @@ def rm_tmp_file(nodefile_nocmt):
         None
 
     """
-    from os import remove
+    import os
 
     try:
-        remove(nodefile_nocmt)
+        os.remove(nodefile_nocmt)
     except OSError:
         raise OSError
 
@@ -120,9 +103,11 @@ def extractPlane(snic, axes, plane):
     elif plane[0] == 2:
         planeNodeIDs = snic['id'][:, :, plane_axis_index[0]]
     else:
+        logger.error("Specified plane index to extract does not exist.")
         raise IndexError("Specified plane index to extract does not exist.")
 
     planeNodeIDs = planeNodeIDs.squeeze()
+
     return planeNodeIDs
 
 
@@ -135,10 +120,10 @@ def SortNodeIDs(nic, sort=False):
                         True (spatially sort)
 
     Returns:
-        SortedNodeIDs (ndarray): n matrix (x,y,z), axes
+        [snic, axes] (ndarray): n matrix (x,y,z), axes
 
     """
-    from sys import exit
+    import sys
     from numpy import unique
 
     axes = [unique(nic['x']), unique(nic['y']), unique(nic['z'])]
@@ -146,8 +131,9 @@ def SortNodeIDs(nic, sort=False):
     # test to make sure that we have the right dimension (and that precision
     # issues aren't adding extra unique values)
     if len(nic) != (axes[0].size * axes[1].size * axes[2].size):
-        exit('ERROR: Dimension mismatch - possible precision error '
-             'when sorting nodes (?)')
+        logger.error('ERROR: Dimension mismatch - possible precision error '
+                     'when sorting nodes (?)')
+        sys.exit(1)
 
     # sort the nodes by x, y, then z columns
     if sort:
@@ -181,7 +167,7 @@ def SortElems(elems, axes):
     return sorted_elems
 
 
-def load_nodeIDs_coords(nodefile="nodes.dyn"):
+def load_nodeIDs_coords(nodefile: str="nodes.dyn"):
     """load in node IDs and coordinates
 
     Exclude '*' keyword lines.
@@ -194,7 +180,9 @@ def load_nodeIDs_coords(nodefile="nodes.dyn"):
 
     """
     import numpy as np
+
     header_comment_skips = count_header_comment_skips(nodefile)
+
     nodeIDcoords = np.loadtxt(nodefile,
                               delimiter=',',
                               comments='*',
@@ -205,7 +193,7 @@ def load_nodeIDs_coords(nodefile="nodes.dyn"):
     return nodeIDcoords
 
 
-def load_elems(elefile="elems.dyn"):
+def load_elems(elefile: str="elems.dyn"):
     """load element definitions
 
     Args:
@@ -215,15 +203,17 @@ def load_elems(elefile="elems.dyn"):
       elems (ndarray)
 
     """
-    from numpy import loadtxt
+    import numpy as np
+
     header_comment_skips = count_header_comment_skips(elefile)
-    elems = loadtxt(elefile,
-                    delimiter=',',
-                    comments='*',
-                    skiprows=header_comment_skips,
-                    dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
-                           ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
-                           ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
-                           ('n8', 'i4')])
+
+    elems = np.loadtxt(elefile,
+                       delimiter=',',
+                       comments='*',
+                       skiprows=header_comment_skips,
+                       dtype=[('id', 'i4'), ('pid', 'i4'), ('n1', 'i4'),
+                              ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
+                              ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'),
+                              ('n8', 'i4')])
 
     return elems

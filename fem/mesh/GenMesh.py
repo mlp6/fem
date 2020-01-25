@@ -12,14 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    """ """
     import sys
     import fem_mesh
 
-    fem_mesh.check_version()
-
-    # read in CLI arguments
     args = parse_cli()
+
     xyz = args.xyz
     numElem = args.numElem
     nodefile = args.nodefile

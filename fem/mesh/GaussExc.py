@@ -1,13 +1,9 @@
-"""Generate Gaussian distribution of point loads.
-"""
+"""Generate Gaussian distribution of point loads."""
 import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def main():
-    """ """
-    from fem_mesh import check_version
-    check_version()
 
     opts = read_cli()
 
@@ -26,7 +22,7 @@ def main():
 def generate_loads(sigma, center, amp=1.0, amp_cut=0.05, sym="qsym",
                    direction=-3, loadfilename="loads.dyn",
                    nodefile="nodes.dyn", tukey_length=0.0, tukey_alpha=0.25):
-    """TODO
+    """
 
     Args:
       sigma:
@@ -104,17 +100,15 @@ def write_load_file(loadfilename, load_nodeID_amp, direction=-3,
     Returns:
 
     """
-    from numpy import sign, abs
-    d = abs(direction)
-    dsign = sign(direction)
+    import numpy as np
+    d = np.abs(direction)
+    dsign = np.sign(direction)
 
-    lfile = open(loadfilename, 'w')
-    lfile.write(header_comment)
-    lfile.write("*LOAD_NODE_POINT\n")
-    [lfile.write("%i,%i,1,%.4f\n" % (i, d, dsign * j))
-     for i, j in load_nodeID_amp]
-    lfile.write("*END\n")
-    lfile.close()
+    with open(loadfilename, 'w') as lfile:
+        lfile.write(header_comment)
+        lfile.write("*LOAD_NODE_POINT\n")
+        [lfile.write(f"{i},{d},1,{dsign * j:.4f}\n") for i, j in load_nodeID_amp]
+        lfile.write("*END\n")
 
     return 0
 
@@ -152,10 +146,12 @@ def check_num_fields(fields):
     Returns:
 
     """
-    from sys import exit
+    import sys 
+
     if len(fields) != 4:
-        raise SyntaxError("Unexpected number of node columns")
-        exit(1)
+        logger.error("Unexpected number of node columns.")
+        raise SyntaxError("Unexpected number of node columns.")
+        sys.exit(1)
     else:
         return 0
 
