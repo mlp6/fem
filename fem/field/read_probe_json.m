@@ -8,8 +8,6 @@ function probe = read_probe_json(probe_json_file);
 %     probe (struct)
 %
 
-fid = fopen(probe_json_file);
-rawtext = fread(fid, '*char');
-fclose(fid);
+rawtext = fileread(probe_json_file);
 
 probe = jsondecode(rawtext);

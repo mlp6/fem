@@ -100,3 +100,5 @@ See the git commit history for an effective change log pre-v6.3.1
 * update minimum Python to >= 3.7
 * rm legacy Gitlab CI and Docker configurations
 
+## v8.0.3
+* fix Matlab JSON probe read
