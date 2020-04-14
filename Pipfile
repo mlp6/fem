@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
+jupyterlab = "*"
 
 [packages]
 fem = {editable = true,path = "."}
@@ -17,4 +18,4 @@ sphinx = "*"
 sphinxcontrib-napoleon = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
