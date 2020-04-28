@@ -4,12 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pylint = "*"
 jupyterlab = "*"
 
 [packages]
 fem = {editable = true,path = "."}
 jupyter = "*"
+pylint = "*"
 pytest = "*"
 pytest-pep8 = "*"
 pytest-cov = "*"
