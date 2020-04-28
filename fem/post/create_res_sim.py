@@ -345,13 +345,15 @@ def savepvd(ts_start=0, part=0, **kwargs):
     from pyevtk.hl import gridToVTK
     import os
     import numpy as np
+    from pathlib import Path
 
     if kwargs['arfidata'].ndim != 4:
         raise ValueError("Trying to save timeseries VTR data not supported.")
 
-    resfileprefix = os.path.splitext(kwargs['resfile'])[0]
+    resfile = Path(kwargs['resfile'])
+    resfileprefix = resfile.with_suffix('')
 
-    with open(kwargs['resfile'], 'w') as pvd:
+    with open(resfile, 'w') as pvd:
 
         pvd.write('<?xml version="1.0"?>\n')
         pvd.write('<VTKFile type="Collection" version="0.1" '
@@ -361,6 +363,7 @@ def savepvd(ts_start=0, part=0, **kwargs):
 
         veldata_calc = np.diff(np.asfortranarray(kwargs['arfidata']), axis=3, prepend=0)
 
+        num_timesteps = len(kwargs['t'])-1
         for ts, time in enumerate(kwargs['t']):
 
             arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata']
@@ -369,11 +372,13 @@ def savepvd(ts_start=0, part=0, **kwargs):
             veldata = np.asfortranarray(np.squeeze(veldata_calc[:, :, :, ts])).transpose()
 
             timestep = ts_start + ts
-            vtrfilename = f'{resfileprefix}_T{ts:04d}'
+            vtrfilename = Path(f'{resfileprefix.name}_T{ts:04d}.vtr')
 
-            pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{os.path.basename(vtrfilename)}.vtr"/>\n')
+            logger.info(f"Writing {vtrfilename}. [{ts}/{num_timesteps}]")
 
-            gridToVTK(f'{vtrfilename}',
+            pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{vtrfilename.name}"/>\n')
+
+            gridToVTK(vtrfilename.with_suffix('').name,
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),
                       kwargs['axial'].ravel(),
