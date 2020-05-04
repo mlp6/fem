@@ -413,30 +413,34 @@ def read_header(dispout, word_size_bytes: int = 4):
 
 
 def extract_dt(dyn_file):
-    """extract time step (dt) from dyna input deck
-
-    assumes that input deck is comma-delimited
+    """extract time step (dt) from dyna input deck (assume comma-delimited)
 
     Args:
-      dyn_file: input.dyn filename
+      dyn_file (str): input.dyn filename
+
+    Raises:
+      FileNotFoundError
 
     Returns:
-      dt from input.dyn binary data save parameter
+      dt (float): timestep interval
 
     """
     found_database = False
-    with open(dyn_file, 'r') as d:
-        for dyn_line in d:
-            if found_database:
-                line_items = dyn_line.split(',')
-                # make sure we're not dealing with a comment
-                if '$' in line_items[0]:
-                    continue
-                else:
-                    dt = float(line_items[0])
-                    break
-            elif '*DATABASE_NODOUT' in dyn_line:
-                found_database = True
+    try:
+        with open(dyn_file, 'r') as d:
+            for dyn_line in d:
+                if found_database:
+                    line_items = dyn_line.split(',')
+                    # make sure we're not dealing with a comment
+                    if '$' in line_items[0]:
+                        continue
+                    else:
+                        dt = float(line_items[0])
+                        break
+                elif '*DATABASE_NODOUT' in dyn_line:
+                    found_database = True
+    except FileNotFoundError:
+        raise FileNotFoundError
 
     return dt
 
@@ -445,19 +449,24 @@ def open_dispout(dispout):
     """open dispout file for reading, potentially using lzma
 
     Args:
-      dispout (pathlib / str): dispout file
+        dispout (pathlib / str): dispout file
 
     Raises:
-        FileNotFoundError
+        FileNotFoundError: disp.dat[.xz] file cannot be found
+        ImportError: LZMA package not available
 
     Returns:
         dispout (obj): open file object
 
     """
-    import lzma
+    try:
+        import lzma
+    except ImportError:
+        raise ImportError("LZMA module not available (maybe xz-devel needs to be installed).")
     from pathlib import Path
 
     dispout = Path(dispout)
+
     if dispout.name.endswith('.xz'):
         try:
             dispout = lzma.open(dispout, 'rb')
@@ -480,7 +489,7 @@ def __preallocate_arfidata(image_plane, num_timesteps: int):
       num_timesteps (int): number of timesteps to extract
 
     Returns:
-      arfidata
+      arfidata (ndarray): 3D or 4D array (x, [y,], z, t)
 
     Raises:
         IndexError: unexpected number of sorted node dimensions
@@ -519,7 +528,7 @@ def __gen_t(dt: float, num_timesteps: int) -> list:
     return t
 
 
-def extract3Darfidata(dynadeck=None, disp_comp=2, disp_scale=-1e4,
+def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
                       ressim="res_sim.h5", nodedyn="nodes.dyn",
                       dispout="disp.dat"):
     """Extract 3D volume of specified displacement component.
