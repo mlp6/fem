@@ -19,7 +19,7 @@ setup(
                       'scipy',
                       'matplotlib',
                       'pyevtk',],
-    python_requires=">3.7",
+    python_requires=">=3.8",
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
 )
