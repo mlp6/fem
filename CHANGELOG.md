@@ -102,3 +102,7 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.0.3
 * fix Matlab JSON probe read
+
+## v8.1.0
+* add green2para function to convert Green's sim data to Paraview
+
