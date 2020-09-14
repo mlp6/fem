@@ -8,8 +8,7 @@ addons:
 cache: pip
 
 install:
-      - pip install pipenv
-      - pipenv install
+      - pip install -r requirements.txt 
 script: 
       - pytest -v
       - PYTHONPATH=.. sphinx-build -nT -b dummy docs/ docs/_build/html

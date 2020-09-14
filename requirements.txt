@@ -1,0 +1,9 @@
+jupyter
+pylint
+pytest
+pytest-pep8
+pytest-cov
+ipython
+sphinx 
+sphinxcontrib-napoleon
+-e git+https://git@github.com/mlp6/fem.git#egg=fem
