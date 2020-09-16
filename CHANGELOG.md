@@ -106,3 +106,7 @@ See the git commit history for an effective change log pre-v6.3.1
 ## v8.1.0
 * add green2para function to convert Green's sim data to Paraview
 
+## v8.1.1
+* bc.py - fix `axis limits` definition
+* bc.py - fix `fem_mesh` import to use package syntax
+* revert back to using `requirements.txt` for virtualenv package management

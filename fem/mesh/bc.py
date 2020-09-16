@@ -33,7 +33,7 @@ def apply_face_bc_only(face_constraints, nodefile="nodes.dyn",
       bcfile (str): output file for boundary conditions (*BOUNDARY_SPC_NODE)
     """
 
-    import fem_mesh
+    import fem.mesh.fem_mesh as fem_mesh
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -61,7 +61,7 @@ def apply_pml(pml_elems, face_constraints, edge_constraints,
       pml_partID (int): PID for the PML elements
 
     """
-    import fem_mesh
+    import fem.mesh.fem_mesh as fem_mesh
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -94,7 +94,7 @@ def apply_nonreflect(face_constraints, edge_constraints, nodefile="nodes.dyn",
       0 on success
 
     """
-    import fem_mesh
+    import fem.mesh.fem_mesh as fem_mesh
 
     nodeIDcoords = fem_mesh.load_nodeIDs_coords(nodefile)
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
@@ -331,6 +331,7 @@ def constrain_sym_pml_nodes(bcdict, snic, axes, pml_elems, edge_constraints):
     from numpy import ndenumerate
 
     # look for x symmetry face
+    axis_limit = None
     for axis in range(0, 2):
         if edge_constraints[0][axis][0]:
             axis_limit = axes[axis].min()
