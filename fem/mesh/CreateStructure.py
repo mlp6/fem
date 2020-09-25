@@ -6,6 +6,9 @@ Examples:
                                    --sopts 0.0 0.0 -1.0 0.5
 
 """
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 def main():
@@ -174,10 +177,12 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
                         structNodeIDs[i[0]] = True
 
     else:
-        sys.exit('ERROR: The specified structure is not defined')
+        logger.error('The specified structure is not defined.')
+        raise ValueError("The specificed structre is not defined.")
+        sys.exit()
 
     if len(structNodeIDs) == 0:
-        sys.exit('ERROR: no structure nodes were found')
+        logger.warning("No Structure nodes were found.")
 
     return structNodeIDs
 
@@ -196,6 +201,7 @@ def findStructElemIDs(elefile, structNodeIDs):
 
     """
     from fem.mesh.fem_mesh import load_elems
+    import sys
 
     elems = load_elems(elefile)
 
@@ -209,8 +215,8 @@ def findStructElemIDs(elefile, structNodeIDs):
             structElemIDs[i[0]] = True
 
     if len(structElemIDs) == 0:
-        from sys import exit
-        exit('ERROR: no structure elements were found')
+        logger.warning("No structure elements were found.")
+        sys.exit()
 
     return (elems, structElemIDs)
 
