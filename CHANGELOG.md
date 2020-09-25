@@ -110,3 +110,7 @@ See the git commit history for an effective change log pre-v6.3.1
 * bc.py - fix `axis limits` definition
 * bc.py - fix `fem_mesh` import to use package syntax
 * revert back to using `requirements.txt` for virtualenv package management
+
+## v8.1.2
+* CreateStructure.py - fix string match (`is` -> `==`)
+* CreateStructure.py - make the layer search be [</>]=, not just [<,>] (include the edges of the search now)
