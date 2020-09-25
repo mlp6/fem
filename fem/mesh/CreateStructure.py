@@ -99,7 +99,7 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
     structNodeIDs = {}
 
     # TODO: replace sopts approach; figure out something more robust
-    if struct_type is 'sphere':
+    if struct_type == 'sphere':
         """
         sopts is assumed to be a 4 element tuple with the following items:
             sphere center coordinates (x,y,z)
@@ -112,17 +112,17 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
             if nodeRad < sopts[3]:
                 structNodeIDs[i[0]] = True
 
-    elif struct_type is 'layer':
+    elif struct_type == 'layer':
         """
         sopts is assumed to be a 3 element tuple with the following items:
         dimension for normal to layer (x = 1, y = 2, z = 3)
         layer bounds (min,max)
         """
         for i in nodeIDcoords:
-            if i[sopts[0]] > sopts[1] and i[sopts[0]] < sopts[2]:
+            if i[int(sopts[0])] >= sopts[1] and i[int(sopts[0])] <= sopts[2]:
                 structNodeIDs[i[0]] = True
 
-    elif struct_type is 'ellipsoid':
+    elif struct_type == 'ellipsoid':
         """
         sopts is assumed to be a 9 element tuple with the following items:
         ellipsoid center coordinates (x,y,z)
@@ -158,7 +158,7 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
             if radVec.transpose().dot(A.I).dot(radVec) <= 1:
                 structNodeIDs[i[0]] = True
 
-    elif struct_type is 'cube':
+    elif struct_type == 'cube':
         """
         sopts is assumed to be a 6 element tuple with the following items:
         Location of most-negative corner (x,y,z) Respective cube dimensions
