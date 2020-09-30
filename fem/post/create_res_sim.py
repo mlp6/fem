@@ -276,7 +276,7 @@ def saveh5(**kwargs):
 
     compression = {'shuffle': True,
                    'compression': 'gzip',
-                   'compression_opts': 9}
+                   'compression_opts': 4}
 
     with h5py.File(kwargs['resfile'], 'w') as r:
         r.create_dataset(data=kwargs['arfidata'],
