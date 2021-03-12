@@ -41,11 +41,11 @@ FIELD_PARAMS = read_json(field_params_json);
 
 FIELD_PARAMS.measurementPointsandNodes = measurementPointsandNodes;
 % setup some input argument defaults
-if ~isfield(FIELD_PARAMS, 'threads')
+if ~FIELD_PARAMS.threads
     threads = 1;
 end;
 
-if ~isfield(FIELD_PARAMS, 'lownslow')
+if (nargin < 9),
     lownslow = true;
 end;
 
