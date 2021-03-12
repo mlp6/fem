@@ -12,4 +12,4 @@ fid = fopen(jsonfile);
 rawtext = fread(fid, '*char');
 fclose(fid);
 
-jsonstruct = jsondecode(rawtext);
+jsonstruct = jsondecode(rawtext');
