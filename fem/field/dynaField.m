@@ -28,6 +28,8 @@ set_field('fs', FIELD_PARAMS.sampling_freq_Hz);
 % define the transducer definition
 probe_json_file = [FIELD_PARAMS.transducer '.json'];
 probe = read_probe_json(probe_json_file);
+probe.type = probe.transducerType; %might want to change this in genTh instead of       here
+%FIELD_PARAMS.probe_params = probe;
 %probe = read_probe_json(FIELD_PARAMS.probe_params);
 Th = genTh(probe, FIELD_PARAMS);
 
