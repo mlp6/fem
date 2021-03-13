@@ -27,17 +27,16 @@ Ultrason., Ferroelec., Freq. Contr., 39, pp. 262-267,
 
 ## Installation
 These tools have been developed in a Linux environment, which is the
-recommended platform for usage.  Many of the Python and some of the C code will
-work on Windows and Mac platforms, but build tools for these systems is not
-outlined here and robust testing does not exist for those environments (i.e.,
-use at your own risk).  The Python tools require a version >= 3.4; 3.6.x is
-recommended.
+recommended platform for usage.  Most of the Python code, and some of the C
+code, will work on Windows and Mac platforms, but build tools for these systems
+is not outlined here and robust testing does not exist for those environments
+(i.e., use at your own risk).  The Python tools require a version >= 3.8.
 
 There are three different methods to use/install this package:
-1. *[RECOMMENDED]* Install this with `pipenv` in a local virtualenv: `pipenv install -e 
+1. *[RECOMMENDED]* Install this with `pip` in a local virtualenv: `pip install -e 
    git+https://github.com/mlp6/fem.git`.
 1. Clone this source directory and manually install it in your local
-   virtualenv: `pipenv install -e .`
+   virtualenv: `pip install -e .`
 1. Clone this source directory and work directly with it by defining
    `PYTHONPATH` to include the root directory this repository was cloned into.
    This is the easiest method if you are planning to actively edit/develop the
