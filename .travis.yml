@@ -1,19 +1,21 @@
-language: python
-python:
-      - "3.8"
-addons:
-      apt_packages:
-              - swig
-              - python-dev
-cache: pip
+jobs:
+    include:
+        - language: python
+          python:
+              - "3.8"
+          addons:
+              apt_packages:
+                  - swig
+                  - python-dev
+          cache: pip
 
-install:
-      - pip install -r requirements.txt 
-script: 
-      - pytest -v
-      - PYTHONPATH=.. sphinx-build -nT -b dummy docs/ docs/_build/html
-      - cd fem/post
-      - make 
-      - cd create_disp_dat_c
-      - make create_disp_dat
-      - make test
+          install:
+              - pip install -r requirements.txt 
+          script: 
+              - pytest -v
+              - PYTHONPATH=.. sphinx-build -nT -b dummy docs/ docs/_build/html
+              - cd fem/post
+              - make 
+              - cd create_disp_dat_c
+              - make create_disp_dat
+              - make test
