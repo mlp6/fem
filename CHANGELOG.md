@@ -114,3 +114,6 @@ See the git commit history for an effective change log pre-v6.3.1
 ## v8.1.2
 * CreateStructure.py - fix string match (`is` -> `==`)
 * CreateStructure.py - make the layer search be [</>]=, not just [<,>] (include the edges of the search now)
+
+## v8.1.3
+* FIX: JSON probe file / parameter reading

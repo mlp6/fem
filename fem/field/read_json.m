@@ -12,4 +12,8 @@ fid = fopen(jsonfile);
 rawtext = fread(fid, '*char');
 fclose(fid);
 
+if ~isrow(rawtext)
+    rawtext = rawtext';
+end
+
 jsonstruct = jsondecode(rawtext);

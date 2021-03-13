@@ -12,7 +12,7 @@ function Th = genTh(probe, FIELD_PARAMS)
 %     Th - pointer to Field II transducer definition
 %
 
-switch probe.type
+switch probe.transducerType
     case 'focused_multirow'
         Th = xdc_focused_multirow(probe.noElements, probe.width, ...
                                   probe.noElementsY, probe.height, ... 
