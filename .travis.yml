@@ -32,3 +32,6 @@ jobs:
       - cd create_disp_dat_c
       - make create_disp_dat
       - make test
+  - language: matlab
+    matlab: R2020a
+    script: matlab -batch "results = runtests(pwd, 'IncludeSubfolders', true), assertSuccess(results);"
