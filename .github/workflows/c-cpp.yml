@@ -1,0 +1,25 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: cd fem/post
+      run: cd fem/post
+    - name: make
+      run: make
+    - name: cd create_disp_dat_c
+      run: cd create_disp_dat_c
+    - name: make create_disp_dat
+      run: make
+    - name: run test
+      run: make test
