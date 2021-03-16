@@ -13,13 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: cd fem/post
-      run: cd fem/post
+    - name: cd fem/post/create_disp_dat_c
+      run: cd fem/post/create_disp_dat_c
     - name: make
-      run: make
-    - name: cd create_disp_dat_c
-      run: cd create_disp_dat_c
-    - name: make create_disp_dat
       run: make
     - name: run test
       run: make test
