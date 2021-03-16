@@ -8,20 +8,14 @@ on:
 
 jobs:
   build:
-    name: Run MATLAB Tests
+    name: Run MATLAB Unit Tests
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        matlab-version: ["R2020a", "R2020b"]
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
       - name: Install MATLAB
         uses: matlab-actions/setup-matlab@v0
-        with:
-          release: ${{ matrix.matlab-version }}
       - name: Run tests and generate artifacts
         uses: matlab-actions/run-tests@v0
 #        with:
