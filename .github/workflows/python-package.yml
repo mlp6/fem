@@ -37,3 +37,5 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+      env:
+        PY_IGNORE_IMPORTMISMATCH: 1
