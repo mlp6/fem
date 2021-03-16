@@ -1,4 +1,5 @@
 [![DOI](https://zenodo.org/badge/72387361.svg)](https://zenodo.org/badge/latestdoi/72387361)
+![WorkflowStatusBadge](https://github.com/mlp6/fem/actions/workflows/python-package.yml/badge.svg)
 <a href="https://travis-ci.org/mlp6/fem"><img src="https://travis-ci.org/mlp6/fem.svg?branch=main" /></a>
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
