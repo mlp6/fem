@@ -1,5 +1,6 @@
 [![DOI](https://zenodo.org/badge/72387361.svg)](https://zenodo.org/badge/latestdoi/72387361)
-![WorkflowStatusBadge](https://github.com/mlp6/fem/actions/workflows/python-package.yml/badge.svg)
+![PythonBadge](https://github.com/mlp6/fem/actions/workflows/python-package.yml/badge.svg)
+![CppBadge](https://github.com/mlp6/fem/actions/workflows/c-cpp.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Acoustic Radiation Force FEM Tools
