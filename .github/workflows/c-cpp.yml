@@ -10,11 +10,12 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    
+    defaults:
+      run:
+        working-directory: ./fem/post/create_disp_dat_c
     steps:
     - uses: actions/checkout@v2
-    - name: cd fem/post/create_disp_dat_c
-      run: cd fem/post/create_disp_dat_c
     - name: make
       run: make
     - name: run test
