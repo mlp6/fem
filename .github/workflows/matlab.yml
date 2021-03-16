@@ -12,12 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: check out repository
         uses: actions/checkout@v2
-      - name: Install MATLAB
+      - name: install MATLAB
         uses: matlab-actions/setup-matlab@v0
-      - name: Run tests and generate artifacts
+      - name: run tests
         uses: matlab-actions/run-tests@v0
-#        with:
-#          test-results-junit: test-results/results.xml
-#          code-coverage-cobertura: code-coverage/coverage.xml
