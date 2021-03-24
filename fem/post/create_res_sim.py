@@ -29,7 +29,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         dispout (str): binary displacement input filename
         legacynodes (Boolean): node IDs written with each timestep in dispout
         plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_oientation dimension = 0)
-        plane_orientation (float): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
+        plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
 
     """
     import sys
@@ -42,8 +42,6 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
 
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
-
-    plane_pos, direction = 0
     
     image_plane = extract_image_plane(snic, axes, plane_pos, plane_orientation)
 
