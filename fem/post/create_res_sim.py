@@ -15,7 +15,7 @@ def main():
 
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos = 0.0, plane_orientation = 0):
     """helper function to run high-level, 2D plane extraction
 
     look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
@@ -28,6 +28,8 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         nodedyn (str): node defintion input filename
         dispout (str): binary displacement input filename
         legacynodes (Boolean): node IDs written with each timestep in dispout
+        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_oientation dimension = 0)
+        plane_orientation (float): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
 
     """
     import sys
@@ -41,7 +43,9 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
-    image_plane = extract_image_plane(snic, axes, ele_pos=0.0)
+    plane_pos, direction = 0
+    
+    image_plane = extract_image_plane(snic, axes, plane_pos, plane_orientation)
 
     header = read_header(dispout)
     t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
@@ -182,12 +186,18 @@ def __read_cli():
                      help="read in disp.dat file that has node IDs saved for"
                           "each timestep",
                      action="store_true")
+    par.add_argument("--plane_pos", 
+                     help = "pos of plane wanted to extract",
+                     default = 0.0)
+    par.add_argument("--plane_orientation",
+                     help = "what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
+                     default = 0)
     args = par.parse_args()
 
     return args
 
 
-def extract_image_plane(snic, axes, ele_pos):
+def extract_image_plane(snic, axes, plane_pos, direction = 0):
     """extract 2D imaging plane node IDs
 
     Extract a 2D matrix of the imaging plane node IDs based on the
@@ -204,10 +214,11 @@ def extract_image_plane(snic, axes, ele_pos):
     """
     import numpy as np
 
-    ele0 = np.min(np.where(axes[0] >= ele_pos))
-    image_plane = np.squeeze(snic['id'][ele0, :, :]).astype(int)
+    plane0 = np.min(np.where(axes[direction] >= plane_pos))
+    image_plane = np.squeeze(snic['id'][plane0, :, :]).astype(int)
 
     return image_plane
+
 
 
 def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
