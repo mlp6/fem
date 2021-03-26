@@ -46,12 +46,15 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     image_plane = extract_image_plane(snic, axes, plane_pos, plane_orientation)
 
     header = read_header(dispout)
+    #print('header')
+    #print(header)
     t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
-
+    #print('t')
+    #print(t)
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
                                  disp_scale, legacynodes)
 
-    save_res_sim(ressim, arfidata, axes, t)
+    save_res_sim(ressim, arfidata, axes, t, plane_pos, plane_orientation)
 
     return 0
 
@@ -226,7 +229,7 @@ def extract_image_plane(snic, axes, plane_pos, direction = 0):
 
 
 
-def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
+def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_pos = 0, plane_orientation = 0):
     """Save res_sim.[mat,h5,pvd] file with arfidata and relevant axes.
 
     Data are saved as float32 (single) to save space.
@@ -243,14 +246,27 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
 
     """
     import os
-
+    print(axes)
     # scale axes
     if arfidata.ndim == 4:
         elev = axis_scale[0] * axes[0]
-    lat = axis_scale[1] * axes[1]
-    axial = axis_scale[2] * axes[2]
-    if axis_scale[2] < 1:
-        axial = axial[::-1]
+    if plane_orientation == 0: # means an elevational plane
+        lat = axis_scale[1] * axes[1]
+        axial = axis_scale[2] * axes[2]
+        elev = axis_scale[0] * plane_pos # pass value of what it was at
+        if axis_scale[2] < 1:
+            axial = axial[::-1]
+    elif plane_orientation == 1: #means a lateral plane
+        elev = axis_scale[0] * axes[0]
+        lat = axis_scale[1] * plane_pos
+        axial = axis_scale[2] * axes [2]
+        if axis_scale[2]<1:
+            axial = axial[::-1]
+    elif plane_orientation == 2:
+        elev = axis_scale[0] * axes[0]
+        lat = axis_scale[1] * axes[1]
+        axial = axis_scale[2] * plane_pos
+        
 
     logger.info(f'Saving data to: {resfile}')
 
@@ -258,6 +274,7 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
               'arfidata': arfidata,
               'axial': axial,
               'lat': lat,
+              'elev': elev,
               't': t}
     if arfidata.ndim == 4:
         kwargs['elev'] = elev
