@@ -211,10 +211,17 @@ def extract_image_plane(snic, axes, plane_pos, direction = 0):
 
     """
     import numpy as np
+    plane0 = np.min(np.where(axes[direction]>=plane_pos))
 
-    plane0 = np.min(np.where(axes[direction] >= plane_pos))
-    image_plane = np.squeeze(snic['id'][plane0, :, :]).astype(int)
-
+    if direction == 0:
+        image_plane = np.squeeze(snic['id'][plane0,:,:]).astype(int)
+    elif direction == 1:
+        image_plane = np.squeeze(snic['id'][:,plane0,:]).astype(int)
+    elif direction == 2:
+        image_plane = np.squeeze(snic['id'][:,:,plane0]).astype(int)
+    else:
+        print('not a valid axes direction')
+    
     return image_plane
 
 
