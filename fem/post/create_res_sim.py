@@ -53,9 +53,9 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     #print(t)
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
                                  disp_scale, legacynodes)
-
-    save_res_sim(ressim, arfidata, axes, t, plane_pos, plane_orientation)
-
+    axis_scale=(-10, 10, -10)
+    save_res_sim(ressim, arfidata, axes, t, axis_scale, plane_pos, plane_orientation)
+    
     return 0
 
 
@@ -246,7 +246,6 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
 
     """
     import os
-    print(axes)
     # scale axes
     if arfidata.ndim == 4:
         elev = axis_scale[0] * axes[0]
