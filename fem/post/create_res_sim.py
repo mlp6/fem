@@ -210,7 +210,7 @@ def extract_image_plane(snic, axes, plane_pos, direction = 0):
       ele_pos: elevation position for plane of interest
 
     Returns:
-      image_plane (node IDs)
+        image_plane (node IDs)
 
     """
     import numpy as np
@@ -218,10 +218,46 @@ def extract_image_plane(snic, axes, plane_pos, direction = 0):
 
     if direction == 0:
         image_plane = np.squeeze(snic['id'][plane0,:,:]).astype(int)
+        print('direction 0')
+        print('image_plane.shape')
+        print(image_plane.shape)
+        print('image_plane[0][0]')
+        print(image_plane[0][0])
+        print('image_plane[0][-1]')
+        print(image_plane[0][-1])
+        print('image_plane[-1][0]')
+        print(image_plane[-1][0])
+        print('image_plane[-1][-1]')
+        print(image_plane[-1][-1])
+        print('------------')
     elif direction == 1:
         image_plane = np.squeeze(snic['id'][:,plane0,:]).astype(int)
+        print('direction 1')
+        print('image_plane.shape')
+        print(image_plane.shape)
+        print('image_plane[0][0]')
+        print(image_plane[0][0])
+        print('image_plane[0][-1]')
+        print(image_plane[0][-1])
+        print('image_plane[-1][0]')
+        print(image_plane[-1][0])
+        print('image_plane[-1][-1]')
+        print(image_plane[-1][-1])
+        print('------------')
     elif direction == 2:
         image_plane = np.squeeze(snic['id'][:,:,plane0]).astype(int)
+        print('direction 2')
+        print('image_plane.shape')
+        print(image_plane.shape)
+        print('image_plane[0][0]')
+        print(image_plane[0][0])
+        print('image_plane[0][-1]')
+        print(image_plane[0][-1])
+        print('image_plane[-1][0]')
+        print(image_plane[-1][0])
+        print('image_plane[-1][-1]')
+        print(image_plane[-1][-1])
+        print('------------')
     else:
         print('not a valid axes direction')
     
