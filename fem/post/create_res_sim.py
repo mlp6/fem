@@ -15,7 +15,7 @@ def main():
 
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos = 0.0, plane_orientation = 0):
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos = 0.0, plane_orientation = 0, ele_pos = 0):
     """helper function to run high-level, 2D plane extraction
 
     look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
@@ -30,7 +30,8 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         legacynodes (Boolean): node IDs written with each timestep in dispout
         plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_oientation dimension = 0)
         plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
-
+        ele_pos (float): deprecated, old input for what elevational plane to use, prefer use of plane_pos instead
+    
     """
     import sys
     from pathlib import Path
@@ -40,6 +41,12 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
 
     import fem_mesh
 
+    try:
+        plane_pos
+    except NameError:
+        plane_pos = ele_pos
+        
+        
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
     
@@ -193,6 +200,9 @@ def __read_cli():
     par.add_argument("--plane_orientation",
                      help = "what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
                      default = 0)
+    par.add_argument('--ele_pos', 
+                     help = 'elevational position, now depricated, use plane_pos instead',
+                     default = 0)
     args = par.parse_args()
 
     return args
@@ -218,46 +228,10 @@ def extract_image_plane(snic, axes, plane_pos, direction = 0):
 
     if direction == 0:
         image_plane = np.squeeze(snic['id'][plane0,:,:]).astype(int)
-        print('direction 0')
-        print('image_plane.shape')
-        print(image_plane.shape)
-        print('image_plane[0][0]')
-        print(image_plane[0][0])
-        print('image_plane[0][-1]')
-        print(image_plane[0][-1])
-        print('image_plane[-1][0]')
-        print(image_plane[-1][0])
-        print('image_plane[-1][-1]')
-        print(image_plane[-1][-1])
-        print('------------')
     elif direction == 1:
         image_plane = np.squeeze(snic['id'][:,plane0,:]).astype(int)
-        print('direction 1')
-        print('image_plane.shape')
-        print(image_plane.shape)
-        print('image_plane[0][0]')
-        print(image_plane[0][0])
-        print('image_plane[0][-1]')
-        print(image_plane[0][-1])
-        print('image_plane[-1][0]')
-        print(image_plane[-1][0])
-        print('image_plane[-1][-1]')
-        print(image_plane[-1][-1])
-        print('------------')
     elif direction == 2:
         image_plane = np.squeeze(snic['id'][:,:,plane0]).astype(int)
-        print('direction 2')
-        print('image_plane.shape')
-        print(image_plane.shape)
-        print('image_plane[0][0]')
-        print(image_plane[0][0])
-        print('image_plane[0][-1]')
-        print(image_plane[0][-1])
-        print('image_plane[-1][0]')
-        print(image_plane[-1][0])
-        print('image_plane[-1][-1]')
-        print(image_plane[-1][-1])
-        print('------------')
     else:
         print('not a valid axes direction')
     
