@@ -300,19 +300,19 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
     elif plane_orientation == 2:
         elev = axis_scale[0] * axes[0]
         lat = axis_scale[1] * axes[1]
-        axial = axis_scale[2] * plane_pos
+        axial = axis_scale[2] * plane_pos 
         
-
-    logger.info(f'Saving data to: {resfile}')
+        
+    logger.info(f'Saving data to: {resfile}')   
+    #if arfidata.ndim == 4:
+     #   kwargs['elev'] = elev
 
     kwargs = {'resfile': resfile,
               'arfidata': arfidata,
               'axial': axial,
               'lat': lat,
               'elev': elev,
-              't': t}
-    if arfidata.ndim == 4:
-        kwargs['elev'] = elev
+              't': t}   
 
     output_switch = {
         '.h5': saveh5,
@@ -445,6 +445,7 @@ def savepvd(ts_start=0, part=0, **kwargs):
 
             pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{vtrfilename.name}"/>\n')
 
+            kwargs['elev'] = np.array(kwargs['elev'])
             gridToVTK(vtrfilename.with_suffix('').name,
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),
