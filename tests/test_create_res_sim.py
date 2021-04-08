@@ -23,7 +23,22 @@ def test_extract_image_plane(sorted_nodes, axes):
     assert image_plane[0][-1] == 1221
     assert image_plane[-1][0] == 121
     assert image_plane[-1][-1] == 1331
-
+    
+    image_plane = extract_image_plane(sorted_nodes, axes, plane_pos = 0, direction =1)
+    
+    assert image_plane.shape == (11,11)
+    assert image_plane[0][0] == 11
+    assert image_plane[0][-1] == 1221
+    assert image_plane[-1][0] == 1
+    assert image_plane[-1][-1] == 1211
+    
+    image_plane = extract_image_plane(sorted_nodes, axes, plane_pos = 0, direction =2)
+    
+    assert image_plane.shape == (11,11)
+    assert image_plane[0][0] == 11
+    assert image_plane[0][-1] == 121
+    assert image_plane[-1][0] == 1
+    assert image_plane[-1][-1] == 111
 
 def test_get_t():
     """test generation of time vector
