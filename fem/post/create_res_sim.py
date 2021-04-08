@@ -28,7 +28,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         nodedyn (str): node defintion input filename
         dispout (str): binary displacement input filename
         legacynodes (Boolean): node IDs written with each timestep in dispout
-        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_oientation dimension = 0)
+        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
         plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
         ele_pos (float): deprecated, old input for what elevational plane to use, prefer use of plane_pos instead
     
@@ -217,7 +217,10 @@ def extract_image_plane(snic, axes, plane_pos, direction = 0):
     Args:
       snic: sorted node IDs and coordinates
       axes: spatial axes
-      ele_pos: elevation position for plane of interest
+      plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
+      plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
+      ele_pos (float): deprecated, old input for what elevational plane to use, prefer use of plane_pos instead
+    
 
     Returns:
         image_plane (node IDs)
