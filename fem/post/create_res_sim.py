@@ -204,7 +204,7 @@ def __read_cli():
     return args
 
 
-def extract_image_plane(snic, axes, plane_pos, direction = 0):
+def extract_image_plane(snic, axes, plane_pos:float=0.0, direction:int=0):
     """extract 2D imaging plane node IDs
 
     Extract a 2D matrix of the imaging plane node IDs based on the
@@ -215,30 +215,34 @@ def extract_image_plane(snic, axes, plane_pos, direction = 0):
       axes: spatial axes
       plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
       plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
-      ele_pos (float): deprecated, old input for what elevational plane to use, prefer use of plane_pos instead
-    
+
+    Raises:
+        TypeError: deprecated ele_pos passed as keyword argument
+        ValueError: invalid direction axis specified
 
     Returns:
         image_plane (node IDs)
 
     """
     import numpy as np
-    plane0 = np.min(np.where(axes[direction]>=plane_pos))
+
+    if direction < 0 or direction > 2:
+        logging.error('Not a valid axes direction.')
+        raise ValueError('Invalid direction axis specified.')
+
+    plane = np.min(np.where(axes[direction]>=plane_pos))
 
     if direction == 0:
-        image_plane = np.squeeze(snic['id'][plane0,:,:]).astype(int)
+        image_plane = np.squeeze(snic['id'][plane,:,:]).astype(int)
     elif direction == 1:
-        image_plane = np.squeeze(snic['id'][:,plane0,:]).astype(int)
+        image_plane = np.squeeze(snic['id'][:,plane,:]).astype(int)
     elif direction == 2:
-        image_plane = np.squeeze(snic['id'][:,:,plane0]).astype(int)
-    else:
-        print('not a valid axes direction')
+        image_plane = np.squeeze(snic['id'][:,:,plane]).astype(int)
     
     return image_plane
 
 
-
-def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_pos = 0, plane_orientation = 0):
+def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_pos=0.0, plane_orientation=0):
     """Save res_sim.[mat,h5,pvd] file with arfidata and relevant axes.
 
     Data are saved as float32 (single) to save space.
