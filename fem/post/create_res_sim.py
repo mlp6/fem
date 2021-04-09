@@ -15,7 +15,7 @@ def main():
 
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos = 0.0, plane_orientation = 0, ele_pos = 0):
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos = 0.0, plane_orientation = 0):
     """helper function to run high-level, 2D plane extraction
 
     look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
@@ -30,7 +30,6 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         legacynodes (Boolean): node IDs written with each timestep in dispout
         plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
         plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
-        ele_pos (float): deprecated, old input for what elevational plane to use, prefer use of plane_pos instead
     
     """
     import sys
@@ -200,9 +199,6 @@ def __read_cli():
     par.add_argument("--plane_orientation",
                      help = "what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
                      default = 0)
-    par.add_argument('--ele_pos', 
-                     help = 'elevational position, now depricated, use plane_pos instead',
-                     default = 0)
     args = par.parse_args()
 
     return args
@@ -257,6 +253,7 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
         plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
 
     Raises:
+        ValueError: Cannot save 2D PVD timeseries data.
         KeyError: Trying to save unknown output type.
 
     """
