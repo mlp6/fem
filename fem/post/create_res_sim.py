@@ -15,7 +15,7 @@ def main():
 
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False):
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos = 0.0, plane_orientation = 0):
     """helper function to run high-level, 2D plane extraction
 
     look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
@@ -28,7 +28,9 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         nodedyn (str): node defintion input filename
         dispout (str): binary displacement input filename
         legacynodes (Boolean): node IDs written with each timestep in dispout
-
+        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
+        plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
+    
     """
     import sys
     from pathlib import Path
@@ -38,19 +40,28 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
 
     import fem_mesh
 
+    try:
+        plane_pos
+    except NameError:
+        plane_pos = ele_pos
+        
+        
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
-
-    image_plane = extract_image_plane(snic, axes, ele_pos=0.0)
+    
+    image_plane = extract_image_plane(snic, axes, plane_pos, plane_orientation)
 
     header = read_header(dispout)
+    #print('header')
+    #print(header)
     t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
-
+    #print('t')
+    #print(t)
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
                                  disp_scale, legacynodes)
-
-    save_res_sim(ressim, arfidata, axes, t)
-
+    axis_scale=(-10, 10, -10)
+    save_res_sim(ressim, arfidata, axes, t, axis_scale, plane_pos, plane_orientation)
+    
     return 0
 
 
@@ -182,12 +193,18 @@ def __read_cli():
                      help="read in disp.dat file that has node IDs saved for"
                           "each timestep",
                      action="store_true")
+    par.add_argument("--plane_pos", 
+                     help = "pos of plane wanted to extract",
+                     default = 0.0)
+    par.add_argument("--plane_orientation",
+                     help = "what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
+                     default = 0)
     args = par.parse_args()
 
     return args
 
 
-def extract_image_plane(snic, axes, ele_pos):
+def extract_image_plane(snic, axes, plane_pos:float=0.0, direction:int=0):
     """extract 2D imaging plane node IDs
 
     Extract a 2D matrix of the imaging plane node IDs based on the
@@ -196,21 +213,36 @@ def extract_image_plane(snic, axes, ele_pos):
     Args:
       snic: sorted node IDs and coordinates
       axes: spatial axes
-      ele_pos: elevation position for plane of interest
+      plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
+      plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
+
+    Raises:
+        TypeError: deprecated ele_pos passed as keyword argument
+        ValueError: invalid direction axis specified
 
     Returns:
-      image_plane (node IDs)
+        image_plane (node IDs)
 
     """
     import numpy as np
 
-    ele0 = np.min(np.where(axes[0] >= ele_pos))
-    image_plane = np.squeeze(snic['id'][ele0, :, :]).astype(int)
+    if direction < 0 or direction > 2:
+        logging.error('Not a valid axes direction.')
+        raise ValueError('Invalid direction axis specified.')
 
+    plane = np.min(np.where(axes[direction]>=plane_pos))
+
+    if direction == 0:
+        image_plane = np.squeeze(snic['id'][plane,:,:]).astype(int)
+    elif direction == 1:
+        image_plane = np.squeeze(snic['id'][:,plane,:]).astype(int)
+    elif direction == 2:
+        image_plane = np.squeeze(snic['id'][:,:,plane]).astype(int)
+    
     return image_plane
 
 
-def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
+def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_pos=0.0, plane_orientation=0):
     """Save res_sim.[mat,h5,pvd] file with arfidata and relevant axes.
 
     Data are saved as float32 (single) to save space.
@@ -221,30 +253,46 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10)):
         axes (ndarrays tuple): ele, lat, axial (mesh units)
         t (ndarray): time
         axis_scale (floats tuple): scale axes sign & mag
+        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
+        plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
 
     Raises:
+        ValueError: Cannot save 2D PVD timeseries data.
         KeyError: Trying to save unknown output type.
 
     """
     import os
-
     # scale axes
     if arfidata.ndim == 4:
         elev = axis_scale[0] * axes[0]
-    lat = axis_scale[1] * axes[1]
-    axial = axis_scale[2] * axes[2]
-    if axis_scale[2] < 1:
-        axial = axial[::-1]
-
-    logger.info(f'Saving data to: {resfile}')
+    if plane_orientation == 0: # means an elevational plane
+        lat = axis_scale[1] * axes[1]
+        axial = axis_scale[2] * axes[2]
+        elev = axis_scale[0] * plane_pos # pass value of what it was at
+        if axis_scale[2] < 1:
+            axial = axial[::-1]
+    elif plane_orientation == 1: #means a lateral plane
+        elev = axis_scale[0] * axes[0]
+        lat = axis_scale[1] * plane_pos
+        axial = axis_scale[2] * axes [2]
+        if axis_scale[2]<1:
+            axial = axial[::-1]
+    elif plane_orientation == 2:
+        elev = axis_scale[0] * axes[0]
+        lat = axis_scale[1] * axes[1]
+        axial = axis_scale[2] * plane_pos 
+        
+        
+    logger.info(f'Saving data to: {resfile}')   
+    #if arfidata.ndim == 4:
+     #   kwargs['elev'] = elev
 
     kwargs = {'resfile': resfile,
               'arfidata': arfidata,
               'axial': axial,
               'lat': lat,
-              't': t}
-    if arfidata.ndim == 4:
-        kwargs['elev'] = elev
+              'elev': elev,
+              't': t}   
 
     output_switch = {
         '.h5': saveh5,
@@ -377,6 +425,7 @@ def savepvd(ts_start=0, part=0, **kwargs):
 
             pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{vtrfilename.name}"/>\n')
 
+            kwargs['elev'] = np.array(kwargs['elev'])
             gridToVTK(vtrfilename.with_suffix('').name,
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),

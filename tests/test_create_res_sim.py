@@ -1,4 +1,5 @@
 from pathlib import Path
+import pytest
 
 examplesPath = Path(__file__).parents[1] / "examples"
 
@@ -24,6 +25,35 @@ def test_extract_image_plane(sorted_nodes, axes):
     assert image_plane[-1][0] == 121
     assert image_plane[-1][-1] == 1331
 
+    # the ele_post kwarg is deprecated and should now raise a TypeError if 
+    # passed
+    with pytest.raises(TypeError):
+        image_plane = extract_image_plane(sorted_nodes, axes, ele_pos=0.0)
+
+    assert image_plane.shape == (11, 11)
+    assert image_plane[0][0] == 11
+    assert image_plane[0][-1] == 1221
+    assert image_plane[-1][0] == 121
+    assert image_plane[-1][-1] == 1331
+
+    image_plane = extract_image_plane(sorted_nodes, axes, plane_pos=0.0, direction=1)
+    
+    assert image_plane.shape == (11,11)
+    assert image_plane[0][0] == 1
+    assert image_plane[0][-1] == 1211
+    assert image_plane[-1][0] == 11
+    assert image_plane[-1][-1] == 1221
+    
+    image_plane = extract_image_plane(sorted_nodes, axes, plane_pos=0.0, direction=2)
+    
+    assert image_plane.shape == (11,11)
+    assert image_plane[0][0] == 1211#11
+    assert image_plane[0][-1] == 1321#121
+    assert image_plane[-1][0] == 1221#1
+    assert image_plane[-1][-1] == 1331#111
+
+    with pytest.raises(ValueError):
+        image_plane = extract_image_plane(sorted_nodes, axes, plane_pos=0.0, direction=3)
 
 def test_get_t():
     """test generation of time vector
