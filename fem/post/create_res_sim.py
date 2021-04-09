@@ -253,6 +253,8 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
         axes (ndarrays tuple): ele, lat, axial (mesh units)
         t (ndarray): time
         axis_scale (floats tuple): scale axes sign & mag
+        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
+        plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
 
     Raises:
         KeyError: Trying to save unknown output type.
