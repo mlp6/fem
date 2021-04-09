@@ -120,3 +120,8 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.1.4
 * FIX: JSON parameter input for Field II sim
+
+## v8.2.0
+* NEW: `create_res_sim`: `extract_image_plane()` can now extract an arbitrary
+  plane in any specified dimension instead of just an axial-lateral plane at a
+  specified elevation position.
