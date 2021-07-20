@@ -261,6 +261,9 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
     # scale axes
     if arfidata.ndim == 4:
         elev = axis_scale[0] * axes[0]
+    lat = axis_scale[1] * axes[1]
+    axial = axis_scale[2] * axes[2]
+
     if plane_orientation == 0: # means an elevational plane
         lat = axis_scale[1] * axes[1]
         axial = axis_scale[2] * axes[2]
