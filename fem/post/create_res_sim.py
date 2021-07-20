@@ -15,7 +15,7 @@ def main():
 
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos = 0.0, plane_orientation = 0):
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos:float=0.0, plane_orientation:int=0):
     """helper function to run high-level, 2D plane extraction
 
     look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
@@ -28,8 +28,8 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         nodedyn (str): node defintion input filename
         dispout (str): binary displacement input filename
         legacynodes (Boolean): node IDs written with each timestep in dispout
-        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
-        plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
+        plane_pos (float): position of the plane to extract (in the specified plane_orientation)
+        plane_orientation (int): orientation plane to extract from (0 = elev, 1 = lateral, 2 = axial)
     
     """
     import sys
@@ -52,11 +52,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     image_plane = extract_image_plane(snic, axes, plane_pos, plane_orientation)
 
     header = read_header(dispout)
-    #print('header')
-    #print(header)
     t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
-    #print('t')
-    #print(t)
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
                                  disp_scale, legacynodes)
     axis_scale=(-10, 10, -10)
@@ -211,10 +207,10 @@ def extract_image_plane(snic, axes, plane_pos:float=0.0, direction:int=0):
     elevation position (mesh coordinates).
 
     Args:
-      snic: sorted node IDs and coordinates
-      axes: spatial axes
-      plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
-      plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
+        snic: sorted node IDs and coordinates
+        axes: spatial axes
+        plane_pos (float): position of the plane to extract (in the specified plane_orientation)
+        plane_orientation (int): orientation plane to extract from (0 = elev, 1 = lateral, 2 = axial)
 
     Raises:
         TypeError: deprecated ele_pos passed as keyword argument
@@ -242,7 +238,7 @@ def extract_image_plane(snic, axes, plane_pos:float=0.0, direction:int=0):
     return image_plane
 
 
-def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_pos=0.0, plane_orientation=0):
+def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_pos=None, plane_orientation=None):
     """Save res_sim.[mat,h5,pvd] file with arfidata and relevant axes.
 
     Data are saved as float32 (single) to save space.
@@ -253,8 +249,8 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
         axes (ndarrays tuple): ele, lat, axial (mesh units)
         t (ndarray): time
         axis_scale (floats tuple): scale axes sign & mag
-        plane_pos (float): position of the plane wanted to extract (example 0 means plane where plane_orientation dimension = 0)
-        plane_orientation (int): what orientation plane to extract from, 0 = elevationa, 1 = lateral, 2 = axial
+        plane_pos (float): position of the plane to extract (in the specified plane_orientation)
+        plane_orientation (int): orientation plane to extract from (0 = elev, 1 = lateral, 2 = axial)
 
     Raises:
         ValueError: Cannot save 2D PVD timeseries data.
@@ -284,8 +280,6 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
         
         
     logger.info(f'Saving data to: {resfile}')   
-    #if arfidata.ndim == 4:
-     #   kwargs['elev'] = elev
 
     kwargs = {'resfile': resfile,
               'arfidata': arfidata,
