@@ -422,7 +422,6 @@ def savepvd(ts_start=0, part=0, **kwargs):
 
             pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{vtrfilename.name}"/>\n')
 
-            kwargs['elev'] = np.array(kwargs['elev'])
             gridToVTK(vtrfilename.with_suffix('').name,
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),
