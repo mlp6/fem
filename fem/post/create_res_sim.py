@@ -210,7 +210,7 @@ def extract_image_plane(snic, axes, plane_pos:float=0.0, direction:int=0):
         snic: sorted node IDs and coordinates
         axes: spatial axes
         plane_pos (float): position of the plane to extract (in the specified plane_orientation)
-        plane_orientation (int): orientation plane to extract from (0 = elev, 1 = lateral, 2 = axial)
+        direction (int): orientation plane to extract from (0 = elev, 1 = lateral, 2 = axial)
 
     Raises:
         TypeError: deprecated ele_pos passed as keyword argument
