@@ -129,3 +129,6 @@ See the git commit history for an effective change log pre-v6.3.1
 ## v8.2.1
 * FIX: `create_res_sim`: restore ability to save 3D data (not just a single
   plane, which was a bug introduced in `v8/2/0`)
+
+## v8.2.2
+* REVERT: mistakenly-deleted field/dynaField.m
