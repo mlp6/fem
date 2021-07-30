@@ -59,7 +59,7 @@ def parse_line(line):
         line (str): raw data line from nodout
 
     Returns:
-        raw_data (float):
+        raw_data (list of floats): [nodeID, xdisp, ydisp, zdisp]
 
     """
     # first 10 characters (int)
@@ -83,8 +83,22 @@ def parse_line(line):
 
     raw_data = [nodeID, xdisp, ydisp, zdisp]
 
+    return raw_data
+
+
+def parse_line_regex(line):
+    """Parse raw data line into list of floats using regex.
+
+    This regex approach works, but is very slow!!  It also requires two helper functions to clean up
+    malformed data written by ls-dyna (done on purpose, probably to save space).
+
+    Args:
+        line (str): raw data line from nodout
+
+    Returns:
+        raw_data (list of floats): [nodeID, xdisp, ydisp, zdisp]
+
     """
-    # THIS REGEX APPROACH WORKS, BUT IS VERY SLOW
     try:
         raw_data = line.split()
         raw_data = [float(x) for x in raw_data]
@@ -93,7 +107,6 @@ def parse_line(line):
         line = correct_Enot(line)
         raw_data = line.split()
         raw_data = [float(x) for x in raw_data[0:4]]
-    """
 
     return raw_data
 
@@ -201,10 +214,13 @@ def process_timestep_data(data, outfile, writenode):
     """write data for the entire timestep to outfile
 
     Args:
-        data (ndarray):
+        data (list): list of all data, with each entry containing [nodeID, xdisp, ydisp, zdisp]
         outfile (obj): output file object
         writenode (Boolean): Boolean if the node IDs should be written to save
             ~25% of the disp.dat file size
+
+    Returns:
+        None
 
     """
     from struct import pack
@@ -226,6 +242,9 @@ def correct_Enot(line):
     so check for those in the line data and change those to 'E-100' so that
     we can convert to floats
 
+    This is a helper function only called by parse_line_regex(), which is currently not being used
+    by default.
+
     Args:
         line (str): string of split raw string data
 
@@ -243,6 +262,9 @@ def correct_Enot(line):
 
 def correct_neg(line):
     """Add space before negative coefficient numbers.
+
+    This is a helper function only called by parse_line_regex(), which is currently not being used
+    by default.
 
     Args:
         line (str): raw read line
