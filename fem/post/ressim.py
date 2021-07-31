@@ -41,6 +41,7 @@ class ResSim:
         from scipy.io import loadmat
         import h5py
         from pathlib import Path
+        import numpy as np
 
         filename = Path(self.filename)
 
@@ -53,10 +54,10 @@ class ResSim:
             logger.exception(f'{filename} failed to load')
             raise TypeError
 
-        self.lat = d['lat'].squeeze()
-        self.axial = d['axial'].squeeze()
-        self.t = d['t'].squeeze() * self.time_scale_factor
-        self.arfidata = d['arfidata'] * self.disp_scale_factor
+        self.lat = np.squeeze(d['lat'])
+        self.axial = np.squeeze(d['axial'])
+        self.t = np.squeeze(d['t'])* self.time_scale_factor
+        self.arfidata = np.squeeze(d['arfidata']) * self.disp_scale_factor
 
     def plot(self, timestep, show=True, save=False, savename='file',
              xlabel='Lateral (mm)', ylabel='Axial (mm)', title=None):
