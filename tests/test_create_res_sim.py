@@ -25,7 +25,7 @@ def test_extract_image_plane(sorted_nodes, axes):
     assert image_plane[-1][0] == 121
     assert image_plane[-1][-1] == 1331
 
-    # the ele_post kwarg is deprecated and should now raise a TypeError if 
+    # the ele_post kwarg is deprecated and should now raise a TypeError if
     # passed
     with pytest.raises(TypeError):
         image_plane = extract_image_plane(sorted_nodes, axes, ele_pos=0.0)
@@ -37,15 +37,15 @@ def test_extract_image_plane(sorted_nodes, axes):
     assert image_plane[-1][-1] == 1331
 
     image_plane = extract_image_plane(sorted_nodes, axes, plane_pos=0.0, direction=1)
-    
+
     assert image_plane.shape == (11,11)
     assert image_plane[0][0] == 1
     assert image_plane[0][-1] == 1211
     assert image_plane[-1][0] == 11
     assert image_plane[-1][-1] == 1221
-    
+
     image_plane = extract_image_plane(sorted_nodes, axes, plane_pos=0.0, direction=2)
-    
+
     assert image_plane.shape == (11,11)
     assert image_plane[0][0] == 1211#11
     assert image_plane[0][-1] == 1321#121
@@ -109,6 +109,9 @@ def test_savepvd(tmpdir):
     import filecmp
 
     pvdfile = tmpdir.join('res_sim.pvd')
+    vtr0file = tmpdir.join('res_sim_T0000.vtr')
+    vtr1file = tmpdir.join('res_sim_T0001.vtr')
+    vtr2file = tmpdir.join('res_sim_T0002.vtr')
     gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
 
     run(dynadeck=gauss_qsym_pml_example_path / "gauss_qsym_pml.dyn",
@@ -117,3 +120,6 @@ def test_savepvd(tmpdir):
         ressim=pvdfile.strpath)
 
     assert filecmp.cmp(gauss_qsym_pml_example_path / "res_sim.pvd", pvdfile.strpath)
+    assert filecmp.cmp(gauss_qsym_pml_example_path / "res_sim_T0000.vtr", vtr0file.strpath)
+    assert filecmp.cmp(gauss_qsym_pml_example_path / "res_sim_T0001.vtr", vtr1file.strpath)
+    assert filecmp.cmp(gauss_qsym_pml_example_path / "res_sim_T0002.vtr", vtr2file.strpath)

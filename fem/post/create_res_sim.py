@@ -416,13 +416,13 @@ def savepvd(ts_start=0, part=0, **kwargs):
             veldata = np.asfortranarray(np.squeeze(veldata_calc[:, :, :, ts])).transpose()
 
             timestep = ts_start + ts
-            vtrfilename = Path(f'{resfileprefix.name}_T{ts:04d}.vtr')
+            vtrfilename = Path(f'{resfileprefix}_T{ts:04d}.vtr')
 
-            logger.info(f"Writing {vtrfilename}. [{ts}/{num_timesteps}]")
+            logger.info(f"Writing {vtrfilename.name}. [{ts}/{num_timesteps}]")
 
             pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{vtrfilename.name}"/>\n')
 
-            gridToVTK(vtrfilename.with_suffix('').name,
+            gridToVTK(str(vtrfilename.with_suffix('')),
                       kwargs['elev'].ravel(),
                       kwargs['lat'].ravel(),
                       kwargs['axial'].ravel(),
