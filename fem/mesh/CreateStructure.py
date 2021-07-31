@@ -183,6 +183,8 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
 
     if len(structNodeIDs) == 0:
         logger.warning("No Structure nodes were found.")
+    else:
+        logger.info(f"{len(structNodeIDs)} structural nodes were found.")
 
     return structNodeIDs
 
@@ -217,6 +219,8 @@ def findStructElemIDs(elefile, structNodeIDs):
     if len(structElemIDs) == 0:
         logger.warning("No structure elements were found.")
         sys.exit()
+    else:
+        logger.info(f"{len(structElemIDs)} structural elements were found.")
 
     return (elems, structElemIDs)
 
@@ -242,6 +246,8 @@ def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
             NEFILE.write('{}\n'.format(','.join('{}'.format(val)
                                                 for val in j[0:10])))
         NEFILE.write('*END')
+
+    logger.info(f"{len(structElemIDs)} structural of {len(elems)} total elements written to {nefile}.")
 
 
 def define_struct_type(args):
