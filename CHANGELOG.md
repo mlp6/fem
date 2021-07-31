@@ -137,3 +137,9 @@ See the git commit history for an effective change log pre-v6.3.1
 * Add more logging.
 * Augment / correct docstrings.
 * Refactoring of code.
+
+## v8.3.0
+* ressim.py - ADD ability to load res_sim.h5 (HDF5) files
+
+## v8.3.1
+* ressim.py - FIX numpy array casting of HDF-read arrays
