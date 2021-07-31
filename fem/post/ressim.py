@@ -7,7 +7,7 @@ class ResSim:
     """plot and animate res_sim.mat simulation data
 
     Attributes:
-        filename (str): name of file to load in (MATv5)
+        filename (str): name of file to load in (MATv5 or HDF5)
         arfidata (float ndarray): arfidata
         axial (float ndarray): depth
         lat (float ndarray): lateral
@@ -29,21 +29,29 @@ class ResSim:
         self.load()
 
     def load(self):
-        """load MATv5 data
+        """load MATv5 or HDF5 data
 
         Args:
             filename (str): input filename
 
-        Todo:
-            * Make compatible with v7.3 (HDF5) format files.
+        Raises:
+            TypeError: MATv5 or HDF5 load exceptions
 
         """
         from scipy.io import loadmat
+        import h5py
+        from pathlib import Path
+
+        filename = Path(self.filename)
 
         try:
-            d = loadmat(self.filename)
-        except:
-            logger.exception(f'{self.filename} most likely not MATv5 format')
+            if filename.suffix == '.mat':
+                d = loadmat(filename)
+            elif filename.suffix == '.h5':
+                d = h5py.File(filename)
+        except TypeError:
+            logger.exception(f'{filename} failed to load')
+            raise TypeError
 
         self.lat = d['lat'].squeeze()
         self.axial = d['axial'].squeeze()
