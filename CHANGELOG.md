@@ -132,3 +132,8 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.2.2
 * REVERT: mistakenly-deleted field/dynaField.m
+
+## v8.2.3
+* Add more logging.
+* Augment / correct docstrings.
+* Refactoring of code.
