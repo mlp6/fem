@@ -25,7 +25,12 @@ def main():
 
 
 def parse_cli():
-    """read in CLI arguments"""
+    """read in CLI arguments
+    
+    Returns:
+        args: CLI arguments
+
+    """
     import argparse
 
     par = argparse.ArgumentParser(
@@ -74,21 +79,22 @@ def parse_cli():
     return args
 
 
-def findStructNodeIDs(nodefile, struct_type, sopts):
+def findStructNodeIDs(nodefile:str, struct_type:str, sopts) -> dict:
     """find nodes in given geometry
 
     Find node IDs that fall within a specified geometry (sphere, layer,
     cube, ellipsoid).
 
     Args:
-      nodefile (str): nodes.dyn
-      struct_type (str): sphere, layer, ellipsoid, cube
-      sopts: struct-specific parameters
-      nodefile:
-      struct_type:
+        nodefile (str): nodes.dyn
+        struct_type (str): sphere, layer, ellipsoid, cube
+        sopts: struct-specific parameters
 
     Returns:
-      structNodeIDs (dict)
+        structNodeIDs (dict)
+
+    Raises:
+        ValueError: specified struct type not defined
 
     """
     import sys
@@ -189,17 +195,18 @@ def findStructNodeIDs(nodefile, struct_type, sopts):
     return structNodeIDs
 
 
-def findStructElemIDs(elefile, structNodeIDs):
+def findStructElemIDs(elefile:str, structNodeIDs:dict) -> list:
     """find elements that contain nodes in structNodeIDs
 
     Args:
-      elefile (str): element filename
-      structNodeIDs:
-      elefile:
-      structNodeIDs:
+        elefile (str): element filename
+        structNodeIDs (dict):
 
     Returns:
-      (elems, structElemIds)
+        (elems, structElemIds)
+
+    Raises:
+        ValueError: no structural elements found
 
     """
     from fem.mesh.fem_mesh import load_elems
@@ -218,6 +225,7 @@ def findStructElemIDs(elefile, structNodeIDs):
 
     if len(structElemIDs) == 0:
         logger.warning("No structure elements were found.")
+        raise ValueError("No structure elements were found.")
         sys.exit()
     else:
         logger.info(f"{len(structElemIDs)} structural elements were found.")
@@ -225,14 +233,15 @@ def findStructElemIDs(elefile, structNodeIDs):
     return (elems, structElemIDs)
 
 
-def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
+def write_struct_elems(nefile:str, partid:int, elems:list, structNodeIDs:dict, structElemIDs:dict):
     """Write new elem files with structure elems assigned a new part ID.
 
     Args:
       nefile (str): new element file
       partid (int): new Part ID
-      structNodeIDs: param structElemIDs:
-      elems:
+      elems (list):
+      structNodeIDs (dict): 
+      structElemIDs (dict):
 
     """
     with open(nefile, 'w') as NEFILE:
@@ -250,15 +259,18 @@ def write_struct_elems(nefile, partid, elems, structNodeIDs, structElemIDs):
     logger.info(f"{len(structElemIDs)} structural of {len(elems)} total elements written to {nefile}.")
 
 
-def define_struct_type(args):
+def define_struct_type(args) -> str:
     """Determine the type of structure being defined from the Boolean
        input arguments
 
     Args:
-      args (obj): type of geometry
+        args (obj): type of geometry
 
     Returns:
-      struct_type (str)
+        struct_type (str)
+
+    Raises:
+        NotImplementedError: specified structure type not implemented
 
     """
 
@@ -272,7 +284,7 @@ def define_struct_type(args):
         elif args.ellipsoid:
             struct_type = "ellipsoid"
     except:
-        raise ValueError('Specified structure is not defined (yet).')
+        raise NotImplementedError('Specified structure is not implemented (yet).')
 
     return struct_type
 
