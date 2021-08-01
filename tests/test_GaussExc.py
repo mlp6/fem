@@ -83,9 +83,9 @@ def test_check_num_fields():
     from fem.mesh.GaussExc import check_num_fields
 
     assert check_num_fields([1.0, 1.0, 2.0, 3.0]) == 0
-    with pytest.raises(SyntaxError) as excinfo:
+    with pytest.raises(ValueError) as excinfo:
         check_num_fields([1.0, 1.0, 2.0, 3.0, 4.0])
-    assert "Unexpected number of node columns" in str(excinfo.value)
+    assert "There are 5 node columns; expected 4." in str(excinfo.value)
 
 
 def test_read_process_nodes():
