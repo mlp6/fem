@@ -19,14 +19,21 @@ def main():
     return 0
 
 
-def generate_loads(sigma, center, amp=1.0, amp_cut=0.05, sym="qsym",
-                   direction=-3, loadfilename="loads.dyn",
-                   nodefile="nodes.dyn", tukey_length=0.0, tukey_alpha=0.25):
+def generate_loads(sigma:tuple,
+                   center:tuple,
+                   amp:float=1.0,
+                   amp_cut:float=0.05,
+                   sym:str="qsym",
+                   direction:int=-3,
+                   loadfilename:str="loads.dyn",
+                   nodefile:str="nodes.dyn",
+                   tukey_length:float=0.0,
+                   tukey_alpha:float=0.25):
     """
 
     Args:
-      sigma:
-      center:
+      sigma (tuple):
+      center (tuple):
       amp:  (Default value = 1.0)
       amp_cut:  (Default value = 0.05)
       sym:  (Default value = "qsym")
@@ -227,24 +234,23 @@ def calc_gauss_amp(node_xyz:list, center:tuple=(0.0, 0.0, -2.0), sigma:tuple=(1.
     return nodeGaussAmp
 
 
-def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
-                   tukey_length=1.0, tukey_alpha=0.25, amp=1.0,
-                   amp_cut=0.05, sym="qsym"):
+def calc_tukey_amp(node_xyz:tuple, center:tuple=(0.0, 0.0, -2.0), sigma:tuple=(1.0, 1.0),
+                   tukey_length:float=1.0, tukey_alpha:float=0.25, amp:float=1.0,
+                   amp_cut:float=0.05, sym:str="qsym") -> float:
     """calculated the Gaussian amplitude at the node
 
     Args:
-      node_xyz: list of x,y,z node coordinates
-      center: list of x,y,z for excitation center (Default value = (0.0)
-      sigma: list of x,y Guassian width
-      tukey_length: length of axial extent, centered at center
-      tukey_alpha: percentage of rolloff (see scipy documentation)
-      amp: peak Gaussian source amplitude
-      amp_cut: lower threshold (pct of max) for amplitude creating a
-    point load
-      qsym: mesh symemetry (qsym, hsym, none)
+      node_xyz (tuple): x,y,z node coordinates
+      center (tuple): x,y,z for excitation center (Default value = (0.0)
+      sigma (tuple): list of x,y Guassian width
+      tukey_length (float): length of axial extent, centered at center
+      tukey_alpha (float): percentage of rolloff (see scipy documentation)
+      amp (float): peak Gaussian source amplitude
+      amp_cut (float): lower threshold (pct of max) for amplitude 
+      sym (str): mesh symemetry (qsym [default], hsym, none)
 
     Returns:
-      nodeGaussAmp - point load amplitude at the specified node
+      nodeGaussAmp (float): point load amplitude at the specified node
 
     """
     from math import pow, exp
@@ -264,18 +270,18 @@ def calc_tukey_amp(node_xyz, center=(0.0, 0.0, -2.0), sigma=(1.0, 1.0),
     return nodeGaussAmp
 
 
-def tukey_z_scale(z, center, length, alpha=0.25, points=101):
+def tukey_z_scale(z:float, center:float, length:float, alpha:float=0.25, points:int=101) -> float:
     """
 
     Args:
-      z: z-coordinate
-      center: center of Tukey window
-      length: length of Tukey window
-      alpha: rolloff (percentage of window) (Default value = 0.25)
-      points: number of points in Tukey window (Default value = 101)
+      z (float): z-coordinate
+      center (float): center of Tukey window
+      length (float): length of Tukey window
+      alpha (float): rolloff (percentage of window) (Default value = 0.25)
+      points (int): number of points in Tukey window (Default value = 101)
 
     Returns:
-      z_scale (scale, relative to 1.0)
+      z_scale (float): scale, relative to 1.0
 
     """
     import numpy as np
