@@ -21,3 +21,4 @@ fem.egg-info
 .venv/
 Pipfile.lock
 .vscode/
+*.so
