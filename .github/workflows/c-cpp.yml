@@ -14,7 +14,7 @@ jobs:
         working-directory: ./fem/post/create_disp_dat_c
     steps:
     - uses: actions/checkout@v2
-    - name: make
+    - name: create_disp_dat
       run: make create_disp_dat
-    - name: run test
+    - name: create_disp_dat test
       run: make test
