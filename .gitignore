@@ -11,6 +11,9 @@ lspost.*
 nodes.dyn
 elems.dyn
 bc.dyn
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
 d3*
 nodout
 .venv/
