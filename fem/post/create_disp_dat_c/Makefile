@@ -1,25 +1,9 @@
-PYTHON36  = $(HOME)/fem/env/
-#PYTHON36  = $(HOME)/miniconda3/envs/fem
-CC         = gcc
-CFLAGS     = -c -fpic
-LD         = ld -shared
-SRC       = create_disp_dat.c
-SRCS       = create_disp_dat.c create_disp_dat_wrap.c
-INTERFACE  = create_disp_dat.i
-OBJS       = create_disp_dat.o create_disp_dat_wrap.o
-TARGET     = _create_disp_dat.so
-PYTHON_INCLUDE    = -I$(PYTHON36)/include/python3.5m
-PYTHON_LIB = -L$(PYTHON36)/lib -lpython3.5m
-SWIG       = swig
-
-SWIGOPT     = -python
-
 all: create_disp_dat _create_disp_dat.so
 
-_create_disp_dat.so: $(SRC) $(INTERFACE)
-	$(SWIG) $(SWIGOPT) $(INTERFACE)
-	$(CC) $(CFLAGS) $(PYTHON_INCLUDE) $(SRCS)
-	$(LD) $(OBJS) -o $(TARGET)
+_create_disp_dat.so: create_disp_dat.c create_disp_dat.i
+	swig -python create_disp_dat.i
+	gcc -O2 -fPIC -c -I/usr/include/python3.9 create_disp_dat.c create_disp_dat_wrap.c
+	gcc -shared create_disp_dat.o create_disp_dat_wrap.o -o create_disp_dat.so
 
 
 create_disp_dat: create_disp_dat.c
