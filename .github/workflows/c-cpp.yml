@@ -11,10 +11,14 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./fem/post/create_disp_dat_c
+        working-directory: ./fem/post
     steps:
     - uses: actions/checkout@v2
-    - name: create_disp_dat
-      run: make create_disp_dat
-    - name: create_disp_dat test
-      run: make test
+    - name: generate create_disp_dat and scale_disp_dat Makefile with cmake
+      run: cmake .
+    - name: make targets
+      run: make
+    - name: generate create_disp_dat disp.dat output
+      run: ./create_disp_dat -i ../../tests/nodout1 -o ./disp.dat
+    - name: compare test output
+      run: cmp ../../tests/disp.dat.good ./disp.dat ; if [ $$? -eq 0 ] ; then echo "passed test" ; else echo "failed test"; fi; 
