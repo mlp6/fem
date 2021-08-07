@@ -21,4 +21,4 @@ jobs:
     - name: generate create_disp_dat disp.dat output
       run: ./create_disp_dat -i ../../tests/nodout1 -o ./disp.dat
     - name: compare test output
-      run: cmp ../../tests/disp.dat.good ./disp.dat ; if [ $$? -eq 0 ] ; then echo "passed test" ; else echo "failed test"; fi; 
+      run: cmp ../../tests/disp.dat.good ./disp.dat
