@@ -15,7 +15,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR})
 
 SET(CMAKE_SWIG_FLAGS "")
 
-SET_SOURCE_FILES_PROPERTIES(create_disp_dat.i PROPERTIES CPLUSPLUS OFF SWIG_FLAGS "-includeall" SWIG_MODULE_NAME create_disp_dat.so)
+SET_SOURCE_FILES_PROPERTIES(create_disp_dat.i PROPERTIES SWIG_FLAGS "-includeall" SWIG_MODULE_NAME create_disp_dat.so)
 SWIG_ADD_LIBRARY(create_disp_dat LANGUAGE python TYPE MODULE SOURCES create_disp_dat.i create_disp_dat.c)
 SWIG_LINK_LIBRARIES(create_disp_dat ${PYTHON_LIBRARIES})
 
