@@ -23,6 +23,4 @@ setup(
     python_requires=">=3.8",
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
-    cmake_source_dir='fem/post',
-    cmake_install_dir='fem/post',
 )
