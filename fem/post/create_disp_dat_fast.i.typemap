@@ -1,5 +1,5 @@
-/* create_disp_dat.i */
-%module create_disp_dat
+/* create_disp_dat_fast.i */
+%module create_disp_dat_fast
 
 %include "typemaps.i"
 
@@ -32,14 +32,14 @@ int i;
 %{
 /* Put header files here or function declarations like below */
 extern char *inFileName, *outFileName;
-extern int create_disp_dat(int argc, char **argv);
+extern int create_disp_dat_fast(int argc, char **argv);
 extern int correctE(char *disp);
 extern int countNodeIDs(FILE *inFilePtr, int *nodes);
 extern int writeNodeIDs(FILE *ptr, int num);
 %}
 
 extern char *inFileName, *outFileName;
-extern int create_disp_dat(int argc, char **argv);
+extern int create_disp_dat_fast(int argc, char **argv);
 extern int correctE(char *disp);
 extern int countNodeIDs(FILE *inFilePtr, int *nodes);
 extern int writeNodeIDs(FILE *ptr, int num);
