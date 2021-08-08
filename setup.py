@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools: import setup
 
 setup(
     name='fem',
@@ -20,7 +20,6 @@ setup(
                       'matplotlib',
                       'pyevtk', ],
     python_requires=">=3.8",
-    extras_require={"test": ["pytest"]},
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
     zip_safe=False,
