@@ -1,5 +1,13 @@
 from setuptools import setup
 
+
+def CMakeBuild():
+    import subprocess
+
+    subprocess.check_call("cmake -S fem/post -B fem/post", shell=True)
+    subprocess.check_call("cmake --build fem/post", shell=True)
+
+
 setup(
     name='fem',
     packages=['fem', 'fem.mesh', 'fem.post', 'fem.field'],
@@ -18,8 +26,9 @@ setup(
                       'numpy>=1.16',
                       'scipy',
                       'matplotlib',
-                      'pyevtk',],
+                      'pyevtk', ],
     python_requires=">=3.8",
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
+    cmdclass={"build_ext": CMakeBuild()},
 )
