@@ -1,11 +1,4 @@
-from setuptools import setup
-
-
-def CMakeBuild():
-    import subprocess
-
-    subprocess.check_call("cmake -S fem/post -B fem/post", shell=True)
-    subprocess.check_call("cmake --build fem/post", shell=True)
+from skbuild import setup
 
 
 setup(
@@ -30,5 +23,6 @@ setup(
     python_requires=">=3.8",
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
-    cmdclass={"build_ext": CMakeBuild()},
+    cmake_source_dir='fem/post',
+    cmake_install_dir='fem/post',
 )
