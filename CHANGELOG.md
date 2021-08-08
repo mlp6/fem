@@ -143,3 +143,10 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.3.1
 * ressim.py - FIX numpy array casting of HDF-read arrays
+
+## v8.4.0
+* `CMakeLists.txt` now for C/C++ post-processing code building (manually executed)
+  + `cmake` allows the Python install version to be more elegantly determined (very useful for the CI testing)
+  + SWIG-build more elegant with autodiscovery of install paths and use of default arguments.
+  + Module name clobber avoided: `create_disp_dat.c -> create_disp_dat_fast.c`
+* Add logger warning when using the much slower--but still default--Python-based `create_disp_dat.py`.
