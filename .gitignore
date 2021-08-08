@@ -11,6 +11,9 @@ lspost.*
 nodes.dyn
 elems.dyn
 bc.dyn
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
 d3*
 nodout
 .venv/
@@ -21,3 +24,4 @@ fem.egg-info
 .venv/
 Pipfile.lock
 .vscode/
+*.so

@@ -11,10 +11,14 @@ jobs:
     
     defaults:
       run:
-        working-directory: ./fem/post/create_disp_dat_c
+        working-directory: ./fem/post
     steps:
     - uses: actions/checkout@v2
-    - name: make
-      run: make create_disp_dat
-    - name: run test
-      run: make test
+    - name: generate create_disp_dat_fast and scale_disp_dat Makefile with cmake
+      run: cmake .
+    - name: make targets
+      run: cmake --build .
+    - name: generate create_disp_dat_fast disp.dat output
+      run: ./create_disp_dat_fast -i ../../tests/nodout1 -o ./disp.dat
+    - name: compare test output
+      run: cmp ../../tests/disp.dat.good ./disp.dat

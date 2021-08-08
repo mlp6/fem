@@ -2,6 +2,7 @@
 import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+logger.warning('The SLOW Python implementation of create_disp_day is being used.  Consider using create_disp_dat_fast (C implementation via shared object or executable).')
 
 def main():
     args = parse_cli()

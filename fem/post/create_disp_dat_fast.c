@@ -33,6 +33,7 @@ char *usage[] = {
 	0};
 
 void correctE(), create_disp_dat(), writeNodeIDs();
+int countNodeIDs(), isprint(), parseArgs();
 
 void
 main(int argc, char **argv)
@@ -342,7 +343,7 @@ char nodeID[NUM_CHARS];
 	return(nodes);
 }
 
-parseArgs(int argc, char **argv) {
+int parseArgs(int argc, char **argv) {
 int c;
 
 	while ((c = getopt(argc, argv, "i:o:ld:")) != -1)
@@ -364,7 +365,7 @@ int c;
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
 				if (optopt == 'o')
 					fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-				else if (isprint (optopt))
+				else if (isprint(optopt))
 					fprintf (stderr, "Unknown option `-%c'.\n", optopt);
 				else
 					fprintf (stderr, "Unknown option character `\\x%x'.\n", optopt);

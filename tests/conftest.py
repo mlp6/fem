@@ -80,3 +80,21 @@ def savevtk_data():
     savevtk_data = d['data']
 
     return savevtk_data
+
+
+@pytest.fixture
+def dispdatgood():
+    from pathlib import Path
+
+    dispdatgood = Path(testPath, 'disp.dat.good')
+
+    return dispdatgood
+
+
+@pytest.fixture
+def nodout1():
+    from pathlib import Path
+
+    nodout1 = Path(testPath, 'nodout1')
+
+    return nodout1
