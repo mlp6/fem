@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, Extension
 
 setup(
     name='fem',
@@ -23,4 +23,7 @@ setup(
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
     zip_safe=False,
+    ext_modules=[Extension(name='fem/post/_create_disp_dat_fast',
+                           sources=["fem/post/create_disp_dat_fast.i",
+                                    "fem/post/create_disp_dat_fast.c"])]
 )
