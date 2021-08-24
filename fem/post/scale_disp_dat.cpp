@@ -23,7 +23,7 @@ int main (int argc, char **argv) {
 
     if (argc == 1) {
         printf("%s\n", usage);
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     while ((opt = getopt(argc, argv, "i:o:s:")) != -1) {
@@ -39,7 +39,7 @@ int main (int argc, char **argv) {
                 break;
             default:
                 printf("%s\n", usage);
-                exit(1);
+                exit(EXIT_FAILURE);
         }
     }
 
