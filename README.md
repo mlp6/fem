@@ -36,7 +36,7 @@ is not outlined here and robust testing does not exist for those environments
 
 There are three different methods to use/install this package:
 1. *[RECOMMENDED]* Install this with `pip` in a local virtualenv: `pip install -e 
-   git+https://github.com/mlp6/fem.git`.
+   git+https://github.com/mlp6/fem.git#egg=fem`.
 1. Clone this source directory and manually install it in your local
    virtualenv: `pip install -e .`
 1. Clone this source directory and work directly with it by defining
