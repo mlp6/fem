@@ -2,20 +2,20 @@
 import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+from typing import Union, Optional
+
 
 def main():
     """ """
     args = __read_cli()
-    if args.legacynodes:
-        legacynodes = True
-    else:
-        legacynodes = False
-
-    run(args.dynadeck, args.ressim, args.nodedyn, args.dispout, legacynodes)
+    run(args.dynadeck, args.disp_comp, -1e4, args.ressim, args.nodedyn, args.dispout, 
+        args.legacynodes, args.plane_pos, args.plane_orientation, args.specific_times)
 
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos:float=0.0, plane_orientation:int=0):
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, 
+        plane_pos:float=0.0, plane_orientation:int=0,
+        specific_times:Optional[list]=None):
     """helper function to run high-level, 2D plane extraction
 
     look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
@@ -30,6 +30,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         legacynodes (Boolean): node IDs written with each timestep in dispout
         plane_pos (float): position of the plane to extract (in the specified plane_orientation)
         plane_orientation (int): orientation plane to extract from (0 = elev, 1 = lateral, 2 = axial)
+        specific_times (list): optional list of specific time indices to extract
     
     """
     import sys
@@ -45,16 +46,20 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
     except NameError:
         plane_pos = ele_pos
         
-        
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
     
     image_plane = extract_image_plane(snic, axes, plane_pos, plane_orientation)
 
     header = read_header(dispout)
-    t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
+    if specific_times is None:
+        t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
+    else:
+        t = __gen_t(extract_dt(dynadeck), specific_times)
+
     arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
-                                 disp_scale, legacynodes)
+                                 disp_scale, legacynodes, specific_times)
+
     axis_scale=(-10, 10, -10)
     save_res_sim(ressim, arfidata, axes, t, axis_scale, plane_pos, plane_orientation)
     
@@ -62,7 +67,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
 
 
 def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
-                      disp_scale=-1e4, legacynodes=False):
+                      disp_scale=-1e4, legacynodes=False, specific_times=None):
     """extract ARFI data from disp.dat
 
     Args:
@@ -70,8 +75,9 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
         header (dict): num_nodes, num_dims, num_timesteps
         image_plane (ndarray): matrix of image plane node IDs spatially sorted
         disp_comp (int): disp component index to extract (0, 1, 2 [default, z])
-        legacynodes (Boolean): node IDs repeated every timestep
         disp_scale (float):  cm -> um
+        legacynodes (Boolean): node IDs repeated every timestep
+        specific_times (list): optional list of specific time indices to extract
 
     Returns:
         arfidata (ndarray):
@@ -90,14 +96,20 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
     timestep_bytes = header['num_nodes'] * (header['num_dims'] - 1) * word_size
 
     with open_dispout(dispout) as fid:
-        trange = [x for x in range(1, header['num_timesteps'] + 1)]
-
-        arfidata = __preallocate_arfidata(image_plane, header['num_timesteps'])
-
         logger.info(f"Total Timesteps: {header['num_timesteps']}")
+        if specific_times is None:
+            specific_times = [x for x in range(1, header['num_timesteps'] + 1)]
+            arfidata = __preallocate_arfidata(image_plane, header['num_timesteps'])
+            added_one = False
+        else:
+            if specific_times[0] != 1:
+                specific_times.insert(0, 1)  # the first timestep must be extracted
+                added_one = True
+            arfidata = __preallocate_arfidata(image_plane, len(specific_times))
+            logger.info(f'Specific timesteps: {specific_times}')
         logger.info('Extracting timestep:')
 
-        for t in trange:
+        for t_idx, t in enumerate(specific_times):
             logger.info(f'{t}')
             if (t == 1) or legacynodes:
                 fmt = 'f' * int(first_timestep_words)
@@ -130,10 +142,10 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
 
             if arfidata.ndim == 3:
                 for (i, j), nodeid in np.ndenumerate(image_plane):
-                    arfidata[j, i, t - 1] = disp_scale * zdisp[nodeid]
+                    arfidata[j, i, t_idx] = disp_scale * zdisp[nodeid]
             elif arfidata.ndim == 4:
                 for (k, i, j), nodeid in np.ndenumerate(image_plane):
-                    arfidata[j, i, k, t - 1] = disp_scale * zdisp[nodeid]
+                    arfidata[j, i, k, t_idx] = disp_scale * zdisp[nodeid]
             else:
                 raise IndexError("Unexpected # of dimensions for arfidata.")
 
@@ -142,7 +154,10 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
     # ndenumerate only iterates in C-ordering, so flip this over to match the
     # F-ordering of Matlab-like code
     arfidata = np.flipud(arfidata)
-
+    
+    if added_one:
+        arfidata = arfidata[..., 1:]
+        
     return arfidata
 
 
@@ -190,11 +205,17 @@ def __read_cli():
                           "each timestep",
                      action="store_true")
     par.add_argument("--plane_pos", 
-                     help = "pos of plane wanted to extract",
-                     default = 0.0)
+                     help="pos of plane wanted to extract",
+                     default=0.0, type=float)
     par.add_argument("--plane_orientation",
-                     help = "what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
-                     default = 0)
+                     help="what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
+                     default=0, type=int)
+    par.add_argument("--disp_comp",
+                     help="what component of displacement 0 = elev, 1 = lat, 2 = ax",
+                     default=2, type=int)                     
+    par.add_argument("--specific_times", 
+                     help="what specific time points to extract",
+                     default=None, nargs='+', type=int)
     args = par.parse_args()
 
     return args
@@ -258,6 +279,8 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
 
     """
     import os
+    import numpy as np
+    plane_pos = np.array([plane_pos])
     # scale axes
     if arfidata.ndim == 4:
         elev = axis_scale[0] * axes[0]
@@ -557,25 +580,31 @@ def __preallocate_arfidata(image_plane, num_timesteps: int):
     return arfidata
 
 
-def __gen_t(dt: float, num_timesteps: int) -> list:
+def __gen_t(dt: float, timesteps: Union[int, list]) -> list:
     """generate time vector, starting at 0
 
     Args:
         dt (float): time between saved timesteps
-        num_timesteps (int): number of total timesteps
+        timesteps (int or list): number of total timesteps
+          or a list of specific timesteps
 
     Returns:
         t (list): list of times
 
     """
-    t = [float(x) * dt for x in range(0, num_timesteps)]
+    if isinstance(timesteps, int):
+        t = [float(x) * dt for x in range(0, timesteps)]
+    elif isinstance(timesteps, list):
+        t = [float(x-1) * dt for x in timesteps]
+    else:
+        raise TypeError
 
     return t
 
 
 def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
                       ressim="res_sim.h5", nodedyn="nodes.dyn",
-                      dispout="disp.dat"):
+                      dispout="disp.dat", specific_times=None):
     """Extract 3D volume of specified displacement component.
 
     Args:
@@ -585,6 +614,7 @@ def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
         ressim (str): output file name [.mat, .h5, .pvd]
         nodedyn (str): node input file
         dispout (str): binary displacement data
+        specific_times (list): optional list of specific time indices
     """
     import sys
     from pathlib import Path
@@ -601,11 +631,14 @@ def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
     header = read_header(dispout)
-    dt = extract_dt(dynadeck)
-    t = [float(x) * dt for x in range(0, header['num_timesteps'])]
+    if specific_times is None:
+        t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
+    else:
+        t = __gen_t(extract_dt(dynadeck), specific_times)
 
     arfidata = extract_arfi_data(dispout, header, snic['id'],
-                                 disp_comp, disp_scale, legacynodes=False)
+                                 disp_comp, disp_scale, legacynodes=False,
+                                 specific_times=specific_times)
 
     save_res_sim(ressim, arfidata, axes, t)
 
