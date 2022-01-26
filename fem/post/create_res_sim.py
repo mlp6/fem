@@ -604,7 +604,7 @@ def __gen_t(dt: float, timesteps: Union[int, list]) -> list:
 
 def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
                       ressim="res_sim.h5", nodedyn="nodes.dyn",
-                      dispout="disp.dat"):
+                      dispout="disp.dat", specific_times=None):
     """Extract 3D volume of specified displacement component.
 
     Args:
@@ -614,6 +614,7 @@ def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
         ressim (str): output file name [.mat, .h5, .pvd]
         nodedyn (str): node input file
         dispout (str): binary displacement data
+        specific_times (list): optional list of specific time indices
     """
     import sys
     from pathlib import Path
@@ -630,11 +631,14 @@ def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
     header = read_header(dispout)
-    dt = extract_dt(dynadeck)
-    t = [float(x) * dt for x in range(0, header['num_timesteps'])]
+    if specific_times is None:
+        t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
+    else:
+        t = __gen_t(extract_dt(dynadeck), specific_times)
 
     arfidata = extract_arfi_data(dispout, header, snic['id'],
-                                 disp_comp, disp_scale, legacynodes=False)
+                                 disp_comp, disp_scale, legacynodes=False,
+                                 specific_times=specific_times)
 
     save_res_sim(ressim, arfidata, axes, t)
 
