@@ -150,3 +150,6 @@ See the git commit history for an effective change log pre-v6.3.1
   + SWIG-build more elegant with autodiscovery of install paths and use of default arguments.
   + Module name clobber avoided: `create_disp_dat.c -> create_disp_dat_fast.c`
 * Add logger warning when using the much slower--but still default--Python-based `create_disp_dat.py`.
+
+## v8.5.0
+* ENH: add ability to extract a specified number of time steps in `create_res_sim.py` (@fqjin)
