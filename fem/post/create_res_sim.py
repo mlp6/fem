@@ -8,16 +8,13 @@ from typing import Union, Optional
 def main():
     """ """
     args = __read_cli()
-    if args.legacynodes:
-        legacynodes = True
-    else:
-        legacynodes = False
-
-    run(args.dynadeck, args.ressim, args.nodedyn, args.dispout, legacynodes)
+    run(args.dynadeck, args.disp_comp, -1e4, args.ressim, args.nodedyn, args.dispout, 
+        args.legacynodes, args.plane_pos, args.plane_orientation, args.specific_times)
 
 
 def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, plane_pos:float=0.0, plane_orientation:int=0,
+        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, 
+        plane_pos:float=0.0, plane_orientation:int=0,
         specific_times:Optional[list]=None):
     """helper function to run high-level, 2D plane extraction
 
@@ -208,11 +205,17 @@ def __read_cli():
                           "each timestep",
                      action="store_true")
     par.add_argument("--plane_pos", 
-                     help = "pos of plane wanted to extract",
-                     default = 0.0)
+                     help="pos of plane wanted to extract",
+                     default=0.0, type=float)
     par.add_argument("--plane_orientation",
-                     help = "what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
-                     default = 0)
+                     help="what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
+                     default=0, type=int)
+    par.add_argument("--disp_comp",
+                     help="what component of displacement 0 = elev, 1 = lat, 2 = ax",
+                     default=2, type=int)                     
+    par.add_argument("--specific_times", 
+                     help="what specific time points to extract",
+                     default=None, nargs='+', type=int)
     args = par.parse_args()
 
     return args
