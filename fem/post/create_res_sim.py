@@ -98,18 +98,17 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
     with open_dispout(dispout) as fid:
         logger.info(f"Total Timesteps: {header['num_timesteps']}")
         if specific_times is None:
-            specific_times = [x for x in range(1, header['num_timesteps'] + 1)]
-            arfidata = __preallocate_arfidata(image_plane, header['num_timesteps'])
+            timesteps = [x for x in range(1, header['num_timesteps'] + 1)]
             added_one = False
         else:
-            if specific_times[0] != 1:
-                specific_times.insert(0, 1)  # the first timestep must be extracted
-                added_one = True
-            arfidata = __preallocate_arfidata(image_plane, len(specific_times))
-            logger.info(f'Specific timesteps: {specific_times}')
+            timesteps = specific_times
+            added_one = (timesteps[0] != 1)
+            if added_one:  # the first timestep must always be extracted
+                timesteps.insert(0, 1)
+        arfidata = __preallocate_arfidata(image_plane, len(timesteps))
         logger.info('Extracting timestep:')
 
-        for t_idx, t in enumerate(specific_times):
+        for t_idx, t in enumerate(timesteps):
             logger.info(f'{t}')
             if (t == 1) or legacynodes:
                 fmt = 'f' * int(first_timestep_words)
