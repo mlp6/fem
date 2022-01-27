@@ -79,6 +79,7 @@ def test_extract_arfi_data():
     """test extraction of arfi data at specific timesteps
     """
     from fem.post.create_res_sim import extract_arfi_data
+    from fem.post.create_res_sim import read_header
     from fem.post.create_res_sim import extract_image_plane
     from fem.mesh.fem_mesh import load_nodeIDs_coords
     from fem.mesh.fem_mesh import SortNodeIDs
