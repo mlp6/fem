@@ -66,7 +66,7 @@ def test_get_t():
     assert t[0] == 0.0
     assert t[9] == 0.9
     
-    t = __gen_t(0.1, [1, 10, 101]))
+    t = __gen_t(0.1, [1, 10, 101])
 
     assert len(t) == 3
     assert t[0] == 0.0
