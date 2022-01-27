@@ -55,6 +55,7 @@ def test_extract_image_plane(sorted_nodes, axes):
     with pytest.raises(ValueError):
         image_plane = extract_image_plane(sorted_nodes, axes, plane_pos=0.0, direction=3)
 
+
 def test_get_t():
     """test generation of time vector
     """
@@ -72,7 +73,36 @@ def test_get_t():
     assert t[0] == 0.0
     assert t[1] == 0.9
     assert t[2] == 10.0
+    
+    
+def test_extract_arfi_data():
+    """test extraction of arfi data at specific timesteps
+    """
+    from fem.post.create_res_sim import extract_arfi_data
+    from fem.post.create_res_sim import extract_image_plane
+    from fem.mesh.fem_mesh import load_nodeIDs_coords
+    from fem.mesh.fem_mesh import SortNodeIDs
+    from scipy.io import loadmat
+    import numpy as np
 
+    gauss_qsym_pml_example_path = examplesPath / "gauss_qsym_pml"
+    dispout = gauss_qsym_pml_example_path / "disp.dat.xz"
+    nodedyn = gauss_qsym_pml_example_path / "nodes.dyn"
+    valid_data = loadmat(gauss_qsym_pml_example_path / "res_sim_valid.mat")['arfidata']
+    
+    header = read_header(dispout)
+    node_id_coords = load_nodeIDs_coords(nodedyn)
+    [snic, axes] = SortNodeIDs(node_id_coords)
+    image_plane = extract_image_plane(snic, axes)
+
+    test_data0 = extract_arfi_data(dispout, header, image_plane)
+    test_data1 = extract_arfi_data(dispout, header, image_plane, specific_times=[1, 3])
+    test_data2 = extract_arfi_data(dispout, header, image_plane, specific_times=[3, 2, 1])
+    
+    assert np.array_equal(test_data0, valid_data)
+    assert np.array_equal(test_data1, valid_data[:, :, [0, 2]])
+    assert np.array_equal(test_data2, np.flip(valid_data, axis=-1))
+    
 
 def test_savemat(tmpdir):
     from fem.post.create_res_sim import run
