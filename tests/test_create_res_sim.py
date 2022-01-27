@@ -67,6 +67,18 @@ def test_get_t():
     assert t[9] == 0.9
 
 
+def test_get_t_specific_times():
+    """test generation of time vector using user-specified list of times
+    """
+    from fem.post.create_res_sim import __gen_t
+
+    t = __gen_t(0.1, list(range(0, 10)))
+
+    assert len(t) == 10
+    assert t[0] == 0.0
+    assert t[9] == 0.9
+
+
 def test_savemat(tmpdir):
     from fem.post.create_res_sim import run
     from scipy.io import loadmat
