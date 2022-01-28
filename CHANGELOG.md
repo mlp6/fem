@@ -153,3 +153,6 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.5.0
 * ENH: add ability to extract a specified number of time steps in `create_res_sim.py` (@fqjin)
+
+## v8.5.1
+* FIX bug in timestep specification in `create_res_sim.py`; ADD more unit tests
