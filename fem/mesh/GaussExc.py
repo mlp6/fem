@@ -214,7 +214,7 @@ def calc_gauss_amp(node_xyz:list, center:tuple=(0.0, 0.0, -2.0), sigma:tuple=(1.
       amp (float): peak Gaussian source amplitude (default = 1.0)
       amp_cut (float): lower threshold (pct of max) for amplitude creating a
         point load (default = 0.05)
-      qsym (str): mesh symemetry (qsym [default], hsym, none)
+      sym (str): mesh symemetry ('qsym' [default], 'hsym', 'none')
 
     Returns:
       nodeGaussAmp - point load amplitude at the specified node
@@ -229,6 +229,7 @@ def calc_gauss_amp(node_xyz:list, center:tuple=(0.0, 0.0, -2.0), sigma:tuple=(1.
     if (nodeGaussAmp / amp) < amp_cut:
         nodeGaussAmp = None
     else:
+        # TODO: only call this next function if there is a symmetry condition to impose
         nodeGaussAmp = sym_scale_amp(node_xyz, nodeGaussAmp, sym)
 
     return nodeGaussAmp
