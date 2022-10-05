@@ -1,13 +1,10 @@
--e git+https://git@github.com/mlp6/fem.git#egg=fem
 flake8
 h5py
 ipython
-jupyter
 numpy
 pyevtk
 pylint
 pytest
-pytest-pep8
 pytest-cov
 pytest-xdist
 scipy
