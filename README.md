@@ -35,8 +35,10 @@ is not outlined here and robust testing does not exist for those environments
 (i.e., use at your own risk).  The Python tools require a version >= 3.8.
 
 There are three different methods to use/install this package:
-1. *[RECOMMENDED]* Install this with `pip` in a local virtualenv: `pip install -e 
-   git+https://github.com/mlp6/fem.git#egg=fem`.
+1. *[RECOMMENDED]* Install this with `pip` in a local virtualenv: `pip install 
+   --prefer-binary -e git+https://github.com/mlp6/fem.git#egg=fem`.
+   If `swig` is not available on your machine, install with `pip install 
+   --prefer-binary -e git+https://github.com/mlp6/fem.git@no-swig#egg=fem`.
 1. Clone this source directory and manually install it in your local
    virtualenv: `pip install -e .`
 1. Clone this source directory and work directly with it by defining
