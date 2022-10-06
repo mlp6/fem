@@ -156,3 +156,6 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.5.1
 * FIX bug in timestep specification in `create_res_sim.py`; ADD more unit tests
+
+## v8.5.2
+* Fix installation to have non-SWIG dependent option.
