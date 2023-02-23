@@ -1,9 +1,8 @@
-from setuptools import setup, Extension
+from setuptools import find_packages, setup
 
 setup(
     name='fem',
-    packages=['fem', 'fem.mesh', 'fem.post', 'fem.field'],
-    package_dir={'fem': 'fem'},
+    packages=find_packages(),
     version='8.5.2',
     license='Apache v2.0',
     author='Mark Palmeri',
@@ -19,7 +18,7 @@ setup(
                       'scipy',
                       'matplotlib',
                       'pyevtk', ],
-    python_requires=">=3.8",
+    python_requires=">=3.10",
     package_data={'fem': ['*.md', 'examples/*/*', 'docs/*']},
     include_package_data=True,
     zip_safe=False,
