@@ -159,3 +159,6 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.5.2
 * Fix installation to have non-SWIG dependent option.
+
+## v8.5.3
+* fix Field II transducer using specified F/#
