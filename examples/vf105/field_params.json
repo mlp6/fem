@@ -1,5 +1,5 @@
 {
-    "probe_params": "vf105.json",
+    "transducer": "vf105",
     "transducer_type": "focused_multirow",
     "alpha_dB_cm_MHz": 0.5,
     "fnum": 1.0,
