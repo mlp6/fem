@@ -162,3 +162,6 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.5.3
 * fix Field II transducer using specified F/#
+
+## v8.5.4
+* fix syntax errors in the v8.5.3 fix
