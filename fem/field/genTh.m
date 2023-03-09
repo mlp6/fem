@@ -12,15 +12,15 @@ function Th = genTh(probe, FIELD_PARAMS)
 %     Th - pointer to Field II transducer definition
 %
 
-_dcalc = FIELD_PARAMS.focus_m(3)/FIELD_PARAMS.fnum;
-_pitch = probe.width + probe.kerf
-_dmax = probe.noElements*(_pitch)
-if (_dcalc > _dmax)
+dcalc = FIELD_PARAMS.focus_m(3)/FIELD_PARAMS.fnum;
+pitch = probe.width + probe.kerf;
+dmax = probe.noElements*(pitch);
+if (dcalc > dmax)
     fprintf('Calculated aperture width exceeds physical array; using all elements.\n');
     num_elements = probe.NoElements;
 else
-    num_elements = round(_dcalc / _pitch);
-end;
+    num_elements = round(dcalc / pitch);
+end
 
 switch probe.transducerType
     case 'focused_multirow'
