@@ -13,23 +13,24 @@ function Th = genTh(probe, FIELD_PARAMS)
 %
 
 _dcalc = FIELD_PARAMS.focus(3)/FIELD_PARAMS.fnum;
-_dmax = probe.noElements*(probe.width+probe.kerf)
+_pitch = probe.width + probe.kerf
+_dmax = probe.noElements*(_pitch)
 if (_dcalc > _dmax)
-    fprintf('Calculated aperture width exceeds physical array.  Using array width.\n');
-    d = _dmax;
+    fprintf('Calculated aperture width exceeds physical array; using all elements.\n');
+    num_elements = probe.NoElements;
 else
-    d = _dcalc;
+    num_elements = round(_dcalc / _pitch);
 end;
 
 switch probe.transducerType
     case 'focused_multirow'
-        Th = xdc_focused_multirow(d, probe.width, ...
+        Th = xdc_focused_multirow(num_elements, probe.width, ...
                                   probe.noElementsY, probe.height, ... 
                                   probe.kerf, probe.kerf, probe.Rfocus, ...
                                   probe.noSubX, probe.noSubY, ...
                                   FIELD_PARAMS.focus_m');
     case 'convex_focused_array'
-        Th = xdc_convex_focused_array(d, probe.width, probe.height, ...
+        Th = xdc_convex_focused_array(num_elements, probe.width, probe.height, ...
                                       probe.kerf, probe.Rconvex, probe.Rfocus, ...
                                       probe.noSubX, probe.noSubY, ...
                                       FIELD_PARAMS.focus_m');
@@ -38,7 +39,7 @@ switch probe.transducerType
         Th = xdc_concave(probe.R, probe.Rfocal, probe.ele_size);
     case 'focused_array'
         %case {'v41c'}
-        Th = xdc_focused_array(d, probe.width, probe.height, ...
+        Th = xdc_focused_array(num_elements, probe.width, probe.height, ...
                                probe.kerf, probe.Rfocus, probe.noSubX, ...
                                probe.noSubY, FIELD_PARAMS.focus_m');
     otherwise
