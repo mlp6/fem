@@ -12,7 +12,7 @@ function Th = genTh(probe, FIELD_PARAMS)
 %     Th - pointer to Field II transducer definition
 %
 
-_dcalc = FIELD_PARAMS.focus(3)/FIELD_PARAMS.fnum;
+_dcalc = FIELD_PARAMS.focus_m(3)/FIELD_PARAMS.fnum;
 _pitch = probe.width + probe.kerf
 _dmax = probe.noElements*(_pitch)
 if (_dcalc > _dmax)
