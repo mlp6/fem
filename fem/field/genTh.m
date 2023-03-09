@@ -17,7 +17,7 @@ pitch = probe.width + probe.kerf;
 dmax = probe.noElements*(pitch);
 if (dcalc > dmax)
     fprintf('Calculated aperture width exceeds physical array; using all elements.\n');
-    num_elements = probe.NoElements;
+    num_elements = probe.noElements;
 else
     num_elements = round(dcalc / pitch);
 end
