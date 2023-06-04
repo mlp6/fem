@@ -69,6 +69,10 @@ class DynaMesh(
     pml_nodes: list[int] = field(default_factory=list)
 
     material_card_string: str = field(init=False, repr=False)
+    load_card_string: str = field(init=False, repr=False)
+    control_card_string: str = field(init=False, repr=False)
+    database_card_string: str = field(init=False, repr=False)
+    master_card_string: str = field(init=False, repr=False)
 
     def __post_init__(self):
         self.n_nodes = self.coords.nx * self.coords.ny * self.coords.nz
@@ -174,7 +178,7 @@ class DynaMesh(
         elif self.symmetry == 'hx':   # symmetry on x normal (yz plane)
             symmetry_planes = {'xmax'}
         elif self.symmetry == 'hy':   # symmetry on y normal (xz plane)
-            symmetry_planes = {'xmax'}
+            symmetry_planes = {'ymax'}
         elif self.symmetry == 'n':
             symmetry_planes = {None}
         else:

@@ -2,6 +2,10 @@ import numpy as np
 
 
 class DynaMeshStructureMixin:
+    def add_struct_list(self, struct_list):
+        for struct in struct_list:
+            self.add_struct(**struct)
+
     def add_struct(self, shape, material, struct_opts):
         # Get nodes in struct
         nodes_in_struct = self.find_nodes_in_struct(shape, *struct_opts)

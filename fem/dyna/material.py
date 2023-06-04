@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
 
+from ._writer import format_dyna_number
+
 
 @dataclass(kw_only=True)
 class Material:
@@ -77,21 +79,39 @@ class KelvinMaxwellViscoelastic(Material):
         # 200gi used to make 3rd param too stiff of a spring so it acts as a wire 
         # makes 3 parameter model into a 2 parameter model
         self.g0 = 200*self.gi                         # g0 in Barye
-        self.dc = (self.tau * self.gi) / self.g0
+        self.dc = (self.tau * self.gi) / self.g0     # 
 
     def format_material_card(self, mid):
         dyna_card_string = (
         "*MAT_KELVIN-MAXWELL_VISCOELASTIC\n"
-        f"$ -- Youngs = {self.E:.2f} kPa, Viscosity = {self.eta:.2f} Pa.s, Tau = {1e3*self.tau:.2f} ms, Poisson = {self.nu:.5f}\n"
+        "$ -- Youngs = {E:.2f} kPa, Viscosity = {eta:.2f} Pa.s, Tau = {tau:.2f} ms, Poisson = {nu:.5f}\n"
         "$ MID, DENSITY, K, G0, Gi, dc, f0, s0\n"
-        f"{mid:d},{self.density: #.7G},{self.K: #.8E},{self.g0: #.8G},{self.gi: #.8G},{self.dc: #.8E},{self.f0: #.8G},{self.s0: #.8G}\n"
+        "{mid:d},{density},{K},{g0},{gi},{dc},{f0},{s0}\n"
+        ).format(
+            E=self.E,
+            eta=self.eta,
+            tau=1e3*self.tau,
+            nu=self.nu,
+            mid=mid,
+            density=format_dyna_number(self.density),
+            K=format_dyna_number(self.K),
+            g0=format_dyna_number(self.g0),
+            gi=format_dyna_number(self.gi),
+            dc=format_dyna_number(self.dc),
+            f0=format_dyna_number(self.f0),
+            s0=format_dyna_number(self.s0),
         )
         return dyna_card_string
     
     def format_pml_card(self, mid):
         dyna_card_string = (
-        "*MAT_PML_ELASTICC\n"
+        "*MAT_PML_ELASTIC\n"
         "$ MID, DENSITY, E, NU\n"
-        f"{mid:d},{self.density: #.8G},{self.E: #.8G},{self.nu: #.8G}\n"
+        "{mid:d},{density},{E},{nu}\n"
+        ).format(
+            mid=mid,
+            density=format_dyna_number(self.density),
+            E=format_dyna_number(self.E),
+            nu=format_dyna_number(self.nu),
         )
         return dyna_card_string
