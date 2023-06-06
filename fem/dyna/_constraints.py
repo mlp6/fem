@@ -2,7 +2,10 @@
 class DynaMeshConstraintsMixin:
     def constrain_boundary_nodes(self):
         """
-        
+        This function adds two types of boundary constraints:
+            1) Nodes on the bottom of the mesh (zmin face) are fully constrained (translational and rotational on x,y,z axes) to prevent the face from slipping during the simulation. This ensures all nodal displacements within the mesh are due to mesh deformations and prevents global mesh displacement.
+            2) Nodes on the symmetry faces are constrained to not translate in the normal direction to the symmetry plane and to not rotate in the symmetry plane. For example, a mesh with a y-z symmetry plane face would be constrained to have no x translations and no y or z rotations.
+
         See DYNA Manual 1 *NODE section for rc and tc constraints
         - tc = translational constraint
         - rc = rotational constraint

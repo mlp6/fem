@@ -88,43 +88,92 @@ class DynaMeshWriterMixin:
             database=self.database_card_string
         )
 
-    def write_all_dyna_cards(self, project_path, load_folder_name, material_folder_name):
+    def write_all_dyna_cards(self, project_path, load_folder_name, material_folder_name, master_filename='Master.dyn'):
+        """
+        Writes all dyna cards necessary to run a simulation to file. Generates the following directory structure:
+
+        project_path/nodes.dyn
+                    /elems.dyn
+                    /load_folder_name/
+                                     /material_folder_name/Materials.dyn
+                                                          /master_filename
+
+        Args:
+            project_path (str): Path to base directory for simulations with shared mesh (nodes and elements files).
+            load_folder_name (str): Folder name for loading type used in simulation.
+            material_folder_name (str): Folder name for material used in simulation. 
+            master_filename (str, optional): Name of master keyword file. Defaults to 'Master.dyn'.
+        """
+        # Create a Path object for each subpath. Create folders if necessary.
         project_path = pathlib.Path(project_path)
         load_path = project_path / load_folder_name
         material_path = load_path / material_folder_name
         material_path.mkdir(parents=True, exist_ok=True)
 
+        # Write nodes and elements to project path
         self.write_nodes(project_path)
         self.write_elems(project_path)
 
+        # Write materials and master keyword file to material path
         self.write_dyna_card(material_path, 'Materials.dyn', self.material_card_string)
-        self.write_dyna_card(material_path, 'Master.dyn', self.master_card_string)
+        self.write_dyna_card(material_path, master_filename, self.master_card_string)
 
     def write_dyna_card(self, base_path, filename, text):
+        """
+        Wrapper for basic writing strings to file. Useful for dyna cards held as strings in memory.
+        """
+        base_path = pathlib.Path(base_path)
+        base_path.mkdir(parents=True, exist_ok=True)
         with open(base_path / filename, "w") as fh:
             fh.write(text)
 
     def write_nodes(self, base_path='./', header_comment=""):
+        """
+        Write nodes array to file. Format follows LS-DYNA manual for *NODE cards. Translational and rotational constraints for each node are included.
+
+        Args:
+            base_path (str, optional): Path to save nodes.dyn. Defaults to './'.
+            header_comment (str, optional): Comment to add to top of nodes file. Defaults to "".
+        """
+        # Make sure base_path is a Path object 
         base_path = pathlib.Path(base_path)
         with open(base_path / 'nodes.dyn', 'w') as fh:
+
+            # Only add header comment line if one exists
             if header_comment:
-                fh.write(f"{header_comment}\n")
+                fh.write(f"$ {header_comment}\n")
+
+            # Write nodes card header 
             fh.write("*NODE\n")
             fh.write("$ NID, x, y, z, TC, RC\n")
 
+            # Write all nodes to file
             for nid, x, y, z, tc, rc in self.nodes:
                 fh.write(f"{nid},{x:.6f},{y:.6f},{z:.6f},{tc},{rc}\n")
             
             fh.write("*END\n")
 
     def write_elems(self, base_path='./', header_comment=""):
+        """
+        Write elements array to file. Format follows LS-DYNA manual for *ELEMENT_SOLID cards.
+
+        Args:
+            base_path (str, optional): Path to save elems.dyn. Defaults to './'.
+            header_comment (str, optional): Comment to add to top of elemenets file. Defaults to "".
+        """
+        # Make sure base_path is a path object
         base_path = pathlib.Path(base_path)
         with open(base_path / 'elems.dyn', 'w') as fh:
+            
+            # Only add header comment line if one exists
             if header_comment:
-                fh.write(f"{header_comment}\n")
+                fh.write(f"$ {header_comment}\n")
+
+            # Write elements card header
             fh.write("*ELEMENT_SOLID\n")
             fh.write("$ NID, PID, n1, n2, n3, n4, n5, n6, n7, n8\n")
 
+            # Write all elements to file
             for nid, pid, n1, n2, n3, n4, n5, n6, n7, n8 in self.elems:
                 fh.write(f"{nid},{pid},{n1},{n2},{n3},{n4},{n5},{n6},{n7},{n8}\n")
             
