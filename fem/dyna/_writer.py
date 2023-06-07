@@ -3,6 +3,15 @@ import pathlib
 
 
 def format_dyna_number(num):
+    """
+    Formats a number to fit LS-DYNA fixed card format (10 characters per field and max 80 character line lengths). Handles negative and scientific notation numbers.
+
+    Args:
+        num (float): Input number to format.
+
+    Returns:
+        str: Formatted number as a string.
+    """
     snum = str(num)
 
     if len(snum) > 10:
@@ -26,6 +35,14 @@ def format_dyna_number(num):
 
 class DynaMeshWriterMixin:
     def set_control(self, end_time, dt_init=1e-6, tssfac=0.02):
+        """
+        Create a control card string. These cards set total simulation length, initial simulation backend time step, and time step scaling factor. 
+
+        Args:
+            end_time (_type_): _description_
+            dt_init (_type_, optional): _description_. Defaults to 1e-6.
+            tssfac (float, optional): _description_. Defaults to 0.02.
+        """
         self.control_card_string = (
             "*CONTROL_ENERGY\n"
             "$#    hgen      rwen    slnten     rylen\n"
@@ -46,6 +63,12 @@ class DynaMeshWriterMixin:
         )
 
     def set_database(self, dt=2.5e-5):
+        """
+        Create a database card string. These cards set how often and for which nodes LS-DYNA will write information during the FEM simulation. 
+
+        Args:
+            dt (float, optional): Time set for LS-DYNA database writes during the simulation. Defaults to 2.5e-5.
+        """
         self.database_card_string = (
             "*DATABASE_NODOUT\n"
             "$#      dt    binary      lcur     ioopt   option1   option2\n"
@@ -67,6 +90,18 @@ class DynaMeshWriterMixin:
         )
     
     def set_master(self, title=''): 
+        """
+        Creates LS-DYNA master keyword file. Includes control and database cards so these must be set first. 
+
+        Args:
+            title (str, optional): Optional title to put at the top of the LS-DYNA deck. Defaults to ''.
+        """
+        if not self.control_card_string:
+            raise AttributeError("Control card string not set. Create a control card string before the master card string.")
+        
+        if not self.database_card_string:
+            raise AttributeError("Database card string not set. Create a database card string before the master card string.")
+
         self.master_card_string = (
             "$ LS-DYNA Keyword file created by fem.dyna Python functions\n"
             "$ Created on {current_time}\n"

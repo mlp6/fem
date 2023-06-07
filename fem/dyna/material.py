@@ -5,6 +5,9 @@ from ._writer import format_dyna_number
 
 @dataclass(kw_only=True)
 class Material:
+    """
+    Base class for LS-DYNA materials. Inherit from this class whenever creating a new material class. Includes part and section solid keyword arguments that have reasonable defaults and can still be set on subclass material object instantiation. Also provides functions necessary for writing section solid and part cards and overrideable functions for material and pml card writing.
+    """
     # Part kwargs
     eosid: int = 0
     hgid: int = 0
