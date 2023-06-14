@@ -2,33 +2,34 @@ import datetime
 import pathlib
 
 
-def format_dyna_number(num):
+def format_dyna_number(num, num_len=10):
     """
-    Formats a number to fit LS-DYNA fixed card format (10 characters per field and max 80 character line lengths). Handles negative and scientific notation numbers.
+    Formats a number to fit LS-DYNA fixed card format (10 characters per field and max 80 character line lengths by default). Handles negative and scientific notation numbers.
 
     Args:
         num (float): Input number to format.
+        num_len (int): Maximum length of number.
 
     Returns:
         str: Formatted number as a string.
     """
     snum = str(num)
 
-    if len(snum) > 10:
+    if len(snum) > num_len:
         # Convert number to scientific notation
         snum = "{:E}".format(num)
 
-        # If number string is greater than 10 characters, remove leading zeros from exponent
-        if len(snum) > 10:
+        # If number string is greater than num_len characters, remove leading zeros from exponent
+        if len(snum) > num_len:
             base, exponent = snum.split('E')
             sign = exponent[0]
             exponent = exponent[1:].lstrip('0')
             snum = base + 'E' + sign + exponent
 
-        # If number string is still greater than 10 characters, remove precision bits to make it 10 characters long
-        if len(snum) > 10: 
+        # If number string is still greater than num_len characters, remove precision bits to make it num_len characters long
+        if len(snum) > num_len: 
             base, exponent = snum.split('E')
-            precision_bits_to_remove = len(snum) - (10 - len(exponent) + 2)
+            precision_bits_to_remove = len(snum) - (num_len - len(exponent) + 2)
             snum = base[:-precision_bits_to_remove] + 'E' + exponent
 
     return snum
@@ -116,6 +117,8 @@ class DynaMeshWriterMixin:
             "../NodalLoads.dyn\n"
             "*INCLUDE\n"
             "Materials.dyn\n"
+            "*INCLUDE\n"
+            "LoadCurves.dyn\n"
             "*END\n"
         ).format(
             current_time=datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"),
@@ -149,7 +152,11 @@ class DynaMeshWriterMixin:
         self.write_nodes(project_path)
         self.write_elems(project_path)
 
-        # Write materials and master keyword file to material path
+        # Write loads to load path
+        self.write_dyna_card(load_path, 'NodalLoads.dyn', self.load_card_string)
+
+        # Write load curve, materials, master keyword file to material path
+        self.write_dyna_card(material_path, 'LoadCurves.dyn', self.load_curve_card_string)
         self.write_dyna_card(material_path, 'Materials.dyn', self.material_card_string)
         self.write_dyna_card(material_path, master_filename, self.master_card_string)
 

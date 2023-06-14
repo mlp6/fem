@@ -14,13 +14,24 @@ class Structure:
 class DynaMeshStructureMixin:
     def add_struct_list(self, struct_list):
         for s in struct_list:
-            self.add_struct(s.shape, s.material, *s.args)
+            self.add_struct(s.shape, s.material, s.args)
 
-    def add_struct(self, shape, material, *struct_args):
-        # Get nodes in struct
+    def add_struct(self, shape, material, struct_args):
+        """
+        Adds a structure to the mesh. Edits the part id for elements within the structure, creates the structure material, part, and section cards, and adds a PML for the structure if structure elements overlap with the PML. 
+
+        Args:
+            shape (str): Shape of the structure.
+            material (Material): Material object of the structure.
+            struct_args (list): List of parameters to create structure.
+        """
+        # Get the ids of all nodes within the structure
         nodes_in_struct = self.find_nodes_in_struct(shape, *struct_args)
         
+        # Generate a new part id for the structure
         new_part_id = self.get_new_part_id()
+
+        # Update the part id of elements in the structure
         self.add_struct_to_elems(nodes_in_struct, new_part_id)
 
         # Create material, part, and section solid cards
@@ -28,11 +39,19 @@ class DynaMeshStructureMixin:
             new_part_id, title=shape
         )
 
+        # If the mesh has a PML, edit the PML material where the structure overlaps to have the same elastic properties
         if self.has_pml():
+            # Find nodes in both the PML and the structure
             pml_and_struct_nodes = np.intersect1d(self.pml_node_ids, nodes_in_struct)
+
             if len(pml_and_struct_nodes) > 0:
+                # Generate a new part id for the structure PML
                 pml_part_id = self.get_new_part_id()
+
+                # Update the part id of elements in both the structure and PML
                 self.add_struct_to_elems(pml_and_struct_nodes, pml_part_id)
+
+                # Create material, part, and section solid cards for the structure PML
                 self.material_card_string += material.format_material_part_and_section_cards(
                     pml_part_id, title=shape+' pml', is_pml_material=True
                 )

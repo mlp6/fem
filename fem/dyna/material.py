@@ -61,6 +61,44 @@ class Material:
         return material_card_string + part_card_string + section_solid_string + '\n'
 
 @dataclass(kw_only=True)
+class Elastic(Material):
+    density: float                 
+    E: float                       # young's modulus
+    nu: float                      # poisson's ratio
+    da: float = 0.0
+    db: float = 0.0
+    K: float = 0.0
+
+    def format_material_card(self, mid):
+        dyna_card_string = (
+        "*MAT_ELASTIC\n"
+        "$ MID, DENSITY, E, PR, DA, DB, K\n"
+        "{mid:d},{density},{E},{poisson},{da},{db},{K}\n"
+        ).format(
+            mid=mid,
+            density=format_dyna_number(self.density),
+            E=format_dyna_number(self.E),
+            poisson=format_dyna_number(self.nu),
+            da=format_dyna_number(self.da),
+            db=format_dyna_number(self.db),
+            K=format_dyna_number(self.K),
+        )
+        return dyna_card_string
+    
+    def format_pml_card(self, mid):
+        dyna_card_string = (
+        "*MAT_PML_ELASTIC\n"
+        "$ MID, DENSITY, E, NU\n"
+        "{mid:d},{density},{E},{nu}\n"
+        ).format(
+            mid=mid,
+            density=format_dyna_number(self.density),
+            E=format_dyna_number(self.E),
+            nu=format_dyna_number(self.nu),
+        )
+        return dyna_card_string
+
+@dataclass(kw_only=True)
 class KelvinMaxwellViscoelastic(Material):
     density: float                 
     E: float                       # young's modulus

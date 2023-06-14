@@ -50,6 +50,14 @@ class Coordinates:
         self.y = np.linspace(self.ymin, self.ymax, self.ny)
         self.z = np.linspace(self.zmin, self.zmax, self.nz)
 
+    def flatten(self):
+        """
+        Create (n_node x 3) array of all coordinates in the mesh where each row is a 3-tuple of the (x,y,z) coordinates of each node
+        """
+        return np.array(list(product(
+            self.x, self.y, self.z
+        )))
+
 @dataclass
 class DynaMesh(
         DynaMeshConstraintsMixin,
@@ -66,7 +74,7 @@ class DynaMesh(
     symmetry: str      # Options: q - quarter symmetry, hx - half symmetry in x normal plane, hy - half symmetry in y normal plane, n - no symmetry
     material: Material
 
-    # Total materials in the mesh
+    # Total materials and loads in the mesh
     n_materials: int = 0
 
     # Nodes numpy record array and related properties
@@ -84,11 +92,12 @@ class DynaMesh(
     pml_node_ids: list[int] = field(default_factory=list)
 
     # Strings for each LS-DYNA deck card set
-    material_card_string: str = field(init=False, repr=False)
-    load_card_string: str = field(init=False, repr=False)
-    control_card_string: str = field(init=False, repr=False)
-    database_card_string: str = field(init=False, repr=False)
-    master_card_string: str = field(init=False, repr=False)
+    material_card_string: str = field(init=False, repr=False, default='')
+    load_card_string: str = field(init=False, repr=False, default='')
+    load_curve_card_string: str = field(init=False, repr=False, default='')
+    control_card_string: str = field(init=False, repr=False, default='')
+    database_card_string: str = field(init=False, repr=False, default='')
+    master_card_string: str = field(init=False, repr=False, default='')
 
     def __post_init__(self):
         # Set total number of nodes (treating each sample in the coordinate system as a mesh node)
@@ -118,9 +127,7 @@ class DynaMesh(
         node_ids = np.arange(self.n_nodes) + 1
 
         # Create (n_node x 3) array of all coordinates in the mesh where each row is a 3-tuple of the (x,y,z) coordinates of each node
-        coords_cartesian_product = np.array(list(product(
-            self.coords.x, self.coords.y, self.coords.z
-        )))
+        coords_cartesian_product = self.coords.flatten()
 
         # Initialize the translational and rotational constraints for each node as 0 (no constraints in any dimension)
         node_tc_and_rc = np.zeros((self.n_nodes,2))
@@ -171,13 +178,16 @@ class DynaMesh(
         )
         return np.rec.fromarrays(elems_arr.T, dtype=ELEMS_DT)
     
-    def add_pml(self, pml_thickness):
+    def add_pml(self, pml_thickness, exclude_faces=None):
         """
         Add pml to a mesh without any structures. Can be used if structures have been set, but the structures won't have material specific pmls and the pml will only match the mesh background elasticity.
 
         Args:
             pml_thickness (int): Thickness of pml layer (number of nodes)
+            exclude_faces (list[str], optional): List of faces to exclude from the PML. Defaults to None. Options: 'xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'.
         """
+        if exclude_faces is None:
+            exclude_faces = []
 
         # Get new part id for the pml
         new_part_id = self.get_new_part_id()
@@ -188,15 +198,16 @@ class DynaMesh(
         )
 
         # Find nodes in pml and add as a structure to the elements array
-        self.pml_node_ids = self.find_nodes_in_pml(pml_thickness)
+        self.pml_node_ids = self.find_nodes_in_pml(pml_thickness, exclude_faces)
         self.add_struct_to_elems(self.pml_node_ids, new_part_id)
     
-    def find_nodes_in_pml(self, pml_thickness):
+    def find_nodes_in_pml(self, pml_thickness, exclude_faces):
         """
         Find all nodes within a pml based on mesh symmetry and pml_thickness.
 
         Args:
             pml_thickness (int): Thickness of pml (in number of nodes).
+            exclude_faces (list[str]): List of faces to exclude from the PML. 
 
         Returns:
             np.array: Nodes within the pml layers
@@ -207,7 +218,8 @@ class DynaMesh(
         # For each non-symmetry plane, get all node ids within the pml_thickness
         pml_node_ids = []
         for plane in non_symmetry_planes:
-            pml_node_ids.extend( self.get_plane_node_ids(plane, pml_thickness) ) 
+            if plane not in exclude_faces:
+                pml_node_ids.extend( self.get_plane_node_ids(plane, pml_thickness) ) 
 
         # Return unique ids (removes ids from overlapping plane edges)
         return np.unique(pml_node_ids)
@@ -283,6 +295,15 @@ class DynaMesh(
         # Non-symmetry planes are the set difference 
         non_symmetry_planes = all_planes - symmetry_planes
         return symmetry_planes, non_symmetry_planes
+    
+    def get_element_volume(self):
+        """
+        Returns the volume of each element (assumes they are all the same).
+        """
+        x_elem_len = (self.coords.xmax - self.coords.xmin) / self.nex
+        y_elem_len = (self.coords.ymax - self.coords.ymin) / self.ney
+        z_elem_len = (self.coords.zmax - self.coords.zmin) / self.nez
+        return x_elem_len * y_elem_len * z_elem_len
     
     def has_pml(self):
         """
