@@ -14,24 +14,36 @@ def format_dyna_number(num, num_len=10):
         str: Formatted number as a string.
     """
     snum = str(num)
+    # print(snum)
 
     if len(snum) > num_len:
-        # Convert number to scientific notation
-        snum = "{:E}".format(num)
+        if num > 0.01:
+            snum = f"{num:.8f}"
+        elif abs(num) > 0.01:
+            snum = f"{num:.7f}"
+
+        if len(snum) > num_len:
+            # Convert number to scientific notation
+            snum = f"{num:.5E}"
+            # print(snum)
 
         # If number string is greater than num_len characters, remove leading zeros from exponent
         if len(snum) > num_len:
             base, exponent = snum.split('E')
             sign = exponent[0]
-            exponent = exponent[1:].lstrip('0')
+            if exponent[1] == '0':
+                exponent = exponent[2]
+            else:
+                exponent = exponent[1:]
             snum = base + 'E' + sign + exponent
 
         # If number string is still greater than num_len characters, remove precision bits to make it num_len characters long
         if len(snum) > num_len: 
             base, exponent = snum.split('E')
-            precision_bits_to_remove = len(snum) - (num_len - len(exponent) + 2)
+            precision_bits_to_remove = len(snum) - num_len
             snum = base[:-precision_bits_to_remove] + 'E' + exponent
 
+    # print(snum)
     return snum
 
 class DynaMeshWriterMixin:

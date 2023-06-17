@@ -186,15 +186,15 @@ class DynaMeshLoadsMixin:
             "*LOAD_NODE_POINT\n"
             "$ Normalization ISPPA = {norm_isppa} W/cm^2\n"
             "$ Frequency = {frequency} MHz\n"
-            "$ Alpha = {alpha_np} Np\n"
+            "$ Alpha = {alpha_np:} Np\n"
             "$ Element Volume = {elem_vol} cm^3\n"
             "{load_string}"
             "*END\n"
         ).format(
-            norm_isppa=normalization_isppa,
-            frequency=frequency,
-            alpha_np=alpha_np,
-            elem_vol=self.get_element_volume(),
+            norm_isppa=format_dyna_number(normalization_isppa),
+            frequency=format_dyna_number(frequency),
+            alpha_np=format_dyna_number(alpha_np),
+            elem_vol=format_dyna_number(self.get_element_volume()),
             load_string=load_string
         )
 
