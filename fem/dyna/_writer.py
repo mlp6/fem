@@ -59,16 +59,16 @@ class DynaMeshWriterMixin:
         self.control_card_string = (
             "*CONTROL_ENERGY\n"
             "$#    hgen      rwen    slnten     rylen\n"
-            "        2         2         2         2\n"
+            "         2         2         2         2\n"
             "*CONTROL_MPP_IO_NOFULL\n"
             "*CONTROL_TERMINATION\n"
             "$#  endtim    endcyc     dtmin    endeng    endmas\n"
-            "{endtim}        0     0.000     0.000     0.000\n"
+            "{endtim:>10}         0     0.000     0.000     0.000\n"
             "*CONTROL_TIMESTEP\n"
             "$#  dtinit    tssfac      isdo    tslimt     dt2ms      lctm     erode     ms1st\n"
-            "{dtinit}  {tssfac}         0     0.000     0.000         1         0         0\n"
+            "{dtinit:>10}{tssfac:>10}         0     0.000     0.000         1         0         0\n"
             "$#  dt2msf   dt2mslc     imscl    unused    unused     rmscl\n"
-            "    0.000         0         0                         0.000\n"
+            "     0.000         0         0                         0.000\n"
         ).format(
             endtim=format_dyna_number(end_time),
             dtinit=format_dyna_number(dt_init),
@@ -85,19 +85,22 @@ class DynaMeshWriterMixin:
         self.database_card_string = (
             "*DATABASE_NODOUT\n"
             "$#      dt    binary      lcur     ioopt   option1   option2\n"
-            "{dt}         0         0         1     0.000         0\n"
+            "{dt:>10}         0         0         1     0.000         0\n"
             "*DATABASE_EXTENT_BINARY\n"
             "$#   neiph     neips    maxint    strflg    sigflg    epsflg    rltflg    engflg\n"
-            "        0         0         3         0         2         2         2         1\n"
+            "         0         0         3         0         2         2         2         1\n"
             "$#  cmpflg    ieverp    beamip     dcomp      shge     stssz    n3thdt   ialemat\n"
-            "        0         0         0         4         1         1         2         0\n"
+            "         0         0         0         4         1         1         2         0\n"
             "$# nintsld   pkp_sen      sclp    unused     msscl     therm    intout    nodout\n"
-            "        1         0     0.000                   0         0STRESS              \n"
+            "         1         0     0.000                   0         0STRESS              \n"
             "$#    dtdt    resplt\n"
-            "        0         0\n"
+            "         0         0\n"
             "*DATABASE_HISTORY_NODE_SET\n"
             "$#     id1       id2       id3       id4       id5       id6       id7       id8\n"
-            "        1         0         0         0         0         0         0         0\n"
+            "         1         0         0         0         0         0         0         0\n"
+            "*SET_NODE_GENERAL\n"
+            "1\n"
+            "ALL\n"
         ).format(
             dt=format_dyna_number(dt)
         )

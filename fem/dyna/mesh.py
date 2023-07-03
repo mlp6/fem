@@ -75,7 +75,7 @@ class DynaMesh(
     material: Material
 
     # Total materials and loads in the mesh
-    n_materials: int = 0
+    n_materials: int = field(init=False, default=0)
 
     # Nodes numpy record array and related properties
     nodes: np.ndarray = field(init=False, repr=False)

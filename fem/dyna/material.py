@@ -58,7 +58,8 @@ class Material:
         part_card_string = self.format_part_card(id, id, id, title=title)
         section_solid_string = self.format_section_solid_card(id)
 
-        return material_card_string + part_card_string + section_solid_string + '\n'
+        # Part and section need to be defined before materials otherwise dyna will error out
+        return part_card_string + section_solid_string + material_card_string + '\n'
 
 @dataclass(kw_only=True)
 class Elastic(Material):
