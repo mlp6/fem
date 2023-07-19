@@ -36,7 +36,8 @@ class DynaMeshConstraintsMixin:
                 # Constrain x translations and y,z rotations
                 self.nodes['tc'][plane_node_ids - 1] = 1
                 self.nodes['rc'][plane_node_ids - 1] = 5
-            elif plane == 'ymax':
+            # elif plane == 'ymax':
+            elif plane == 'ymin':
                 # Constrain y translations and x,z rotations
                 self.nodes['tc'][plane_node_ids - 1] = 2
                 self.nodes['rc'][plane_node_ids - 1] = 6                
@@ -47,3 +48,10 @@ class DynaMeshConstraintsMixin:
         plane_node_ids = self.get_plane_node_ids('zmin', plane_thickness)
         self.nodes['tc'][plane_node_ids - 1] = 7
         self.nodes['rc'][plane_node_ids - 1] = 7
+
+        # Fully constrain PML planes if they exist
+        if self.has_pml():
+            for plane in self.pml_planes:
+                plane_node_ids = self.get_plane_node_ids(plane, plane_thickness)
+                self.nodes['tc'][plane_node_ids - 1] = 7
+                self.nodes['rc'][plane_node_ids - 1] = 7

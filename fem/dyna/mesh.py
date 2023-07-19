@@ -92,6 +92,7 @@ class DynaMesh(
     pml_node_ids: list[int] = field(default_factory=list)
 
     # Strings for each LS-DYNA deck card set
+    part_and_section_card_string: str = field(init=False, repr=False, default='')
     material_card_string: str = field(init=False, repr=False, default='')
     load_card_string: str = field(init=False, repr=False, default='')
     load_curve_card_string: str = field(init=False, repr=False, default='')
@@ -117,7 +118,7 @@ class DynaMesh(
         new_part_id = self.get_new_part_id()
         
         # Add background material to material card string
-        self.material_card_string = self.material.format_material_part_and_section_cards(new_part_id, title='background')
+        self.part_and_section_card_string, self.material_card_string = self.material.format_material_part_and_section_cards(new_part_id, title='background')
 
     def _create_nodes_record_array(self):
         """
@@ -183,7 +184,7 @@ class DynaMesh(
         Add pml to a mesh without any structures. Can be used if structures have been set, but the structures won't have material specific pmls and the pml will only match the mesh background elasticity.
 
         Args:
-            pml_thickness (int): Thickness of pml layer (number of nodes)
+            pml_thickness (int): Thickness of pml layer (number of elements)
             exclude_faces (list[str], optional): List of faces to exclude from the PML. Defaults to None. Options: 'xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'.
         """
         if exclude_faces is None:
@@ -193,9 +194,11 @@ class DynaMesh(
         new_part_id = self.get_new_part_id()
 
         # Update material card string with pml material
-        self.material_card_string += self.material.format_material_part_and_section_cards(
+        part_and_section_card_string, material_card_string = self.material.format_material_part_and_section_cards(
             new_part_id, title='background pml', is_pml_material=True
         )
+        self.part_and_section_card_string += part_and_section_card_string
+        self.material_card_string += material_card_string
 
         # Find nodes in pml and add as a structure to the elements array
         self.pml_node_ids = self.find_nodes_in_pml(pml_thickness, exclude_faces)
@@ -206,7 +209,7 @@ class DynaMesh(
         Find all nodes within a pml based on mesh symmetry and pml_thickness.
 
         Args:
-            pml_thickness (int): Thickness of pml (in number of nodes).
+            pml_thickness (int): Thickness of pml (in number of elements).
             exclude_faces (list[str]): List of faces to exclude from the PML. 
 
         Returns:
@@ -216,9 +219,12 @@ class DynaMesh(
         symmetry_planes, non_symmetry_planes = self.get_symmetry_and_non_symmetry_planes()
 
         # For each non-symmetry plane, get all node ids within the pml_thickness
+        pml_thickness += 1  # number of nodes = number of elements + 1
         pml_node_ids = []
+        self.pml_planes = []
         for plane in non_symmetry_planes:
             if plane not in exclude_faces:
+                self.pml_planes.append(plane)
                 pml_node_ids.extend( self.get_plane_node_ids(plane, pml_thickness) ) 
 
         # Return unique ids (removes ids from overlapping plane edges)
@@ -282,7 +288,8 @@ class DynaMesh(
         
         # Set symmetry planes set based on mesh symmetry condition
         if self.symmetry == 'q':
-            symmetry_planes = {'xmax', 'ymax'}
+            symmetry_planes = {'xmax', 'ymin'}
+            # symmetry_planes = {'xmax', 'ymax'}
         elif self.symmetry == 'hx':   # symmetry on x normal (yz plane)
             symmetry_planes = {'xmax'}
         elif self.symmetry == 'hy':   # symmetry on y normal (xz plane)

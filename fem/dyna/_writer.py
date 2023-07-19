@@ -124,6 +124,7 @@ class DynaMeshWriterMixin:
             "*KEYWORD\n"
             "{control}"
             "{database}"
+            "{parts_and_sections}"
             "*INCLUDE\n"
             "../../nodes.dyn\n"
             "*INCLUDE\n"
@@ -138,7 +139,8 @@ class DynaMeshWriterMixin:
         ).format(
             current_time=datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"),
             control=self.control_card_string,
-            database=self.database_card_string
+            database=self.database_card_string,
+            parts_and_sections=self.part_and_section_card_string,
         )
 
     def write_all_dyna_cards(self, project_path, load_folder_name, material_folder_name, master_filename='Master.dyn'):
