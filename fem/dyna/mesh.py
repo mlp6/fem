@@ -54,9 +54,11 @@ class Coordinates:
         """
         Create (n_node x 3) array of all coordinates in the mesh where each row is a 3-tuple of the (x,y,z) coordinates of each node
         """
-        return np.array(list(product(
-            self.x, self.y, self.z
+        arr = np.array(list(product(
+            self.z, self.y, self.x
         )))
+
+        return arr[:, [2,1,0]]
 
 @dataclass
 class DynaMesh(
