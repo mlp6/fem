@@ -109,11 +109,19 @@ class DynaMeshLoadsMixin:
     def interpolate_field_to_dyna_intensities(self, field_load_file):
         mat = loadmat(field_load_file)
 
-        extent = dict(
-            lat=mat['FIELD_PARAMS']['lat_extent'][0,0].reshape(-1,),
-            ele=mat['FIELD_PARAMS']['ele_extent'][0,0].reshape(-1,),
-            ax=mat['FIELD_PARAMS']['ax_extent'][0,0].reshape(-1,),
-        )
+        if 'ax_extent' in mat['FIELD_PARAMS'].dtype.names:
+            extent = dict(
+                lat=mat['FIELD_PARAMS']['lat_extent'][0,0].reshape(-1,),
+                ele=mat['FIELD_PARAMS']['ele_extent'][0,0].reshape(-1,),
+                ax=mat['FIELD_PARAMS']['ax_extent'][0,0].reshape(-1,),
+            )
+        else:
+            mpn = mat['FIELD_PARAMS']['measurementPoints'][0,0]
+            extent = dict(
+                lat=np.unique(mpn[:,0]),
+                ele=np.unique(mpn[:,1]),
+                ax=np.unique(mpn[:,2]),
+            )
 
         nlat, nele, nax = len(extent['lat']), len(extent['ele']), len(extent['ax'])
         intensity = mat['intensity'].reshape(nax, nlat, nele)
@@ -169,8 +177,8 @@ class DynaMeshLoadsMixin:
     
     def add_field_arf_load(self, field_load_file, normalization_isppa, load_curve_id):
         mat = loadmat(field_load_file)
-        # c = mat['FIELD_PARAMS']['soundSpeed'][0,0][0][0]*100 # convert from m/s to cm/s
-        c = mat['FIELD_PARAMS']['soundSpeed'][0,0][0][0]
+        c = mat['FIELD_PARAMS']['soundSpeed'][0,0][0][0]*100 # convert from m/s to cm/s
+        # c = mat['FIELD_PARAMS']['soundSpeed'][0,0][0][0]
         alpha_db = mat['FIELD_PARAMS']['alpha'][0,0][0][0]
         frequency = mat['FIELD_PARAMS']['Frequency'][0,0][0][0]
         alpha_np = alpha_db * frequency / 8.616

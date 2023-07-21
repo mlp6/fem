@@ -36,16 +36,16 @@ class Material:
         dyna_card_string = (
         "*PART\n"
         f"{title_string}"
-        "$      pid     secid       mid     eosid      hgid      grav    adpopt      tmid\n"
-        f"{pid:>10}{secid:>10}{mid:>10}{self.eosid:>10}{self.hgid:>10}{self.grav:>10}{self.adpopt:>10}{self.tmid:>10}\n"
+        "$ pid, secid, mid, eosid, hgid, grav, adpopt, tmid\n"
+        f"{pid},{secid},{mid},{self.eosid},{self.hgid},{self.grav},{self.adpopt},{self.tmid}\n"
         )
         return dyna_card_string
     
     def format_section_solid_card(self, secid):
         dyna_card_string = (
         "*SECTION_SOLID\n"
-        "$    secid    elform       aet\n"
-        f"{secid:>10}{self.elform:>10}{self.aet:>10}\n"
+        "$ secid, elform, aet\n"
+        f"{secid},{self.elform},{self.aet}\n"
         )
         return dyna_card_string
     

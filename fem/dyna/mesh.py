@@ -234,11 +234,12 @@ class DynaMesh(
     
     def get_elems_3d(self):
         """ Reshape elements array to 3D for matrix indexing. """
-        return self.elems.reshape(self.nex, self.ney, self.nez) 
+        return self.elems.reshape(self.nex, self.ney, self.nez, order='F') 
 
     def get_nodes_3d(self):
         """ Reshape nodes array to 3D for matrix indexing. """
-        return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz)
+        return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz, order='F')
+        # return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz)
     
     def get_new_part_id(self):
         """ Create a new part id and increment the total number of materials. """
