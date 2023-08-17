@@ -14,7 +14,6 @@ def format_dyna_number(num, num_len=10):
         str: Formatted number as a string.
     """
     snum = str(num)
-    # print(snum)
 
     if len(snum) > num_len:
         if num > 0.01:
@@ -25,7 +24,6 @@ def format_dyna_number(num, num_len=10):
         if len(snum) > num_len:
             # Convert number to scientific notation
             snum = f"{num:.5E}"
-            # print(snum)
 
         # If number string is greater than num_len characters, remove leading zeros from exponent
         if len(snum) > num_len:
@@ -43,7 +41,6 @@ def format_dyna_number(num, num_len=10):
             precision_bits_to_remove = len(snum) - num_len
             snum = base[:-precision_bits_to_remove] + 'E' + exponent
 
-    # print(snum)
     return snum
 
 class DynaMeshWriterMixin:
