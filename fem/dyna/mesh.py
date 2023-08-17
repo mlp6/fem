@@ -1,3 +1,4 @@
+import warnings
 from dataclasses import dataclass, field
 from itertools import product
 
@@ -19,9 +20,9 @@ ELEMS_DT = [
     ('n1', 'i4'), ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
     ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'), ('n8', 'i4')
 ]
-
+    
 @dataclass
-class Coordinates:
+class UniformCoordinates:
     """
     Defines coordinate system parameters for a 3D rectangular region.
     """
@@ -31,7 +32,7 @@ class Coordinates:
     ny: int
     nz: int
 
-    # Min and max values for each dimension
+    # Min and max values for each dimension (in centimeters)
     xmin: float
     xmax: float
     ymin: float
@@ -39,10 +40,15 @@ class Coordinates:
     zmin: float
     zmax: float
 
-    # Coordinates for each axis
+    # Coordinates for each axis (in centimeters)
     x: np.ndarray = field(init=False, repr=False)
     y: np.ndarray = field(init=False, repr=False)
     z: np.ndarray = field(init=False, repr=False)
+
+    # Distance between nodes in each direction (in centimeters)
+    dx: float = field(init=False)
+    dy: float = field(init=False)
+    dz: float = field(init=False)
 
     def __post_init__(self):
         # Setup coordinates for each axis
@@ -50,16 +56,23 @@ class Coordinates:
         self.y = np.linspace(self.ymin, self.ymax, self.ny)
         self.z = np.linspace(self.zmin, self.zmax, self.nz)
 
+        # Calculate distance between nodes in each direction
+        self.dx = self.x[1] - self.x[0]
+        self.dy = self.y[1] - self.y[0]
+        self.dz = self.z[1] - self.z[0]
+
     def flatten(self):
         """
-        Create (n_node x 3) array of all coordinates in the mesh where each row is a 3-tuple of the (x,y,z) coordinates of each node
+        Create (n_node x 3) array of all coordinates in the mesh where each row is a 3-tuple of the (x,y,z) coordinates of each node. Reordering is to use 'Fortran' or 'F' indexing (see https://numpy.org/doc/stable/reference/generated/numpy.reshape.html) to be compatible with legacy node readers. 
         """
-        return np.array(list(product(
-            self.x, self.y, self.z
+        arr = np.array(list(product(
+            self.z, self.y, self.x
         )))
 
+        return arr[:, [2,1,0]]
+
 @dataclass
-class DynaMesh(
+class UniformMesh(
         DynaMeshConstraintsMixin,
         DynaMeshLoadsMixin,
         DynaMeshStructureMixin,
@@ -67,15 +80,14 @@ class DynaMesh(
     ):
     """
     Mesh container class to hold mesh state and methods for writing mesh state to files. Contains nodes and elements numpy record arrays, properties describing the mesh state, and strings formatted as LS-DYNA cards with information about the mesh materials, loading conditions, simulation timing controls, FEM simulation database writers, and master keyword files. 
-
     """
     # Basic properties of an isotropic rectangular mesh
-    coords: Coordinates
+    coords: UniformCoordinates
     symmetry: str      # Options: q - quarter symmetry, hx - half symmetry in x normal plane, hy - half symmetry in y normal plane, n - no symmetry
     material: Material
 
     # Total materials and loads in the mesh
-    n_materials: int = 0
+    n_materials: int = field(init=False, default=0)
 
     # Nodes numpy record array and related properties
     nodes: np.ndarray = field(init=False, repr=False)
@@ -88,10 +100,16 @@ class DynaMesh(
     nez: int = field(init=False)
     n_elems: int = field(init=False)
 
+    # Symmetry, non-symmetry, and pml plane sets (if applicable)
+    symmetry_planes: set[str] = field(default_factory=set)
+    non_symmetry_planes: set[str] = field(default_factory=set)
+    pml_planes: set[str] = field(default_factory=set)
+
     # List of node ids in pml (if applicable)
-    pml_node_ids: list[int] = field(default_factory=list)
+    pml_node_ids: list[int] = field(default_factory=list, repr=False)
 
     # Strings for each LS-DYNA deck card set
+    part_and_section_card_string: str = field(init=False, repr=False, default='')
     material_card_string: str = field(init=False, repr=False, default='')
     load_card_string: str = field(init=False, repr=False, default='')
     load_curve_card_string: str = field(init=False, repr=False, default='')
@@ -100,6 +118,8 @@ class DynaMesh(
     master_card_string: str = field(init=False, repr=False, default='')
 
     def __post_init__(self):
+        self._validate_symmetry_condition()
+
         # Set total number of nodes (treating each sample in the coordinate system as a mesh node)
         self.n_nodes = self.coords.nx * self.coords.ny * self.coords.nz
         
@@ -117,7 +137,62 @@ class DynaMesh(
         new_part_id = self.get_new_part_id()
         
         # Add background material to material card string
-        self.material_card_string = self.material.format_material_part_and_section_cards(new_part_id, title='background')
+        self.part_and_section_card_string, self.material_card_string = self.material.format_material_part_and_section_cards(new_part_id, title='background')
+
+    def _validate_symmetry_condition(self):
+        def _is_zero(v):
+            return np.isclose(v, 0.0, atol=1e-9)
+        
+        def _check_for_zero_crossing(v_str):
+            if not any(_is_zero(getattr(self.coords, v_str))):
+                warnings.warn(f"No zero crossing found on {v_str} axis. Make sure {v_str}min and {v_str}max coordinate extents are equal magnitude and the n{v_str} is odd")
+
+        # Warn if nx, ny, or nz are even
+        if (self.coords.nx % 2 == 0) or (self.coords.ny % 2 == 0) or (self.coords.nz % 2 == 0):
+            warnings.warn("Either nx, ny, or nz was set to an even number. This could cause there to not be any nodes at the zero crossing of the axis with an even number of nodes. Change to odd number to avoid bugs unless you know what you're doing")
+
+        all_planes =  {'xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'}
+        symmetry_planes = set()
+        for dim in ['xmin', 'xmax', 'ymin', 'ymax']:
+            if _is_zero(getattr(self.coords, dim)):
+                symmetry_planes.add(dim)
+
+        # Quarter symmetry: make sure x and y both have zero as a min or max
+        if self.symmetry == 'q':
+            if len(symmetry_planes) != 2:
+                raise ValueError(f"Two planes should have either the min or max at zero for quarter symmetry. Planes found at zero: {symmetry_planes}")
+
+        # Half symmetry: make sure either x or y have zero as a min or max
+        elif self.symmetry == 'hx':
+            # symmetry on x normal (yz plane)
+            # if (len(symmetry_planes) != 1) and (not symmetry_planes[0].startswith('x')):   
+            if (len(symmetry_planes) != 1) and ('xmin' not in symmetry_planes or 'xmax' not in symmetry_planes):   
+                raise ValueError(f"Either xmin or xmax only should be zero for hx symmetry. Planes found at zero: {symmetry_planes}")
+            
+            _check_for_zero_crossing('y')
+
+        elif self.symmetry == 'hy':
+            # symmetry on y normal (xz plane)
+            if (len(symmetry_planes) != 1) and (not symmetry_planes[0].startswith('y')):   
+                raise ValueError(f"Either ymin or ymax only should be zero for hy symmetry. Planes found at zero: {symmetry_planes}")
+            
+            _check_for_zero_crossing('x')
+
+        # No symmetry: warn if min and max extents are different since there won't be a node at 0
+        elif self.symmetry == 'n':
+            if (len(symmetry_planes) != 0):
+                raise ValueError(f"None of the min or max extents of x or y should be at zero for a no symmetry mesh. Planes found at zero: {symmetry_planes}")
+
+            symmetry_planes = {None}
+
+            _check_for_zero_crossing('x')
+            _check_for_zero_crossing('y')
+        else:
+            raise ValueError(f"Invalid plane symmetry type: '{self.symmetry}'")
+        
+        self.non_symmetry_planes = all_planes - symmetry_planes
+        self.symmetry_planes
+        
 
     def _create_nodes_record_array(self):
         """
@@ -183,7 +258,7 @@ class DynaMesh(
         Add pml to a mesh without any structures. Can be used if structures have been set, but the structures won't have material specific pmls and the pml will only match the mesh background elasticity.
 
         Args:
-            pml_thickness (int): Thickness of pml layer (number of nodes)
+            pml_thickness (int): Thickness of pml layer (number of elements)
             exclude_faces (list[str], optional): List of faces to exclude from the PML. Defaults to None. Options: 'xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'.
         """
         if exclude_faces is None:
@@ -193,9 +268,11 @@ class DynaMesh(
         new_part_id = self.get_new_part_id()
 
         # Update material card string with pml material
-        self.material_card_string += self.material.format_material_part_and_section_cards(
+        part_and_section_card_string, material_card_string = self.material.format_material_part_and_section_cards(
             new_part_id, title='background pml', is_pml_material=True
         )
+        self.part_and_section_card_string += part_and_section_card_string
+        self.material_card_string += material_card_string
 
         # Find nodes in pml and add as a structure to the elements array
         self.pml_node_ids = self.find_nodes_in_pml(pml_thickness, exclude_faces)
@@ -206,19 +283,19 @@ class DynaMesh(
         Find all nodes within a pml based on mesh symmetry and pml_thickness.
 
         Args:
-            pml_thickness (int): Thickness of pml (in number of nodes).
+            pml_thickness (int): Thickness of pml (in number of elements).
             exclude_faces (list[str]): List of faces to exclude from the PML. 
 
         Returns:
             np.array: Nodes within the pml layers
         """
-        # Get the non-symmetry planes based on mesh symmetry
-        symmetry_planes, non_symmetry_planes = self.get_symmetry_and_non_symmetry_planes()
 
         # For each non-symmetry plane, get all node ids within the pml_thickness
+        pml_thickness += 1  # number of nodes = number of elements + 1
         pml_node_ids = []
-        for plane in non_symmetry_planes:
+        for plane in self.non_symmetry_planes:
             if plane not in exclude_faces:
+                self.pml_planes.add(plane)
                 pml_node_ids.extend( self.get_plane_node_ids(plane, pml_thickness) ) 
 
         # Return unique ids (removes ids from overlapping plane edges)
@@ -226,11 +303,12 @@ class DynaMesh(
     
     def get_elems_3d(self):
         """ Reshape elements array to 3D for matrix indexing. """
-        return self.elems.reshape(self.nex, self.ney, self.nez) 
+        return self.elems.reshape(self.nex, self.ney, self.nez, order='F') 
 
     def get_nodes_3d(self):
         """ Reshape nodes array to 3D for matrix indexing. """
-        return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz)
+        return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz, order='F')
+        # return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz)
     
     def get_new_part_id(self):
         """ Create a new part id and increment the total number of materials. """
@@ -269,32 +347,6 @@ class DynaMesh(
         
         # Return only the node ids
         return plane_nodes['id'].reshape(-1,)
-    
-    def get_symmetry_and_non_symmetry_planes(self):
-        """
-        Get symmetry and non-symmetry planes based on the symmetry condition.
-
-        Returns:
-            tuple[set[str]]: Tuple of two sets of strings containing the symmetry (set 1) and non-symmetry (set 2) plane names.
-        """
-        # Set of all planes
-        all_planes =  {'xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'}
-        
-        # Set symmetry planes set based on mesh symmetry condition
-        if self.symmetry == 'q':
-            symmetry_planes = {'xmax', 'ymax'}
-        elif self.symmetry == 'hx':   # symmetry on x normal (yz plane)
-            symmetry_planes = {'xmax'}
-        elif self.symmetry == 'hy':   # symmetry on y normal (xz plane)
-            symmetry_planes = {'ymax'}
-        elif self.symmetry == 'n':
-            symmetry_planes = {None}
-        else:
-            raise ValueError(f"Invalid plane symmetry type: '{self.symmetry}'")
-
-        # Non-symmetry planes are the set difference 
-        non_symmetry_planes = all_planes - symmetry_planes
-        return symmetry_planes, non_symmetry_planes
     
     def get_element_volume(self):
         """

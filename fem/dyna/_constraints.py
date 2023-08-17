@@ -20,23 +20,22 @@ class DynaMeshConstraintsMixin:
             7: constrained x, y, and z
         For example, if the tc parameter for a node is set to 4, the x and y displacements will be constrained to 0. 
         """
-
-        # Get symmetry and non-symmetry planes based on mesh symmetry conditions
         # Plane node indices are plane node ids - 1
-        symmetry_planes, non_symmetry_planes = self.get_symmetry_and_non_symmetry_planes()
 
         # Only retrieve nodes on outer edge of mesh
         plane_thickness = 1
 
         # For each symmetry plane, constrain normal translations and in-plane rotations
-        for plane in symmetry_planes:
+        for plane in self.symmetry_planes:
+            print(f"symmetry plane: {plane}")
             plane_node_ids = self.get_plane_node_ids(plane, plane_thickness)
 
             if plane == 'xmax':
                 # Constrain x translations and y,z rotations
                 self.nodes['tc'][plane_node_ids - 1] = 1
                 self.nodes['rc'][plane_node_ids - 1] = 5
-            elif plane == 'ymax':
+            # elif plane == 'ymax':
+            elif plane == 'ymin':
                 # Constrain y translations and x,z rotations
                 self.nodes['tc'][plane_node_ids - 1] = 2
                 self.nodes['rc'][plane_node_ids - 1] = 6                
@@ -47,3 +46,11 @@ class DynaMeshConstraintsMixin:
         plane_node_ids = self.get_plane_node_ids('zmin', plane_thickness)
         self.nodes['tc'][plane_node_ids - 1] = 7
         self.nodes['rc'][plane_node_ids - 1] = 7
+
+        # Fully constrain PML planes if they exist
+        if self.has_pml():
+            for plane in self.pml_planes:
+                print(f"pml plane: {plane}")
+                plane_node_ids = self.get_plane_node_ids(plane, plane_thickness)
+                self.nodes['tc'][plane_node_ids - 1] = 7
+                self.nodes['rc'][plane_node_ids - 1] = 7

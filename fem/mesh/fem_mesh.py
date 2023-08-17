@@ -1,5 +1,6 @@
 """fem_mesh.py - ubiquitous functions for many meshing operations"""
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,7 @@ def extractPlane(snic, axes, plane):
 
     """
     from sys import exit
+
     from numpy import where
 
     plane_axis_index = where(axes[plane[0]] == plane[1])
@@ -124,6 +126,7 @@ def SortNodeIDs(nic, sort=False):
 
     """
     import sys
+
     from numpy import unique
 
     axes = [unique(nic['x']), unique(nic['y']), unique(nic['z'])]
@@ -144,6 +147,8 @@ def SortNodeIDs(nic, sort=False):
     else:
         snic = nic.reshape((axes[0].size, axes[1].size, axes[2].size),
                            order='F')
+        # snic = nic.reshape((axes[0].size, axes[1].size, axes[2].size),
+        #                    order='C')
 
     return [snic, axes]
 
@@ -185,8 +190,9 @@ def load_nodeIDs_coords(nodefile: str="nodes.dyn"):
 
     nodeIDcoords = np.loadtxt(nodefile,
                               delimiter=',',
-                              comments='*',
+                              comments=('*', '$'),
                               skiprows=header_comment_skips,
+                              usecols=(0,1,2,3),
                               dtype=[('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
                                      ('z', 'f4')])
 

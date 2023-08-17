@@ -35,9 +35,11 @@ class DynaMeshStructureMixin:
         self.add_struct_to_elems(nodes_in_struct, new_part_id)
 
         # Create material, part, and section solid cards
-        self.material_card_string += material.format_material_part_and_section_cards(
+        part_and_section_card_string, material_card_string = material.format_material_part_and_section_cards(
             new_part_id, title=shape
         )
+        self.part_and_section_card_string += part_and_section_card_string
+        self.material_card_string += material_card_string
 
         # If the mesh has a PML, edit the PML material where the structure overlaps to have the same elastic properties
         if self.has_pml():
@@ -52,9 +54,11 @@ class DynaMeshStructureMixin:
                 self.add_struct_to_elems(pml_and_struct_nodes, pml_part_id)
 
                 # Create material, part, and section solid cards for the structure PML
-                self.material_card_string += material.format_material_part_and_section_cards(
+                part_and_section_card_string, material_card_string = material.format_material_part_and_section_cards(
                     pml_part_id, title=shape+' pml', is_pml_material=True
                 )
+                self.part_and_section_card_string += part_and_section_card_string
+                self.material_card_string += material_card_string
 
     def add_struct_to_elems(self, node_ids_in_struct, new_part_id, in_struct_definition='all'):
         """
