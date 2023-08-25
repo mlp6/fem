@@ -1,0 +1,18 @@
+name: fem
+dependencies:
+  - python=3.8
+  - numpy
+  - scipy
+  - jupyter
+  - flake8
+  - pylint
+  - pytest
+  - pytest-pep8
+  - pytest-cov
+  - pytest-xdist
+  - h5py
+  - matplotlib
+  - sphinx
+  - pip:
+    - sphinxcontrib-napoleon
+    - pyevtk
