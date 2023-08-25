@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='fem',
     packages=find_packages(),
-    version='8.5.2',
+    version='9.0.0',
     license='Apache v2.0',
     author='Mark Palmeri',
     author_email='mlp6@duke.edu',
@@ -11,7 +11,7 @@ setup(
     keywords=['arfi', 'swei', 'fem', 'ultrasound'],
     long_description=open('README.md').read(),
     url='https://github.com/mlp6/fem',
-    download_url='https://github.com/mlp6/fem/archive/refs/tags/v8.5.2.zip',
+    download_url='https://github.com/mlp6/fem/archive/refs/tags/v9.0.0.zip',
     classifiers=[],
     install_requires=['h5py',
                       'numpy>=1.16',
