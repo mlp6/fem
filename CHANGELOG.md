@@ -165,3 +165,19 @@ See the git commit history for an effective change log pre-v6.3.1
 
 ## v8.5.4
 * fix syntax errors in the v8.5.3 fix
+
+## v9.0.0
+* Original version writes nodes/elem files and then successively reads them back
+in to modify them. Now use a dataclass that contains the numpy record arrays
+from nodes and elems with methods to modify the arrays and write the nodes/elems
+files at the end.
+* Added functionality to link materials with structures and my code also
+can write the materials, parts, and section_solid cards.
+* Implemented an object-oriented pattern called "Mixins" where a single large
+class is spread across multiple files to group functionality. Any modules that
+start with an underscore contain a mixin class with methods related to that
+function (eg, _structure.py has the DynaMeshStructureMixin class with all
+methods related to adding structures to the mesh). The main class
+(mesh.DynaMesh) then inherits from all the mixin classes so it has all mixin
+methods. 
+* Bug fixes and refactoring
