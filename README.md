@@ -62,14 +62,14 @@ To build the documentation:
 1. Run `docs/rsync_build.sh` to bring the newly-built HTML files and associated
    source files into `docs/`.
 
-The Travis CI testing also tests the documentation build with a dummy process.
-
 ## Issues
 Please file any bug reports, features requests, etc. using the GitHub
 [Issues](https://github.com/mlp6/fem/issues).
 
 ## Contributors
 - Mark Palmeri (mlp6@duke.edu)
+- Joey Richardson (@jrichardson97)
+- Anna Phillips (@annap2277)
 - Ningrui Li (nl91@duke.edu)
 - Mallory Selzo (UNC-CH)
 - Chris Moore (chrisjmoore@unc.edu)

@@ -271,7 +271,7 @@ def writeNodePositions(loadout, args, filetype):
 
                     # writing volume dimensions to .vts file, and finishing up
                     # header
-                    if filetype is 'vts':
+                    if filetype == 'vts':
                         loadout.write('\t<StructuredGrid WholeExtent="0 %d 0 '
                                       '%d 0 %d">\n' % (dimensions[0],
                                                        dimensions[1],
@@ -279,7 +279,7 @@ def writeNodePositions(loadout, args, filetype):
                         loadout.write('\t\t<Piece Extent="0 %d 0 %d 0 %d">\n'
                                       % (dimensions[0], dimensions[1],
                                          dimensions[2]))
-                    if filetype is 'vtu':
+                    if filetype == 'vtu':
                         loadout.write('\t<UnstructuredGrid>\n')
                         loadout.write('\t\t<Piece NumberOfPoints="%d" '
                                       'NumberOfCells="%d">\n' % (numNodes,
