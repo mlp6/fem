@@ -49,14 +49,14 @@ class Material:
         )
         return dyna_card_string
     
-    def format_material_part_and_section_cards(self, id, title=None, is_pml_material=False):
+    def format_material_part_and_section_cards(self, part_id, title=None, is_pml_material=False):
         if is_pml_material:
-            material_card_string = self.format_pml_card(id)
+            material_card_string = self.format_pml_card(part_id)
         else:
-            material_card_string = self.format_material_card(id)
+            material_card_string = self.format_material_card(part_id)
         
-        part_card_string = self.format_part_card(id, id, id, title=title)
-        section_solid_card_string = self.format_section_solid_card(id)
+        part_card_string = self.format_part_card(part_id, part_id, part_id, title=title)
+        section_solid_card_string = self.format_section_solid_card(part_id)
         part_and_section_card_string = part_card_string + section_solid_card_string
 
         return part_and_section_card_string, material_card_string

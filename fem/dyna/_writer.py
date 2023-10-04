@@ -170,9 +170,9 @@ class DynaMeshWriterMixin:
         # Write loads to load path
         self.write_dyna_card(load_path, 'NodalLoads.dyn', self.load_card_string)
 
-        # Write load curve, materials, master keyword file to material path
+        # Write materials, load curve, master keyword file to material path
+        self.write_materials(material_path)
         self.write_dyna_card(material_path, 'LoadCurves.dyn', self.load_curve_card_string)
-        self.write_dyna_card(material_path, 'Materials.dyn', self.material_card_string)
         self.write_dyna_card(material_path, master_filename, self.master_card_string)
 
     def write_dyna_card(self, base_path, filename, text):
@@ -183,6 +183,27 @@ class DynaMeshWriterMixin:
         base_path.mkdir(parents=True, exist_ok=True)
         with open(base_path / filename, "w") as fh:
             fh.write(text)
+
+    def write_materials(self, material_card_path):
+        """
+        Write materials list of dictionaries to Materials.dyn file. Parts and section cards are also reset and saved as part of the mesh object, but these cards are not written to file until the master card is written.
+
+        Args:
+            material_card_path (str): Path to save Materials.dyn card
+        """
+
+        # Reset part/section and materials cards
+        self.part_and_section_card_string = ''
+        self.material_card_string = ''
+
+        for mat_kwargs in self.materials:
+            material = mat_kwargs.pop('material')
+            part_and_section_card_string, material_card_string = material.format_material_part_and_section_cards(**mat_kwargs)
+
+            self.part_and_section_card_string += part_and_section_card_string
+            self.material_card_string += material_card_string
+
+        self.write_dyna_card(material_card_path, 'Materials.dyn', self.material_card_string)
 
     def write_nodes(self, base_path='./', header_comment=""):
         """

@@ -1,5 +1,5 @@
 import warnings
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from itertools import product
 
 import numpy as np
@@ -84,10 +84,10 @@ class UniformMesh(
     # Basic properties of an isotropic rectangular mesh
     coords: UniformCoordinates
     symmetry: str      # Options: q - quarter symmetry, hx - half symmetry in x normal plane, hy - half symmetry in y normal plane, n - no symmetry
-    material: Material
+    material: InitVar[Material]
 
-    # Total materials and loads in the mesh
-    n_materials: int = field(init=False, default=0)
+    # List of material dictionaries
+    materials: list[dict] = field(default_factory=list, repr=False)
 
     # Nodes numpy record array and related properties
     nodes: np.ndarray = field(init=False, repr=False)
@@ -106,7 +106,7 @@ class UniformMesh(
     pml_planes: set[str] = field(default_factory=set)
 
     # List of node ids in pml (if applicable)
-    pml_node_ids: list[int] = field(default_factory=list, repr=False)
+    pml_node_ids: list[int] = field(default_factory=list, repr=False)    
 
     # Strings for each LS-DYNA deck card set
     part_and_section_card_string: str = field(init=False, repr=False, default='')
@@ -117,7 +117,7 @@ class UniformMesh(
     database_card_string: str = field(init=False, repr=False, default='')
     master_card_string: str = field(init=False, repr=False, default='')
 
-    def __post_init__(self):
+    def __post_init__(self, background_material: Material):
         self._validate_symmetry_condition()
 
         # Set total number of nodes (treating each sample in the coordinate system as a mesh node)
@@ -133,11 +133,9 @@ class UniformMesh(
         # Create elements numpy record array
         self.elems = self._create_elems_record_array()
 
-        # Generate new part id for the mesh background
-        new_part_id = self.get_new_part_id()
-        
-        # Add background material to material card string
-        self.part_and_section_card_string, self.material_card_string = self.material.format_material_part_and_section_cards(new_part_id, title='background')
+        # Add background material
+        self.add_material(background_material, title='background')
+
 
     def _validate_symmetry_condition(self):
         def _is_zero(v):
@@ -253,6 +251,29 @@ class UniformMesh(
         )
         return np.rec.fromarrays(elems_arr.T, dtype=ELEMS_DT)
     
+    def add_material(self, material, title='', is_pml_material=False):
+        """
+        Add material to material list. All materials are represented as a dictionary and a new part id is created for each material added. 
+
+        Args:
+            material (Material): Material object defining material properties.
+            title (str, optional): Title of material. Defaults to ''.
+            is_pml_material (bool, optional): Determines if material is a pml. Material definition cards should be written out differently for pmls (see material.py definitions). Defaults to False.
+
+        Returns:
+            int: Part id created for new material.
+        """
+        new_part_id = len(self.materials) + 1
+        self.materials.append(dict(
+            material=material,
+            part_id=new_part_id,
+            title=title,
+            is_pml_material=is_pml_material,
+        ))
+
+        return new_part_id
+
+    
     def add_pml(self, pml_thickness, exclude_faces=None):
         """
         Add pml to a mesh without any structures. Can be used if structures have been set, but the structures won't have material specific pmls and the pml will only match the mesh background elasticity.
@@ -264,15 +285,9 @@ class UniformMesh(
         if exclude_faces is None:
             exclude_faces = []
 
-        # Get new part id for the pml
-        new_part_id = self.get_new_part_id()
-
-        # Update material card string with pml material
-        part_and_section_card_string, material_card_string = self.material.format_material_part_and_section_cards(
-            new_part_id, title='background pml', is_pml_material=True
-        )
-        self.part_and_section_card_string += part_and_section_card_string
-        self.material_card_string += material_card_string
+        # Add pml material to material list
+        background_material = self.materials[0]['material']
+        new_part_id = self.add_material(background_material, title='background pml', is_pml_material=True)
 
         # Find nodes in pml and add as a structure to the elements array
         self.pml_node_ids = self.find_nodes_in_pml(pml_thickness, exclude_faces)
@@ -309,11 +324,6 @@ class UniformMesh(
         """ Reshape nodes array to 3D for matrix indexing. """
         return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz, order='F')
         # return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz)
-    
-    def get_new_part_id(self):
-        """ Create a new part id and increment the total number of materials. """
-        self.n_materials += 1
-        return self.n_materials
 
     def get_plane_node_ids(self, direction, thickness):
         """

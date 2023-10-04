@@ -16,7 +16,7 @@ class DynaMeshStructureMixin:
         for s in struct_list:
             self.add_struct(s.shape, s.material, s.args)
 
-    def add_struct(self, shape, material, struct_args):
+    def add_struct(self, shape, material, struct_args, title=None):
         """
         Adds a structure to the mesh. Edits the part id for elements within the structure, creates the structure material, part, and section cards, and adds a PML for the structure if structure elements overlap with the PML. 
 
@@ -25,21 +25,17 @@ class DynaMeshStructureMixin:
             material (Material): Material object of the structure.
             struct_args (list): List of parameters to create structure.
         """
+        if title is None:
+            title = shape
+
         # Get the ids of all nodes within the structure
         nodes_in_struct = self.find_nodes_in_struct(shape, *struct_args)
-        
-        # Generate a new part id for the structure
-        new_part_id = self.get_new_part_id()
+
+        # Add structure material to material list
+        new_part_id = self.add_material(material, title=title)
 
         # Update the part id of elements in the structure
         self.add_struct_to_elems(nodes_in_struct, new_part_id)
-
-        # Create material, part, and section solid cards
-        part_and_section_card_string, material_card_string = material.format_material_part_and_section_cards(
-            new_part_id, title=shape
-        )
-        self.part_and_section_card_string += part_and_section_card_string
-        self.material_card_string += material_card_string
 
         # If the mesh has a PML, edit the PML material where the structure overlaps to have the same elastic properties
         if self.has_pml():
@@ -47,18 +43,11 @@ class DynaMeshStructureMixin:
             pml_and_struct_nodes = np.intersect1d(self.pml_node_ids, nodes_in_struct)
 
             if len(pml_and_struct_nodes) > 0:
-                # Generate a new part id for the structure PML
-                pml_part_id = self.get_new_part_id()
+                # Add pml material to material list
+                pml_part_id = self.add_material(material, title=title+' pml', is_pml_material=True)
 
                 # Update the part id of elements in both the structure and PML
                 self.add_struct_to_elems(pml_and_struct_nodes, pml_part_id)
-
-                # Create material, part, and section solid cards for the structure PML
-                part_and_section_card_string, material_card_string = material.format_material_part_and_section_cards(
-                    pml_part_id, title=shape+' pml', is_pml_material=True
-                )
-                self.part_and_section_card_string += part_and_section_card_string
-                self.material_card_string += material_card_string
 
     def add_struct_to_elems(self, node_ids_in_struct, new_part_id, in_struct_definition='all'):
         """
