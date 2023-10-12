@@ -222,20 +222,22 @@ class UniformMesh(
         # Reshape nodes for 3D matrix indexing
         nodes_3d = self.get_nodes_3d()
 
+        # Initialize elements array
+        elem_nodes = np.empty((self.nez * self.ney * self.nex, 8), dtype=int)
+
         # For each element in each dimension, find the nodes that make up element. Elements are assumed to be rectangular volumes and the nodes are the 8 vertices of the element. 
-        elems_list = []
+        index = 0
         for iez in range(self.nez):
             for iey in range(self.ney):
                 for iex in range(self.nex):
                     # Get nodes of (iex, iey, iez) element
-                    elem_nodes = nodes_3d[iex:iex+2, iey:iey+2, iez:iez+2]['id'].reshape(-1,)
+                    elem_nodes[index] = nodes_3d[iex:iex+2, iey:iey+2, iez:iez+2]['id'].reshape(-1)
 
-                    # Reorder nodes to follow LS-DYNA's expected format for rectangular volume elements (see *ELEMENT_SOLID documentation)
-                    elem_nodes[2:4] = np.flip(elem_nodes[2:4])
-                    elem_nodes[6:8] = np.flip(elem_nodes[6:8])
+                    # Reorder nodes to follow LS-DYNA's expected format for rectangular volume elements
+                    elem_nodes[index][2:4] = np.flip(elem_nodes[index][2:4])
+                    elem_nodes[index][6:8] = np.flip(elem_nodes[index][6:8])
 
-                    # Add element nodes to list
-                    elems_list.append( elem_nodes )
+                    index += 1
 
         # Create element id array (1 based indexing)
         elem_ids = np.arange(self.n_elems) + 1
@@ -247,10 +249,11 @@ class UniformMesh(
         elems_arr = np.concatenate((
             elem_ids.reshape(-1,1),
             part_ids,
-            np.array(elems_list)
+            elem_nodes
             ), axis=1
         )
         return np.rec.fromarrays(elems_arr.T, dtype=ELEMS_DT)
+
     
     def add_material(self, material, title='', base_material_index=None):
         """
@@ -341,7 +344,6 @@ class UniformMesh(
     def get_nodes_3d(self):
         """ Reshape nodes array to 3D for matrix indexing. """
         return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz, order='F')
-        # return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz)
 
     def get_plane_node_ids(self, direction, thickness):
         """
