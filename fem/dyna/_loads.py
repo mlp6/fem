@@ -84,11 +84,15 @@ class DynaMeshLoadsMixin:
         # Construct load curve string
         self.load_curve_card_string += (
             "*DEFINE_CURVE\n"
-            "$#    lcid      sidr       sfa       sfo      offa      offo    dattyp\n"
-            "        {lcid}         0  1.000000  1.000000     0.000     0.000         0\n"
-            "$#                a1                  o1\n"
+            "$ Load curve for load_type={load_type}\n"
+            "$ Load timing args: {load_timing_args}\n"
+            "$ lcid, sidr, sfa, sfo, offa, offo, dattyp\n"
+            "{lcid},0,1.0,1.0,0.0,0.0,0\n"
+            "$                 a1                  o1\n"
             "{load_timing}"
         ).format(
+            load_type=load_type,
+            load_timing_args=str(load_timing_args),
             lcid=load_curve_id,
             load_timing=load_timing_str
         )
@@ -201,16 +205,20 @@ class DynaMeshLoadsMixin:
 
         self.load_card_string += (
             "*LOAD_NODE_POINT\n"
+            "$ Load curve generated from: {field_load_file}\n"
             "$ Normalization ISPPA = {norm_isppa} W/cm^2\n"
             "$ Frequency = {frequency} MHz\n"
-            "$ Alpha = {alpha_np:} Np\n"
+            "$ Alpha = {alpha_np} Np, {alpha_db} dB/cm/MHz\n"
             "$ Element Volume = {elem_vol} cm^3\n"
+            "$ nid, dof, lcid, force, cid\n"
             "{load_string}"
             "*END\n"
         ).format(
+            field_load_file=str(field_load_file),
             norm_isppa=format_dyna_number(normalization_isppa),
             frequency=format_dyna_number(frequency),
             alpha_np=format_dyna_number(alpha_np),
+            alpha_db=format_dyna_number(alpha_db),
             elem_vol=format_dyna_number(self.get_element_volume()),
             load_string=load_string
         )

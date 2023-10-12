@@ -240,7 +240,11 @@ class DynaMeshWriterMixin:
 
             # Write nodes card header 
             fh.write("*NODE\n")
-            fh.write("$ NID, x, y, z, TC, RC\n")
+            fh.write(f"$ Mesh size:\n")
+            fh.write(f"$ nx={self.coords.nx}, xmin={self.coords.xmin:.2f}, xmax={self.coords.xmax:.2f}, dx={self.coords.dx:.3f}\n")
+            fh.write(f"$ ny={self.coords.ny}, ymin={self.coords.ymin:.2f}, ymax={self.coords.ymax:.2f}, dy={self.coords.dy:.3f}\n")
+            fh.write(f"$ nz={self.coords.nz}, zmin={self.coords.zmin:.2f}, zmax={self.coords.zmax:.2f}, dz={self.coords.dz:.3f}\n")
+            fh.write("$ nid, x, y, z, tc, rc\n")
 
             # Write all nodes to file
             for nid, x, y, z, tc, rc in self.nodes:
