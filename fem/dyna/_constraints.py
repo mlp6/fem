@@ -27,7 +27,6 @@ class DynaMeshConstraintsMixin:
 
         # For each symmetry plane, constrain normal translations and in-plane rotations
         for plane in self.symmetry_planes:
-            print(f"symmetry plane: {plane}")
             plane_node_ids = self.get_plane_node_ids(plane, plane_thickness)
 
             if plane == 'xmax':
@@ -50,7 +49,6 @@ class DynaMeshConstraintsMixin:
         # Fully constrain PML planes if they exist
         if self.has_pml():
             for plane in self.pml_planes:
-                print(f"pml plane: {plane}")
                 plane_node_ids = self.get_plane_node_ids(plane, plane_thickness)
                 self.nodes['tc'][plane_node_ids - 1] = 7
                 self.nodes['rc'][plane_node_ids - 1] = 7

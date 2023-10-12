@@ -10,8 +10,8 @@ def generate_arf_load_curve_timing(t_arf, dt):
     Create a ARF dyna timing curve. Can generate trapezoidal excitations by adjusting dt.
 
     Args:
-        t_arf (float): ARF push duration (microseconds).
-        dt (float): Time step to transition ARF load on and off (microseconds).
+        t_arf (float): ARF push duration (seconds).
+        dt (float): Time step to transition ARF load on and off (seconds).
 
     Returns:
         list[list]: X and y values of load curve timing.
@@ -32,8 +32,8 @@ def generate_multipush_load_curve_timing(t_arf, dt, n_arf, tracks_between, prf):
     Create a multi-push dyna timing curve. Can generate symmetric trapezoidal excitations by adjusting dt.
 
     Args:
-        t_arf (float): ARF push duration (microseconds).
-        dt (float): Time step to transition ARF load on and off (microseconds).
+        t_arf (float): ARF push duration (seconds).
+        dt (float): Time step to transition ARF load on and off (seconds).
         n_arf (int): Number of successive ARF excitations.
         tracks_between (int): Number of tracking pulses between each ARF push.
         prf (float): Scanner pulse repetition frequency (Hz)
@@ -132,12 +132,19 @@ class DynaMeshLoadsMixin:
 
         field_points = (extent['ele']*1e2, extent['lat']*1e2, -extent['ax']*1e2)
         dyna_points = self.coords.flatten()
-        intensity_interp = interpn(field_points, intensity, dyna_points)
+        intensity_interp = interpn(
+            field_points, intensity, dyna_points, 
+            method='linear',
+            bounds_error=False,
+            fill_value=0.0,
+        )
 
         node_ids = np.arange(self.n_nodes) + 1
         return node_ids, intensity_interp
     
     def calculate_point_loads_from_field_intensities(self, intensity, normalization_isppa, alpha_np, c):
+        # c is in cm/s
+
         field_isppa = np.max(intensity)
         intensity = intensity / field_isppa
 
@@ -178,12 +185,9 @@ class DynaMeshLoadsMixin:
     def add_field_arf_load(self, field_load_file, normalization_isppa, load_curve_id):
         mat = loadmat(field_load_file)
         c = mat['FIELD_PARAMS']['soundSpeed'][0,0][0][0]*100 # convert from m/s to cm/s
-        # c = mat['FIELD_PARAMS']['soundSpeed'][0,0][0][0]
         alpha_db = mat['FIELD_PARAMS']['alpha'][0,0][0][0]
         frequency = mat['FIELD_PARAMS']['Frequency'][0,0][0][0]
         alpha_np = alpha_db * frequency / 8.616
-
-        # print(c, alpha_db, frequency, alpha_np)
 
         node_ids, intensity = self.interpolate_field_to_dyna_intensities(field_load_file)
         point_loads = self.calculate_point_loads_from_field_intensities(intensity, normalization_isppa, alpha_np, c)

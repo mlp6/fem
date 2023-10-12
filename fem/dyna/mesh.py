@@ -86,8 +86,9 @@ class UniformMesh(
     symmetry: str      # Options: q - quarter symmetry, hx - half symmetry in x normal plane, hy - half symmetry in y normal plane, n - no symmetry
     material: InitVar[Material]
 
-    # List of material dictionaries
+    # List of material and pml material dictionaries
     materials: list[dict] = field(default_factory=list, repr=False)
+    pml_materials: list[dict] = field(default_factory=list, repr=False)
 
     # Nodes numpy record array and related properties
     nodes: np.ndarray = field(init=False, repr=False)
@@ -251,7 +252,7 @@ class UniformMesh(
         )
         return np.rec.fromarrays(elems_arr.T, dtype=ELEMS_DT)
     
-    def add_material(self, material, title='', is_pml_material=False):
+    def add_material(self, material, title='', base_material_index=None):
         """
         Add material to material list. All materials are represented as a dictionary and a new part id is created for each material added. 
 
@@ -263,13 +264,21 @@ class UniformMesh(
         Returns:
             int: Part id created for new material.
         """
-        new_part_id = len(self.materials) + 1
-        self.materials.append(dict(
-            material=material,
-            part_id=new_part_id,
-            title=title,
-            is_pml_material=is_pml_material,
-        ))
+        new_part_id = len(self.materials) + len(self.pml_materials) + 1
+
+        if base_material_index is not None:
+            self.pml_materials.append(dict(
+                material=material,
+                part_id=new_part_id,
+                title=title,
+                base_material_index=base_material_index,
+            ))
+        else:
+            self.materials.append(dict(
+                material=material,
+                part_id=new_part_id,
+                title=title,
+            ))
 
         return new_part_id
 
@@ -285,13 +294,22 @@ class UniformMesh(
         if exclude_faces is None:
             exclude_faces = []
 
-        # Add pml material to material list
+        # Add pml material to pml_material list
         background_material = self.materials[0]['material']
-        new_part_id = self.add_material(background_material, title='background pml', is_pml_material=True)
+        new_part_id = self.add_material(background_material, title='background pml', base_material_index=0)
 
         # Find nodes in pml and add as a structure to the elements array
         self.pml_node_ids = self.find_nodes_in_pml(pml_thickness, exclude_faces)
         self.add_struct_to_elems(self.pml_node_ids, new_part_id)
+
+    def change_material(self, new_material, material_index):
+
+        self.materials[material_index]['material'] = new_material
+
+        for pml_mat in self.pml_materials:
+            if pml_mat['base_material_index'] == material_index:
+                pml_mat['material'] = new_material
+
     
     def find_nodes_in_pml(self, pml_thickness, exclude_faces):
         """

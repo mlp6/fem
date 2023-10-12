@@ -25,6 +25,9 @@ class Material:
     def format_pml_card(self, mid):
         pass
 
+    def __str__(self):
+        pass
+
     def format_part_card(self, pid, secid, mid, title=None):
         title_string = ''
         if title is not None:
@@ -102,9 +105,9 @@ class Elastic(Material):
 @dataclass(kw_only=True)
 class KelvinMaxwellViscoelastic(Material):
     density: float                 
-    E: float                       # young's modulus
+    E: float                       # young's modulus (Pa)
     nu: float                      # poisson's ratio
-    eta: float                     # viscous modulus
+    eta: float                     # viscous modulus (Pa.s)
     K: float = field(init=False)   # bulk modulus
     g0: float = field(init=False)  
     gi: float = field(init=False)
@@ -121,7 +124,7 @@ class KelvinMaxwellViscoelastic(Material):
         # 200gi used to make 3rd param too stiff of a spring so it acts as a wire 
         # makes 3 parameter model into a 2 parameter model
         self.g0 = 200*self.gi                         # g0 in Barye
-        self.dc = (self.tau * self.gi) / self.g0     # 
+        self.dc = (self.tau * self.gi) / self.g0      # 
 
     def format_material_card(self, mid):
         dyna_card_string = (

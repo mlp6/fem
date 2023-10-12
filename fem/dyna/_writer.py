@@ -115,6 +115,9 @@ class DynaMeshWriterMixin:
         
         if not self.database_card_string:
             raise AttributeError("Database card string not set. Create a database card string before the master card string.")
+        
+        if not self.part_and_section_card_string:
+            raise ValueError("Write the material card before the master card to set the parts_and_sections string. This string has to be in the master keyword file.")
 
         self.master_card_string = (
             "$ LS-DYNA Keyword file created by fem.dyna Python functions\n"
@@ -141,7 +144,7 @@ class DynaMeshWriterMixin:
             parts_and_sections=self.part_and_section_card_string,
         )
 
-    def write_all_dyna_cards(self, project_path, load_folder_name, material_folder_name, master_filename='Master.dyn'):
+    def write_all_dyna_cards(self, project_path, load_folder_name, material_folder_name, master_filename='Master.dyn', sim_title=''):
         """
         Writes all dyna cards necessary to run a simulation to file. Generates the following directory structure:
 
@@ -173,6 +176,7 @@ class DynaMeshWriterMixin:
         # Write materials, load curve, master keyword file to material path
         self.write_materials(material_path)
         self.write_dyna_card(material_path, 'LoadCurves.dyn', self.load_curve_card_string)
+        self.set_master(title=sim_title)
         self.write_dyna_card(material_path, master_filename, self.master_card_string)
 
     def write_dyna_card(self, base_path, filename, text):
@@ -196,9 +200,22 @@ class DynaMeshWriterMixin:
         self.part_and_section_card_string = ''
         self.material_card_string = ''
 
-        for mat_kwargs in self.materials:
-            material = mat_kwargs.pop('material')
-            part_and_section_card_string, material_card_string = material.format_material_part_and_section_cards(**mat_kwargs)
+        for mat in self.materials:
+            part_and_section_card_string, material_card_string = mat['material'].format_material_part_and_section_cards(
+                mat['part_id'],
+                title=mat['title'],
+                is_pml_material=False,
+            )
+
+            self.part_and_section_card_string += part_and_section_card_string
+            self.material_card_string += material_card_string
+
+        for mat in self.pml_materials:
+            part_and_section_card_string, material_card_string = mat['material'].format_material_part_and_section_cards(
+                mat['part_id'],
+                title=mat['title'],
+                is_pml_material=True,
+            )
 
             self.part_and_section_card_string += part_and_section_card_string
             self.material_card_string += material_card_string

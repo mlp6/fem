@@ -44,7 +44,7 @@ class DynaMeshStructureMixin:
 
             if len(pml_and_struct_nodes) > 0:
                 # Add pml material to material list
-                pml_part_id = self.add_material(material, title=title+' pml', is_pml_material=True)
+                pml_part_id = self.add_material(material, title=title+' pml', base_material_index=new_part_id)
 
                 # Update the part id of elements in both the structure and PML
                 self.add_struct_to_elems(pml_and_struct_nodes, pml_part_id)
