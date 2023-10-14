@@ -66,8 +66,8 @@ class Material:
 
 @dataclass(kw_only=True)
 class Elastic(Material):
-    density: float                 
-    E: float                       # young's modulus
+    density: float                 # mass density (g/cm^3)
+    E: float                       # young's modulus (Pa)
     nu: float                      # poisson's ratio
     da: float = 0.0
     db: float = 0.0
@@ -76,12 +76,17 @@ class Elastic(Material):
     def format_material_card(self, mid):
         dyna_card_string = (
         "*MAT_ELASTIC\n"
+        "$ \tMass Density = {density} g/cm^3\n"
+        "$ \tYoung's Modulus = {E_kpa:.2f} kPa, {E_ba:.2f} Ba\n"
+        "$ \tPoisson's Ratio = {poisson}\n"
         "$ MID, DENSITY, E, PR, DA, DB, K\n"
         "{mid:d},{density},{E},{poisson},{da},{db},{K}\n"
         ).format(
+            E_kpa=self.E/1e3,
+            E_ba=self.E*10,
             mid=mid,
             density=format_dyna_number(self.density),
-            E=format_dyna_number(self.E),
+            E=format_dyna_number(self.E*10),  # convert to barye
             poisson=format_dyna_number(self.nu),
             da=format_dyna_number(self.da),
             db=format_dyna_number(self.db),
@@ -92,29 +97,35 @@ class Elastic(Material):
     def format_pml_card(self, mid):
         dyna_card_string = (
         "*MAT_PML_ELASTIC\n"
+        "$ PML Card to match elasticity of MAT_ELASTIC isotropic material\n"
+        "$ \tMass Density = {density} g/cm^3\n"
+        "$ \tYoung's Modulus = {E_kpa:.2f} kPa, {E_ba:.2f} Ba\n"
+        "$ \tPoisson's Ratio = {nu}\n"
         "$ MID, DENSITY, E, NU\n"
         "{mid:d},{density},{E},{nu}\n"
         ).format(
+            E_kpa=self.E/1e3,
+            E_ba=self.E*10,
             mid=mid,
             density=format_dyna_number(self.density),
-            E=format_dyna_number(self.E),
+            E=format_dyna_number(self.E*10),  # convert to barye
             nu=format_dyna_number(self.nu),
         )
         return dyna_card_string
 
 @dataclass(kw_only=True)
 class KelvinMaxwellViscoelastic(Material):
-    density: float                 
-    E: float                       # young's modulus (Pa)
-    nu: float                      # poisson's ratio
-    eta: float                     # viscous modulus (Pa.s)
-    K: float = field(init=False)   # bulk modulus
-    g0: float = field(init=False)  
-    gi: float = field(init=False)
-    dc: float = field(init=False)
-    tau: float = field(init=False)
-    f0: int = 1
-    s0: int = 0
+    density: float                   # mass density (g/cm^3)
+    E: float                         # young's modulus (Pa)
+    nu: float                        # poisson's ratio
+    eta: float                       # viscous modulus (Pa.s)
+    K: float = field(init=False)     # bulk modulus
+    g0: float = field(init=False)    # short-time shear modulus
+    gi: float = field(init=False)    # long-time (infinite) shear modulus
+    dc: float = field(init=False)    # decay constant (depends on formulation option f0)
+    tau: float = field(init=False)   # ratio of viscosity to elasticity
+    f0: int = 1                      # formulation option (maxwell = 0, kelvin = 1)
+    s0: int = 0                      
 
     def __post_init__(self):
         self.tau = self.eta / self.E
@@ -124,16 +135,23 @@ class KelvinMaxwellViscoelastic(Material):
         # 200gi used to make 3rd param too stiff of a spring so it acts as a wire 
         # makes 3 parameter model into a 2 parameter model
         self.g0 = 200*self.gi                         # g0 in Barye
-        self.dc = (self.tau * self.gi) / self.g0      # 
+        self.dc = (self.tau * self.gi) / self.g0      
 
     def format_material_card(self, mid):
         dyna_card_string = (
         "*MAT_KELVIN-MAXWELL_VISCOELASTIC\n"
-        "$ -- Youngs = {E:.2f} kPa, Viscosity = {eta:.2f} Pa.s, Tau = {tau:.2f} ms, Poisson = {nu:.5f}\n"
+        "$ 3 Parameter Standard Linear Model in {rep} representation\n"
+        "$ \tMass Density = {density} g/cm^3\n"
+        "$ \tYoung's Modulus = {E_kpa:.2f} kPa, {E_ba:.2f} Ba\n"
+        "$ \tViscous Modulus = {eta:.2f} Pa.s\n"
+        "$ \tTau = {tau:.2f} ms\n"
+        "$ \tPoisson's Ratio = {nu:.5f}\n"
         "$ MID, DENSITY, K, G0, Gi, dc, f0, s0\n"
         "{mid:d},{density},{K},{g0},{gi},{dc},{f0},{s0}\n"
         ).format(
-            E=self.E,
+            rep='Kelvin' if self.f0 else 'Maxwell',
+            E_kpa=self.E/1e3,
+            E_ba=self.E*10,
             eta=self.eta,
             tau=1e3*self.tau,
             nu=self.nu,
@@ -151,12 +169,18 @@ class KelvinMaxwellViscoelastic(Material):
     def format_pml_card(self, mid):
         dyna_card_string = (
         "*MAT_PML_ELASTIC\n"
+        "$ PML Card to match elasticity of MAT_KELVIN-MAXWELL_VISCOELASTIC material\n"
+        "$ \tMass Density = {density} g/cm^3\n"
+        "$ \tYoung's Modulus = {E_kpa:.2f} kPa, {E_ba:.2f} Ba\n"
+        "$ \tPoisson's Ratio = {nu}\n"
         "$ MID, DENSITY, E, NU\n"
         "{mid:d},{density},{E},{nu}\n"
         ).format(
+            E_kpa=self.E/1e3,
+            E_ba=self.E*10,
             mid=mid,
             density=format_dyna_number(self.density),
-            E=format_dyna_number(self.E),
+            E=format_dyna_number(self.E*10), # Convert from pascal to barye
             nu=format_dyna_number(self.nu),
         )
         return dyna_card_string
