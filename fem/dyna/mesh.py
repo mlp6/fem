@@ -1,5 +1,6 @@
 import warnings
 from dataclasses import dataclass, field, InitVar
+from typing import Optional
 from itertools import product
 
 import numpy as np
@@ -27,11 +28,6 @@ class UniformCoordinates:
     Defines coordinate system parameters for a 3D rectangular region.
     """
 
-    # Number of samples in x, y, and z dimensions
-    nx: int
-    ny: int
-    nz: int
-
     # Min and max values for each dimension (in centimeters)
     xmin: float
     xmax: float
@@ -39,6 +35,14 @@ class UniformCoordinates:
     ymax: float
     zmin: float
     zmax: float
+
+    # Number of samples in x, y, and z dimensions
+    nx: Optional[int] = None
+    ny: Optional[int] = None
+    nz: Optional[int] = None
+
+    # Grid size (in meters). Can be used in place of defining nx, ny, and nz
+    grid_size: Optional[int] = None
 
     # Coordinates for each axis (in centimeters)
     x: np.ndarray = field(init=False, repr=False)
@@ -51,6 +55,27 @@ class UniformCoordinates:
     dz: float = field(init=False)
 
     def __post_init__(self):
+        # Optional argument parameter group
+        group = (self.nx, self.ny, self.nz)
+
+        if all(group) and not self.grid_size:
+            pass
+        elif self.grid_size and not any(group):
+            # Calculate nx, ny, and nz if grid size passed. Make sure its odd so a node will be at 0 elevationally (x) and laterally (y)
+            self.nx = self._add_one_to_even(
+                np.ceil(1e-2*abs(self.xmax - self.xmin) / self.grid_size).astype(int)
+            )
+            self.ny = self._add_one_to_even(
+                np.ceil(1e-2*abs(self.ymax - self.ymin) / self.grid_size).astype(int)
+            )
+            self.nz = self._add_one_to_even(
+                np.ceil(1e-2*abs(self.zmax - self.zmin) / self.grid_size).astype(int)
+            )
+        else:
+            raise ValueError(
+                "Invalid initialization: Either (nx, ny, and nz) or grid_size must be provided, but not all four parameters."
+            )
+
         # Setup coordinates for each axis
         self.x = np.linspace(self.xmin, self.xmax, self.nx)
         self.y = np.linspace(self.ymin, self.ymax, self.ny)
@@ -60,6 +85,11 @@ class UniformCoordinates:
         self.dx = self.x[1] - self.x[0]
         self.dy = self.y[1] - self.y[0]
         self.dz = self.z[1] - self.z[0]
+
+    def _add_one_to_even(self, number):
+        if number % 2 == 0:  # Check if the number is even
+            number += 1  # Add 1 to it if it's even
+        return number
 
     def flatten(self):
         """
