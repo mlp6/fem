@@ -123,9 +123,23 @@ class DynaMeshWriterMixin:
             "$ LS-DYNA Keyword file created by fem.dyna Python functions\n"
             "$ Created on {current_time}\n"
             "*KEYWORD\n"
+            "$ \n"
+            f"$ {100*'-'}\n"
+            "$ Control Cards\n"
+            f"$ {100*'-'}\n"
+            "$ \n"
             "{control}"
+            f"$ {100*'-'}\n"
+            "$ Database Cards\n"
+            f"$ {100*'-'}\n"
             "{database}"
+            f"$ {100*'-'}\n"
+            "$ Part and Section Cards\n"
+            f"$ {100*'-'}\n"
             "{parts_and_sections}"
+            f"$ {100*'-'}\n"
+            "$ Externally Defined Cards\n"
+            f"$ {100*'-'}\n"
             "*INCLUDE\n"
             "../../nodes.dyn\n"
             "*INCLUDE\n"
@@ -241,6 +255,7 @@ class DynaMeshWriterMixin:
             # Write nodes card header 
             fh.write("*NODE\n")
             fh.write(f"$ Mesh size:\n")
+            fh.write(f"$ Number of nodes = {self.nodes.shape[0]}\n")
             fh.write(f"$ nx={self.coords.nx}, xmin={self.coords.xmin:.2f}, xmax={self.coords.xmax:.2f}, dx={self.coords.dx:.3f}\n")
             fh.write(f"$ ny={self.coords.ny}, ymin={self.coords.ymin:.2f}, ymax={self.coords.ymax:.2f}, dy={self.coords.dy:.3f}\n")
             fh.write(f"$ nz={self.coords.nz}, zmin={self.coords.zmin:.2f}, zmax={self.coords.zmax:.2f}, dz={self.coords.dz:.3f}\n")
@@ -270,7 +285,8 @@ class DynaMeshWriterMixin:
 
             # Write elements card header
             fh.write("*ELEMENT_SOLID\n")
-            fh.write("$ NID, PID, n1, n2, n3, n4, n5, n6, n7, n8\n")
+            fh.write(f"$ Number of elements = {self.elems.shape[0]}\n")
+            fh.write("$ nid, pid, n1, n2, n3, n4, n5, n6, n7, n8\n")
 
             # Write all elements to file
             for nid, pid, n1, n2, n3, n4, n5, n6, n7, n8 in self.elems:
