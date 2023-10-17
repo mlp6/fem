@@ -4,6 +4,7 @@ from typing import Optional
 from itertools import product
 
 import numpy as np
+from numpy.lib.recfunctions import structured_to_unstructured
 
 from ._constraints import DynaMeshConstraintsMixin
 from ._loads import DynaMeshLoadsMixin
@@ -374,6 +375,14 @@ class UniformMesh(
     def get_nodes_3d(self):
         """ Reshape nodes array to 3D for matrix indexing. """
         return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz, order='F')
+    
+    def get_elems_unstructured(self):
+        """ Return elements unstructured view for slicing. """
+        return structured_to_unstructured(self.elems)
+
+    def get_nodes_unstructured(self):
+        """ Return nodes unstructured view for slicing. """
+        return structured_to_unstructured(self.nodes)
 
     def get_plane_node_ids(self, direction, thickness):
         """

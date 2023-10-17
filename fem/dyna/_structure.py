@@ -51,26 +51,31 @@ class DynaMeshStructureMixin:
 
     def add_struct_to_elems(self, node_ids_in_struct, new_part_id, in_struct_definition='all'):
         """
-        Edits the elems numpy array to change the part id of elements within a structure. By default, an element is considered within a structure if all element nodes are within the structure. The original implementation of this library considered an element to be in the structure if any nodes where within the structure. 
+        Edits the elems numpy array to change the part id of elements within a structure.
+        By default, an element is considered within a structure if all element nodes are within the structure.
 
         Args:
             node_ids_in_struct (list): List of node ids within the structure.
             new_part_id (int): LS-DYNA part_id for the structure elements.
-            in_struct_definition (str, optional): Switch for changing whether all element nodes need to be within a structure for the element to have the structure's part_id or if one or more nodes need to be within the structure. Defaults to 'all'.
+            in_struct_definition (str, optional): Switch for changing whether all element nodes
+            need to be within a structure for the element to have the structure's part_id or if one or
+            more nodes need to be within the structure. Defaults to 'all'.
         """
-        def nodes_in_struct(elem_node_list, node_ids_in_struct): 
-            if in_struct_definition == 'all':
-                return all(elem_node_id in node_ids_in_struct for elem_node_id in elem_node_list)
-            elif in_struct_definition == 'any':
-                return any(elem_node_id in node_ids_in_struct for elem_node_id in elem_node_list)
-            else:
-                raise ValueError(f"Invalid 'in_struct_defition: {in_struct_definition}. Options: 'all', 'any'.")
-        
-        # For each element, check if the element is considered in the structure. Update part_id if it is.
-        for elem_id, elem_part_id, *elem_node_list in self.elems:
-            if nodes_in_struct(elem_node_list, node_ids_in_struct):
-                # elem_id - 1 because id is 1-based indexing
-                self.elems['pid'][elem_id-1] = new_part_id
+        if in_struct_definition not in ('all', 'any'):
+            raise ValueError(f"Invalid 'in_struct_definition: {in_struct_definition}. Options: 'all', 'any'.")
+
+        node_ids_in_struct = set(node_ids_in_struct)
+        elems_unstructured = self.get_elems_unstructured()
+
+        # Create a mask of elements that meet the condition based on in_struct_definition
+        if in_struct_definition == 'all':
+            condition = np.all(np.isin(elems_unstructured[:, 2:], list(node_ids_in_struct)), axis=1)
+        elif in_struct_definition == 'any':
+            condition = np.any(np.isin(elems_unstructured[:, 2:], list(node_ids_in_struct)), axis=1)
+
+        # Update the part_id values for the elements that meet the condition
+        self.elems['pid'][condition] = new_part_id
+
 
     def find_nodes_in_struct(self, shape, *struct_args):
         """
