@@ -144,7 +144,7 @@ class KelvinMaxwellViscoelastic(Material):
         "$ \tMass Density = {density} g/cm^3\n"
         "$ \tYoung's Modulus = {E_kpa:.2f} kPa, {E_ba:.2f} Ba\n"
         "$ \tViscous Modulus = {eta:.2f} Pa.s\n"
-        "$ \tTau = {tau:.2f} ms\n"
+        "$ \tTau = {tau:.5f} ms\n"
         "$ \tPoisson's Ratio = {nu:.5f}\n"
         "$ MID, DENSITY, K, G0, Gi, dc, f0, s0\n"
         "{mid:d},{density},{K},{g0},{gi},{dc},{f0},{s0}\n"
