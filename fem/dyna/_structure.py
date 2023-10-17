@@ -112,15 +112,10 @@ class DynaMeshStructureMixin:
         Returns:
             list: List of node ids contained within the rectangular region.
         """
-        struct_node_ids = []
-        for nid, x, y, z, tc, rc in self.nodes:
-            in_x_extent = (x >= xmin) and (x <= xmax)
-            in_y_extent = (y >= ymin) and (y <= ymax)
-            in_z_extent = (z >= zmin) and (z <= zmax)
-
-            if in_x_extent and in_y_extent and in_z_extent:
-                struct_node_ids.append(nid)
-        return struct_node_ids
+        cond_x = (self.nodes['x'] >= xmin) & (self.nodes['x'] <= xmax)
+        cond_y = (self.nodes['y'] >= ymin) & (self.nodes['y'] <= ymax)
+        cond_z = (self.nodes['z'] >= zmin) & (self.nodes['z'] <= zmax)
+        return self.nodes['id'][cond_x & cond_y & cond_z]
 
     def find_nodes_in_sphere(self, xc, yc, zc, radius):
         """
@@ -135,16 +130,12 @@ class DynaMeshStructureMixin:
         Returns:
             list: List of node ids contained within the spherical region.
         """
-        struct_node_ids = []
-        for nid, x, y, z, tc, rc in self.nodes:
-            node_dist_to_sphere_center = np.sqrt(
-                np.power((x - xc), 2) +
-                np.power((y - yc), 2) +
-                np.power((z - zc), 2)
-            )
-            if node_dist_to_sphere_center < radius:
-                struct_node_ids.append(nid)
-        return struct_node_ids
+        node_dist_to_sphere_center = np.sqrt(
+            np.power((self.nodes['x'] - xc), 2) +
+            np.power((self.nodes['y'] - yc), 2) +
+            np.power((self.nodes['z'] - zc), 2)
+        )
+        return self.nodes['id'][node_dist_to_sphere_center < radius]
 
     def find_nodes_in_cylinder(self, s1, s2, srad, longitudinal_direction='x'):
         """
@@ -159,23 +150,27 @@ class DynaMeshStructureMixin:
         Returns:
             list: List of node ids contained within the cylindrical region.
         """
-        struct_node_ids = []
-        for nid, nx, ny, nz, tc, rc in self.nodes:
-            if longitudinal_direction == 'x':  
-                n1, n2 = ny, nz     # cross-sectional circle dimensions: 1=y, 2=z
-            elif longitudinal_direction == 'y': 
-                n1, n2 = nx, nz     # cross-sectional circle dimensions: 1=x, 2=z
-            elif longitudinal_direction == 'z':
-                n1, n2 = nx, ny     # cross-sectional circle dimensions: 1=x, 2=y
-            else:
-                raise ValueError(f"Invalid longitudinal direction of cylinder: '{longitudinal_direction}'")
-
+        if longitudinal_direction == 'x':  
+            # cross-sectional circle dimensions: 1=y, 2=z
             # Distance from transverse cross-section circle to node
             r_node = np.sqrt(
-                np.power((n1 - s1), 2) +
-                np.power((n2 - s2), 2) 
+                np.power((self.nodes['y'] - s1), 2) +
+                np.power((self.nodes['z'] - s2), 2) 
             )
-            if r_node < srad:
-                struct_node_ids.append(nid)
-        return struct_node_ids
+        elif longitudinal_direction == 'y': 
+            # cross-sectional circle dimensions: 1=x, 2=z
+            r_node = np.sqrt(
+                np.power((self.nodes['x'] - s1), 2) +
+                np.power((self.nodes['z'] - s2), 2) 
+            )
+        elif longitudinal_direction == 'z':
+            # cross-sectional circle dimensions: 1=x, 2=y
+            r_node = np.sqrt(
+                np.power((self.nodes['x'] - s1), 2) +
+                np.power((self.nodes['y'] - s2), 2) 
+            )
+        else:
+            raise ValueError(f"Invalid longitudinal direction of cylinder: '{longitudinal_direction}'")
+
+        return self.nodes['id'][r_node < srad]
 
