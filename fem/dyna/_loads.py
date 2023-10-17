@@ -170,7 +170,7 @@ class DynaMeshLoadsMixin:
         point_loads = body_forces * self.get_element_volume()
 
         if self.symmetry == 'q':
-            # if the load is on the symmetry axis (x = y = 0), then divide by 4; if not, check if it is on a symmetry face (x = 0 || y = 0), then divide by 2
+            # if the load is on the symmetry axis (x = y = 0), then divide by 4; if not, check if it is on a symmetry face (x = 0 || y = 0), then divide by 2. '^' is the XOR operator
             idxq = np.isclose(coords[:,0], 0, atol=1e-4) & np.isclose(coords[:,1], 0, atol=1e-4)
             point_loads[idxq] = point_loads[idxq] / 4
             idxh = np.isclose(coords[:,0], 0, atol=1e-4) ^ np.isclose(coords[:,1], 0, atol=1e-4)
@@ -210,6 +210,7 @@ class DynaMeshLoadsMixin:
             "$ Frequency = {frequency} MHz\n"
             "$ Alpha = {alpha_np} Np, {alpha_db} dB/cm/MHz\n"
             "$ Element Volume = {elem_vol} cm^3\n"
+            "$ Intensity Threshold = 5%\n"
             "$ nid, dof, lcid, force, cid\n"
             "{load_string}"
             "*END\n"
