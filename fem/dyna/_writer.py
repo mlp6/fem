@@ -1,6 +1,7 @@
 import datetime
 import pathlib
 
+import numpy as np
 
 def format_dyna_number(num, num_len=10):
     """
@@ -70,13 +71,38 @@ class DynaMeshWriterMixin:
             tssfac=format_dyna_number(tssfac)
         )
 
-    def set_database(self, dt=2.5e-5):
+    def set_database(self, dt=2.5e-5, create_node_set=True, **create_node_set_kwargs):
         """
         Create a database card string. These cards set how often and for which nodes LS-DYNA will write information during the FEM simulation. 
 
         Args:
             dt (float, optional): Time set for LS-DYNA database writes during the simulation. Defaults to 2.5e-5.
         """
+        if create_node_set:
+            if ('shape' in create_node_set_kwargs) and ('struct_args' in create_node_set_kwargs):
+                shape = create_node_set_kwargs['shape']
+                struct_args = create_node_set_kwargs['struct_args']
+                self.node_set_ids = self.find_nodes_in_struct(
+                    shape,
+                    *struct_args
+                )
+                self.node_set_string = f"Node set includes all nodes with shape={shape} and struct_args={str(struct_args).replace(' ', '')}"
+            elif self.has_pml():
+                mask = np.isin(self.nodes['id'], self.pml_node_ids)
+                self.node_set_ids = self.nodes['id'][~mask]
+                self.node_set_string = "Node set includes all nodes within the bounds of the PML."
+            else:
+                raise ValueError('set_database argument create_node_set=True. When creating a node set, must either have a PML (in which case, the node set will be all non-pml nodes) or define a structure where nodes in the structure will be saved.')
+            
+            node_set_card = ""
+        else:
+            node_set_card = (
+                "*SET_NODE_GENERAL\n"
+                "1\n"
+                "ALL\n"
+            )
+
+
         self.database_card_string = (
             "*DATABASE_NODOUT\n"
             "$ dt, binary, lcur, ioopt, option1, option2\n"
@@ -86,21 +112,16 @@ class DynaMeshWriterMixin:
             "0,0,3,0,2,2,2,1\n"
             "$ cmpflg, ieverp, beamip, dcomp, shge, stssz, n3thdt, ialemat\n"
             "0,0,0,4,1,1,2,0\n"
-            # "$ nintsld, pkp_sen, sclp, unused, msscl, therm, intout, nodout\n"
-            # "         1         0     0.000                   0         0STRESS              \n"
-            # "$ dtdt, resplt\n"
-            # "0,0\n"
             "*DATABASE_FORMAT\n"
             "$ iform, ibinary\n"
             "0,1\n"
             "*DATABASE_HISTORY_NODE_SET\n"
             "$ id1, id2, id3, id4, id5, id6, id7, id8\n"
             "1,0,0,0,0,0,0,0\n"
-            "*SET_NODE_GENERAL\n"
-            "1\n"
-            "ALL\n"
+            "{node_set_card}"
         ).format(
-            dt=format_dyna_number(dt)
+            dt=format_dyna_number(dt),
+            node_set_card=node_set_card
         )
     
     def set_master(self, title=''): 
@@ -118,6 +139,25 @@ class DynaMeshWriterMixin:
         
         if not self.part_and_section_card_string:
             raise ValueError("Write the material card before the master card to set the parts_and_sections string. This string has to be in the master keyword file.")
+        
+        include_cards = (
+            "*INCLUDE\n"
+            "Materials.dyn\n"
+            "*INCLUDE\n"
+            "LoadCurves.dyn\n"
+            "*INCLUDE\n"
+            "../NodalLoads.dyn\n"
+            "*INCLUDE\n"
+            "../../elems.dyn\n"
+            "*INCLUDE\n"
+            "../../nodes.dyn\n"
+        )
+
+        if self.has_node_set():
+            include_cards += (
+                "*INCLUDE\n"
+                "../../node_set.dyn\n"
+            )
 
         self.master_card_string = (
             "$ LS-DYNA Keyword file created by fem.dyna Python functions\n"
@@ -140,22 +180,14 @@ class DynaMeshWriterMixin:
             f"$ {100*'-'}\n"
             "$ Externally Defined Cards\n"
             f"$ {100*'-'}\n"
-            "*INCLUDE\n"
-            "../../nodes.dyn\n"
-            "*INCLUDE\n"
-            "../../elems.dyn\n"
-            "*INCLUDE\n"
-            "../NodalLoads.dyn\n"
-            "*INCLUDE\n"
-            "Materials.dyn\n"
-            "*INCLUDE\n"
-            "LoadCurves.dyn\n"
+            "{include_cards}"
             "*END\n"
         ).format(
             current_time=datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"),
             control=self.control_card_string,
             database=self.database_card_string,
             parts_and_sections=self.part_and_section_card_string,
+            include_cards=include_cards,
         )
 
     def write_all_dyna_cards(self, project_path, load_folder_name, material_folder_name, master_filename='Master.dyn', sim_title=''):
@@ -266,6 +298,28 @@ class DynaMeshWriterMixin:
                 fh.write(f"{nid},{x:.6f},{y:.6f},{z:.6f},{tc},{rc}\n")
             
             fh.write("*END\n")
+
+        if self.has_node_set():
+            with open(base_path / 'node_set.dyn', 'w') as fh:
+
+                # Write nodes card header 
+                fh.write("*SET_NODE_LIST_TITLE\n")
+                fh.write(f"$ {self.node_set_string}\n")
+                fh.write(f"$ Number of nodes in set = {len(self.node_set_ids)}\n")
+                fh.write("$ nid1, nid2, nid3, nid4, nid5, nid6, nid7, nid8\n")
+
+                # Write all nodes in node set to file            
+                row = ""
+                for i, value in enumerate(self.node_set_ids):
+                    remainder = (i + 1) % 8
+                    if remainder != 1:
+                        row += ","
+                    row += str(value)
+                    if (remainder == 0) or (i == len(self.node_set_ids) - 1):
+                        fh.write(row + '\n')
+                        row = ""
+                fh.write("*END\n")
+
 
     def write_elems(self, base_path='./', header_comment=""):
         """

@@ -26,7 +26,7 @@ class DynaMeshStructureMixin:
             struct_args (list): List of parameters to create structure.
         """
         if title is None:
-            title = shape
+            title = shape + f', struct_args={str(struct_args).replace(" ", "")}'
 
         # Get the ids of all nodes within the structure
         nodes_in_struct = self.find_nodes_in_struct(shape, *struct_args)
@@ -142,10 +142,10 @@ class DynaMeshStructureMixin:
         Find all nodes within a cylindrical region of the mesh. This function by default extends the longitudinal direction of the cylinder all the way through the mesh, similar to the CIRS cylindrical phantoms or when modeling fibers. A new function would be needed for fibers with length smaller than the mesh geometry. 
 
         Args:
-            s1 (float): Center of cross-sectional circle along dimension 1. The definition of dimension 1 depends on the longitudinal_direction kwarg (eg, with longitudinal_direction='x', dimension 1 is y and dimension 2 is z). See code below for definitions.
-            s2 (float): Center of cross-sectional circle along dimension 2.
-            srad (float): Radius of the cross-sectional circle.
-            longitudinal_direction (str, optional): Dimension to consider the longitudinal axis of the cylinder region. Defaults to 'x'.
+            s1 (float): Center of cross-sectional circle along dimension 1 in centimeters. The definition of dimension 1 depends on the longitudinal_direction kwarg (eg, with longitudinal_direction='x', dimension 1 is y and dimension 2 is z). See code below for definitions.
+            s2 (float): Center of cross-sectional circle along dimension 2 in centimeters.
+            srad (float): Radius of the cross-sectional circle in centimeters.
+            longitudinal_direction (str, optional): Dimension to consider the longitudinal axis of the cylinder region. Defaults to 'x', in other words, the cylinder extrudes in the 'x' (or elevational) direction.
 
         Returns:
             list: List of node ids contained within the cylindrical region.

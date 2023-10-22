@@ -140,6 +140,9 @@ class UniformMesh(
     # List of node ids in pml (if applicable)
     pml_node_ids: list[int] = field(default_factory=list, repr=False)    
 
+    # List of nodes for database writer node set (if applicable)
+    node_set_ids: list[int] = field(default_factory=list, repr=False)  
+
     # Strings for each LS-DYNA deck card set
     part_and_section_card_string: str = field(init=False, repr=False, default='')
     material_card_string: str = field(init=False, repr=False, default='')
@@ -431,6 +434,12 @@ class UniformMesh(
         Function to check if the mesh has a perfectly matched layer (pml).
         """
         return True if len(self.pml_node_ids) else False
+    
+    def has_node_set(self):
+        """
+        Function to check if the mesh has a node set (list of nodes to write info out for with database cards).
+        """
+        return True if len(self.node_set_ids) else False
 
     
 
