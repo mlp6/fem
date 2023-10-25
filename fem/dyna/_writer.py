@@ -196,8 +196,70 @@ class DynaMeshWriterMixin:
 
         project_path/nodes.dyn
                     /elems.dyn
+                    /node_set.dyn (if applicable)
                     /load_folder_name/
+                                     /NodalLoads.dyn
                                      /material_folder_name/Materials.dyn
+                                                          /LoadCurves.dyn
+                                                          /master_filename
+
+        Args:
+            project_path (str): Path to base directory for simulations with shared mesh (nodes and elements files).
+            load_folder_name (str): Folder name for loading type used in simulation.
+            material_folder_name (str): Folder name for material used in simulation. 
+            master_filename (str, optional): Name of master keyword file. Defaults to 'Master.dyn'.
+        """
+        # Create a Path object for each subpath. Create folders if necessary.
+        # project_path = pathlib.Path(project_path)
+        # load_path = project_path / load_folder_name
+        # material_path = load_path / material_folder_name
+        # material_path.mkdir(parents=True, exist_ok=True)
+
+        # Write nodes and elements to project path
+        self.write_mesh_cards(project_path)
+
+        # Write all other cards
+        self.write_non_mesh_cards(
+            project_path, load_folder_name, material_folder_name, 
+            master_filename=master_filename, sim_title=sim_title
+        )
+
+        # # Write loads to load path
+        # self.write_dyna_card(load_path, 'NodalLoads.dyn', self.load_card_string)
+
+        # # Write materials, load curve, master keyword file to material path
+        # self.write_materials(material_path)
+        # self.write_dyna_card(material_path, 'LoadCurves.dyn', self.load_curve_card_string)
+        # self.set_master(title=sim_title)
+        # self.write_dyna_card(material_path, master_filename, self.master_card_string)
+
+    def write_mesh_cards(self, project_path):
+        """
+        Writes all dyna mesh cards. Generates the following directory structure:
+
+        project_path/nodes.dyn
+                    /elems.dyn
+                    /node_set.dyn (if applicable)
+
+        Args:
+            project_path (str): Path to base directory for simulations with shared mesh (nodes and elements files).
+        """
+        # Create a Path object for each subpath. Create folders if necessary.
+        project_path = pathlib.Path(project_path)
+        project_path.mkdir(parents=True, exist_ok=True)
+
+        # Write nodes and elements to project path
+        self.write_nodes(project_path)
+        self.write_elems(project_path)
+
+    def write_non_mesh_cards(self, project_path, load_folder_name, material_folder_name, master_filename='Master.dyn', sim_title=''):
+        """
+        Writes all non-mesh cards necessary to run a simulation to file. Generates the following directory structure:
+
+        project_path/load_folder_name/
+                                     /NodalLoads.dyn
+                                     /material_folder_name/Materials.dyn
+                                                          /LoadCurves.dyn
                                                           /master_filename
 
         Args:
@@ -212,10 +274,6 @@ class DynaMeshWriterMixin:
         material_path = load_path / material_folder_name
         material_path.mkdir(parents=True, exist_ok=True)
 
-        # Write nodes and elements to project path
-        self.write_nodes(project_path)
-        self.write_elems(project_path)
-
         # Write loads to load path
         self.write_dyna_card(load_path, 'NodalLoads.dyn', self.load_card_string)
 
@@ -224,6 +282,7 @@ class DynaMeshWriterMixin:
         self.write_dyna_card(material_path, 'LoadCurves.dyn', self.load_curve_card_string)
         self.set_master(title=sim_title)
         self.write_dyna_card(material_path, master_filename, self.master_card_string)
+
 
     def write_dyna_card(self, base_path, filename, text):
         """
@@ -304,8 +363,11 @@ class DynaMeshWriterMixin:
 
                 # Write nodes card header 
                 fh.write("*SET_NODE_LIST_TITLE\n")
+                fh.write("Database Nodout Nodes\n")
                 fh.write(f"$ {self.node_set_string}\n")
                 fh.write(f"$ Number of nodes in set = {len(self.node_set_ids)}\n")
+                fh.write("$ sid, da1, da2, da3, da4, solver\n")
+                fh.write("1,0.0,0.0,0.0,0.0,MECH\n")
                 fh.write("$ nid1, nid2, nid3, nid4, nid5, nid6, nid7, nid8\n")
 
                 # Write all nodes in node set to file            
