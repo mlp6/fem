@@ -14,15 +14,27 @@ from .material import Material
 
 # Data types for nodes and elements numpy record arrays
 NODES_DT = [
-    ('id', 'i4'), ('x', 'f4'), ('y', 'f4'),
-    ('z', 'f4'), ('tc', 'i4'), ('rc', 'i4')
+    ("id", "i4"),
+    ("x", "f4"),
+    ("y", "f4"),
+    ("z", "f4"),
+    ("tc", "i4"),
+    ("rc", "i4"),
 ]
 ELEMS_DT = [
-    ('id', 'i4'), ('pid', 'i4'), 
-    ('n1', 'i4'), ('n2', 'i4'), ('n3', 'i4'), ('n4', 'i4'),
-    ('n5', 'i4'), ('n6', 'i4'), ('n7', 'i4'), ('n8', 'i4')
+    ("id", "i4"),
+    ("pid", "i4"),
+    ("n1", "i4"),
+    ("n2", "i4"),
+    ("n3", "i4"),
+    ("n4", "i4"),
+    ("n5", "i4"),
+    ("n6", "i4"),
+    ("n7", "i4"),
+    ("n8", "i4"),
 ]
-    
+
+
 @dataclass
 class UniformCoordinates:
     """
@@ -62,15 +74,24 @@ class UniformCoordinates:
         if all(group) and not self.grid_size:
             pass
         elif self.grid_size and not any(group):
+            # Convert grid size from microns to meters
+            grid_size_meters = self.grid_size * 1e-6
+
             # Calculate nx, ny, and nz if grid size passed. Make sure its odd so a node will be at 0 elevationally (x) and laterally (y)
             self.nx = self._add_one_to_even(
-                np.ceil(1e-2*abs(self.xmax - self.xmin) / self.grid_size).astype(int)
+                np.ceil(1e-2 * abs(self.xmax - self.xmin) / grid_size_meters).astype(
+                    int
+                )
             )
             self.ny = self._add_one_to_even(
-                np.ceil(1e-2*abs(self.ymax - self.ymin) / self.grid_size).astype(int)
+                np.ceil(1e-2 * abs(self.ymax - self.ymin) / grid_size_meters).astype(
+                    int
+                )
             )
             self.nz = self._add_one_to_even(
-                np.ceil(1e-2*abs(self.zmax - self.zmin) / self.grid_size).astype(int)
+                np.ceil(1e-2 * abs(self.zmax - self.zmin) / grid_size_meters).astype(
+                    int
+                )
             )
         else:
             raise ValueError(
@@ -94,27 +115,27 @@ class UniformCoordinates:
 
     def flatten(self):
         """
-        Create (n_node x 3) array of all coordinates in the mesh where each row is a 3-tuple of the (x,y,z) coordinates of each node. Reordering is to use 'Fortran' or 'F' indexing (see https://numpy.org/doc/stable/reference/generated/numpy.reshape.html) to be compatible with legacy node readers. 
+        Create (n_node x 3) array of all coordinates in the mesh where each row is a 3-tuple of the (x,y,z) coordinates of each node. Reordering is to use 'Fortran' or 'F' indexing (see https://numpy.org/doc/stable/reference/generated/numpy.reshape.html) to be compatible with legacy node readers.
         """
-        arr = np.array(list(product(
-            self.z, self.y, self.x
-        )))
+        arr = np.array(list(product(self.z, self.y, self.x)))
 
-        return arr[:, [2,1,0]]
+        return arr[:, [2, 1, 0]]
+
 
 @dataclass
 class UniformMesh(
-        DynaMeshConstraintsMixin,
-        DynaMeshLoadsMixin,
-        DynaMeshStructureMixin,
-        DynaMeshWriterMixin,
-    ):
+    DynaMeshConstraintsMixin,
+    DynaMeshLoadsMixin,
+    DynaMeshStructureMixin,
+    DynaMeshWriterMixin,
+):
     """
-    Mesh container class to hold mesh state and methods for writing mesh state to files. Contains nodes and elements numpy record arrays, properties describing the mesh state, and strings formatted as LS-DYNA cards with information about the mesh materials, loading conditions, simulation timing controls, FEM simulation database writers, and master keyword files. 
+    Mesh container class to hold mesh state and methods for writing mesh state to files. Contains nodes and elements numpy record arrays, properties describing the mesh state, and strings formatted as LS-DYNA cards with information about the mesh materials, loading conditions, simulation timing controls, FEM simulation database writers, and master keyword files.
     """
+
     # Basic properties of an isotropic rectangular mesh
     coords: UniformCoordinates
-    symmetry: str      # Options: q - quarter symmetry, hx - half symmetry in x normal plane, hy - half symmetry in y normal plane, n - no symmetry
+    symmetry: str  # Options: q - quarter symmetry, hx - half symmetry in x normal plane, hy - half symmetry in y normal plane, n - no symmetry
     material: InitVar[Material]
 
     # List of material and pml material dictionaries
@@ -138,94 +159,114 @@ class UniformMesh(
     pml_planes: set[str] = field(default_factory=set)
 
     # List of node ids in pml (if applicable)
-    pml_node_ids: list[int] = field(default_factory=list, repr=False)    
+    pml_node_ids: list[int] = field(default_factory=list, repr=False)
 
     # List of nodes for database writer node set (if applicable)
-    node_set_ids: list[int] = field(default_factory=list, repr=False)  
+    node_set_ids: list[int] = field(default_factory=list, repr=False)
 
     # Strings for each LS-DYNA deck card set
-    part_and_section_card_string: str = field(init=False, repr=False, default='')
-    material_card_string: str = field(init=False, repr=False, default='')
-    load_card_string: str = field(init=False, repr=False, default='')
-    load_curve_card_string: str = field(init=False, repr=False, default='')
-    control_card_string: str = field(init=False, repr=False, default='')
-    database_card_string: str = field(init=False, repr=False, default='')
-    master_card_string: str = field(init=False, repr=False, default='')
+    part_and_section_card_string: str = field(init=False, repr=False, default="")
+    material_card_string: str = field(init=False, repr=False, default="")
+    load_card_string: str = field(init=False, repr=False, default="")
+    load_curve_card_string: str = field(init=False, repr=False, default="")
+    control_card_string: str = field(init=False, repr=False, default="")
+    database_card_string: str = field(init=False, repr=False, default="")
+    master_card_string: str = field(init=False, repr=False, default="")
 
     def __post_init__(self, background_material: Material):
         self._validate_symmetry_condition()
 
         # Set total number of nodes (treating each sample in the coordinate system as a mesh node)
         self.n_nodes = self.coords.nx * self.coords.ny * self.coords.nz
-        
+
         # Create nodes numpy record array
         self.nodes = self._create_nodes_record_array()
 
         # Set number of elements in each dimension and the total number of elements
-        self.nex, self.ney, self.nez = self.coords.nx - 1, self.coords.ny - 1, self.coords.nz - 1
+        self.nex, self.ney, self.nez = (
+            self.coords.nx - 1,
+            self.coords.ny - 1,
+            self.coords.nz - 1,
+        )
         self.n_elems = self.nex * self.ney * self.nez
 
         # Create elements numpy record array
         self.elems = self._create_elems_record_array()
 
         # Add background material
-        self.add_material(background_material, title='background')
-
+        self.add_material(background_material, title="background")
 
     def _validate_symmetry_condition(self):
         def _is_zero(v):
             return np.isclose(v, 0.0, atol=1e-9)
-        
+
         def _check_for_zero_crossing(v_str):
             if not any(_is_zero(getattr(self.coords, v_str))):
-                warnings.warn(f"No zero crossing found on {v_str} axis. Make sure {v_str}min and {v_str}max coordinate extents are equal magnitude and the n{v_str} is odd")
+                warnings.warn(
+                    f"No zero crossing found on {v_str} axis. Make sure {v_str}min and {v_str}max coordinate extents are equal magnitude and the n{v_str} is odd"
+                )
 
         # Warn if nx, ny, or nz are even
-        if (self.coords.nx % 2 == 0) or (self.coords.ny % 2 == 0) or (self.coords.nz % 2 == 0):
-            warnings.warn("Either nx, ny, or nz was set to an even number. This could cause there to not be any nodes at the zero crossing of the axis with an even number of nodes. Change to odd number to avoid bugs unless you know what you're doing")
+        if (
+            (self.coords.nx % 2 == 0)
+            or (self.coords.ny % 2 == 0)
+            or (self.coords.nz % 2 == 0)
+        ):
+            warnings.warn(
+                "Either nx, ny, or nz was set to an even number. This could cause there to not be any nodes at the zero crossing of the axis with an even number of nodes. Change to odd number to avoid bugs unless you know what you're doing"
+            )
 
-        all_planes =  {'xmin', 'xmax', 'ymin', 'ymax', 'zmin', 'zmax'}
+        all_planes = {"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"}
         symmetry_planes = set()
-        for dim in ['xmin', 'xmax', 'ymin', 'ymax']:
+        for dim in ["xmin", "xmax", "ymin", "ymax"]:
             if _is_zero(getattr(self.coords, dim)):
                 symmetry_planes.add(dim)
 
         # Quarter symmetry: make sure x and y both have zero as a min or max
-        if self.symmetry == 'q':
+        if self.symmetry == "q":
             if len(symmetry_planes) != 2:
-                raise ValueError(f"Two planes should have either the min or max at zero for quarter symmetry. Planes found at zero: {symmetry_planes}")
+                raise ValueError(
+                    f"Two planes should have either the min or max at zero for quarter symmetry. Planes found at zero: {symmetry_planes}"
+                )
 
         # Half symmetry: make sure either x or y have zero as a min or max
-        elif self.symmetry == 'hx':
+        elif self.symmetry == "hx":
             # symmetry on x normal (yz plane)
-            # if (len(symmetry_planes) != 1) and (not symmetry_planes[0].startswith('x')):   
-            if (len(symmetry_planes) != 1) and ('xmin' not in symmetry_planes or 'xmax' not in symmetry_planes):   
-                raise ValueError(f"Either xmin or xmax only should be zero for hx symmetry. Planes found at zero: {symmetry_planes}")
-            
-            _check_for_zero_crossing('y')
+            # if (len(symmetry_planes) != 1) and (not symmetry_planes[0].startswith('x')):
+            if (len(symmetry_planes) != 1) and (
+                "xmin" not in symmetry_planes or "xmax" not in symmetry_planes
+            ):
+                raise ValueError(
+                    f"Either xmin or xmax only should be zero for hx symmetry. Planes found at zero: {symmetry_planes}"
+                )
 
-        elif self.symmetry == 'hy':
+            _check_for_zero_crossing("y")
+
+        elif self.symmetry == "hy":
             # symmetry on y normal (xz plane)
-            if (len(symmetry_planes) != 1) and (not symmetry_planes[0].startswith('y')):   
-                raise ValueError(f"Either ymin or ymax only should be zero for hy symmetry. Planes found at zero: {symmetry_planes}")
-            
-            _check_for_zero_crossing('x')
+            if (len(symmetry_planes) != 1) and (not symmetry_planes[0].startswith("y")):
+                raise ValueError(
+                    f"Either ymin or ymax only should be zero for hy symmetry. Planes found at zero: {symmetry_planes}"
+                )
+
+            _check_for_zero_crossing("x")
 
         # No symmetry: warn if min and max extents are different since there won't be a node at 0
-        elif self.symmetry == 'n':
-            if (len(symmetry_planes) != 0):
-                raise ValueError(f"None of the min or max extents of x or y should be at zero for a no symmetry mesh. Planes found at zero: {symmetry_planes}")
+        elif self.symmetry == "n":
+            if len(symmetry_planes) != 0:
+                raise ValueError(
+                    f"None of the min or max extents of x or y should be at zero for a no symmetry mesh. Planes found at zero: {symmetry_planes}"
+                )
 
             symmetry_planes = {None}
 
-            _check_for_zero_crossing('x')
-            _check_for_zero_crossing('y')
+            _check_for_zero_crossing("x")
+            _check_for_zero_crossing("y")
         else:
             raise ValueError(f"Invalid plane symmetry type: '{self.symmetry}'")
-        
+
         self.non_symmetry_planes = all_planes - symmetry_planes
         self.symmetry_planes
-        
 
     def _create_nodes_record_array(self):
         """
@@ -238,17 +279,19 @@ class UniformMesh(
         coords_cartesian_product = self.coords.flatten()
 
         # Initialize the translational and rotational constraints for each node as 0 (no constraints in any dimension)
-        node_tc_and_rc = np.zeros((self.n_nodes,2))
+        node_tc_and_rc = np.zeros((self.n_nodes, 2))
 
         # Combine node ids, coodinates, and constraints into single numpy record array
-        nodes_arr = np.concatenate((
-            node_ids.reshape(-1,1),
-            np.array(coords_cartesian_product), 
-            node_tc_and_rc
-            ), axis=1
+        nodes_arr = np.concatenate(
+            (
+                node_ids.reshape(-1, 1),
+                np.array(coords_cartesian_product),
+                node_tc_and_rc,
+            ),
+            axis=1,
         )
         return np.rec.fromarrays(nodes_arr.T, dtype=NODES_DT)
-    
+
     def _create_elems_record_array(self):
         """
         Interal method to create elements record array from mesh properties set on object initialization and nodes array.
@@ -259,13 +302,15 @@ class UniformMesh(
         # Initialize elements array
         elem_nodes = np.empty((self.nez * self.ney * self.nex, 8), dtype=int)
 
-        # For each element in each dimension, find the nodes that make up element. Elements are assumed to be rectangular volumes and the nodes are the 8 vertices of the element. 
+        # For each element in each dimension, find the nodes that make up element. Elements are assumed to be rectangular volumes and the nodes are the 8 vertices of the element.
         index = 0
         for iez in range(self.nez):
             for iey in range(self.ney):
                 for iex in range(self.nex):
                     # Get nodes of (iex, iey, iez) element
-                    elem_nodes[index] = nodes_3d[iex:iex+2, iey:iey+2, iez:iez+2]['id'].reshape(-1)
+                    elem_nodes[index] = nodes_3d[
+                        iex : iex + 2, iey : iey + 2, iez : iez + 2
+                    ]["id"].reshape(-1)
 
                     # Reorder nodes to follow LS-DYNA's expected format for rectangular volume elements
                     elem_nodes[index][2:4] = np.flip(elem_nodes[index][2:4])
@@ -275,23 +320,19 @@ class UniformMesh(
 
         # Create element id array (1 based indexing)
         elem_ids = np.arange(self.n_elems) + 1
-        
+
         # Initialize all elements to have the same part id
-        part_ids = np.ones((self.n_elems,1))
+        part_ids = np.ones((self.n_elems, 1))
 
         # Combine element ids, part ids, and element nodes into single numpy record array
-        elems_arr = np.concatenate((
-            elem_ids.reshape(-1,1),
-            part_ids,
-            elem_nodes
-            ), axis=1
+        elems_arr = np.concatenate(
+            (elem_ids.reshape(-1, 1), part_ids, elem_nodes), axis=1
         )
         return np.rec.fromarrays(elems_arr.T, dtype=ELEMS_DT)
 
-    
-    def add_material(self, material, title='', base_material_index=None):
+    def add_material(self, material, title="", base_material_index=None):
         """
-        Add material to material list. All materials are represented as a dictionary and a new part id is created for each material added. 
+        Add material to material list. All materials are represented as a dictionary and a new part id is created for each material added.
 
         Args:
             material (Material): Material object defining material properties.
@@ -304,22 +345,25 @@ class UniformMesh(
         new_part_id = len(self.materials) + len(self.pml_materials) + 1
 
         if base_material_index is not None:
-            self.pml_materials.append(dict(
-                material=material,
-                part_id=new_part_id,
-                title=title,
-                base_material_index=base_material_index,
-            ))
+            self.pml_materials.append(
+                dict(
+                    material=material,
+                    part_id=new_part_id,
+                    title=title,
+                    base_material_index=base_material_index,
+                )
+            )
         else:
-            self.materials.append(dict(
-                material=material,
-                part_id=new_part_id,
-                title=title,
-            ))
+            self.materials.append(
+                dict(
+                    material=material,
+                    part_id=new_part_id,
+                    title=title,
+                )
+            )
 
         return new_part_id
 
-    
     def add_pml(self, pml_thickness, exclude_faces=None):
         """
         Add pml to a mesh without any structures. Can be used if structures have been set, but the structures won't have material specific pmls and the pml will only match the mesh background elasticity.
@@ -332,29 +376,29 @@ class UniformMesh(
             exclude_faces = []
 
         # Add pml material to pml_material list
-        background_material = self.materials[0]['material']
-        new_part_id = self.add_material(background_material, title='background pml', base_material_index=0)
+        background_material = self.materials[0]["material"]
+        new_part_id = self.add_material(
+            background_material, title="background pml", base_material_index=0
+        )
 
         # Find nodes in pml and add as a structure to the elements array
         self.pml_node_ids = self.find_nodes_in_pml(pml_thickness, exclude_faces)
         self.add_struct_to_elems(self.pml_node_ids, new_part_id)
 
     def change_material(self, new_material, material_index):
-
-        self.materials[material_index]['material'] = new_material
+        self.materials[material_index]["material"] = new_material
 
         for pml_mat in self.pml_materials:
-            if pml_mat['base_material_index'] == material_index:
-                pml_mat['material'] = new_material
+            if pml_mat["base_material_index"] == material_index:
+                pml_mat["material"] = new_material
 
-    
     def find_nodes_in_pml(self, pml_thickness, exclude_faces):
         """
         Find all nodes within a pml based on mesh symmetry and pml_thickness.
 
         Args:
             pml_thickness (int): Thickness of pml (in number of elements).
-            exclude_faces (list[str]): List of faces to exclude from the PML. 
+            exclude_faces (list[str]): List of faces to exclude from the PML.
 
         Returns:
             np.array: Nodes within the pml layers
@@ -366,25 +410,27 @@ class UniformMesh(
         for plane in self.non_symmetry_planes:
             if plane not in exclude_faces:
                 self.pml_planes.add(plane)
-                pml_node_ids.extend( self.get_plane_node_ids(plane, pml_thickness) ) 
+                pml_node_ids.extend(self.get_plane_node_ids(plane, pml_thickness))
 
         # Return unique ids (removes ids from overlapping plane edges)
         return np.unique(pml_node_ids)
-    
+
     def get_elems_3d(self):
-        """ Reshape elements array to 3D for matrix indexing. """
-        return self.elems.reshape(self.nex, self.ney, self.nez, order='F') 
+        """Reshape elements array to 3D for matrix indexing."""
+        return self.elems.reshape(self.nex, self.ney, self.nez, order="F")
 
     def get_nodes_3d(self):
-        """ Reshape nodes array to 3D for matrix indexing. """
-        return self.nodes.reshape(self.coords.nx, self.coords.ny, self.coords.nz, order='F')
-    
+        """Reshape nodes array to 3D for matrix indexing."""
+        return self.nodes.reshape(
+            self.coords.nx, self.coords.ny, self.coords.nz, order="F"
+        )
+
     def get_elems_unstructured(self):
-        """ Return elements unstructured view for slicing. """
+        """Return elements unstructured view for slicing."""
         return structured_to_unstructured(self.elems)
 
     def get_nodes_unstructured(self):
-        """ Return nodes unstructured view for slicing. """
+        """Return nodes unstructured view for slicing."""
         return structured_to_unstructured(self.nodes)
 
     def get_plane_node_ids(self, direction, thickness):
@@ -402,24 +448,26 @@ class UniformMesh(
         nodes_3d = self.get_nodes_3d()
 
         # Extract nodes from direction with specified thickness
-        if direction == 'xmin':
-            plane_nodes = nodes_3d[0:thickness,:,:]
-        elif direction == 'xmax':
-            plane_nodes = nodes_3d[-thickness:,:,:]
-        elif direction == 'ymin':
-            plane_nodes = nodes_3d[:,0:thickness,:]
-        elif direction == 'ymax':
-            plane_nodes = nodes_3d[:,-thickness:,:]
-        elif direction == 'zmin':
-            plane_nodes = nodes_3d[:,:,0:thickness]
-        elif direction == 'zmax':
-            plane_nodes = nodes_3d[:,:,-thickness:]
+        if direction == "xmin":
+            plane_nodes = nodes_3d[0:thickness, :, :]
+        elif direction == "xmax":
+            plane_nodes = nodes_3d[-thickness:, :, :]
+        elif direction == "ymin":
+            plane_nodes = nodes_3d[:, 0:thickness, :]
+        elif direction == "ymax":
+            plane_nodes = nodes_3d[:, -thickness:, :]
+        elif direction == "zmin":
+            plane_nodes = nodes_3d[:, :, 0:thickness]
+        elif direction == "zmax":
+            plane_nodes = nodes_3d[:, :, -thickness:]
         else:
             raise ValueError(f"Direction '{direction}' invalid")
-        
+
         # Return only the node ids
-        return plane_nodes['id'].reshape(-1,)
-    
+        return plane_nodes["id"].reshape(
+            -1,
+        )
+
     def get_element_volume(self):
         """
         Returns the volume of each element (assumes they are all the same).
@@ -428,18 +476,15 @@ class UniformMesh(
         y_elem_len = (self.coords.ymax - self.coords.ymin) / self.ney
         z_elem_len = (self.coords.zmax - self.coords.zmin) / self.nez
         return x_elem_len * y_elem_len * z_elem_len
-    
+
     def has_pml(self):
         """
         Function to check if the mesh has a perfectly matched layer (pml).
         """
         return True if len(self.pml_node_ids) else False
-    
+
     def has_node_set(self):
         """
         Function to check if the mesh has a node set (list of nodes to write info out for with database cards).
         """
         return True if len(self.node_set_ids) else False
-
-    
-
