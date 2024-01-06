@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 import numpy as np
 
@@ -8,8 +9,9 @@ from .material import Material
 @dataclass
 class Structure:
     shape: str
-    material: Material
     args: list = field(default_factory=list)
+    material: Optional[Material] = None
+
 
 class DynaMeshStructureMixin:
     def add_struct_list(self, struct_list):
@@ -18,7 +20,7 @@ class DynaMeshStructureMixin:
 
     def add_struct(self, shape, material, struct_args, title=None):
         """
-        Adds a structure to the mesh. Edits the part id for elements within the structure, creates the structure material, part, and section cards, and adds a PML for the structure if structure elements overlap with the PML. 
+        Adds a structure to the mesh. Edits the part id for elements within the structure, creates the structure material, part, and section cards, and adds a PML for the structure if structure elements overlap with the PML.
 
         Args:
             shape (str): Shape of the structure.
@@ -44,12 +46,16 @@ class DynaMeshStructureMixin:
 
             if len(pml_and_struct_nodes) > 0:
                 # Add pml material to material list
-                pml_part_id = self.add_material(material, title=title+' pml', base_material_index=new_part_id)
+                pml_part_id = self.add_material(
+                    material, title=title + " pml", base_material_index=new_part_id
+                )
 
                 # Update the part id of elements in both the structure and PML
                 self.add_struct_to_elems(pml_and_struct_nodes, pml_part_id)
 
-    def add_struct_to_elems(self, node_ids_in_struct, new_part_id, in_struct_definition='all'):
+    def add_struct_to_elems(
+        self, node_ids_in_struct, new_part_id, in_struct_definition="all"
+    ):
         """
         Edits the elems numpy array to change the part id of elements within a structure.
         By default, an element is considered within a structure if all element nodes are within the structure.
@@ -61,21 +67,26 @@ class DynaMeshStructureMixin:
             need to be within a structure for the element to have the structure's part_id or if one or
             more nodes need to be within the structure. Defaults to 'all'.
         """
-        if in_struct_definition not in ('all', 'any'):
-            raise ValueError(f"Invalid 'in_struct_definition: {in_struct_definition}. Options: 'all', 'any'.")
+        if in_struct_definition not in ("all", "any"):
+            raise ValueError(
+                f"Invalid 'in_struct_definition: {in_struct_definition}. Options: 'all', 'any'."
+            )
 
         node_ids_in_struct = set(node_ids_in_struct)
         elems_unstructured = self.get_elems_unstructured()
 
         # Create a mask of elements that meet the condition based on in_struct_definition
-        if in_struct_definition == 'all':
-            condition = np.all(np.isin(elems_unstructured[:, 2:], list(node_ids_in_struct)), axis=1)
-        elif in_struct_definition == 'any':
-            condition = np.any(np.isin(elems_unstructured[:, 2:], list(node_ids_in_struct)), axis=1)
+        if in_struct_definition == "all":
+            condition = np.all(
+                np.isin(elems_unstructured[:, 2:], list(node_ids_in_struct)), axis=1
+            )
+        elif in_struct_definition == "any":
+            condition = np.any(
+                np.isin(elems_unstructured[:, 2:], list(node_ids_in_struct)), axis=1
+            )
 
         # Update the part_id values for the elements that meet the condition
-        self.elems['pid'][condition] = new_part_id
-
+        self.elems["pid"][condition] = new_part_id
 
     def find_nodes_in_struct(self, shape, *struct_args):
         """
@@ -87,16 +98,16 @@ class DynaMeshStructureMixin:
         Returns:
             list: List of node ids contained within the shape.
         """
-        if shape == 'rectangle':
+        if shape == "rectangle":
             struct_node_ids = self.find_nodes_in_rectangle(*struct_args)
-        elif shape == 'sphere':
+        elif shape == "sphere":
             struct_node_ids = self.find_nodes_in_sphere(*struct_args)
-        elif shape == 'cylinder':
+        elif shape == "cylinder":
             struct_node_ids = self.find_nodes_in_cylinder(*struct_args)
         else:
             raise ValueError(f"Invalid shape: '{shape}'")
         return struct_node_ids
-    
+
     def find_nodes_in_rectangle(self, xmin, xmax, ymin, ymax, zmin, zmax):
         """
         Find all nodes within a rectangular region of the mesh.
@@ -112,10 +123,10 @@ class DynaMeshStructureMixin:
         Returns:
             list: List of node ids contained within the rectangular region.
         """
-        cond_x = (self.nodes['x'] >= xmin) & (self.nodes['x'] <= xmax)
-        cond_y = (self.nodes['y'] >= ymin) & (self.nodes['y'] <= ymax)
-        cond_z = (self.nodes['z'] >= zmin) & (self.nodes['z'] <= zmax)
-        return self.nodes['id'][cond_x & cond_y & cond_z]
+        cond_x = (self.nodes["x"] >= xmin) & (self.nodes["x"] <= xmax)
+        cond_y = (self.nodes["y"] >= ymin) & (self.nodes["y"] <= ymax)
+        cond_z = (self.nodes["z"] >= zmin) & (self.nodes["z"] <= zmax)
+        return self.nodes["id"][cond_x & cond_y & cond_z]
 
     def find_nodes_in_sphere(self, xc, yc, zc, radius):
         """
@@ -131,15 +142,15 @@ class DynaMeshStructureMixin:
             list: List of node ids contained within the spherical region.
         """
         node_dist_to_sphere_center = np.sqrt(
-            np.power((self.nodes['x'] - xc), 2) +
-            np.power((self.nodes['y'] - yc), 2) +
-            np.power((self.nodes['z'] - zc), 2)
+            np.power((self.nodes["x"] - xc), 2)
+            + np.power((self.nodes["y"] - yc), 2)
+            + np.power((self.nodes["z"] - zc), 2)
         )
-        return self.nodes['id'][node_dist_to_sphere_center < radius]
+        return self.nodes["id"][node_dist_to_sphere_center < radius]
 
-    def find_nodes_in_cylinder(self, s1, s2, srad, longitudinal_direction='x'):
+    def find_nodes_in_cylinder(self, s1, s2, srad, longitudinal_direction="x"):
         """
-        Find all nodes within a cylindrical region of the mesh. This function by default extends the longitudinal direction of the cylinder all the way through the mesh, similar to the CIRS cylindrical phantoms or when modeling fibers. A new function would be needed for fibers with length smaller than the mesh geometry. 
+        Find all nodes within a cylindrical region of the mesh. This function by default extends the longitudinal direction of the cylinder all the way through the mesh, similar to the CIRS cylindrical phantoms or when modeling fibers. A new function would be needed for fibers with length smaller than the mesh geometry.
 
         Args:
             s1 (float): Center of cross-sectional circle along dimension 1 in centimeters. The definition of dimension 1 depends on the longitudinal_direction kwarg (eg, with longitudinal_direction='x', dimension 1 is y and dimension 2 is z). See code below for definitions.
@@ -150,27 +161,28 @@ class DynaMeshStructureMixin:
         Returns:
             list: List of node ids contained within the cylindrical region.
         """
-        if longitudinal_direction == 'x':  
+        if longitudinal_direction == "x":
             # cross-sectional circle dimensions: 1=y, 2=z
             # Distance from transverse cross-section circle to node
             r_node = np.sqrt(
-                np.power((self.nodes['y'] - s1), 2) +
-                np.power((self.nodes['z'] - s2), 2) 
+                np.power((self.nodes["y"] - s1), 2)
+                + np.power((self.nodes["z"] - s2), 2)
             )
-        elif longitudinal_direction == 'y': 
+        elif longitudinal_direction == "y":
             # cross-sectional circle dimensions: 1=x, 2=z
             r_node = np.sqrt(
-                np.power((self.nodes['x'] - s1), 2) +
-                np.power((self.nodes['z'] - s2), 2) 
+                np.power((self.nodes["x"] - s1), 2)
+                + np.power((self.nodes["z"] - s2), 2)
             )
-        elif longitudinal_direction == 'z':
+        elif longitudinal_direction == "z":
             # cross-sectional circle dimensions: 1=x, 2=y
             r_node = np.sqrt(
-                np.power((self.nodes['x'] - s1), 2) +
-                np.power((self.nodes['y'] - s2), 2) 
+                np.power((self.nodes["x"] - s1), 2)
+                + np.power((self.nodes["y"] - s2), 2)
             )
         else:
-            raise ValueError(f"Invalid longitudinal direction of cylinder: '{longitudinal_direction}'")
+            raise ValueError(
+                f"Invalid longitudinal direction of cylinder: '{longitudinal_direction}'"
+            )
 
-        return self.nodes['id'][r_node < srad]
-
+        return self.nodes["id"][r_node < srad]

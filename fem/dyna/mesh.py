@@ -463,7 +463,7 @@ class UniformMesh(
         else:
             raise ValueError(f"Direction '{direction}' invalid")
 
-        # Return only the node ids
+        # Return only the node ids as a 1d array
         return plane_nodes["id"].reshape(
             -1,
         )
