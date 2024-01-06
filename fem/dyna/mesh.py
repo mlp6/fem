@@ -266,7 +266,7 @@ class UniformMesh(
             raise ValueError(f"Invalid plane symmetry type: '{self.symmetry}'")
 
         self.non_symmetry_planes = all_planes - symmetry_planes
-        self.symmetry_planes
+        self.symmetry_planes = symmetry_planes
 
     def _create_nodes_record_array(self):
         """
