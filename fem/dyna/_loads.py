@@ -2,7 +2,7 @@ import numpy as np
 from scipy.interpolate import interpn
 from scipy.io import loadmat
 
-from ._writer import format_dyna_number
+from .utils import format_dyna_number
 
 
 def generate_arf_load_curve_timing(t_arf, dt):

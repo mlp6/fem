@@ -5,6 +5,49 @@ import numpy as np
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+
+def format_dyna_number(num, num_len=10):
+    """
+    Formats a number to fit LS-DYNA fixed card format (10 characters per field and max 80 character line lengths by default). Handles negative and scientific notation numbers.
+
+    Args:
+        num (float): Input number to format.
+        num_len (int): Maximum length of number.
+
+    Returns:
+        str: Formatted number as a string.
+    """
+    snum = str(num)
+
+    if len(snum) > num_len:
+        if num > 0.01:
+            snum = f"{num:.8f}"
+        elif abs(num) > 0.01:
+            snum = f"{num:.7f}"
+
+        if len(snum) > num_len:
+            # Convert number to scientific notation
+            snum = f"{num:.5E}"
+
+        # If number string is greater than num_len characters, remove leading zeros from exponent
+        if len(snum) > num_len:
+            base, exponent = snum.split("E")
+            sign = exponent[0]
+            if exponent[1] == "0":
+                exponent = exponent[2]
+            else:
+                exponent = exponent[1:]
+            snum = base + "E" + sign + exponent
+
+        # If number string is still greater than num_len characters, remove precision bits to make it num_len characters long
+        if len(snum) > num_len:
+            base, exponent = snum.split("E")
+            precision_bits_to_remove = len(snum) - num_len
+            snum = base[:-precision_bits_to_remove] + "E" + exponent
+
+    return snum
+
+
 def count_header_comment_skips(nodefile: str):
     """count comments lines to skip before the first keyword (*)
 
@@ -19,7 +62,8 @@ def count_header_comment_skips(nodefile: str):
 
     """
     import re
-    node = re.compile(r'\*', re.UNICODE)
+
+    node = re.compile(r"\*", re.UNICODE)
     count = 1
     try:
         with open(nodefile) as f:
@@ -31,7 +75,8 @@ def count_header_comment_skips(nodefile: str):
     except FileNotFoundError:
         logger.error(f"Cannot open {nodefile}.")
         raise FileNotFoundError(f"Cannot open {nodefile}.")
-    
+
+
 def check_x0_y0(pos):
     """check model position
 
@@ -57,7 +102,8 @@ def check_x0_y0(pos):
         return 1
     else:
         return 0
-    
+
+
 def calc_node_pos(xyz=(-1.0, 0.0, -1.0, 1.0, -4.0, 0.0), numElem=(20, 20, 20)):
     """Calculate nodal spatial positions based on CLI specs
 
@@ -93,7 +139,3 @@ def calc_node_pos(xyz=(-1.0, 0.0, -1.0, 1.0, -4.0, 0.0), numElem=(20, 20, 20)):
     check_x0_y0(pos)
 
     return pos
-
-
-    
-    
