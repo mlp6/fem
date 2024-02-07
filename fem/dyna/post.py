@@ -48,8 +48,8 @@ def parse_args():
     )
     par.add_argument(
         "--disp_scale",
-        help="Scaling factor to apply to FEM displacements. Default value of 1e-4 converts the FEM displacements from centimeters to microns before saving.",
-        default="1e-4",
+        help="Scaling factor to apply to FEM displacements. Default value of -1e4 converts the FEM displacements from negative centimeters to positive microns before saving.",
+        default="-1e4",
         type=float,
     )
 
