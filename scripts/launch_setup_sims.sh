@@ -8,6 +8,7 @@
 #SBATCH --partition=general
 #SBATCH --array=[0-3]
 
+# edit --array=[0-(N-1)] where N is the number of simulation parameter combinations
 # run on longleaf with: sbatch launch_setup_sims.sh ./folder_to_setup_simulations.py
 
 folder=$1
