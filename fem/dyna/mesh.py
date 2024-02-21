@@ -54,7 +54,7 @@ class UniformCoordinates:
     ny: Optional[int] = None
     nz: Optional[int] = None
 
-    # Grid size (in meters). Can be used in place of defining nx, ny, and nz
+    # Grid size (in micrometers). Can be used in place of defining nx, ny, and nz
     grid_size: Optional[int] = None
 
     # Coordinates for each axis (in centimeters)
