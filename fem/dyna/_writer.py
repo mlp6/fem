@@ -326,6 +326,7 @@ class DynaMeshWriterMixin:
             fh.write(
                 f"$ nz={self.coords.nz}, zmin={self.coords.zmin:.4f}, zmax={self.coords.zmax:.4f}, dz={self.coords.dz:.4f}\n"
             )
+            fh.write(f"$ symmetry={self.symmetry}\n")
             fh.write("$ nid, x, y, z, tc, rc\n")
 
             # Write all nodes to file
