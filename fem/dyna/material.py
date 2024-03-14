@@ -1,4 +1,7 @@
 from dataclasses import dataclass, field
+import math
+import numpy as np
+from typing import Optional
 
 from .utils import format_dyna_number
 
@@ -186,3 +189,103 @@ class KelvinMaxwellViscoelastic(Material):
             nu=format_dyna_number(self.nu),
         )
         return dyna_card_string
+
+
+@dataclass(kw_only=True)
+class TransverselyIsotropicElastic(Material):
+    # if inc then dont pass muT or check equation condition
+    rotation_angle: float
+    tilt_angle: float
+    density: float  # mass density (g/cm^3)
+    EL: float
+    ET: float
+    muL: float
+    muT: Optional[float] = None
+    vLT: Optional[float] = 0.499
+
+    a: np.ndarray = field(init=False)  #
+    d: np.ndarray = field(init=False)  #
+    vTT: float = field(init=False)
+
+    aopt: float = 2.0
+    g: float = 0.0
+    sigf: float = 0.0
+    XP: float = 0.0
+    YP: float = 0.0
+    ZP: float = 0.0
+    MACF: float = 1.0
+    v: list = field(default_factory=list)
+    beta: float = 0.0
+    ref: float = 0.0
+
+    def __post_init__(self):
+        if not self.v:
+            self.v = np.array([0.0, 0.0, 0.0])
+
+        self.set_a_and_d_vectors(self.rotation_angle, self.tilt_angle)
+        self.vTT = 1 - (1 / 2) * (self.ET / self.EL)
+
+        if self.muT is None:
+            # self.muT = int(self.ET / (2 * (1 + self.vTT)))
+            self.muT = self.ET / (2 * (1 + self.vTT))
+
+        if not np.isclose(self.tilt_angle, 0):
+            raise NotImplementedError
+
+    def set_a_and_d_vectors(self, rotation_angle, tilt_angle):
+        self.a = np.array(
+            [
+                math.cos(math.radians(rotation_angle)),
+                math.sin(math.radians(rotation_angle)),
+                0,
+            ]
+        )
+        self.d = np.array([0, 0, 1])
+
+    def format_card_properties(self, mid):
+        card_props_string = (
+            "$ C is the stiff (or AOS) direction\n"
+            "$ MID, DENSITY, Ea, Eb, Ec, PRba, PRca, PRcb\n"
+            "{mid:d},{density},{ET},{ET},{EL},{vTT},{vLT},{vLT}\n"
+            "$ Gab, Gbc, Gca, AOPT, g, sigf\n"
+            "{muT},{muL},{muL},{aopt},{g},{sigf}\n"
+            "$ c=axd is an angle 0 with y-axis\n"
+            "$ XP, YP, ZP, a1, a2, a3, MACF\n"
+            "{XP},{YP},{ZP},{a1},{a2},{a3},{MACF}\n"
+            "$ v1, v2, v3, d1, d2, d3, beta, ref\n"
+            "{v1},{v2},{v3},{d1},{d2},{d3},{beta},{ref}\n"
+        ).format(
+            mid=mid,
+            density=format_dyna_number(self.density),
+            ET=format_dyna_number(self.ET),
+            EL=format_dyna_number(self.EL),
+            vTT=format_dyna_number(self.vTT),
+            vLT=format_dyna_number(self.vLT),
+            muT=format_dyna_number(self.muT),
+            muL=format_dyna_number(self.muL),
+            aopt=format_dyna_number(self.aopt),
+            g=format_dyna_number(self.g),
+            sigf=format_dyna_number(self.sigf),
+            XP=format_dyna_number(self.XP),
+            YP=format_dyna_number(self.YP),
+            ZP=format_dyna_number(self.ZP),
+            a1=format_dyna_number(self.a[0]),
+            a2=format_dyna_number(self.a[1]),
+            a3=format_dyna_number(self.a[2]),
+            MACF=format_dyna_number(self.MACF),
+            v1=format_dyna_number(self.v[0]),
+            v2=format_dyna_number(self.v[1]),
+            v3=format_dyna_number(self.v[2]),
+            d1=format_dyna_number(self.d[0]),
+            d2=format_dyna_number(self.d[1]),
+            d3=format_dyna_number(self.d[2]),
+            beta=format_dyna_number(self.beta),
+            ref=format_dyna_number(self.ref),
+        )
+        return card_props_string
+
+    def format_material_card(self, mid):
+        return "*MAT_ORTHOTROPIC_ELASTIC\n" + self.format_card_properties(mid)
+
+    def format_pml_card(self, mid):
+        return "*MAT_PML_ORTHOTROPIC_ELASTIC\n" + self.format_card_properties(mid)
