@@ -12,10 +12,10 @@ PARTITION="2112_queue"
 NODES=13
 TASKS=572
 NAME="dyna"
-TIME="00:30:00"
+TIME="05:00:00"
 
 # Setup slurm logs folder (if it doesn't exist)
-log_folder="${PWD}/logs/$sim_folder/${NAME}"
+log_folder="${PWD}/logs/$sim_folder/phase=${NAME}"
 mkdir -p $log_folder
 
 # Find folders to dyna sims
@@ -48,10 +48,10 @@ NODES=1
 TASKS=1
 NAME="cleanup"
 # TIME="4:00:00"
-TIME="00:10:00"
+TIME="03:00:00"
 
 # Setup slurm logs folder (if it doesn't exist)
-log_folder="${PWD}/logs/$sim_folder/${NAME}"
+log_folder="${PWD}/logs/$sim_folder/phase=${NAME}"
 mkdir -p $log_folder
 
 sbatch --dependency=aftercorr:$job_id --mem=20G -p $PARTITION -N $NODES -n $TASKS -t $TIME --job-name=$NAME --output=$log_folder/%A-%a-out.log --error=$log_folder/%A-%a-err.log --mail-type=BEGIN,FAIL,END --mail-user=$USER@email.unc.edu --array=[0-$job_array_max] sbatch_launch_cleanup.sh "${folders[@]}" 

@@ -66,9 +66,9 @@ mesh.set_database(dt=0.5e-4)
 
 # Add load to mesh from pregenerated field loads
 if fd < 25:
-    load_name = f"txer=l94_row1,fd=[0,0,{fd}],fnum={fnum},att={att}"
+    load_name = f"txer=l94_row1&fd=[0,0,{fd}]&fnum={fnum}&att={att}"
 else:
-    load_name = f"txer=l94_row3,fd=[0,0,{fd}],fnum={fnum},att={att}"
+    load_name = f"txer=l94_row3&fd=[0,0,{fd}]&fnum={fnum}&att={att}"
 
 field_load_file = paths["field_loads"] / f"{load_name}.mat"
 mesh.add_load_curve(load_curve_id, "multipush", multipush_params_list)
@@ -77,7 +77,7 @@ mesh.add_field_arf_load(field_load_file, normalization_isppa, load_curve_id)
 # Write dyna cards and create simulation folder structure
 sims_path = paths["dyna_sims"]
 material_folder_name = (
-    f"e={mesh.materials[0]['material'].E/1e3:.0f},v={mesh.materials[0]['material'].eta}"
+    f"e={mesh.materials[0]['material'].E/1e3:.0f}&v={mesh.materials[0]['material'].eta}"
 )
 load_folder_name = load_name
 mesh.write_all_dyna_cards(sims_path, load_folder_name, material_folder_name)
