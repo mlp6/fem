@@ -76,7 +76,7 @@ def load_arfidata(res_sim_file):
         ele = mat["ele"]
         t = mat["t"]
 
-    except NotImplementedError:
+    except (NotImplementedError, ValueError):
         import h5py
 
         with h5py.File(res_sim_file, "r") as f:
@@ -86,14 +86,15 @@ def load_arfidata(res_sim_file):
             ele = f["ele"][:]
             t = f["t"][:]
 
-        # h5py reads in opposite ordering that loadmat does
-        arfidata = np.transpose(arfidata, (3, 2, 1, 0))
+        # Make all coordinate vectors 1D arrays
+        axial = np.reshape(axial, (-1,))
+        lat = np.reshape(lat, (-1,))
+        ele = np.reshape(ele, (-1,))
+        t = np.reshape(t, (-1,))
 
-    # Make all coordinate vectors 1D arrays
-    axial = np.reshape(axial, (-1,))
-    lat = np.reshape(lat, (-1,))
-    ele = np.reshape(ele, (-1,))
-    t = np.reshape(t, (-1,))
+        if arfidata.shape[0] != axial.shape[0]:
+            # h5py reads in opposite ordering that loadmat does
+            arfidata = np.transpose(arfidata, (3, 2, 1, 0))
 
     return arfidata, axial, lat, ele, t
 
@@ -151,11 +152,17 @@ def extract_and_save_arfidata(
         "t": t,
     }
 
-    output_switch = {".h5": saveh5, ".mat": savemat, ".pvd": savepvd}
+    # output_switch = {".h5": saveh5, ".mat": savemat, ".pvd": savepvd}
 
     try:
-        filetype = os.path.splitext(resfile)[-1]
-        output_switch[filetype](**kwargs)
+        # filetype = os.path.splitext(resfile)[-1]
+        # output_switch[filetype](**kwargs)
+        arfidata_gb = arfidata.nbytes / 1e9
+        if arfidata_gb >= 4:
+            saveh5(**kwargs)
+        else:
+            savemat(**kwargs)
+
     except ValueError:
         raise ValueError("Cannot save 2D PVD timeseries data.")
     except KeyError:
