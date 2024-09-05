@@ -62,45 +62,15 @@ def generate_multipush_load_curve_timing(t_arf, dt, n_arf, tracks_between, prf):
     return t
 
 
-def generate_multipush_hydrophone_measured_load_curve_timing(
-    t_arf, dt, n_arf, tracks_between, prf_arf, prf_track
-):
-    """
-    Create a multi-push dyna timing curve matching hydrophone measured prfs. Can generate symmetric trapezoidal excitations by adjusting dt.
-
-    Args:
-        t_arf (float): ARF push duration (seconds).
-        dt (float): Time step to transition ARF load on and off (seconds).
-        n_arf (int): Number of successive ARF excitations.
-        tracks_between (int): Number of tracking pulses between each ARF push.
-        prf_push (float): Scanner pulse repetition frequency (Hz) during push
-        prf_track (float): Scanner pulse repetition frequency (Hz) during tracks
-
-    Returns:
-        list[list]: X and y values of load curve timing.
-    """
-    if dt <= 0:
-        dt = 1e-6
-
-    # Delay between each arf push
-    t_delay = (1 / prf_arf) + tracks_between * (1 / prf_track)
-
-    t = []
-    for iarf in range(n_arf):
-        narf_delay = iarf * t_delay
-        t.extend(
-            [
-                [narf_delay, 0],
-                [narf_delay + dt, 1],
-                [narf_delay + dt + t_arf, 1],
-                [narf_delay + 2 * dt + t_arf, 0],
-            ]
-        )
-    return t
-
-
 class DynaMeshLoadsMixin:
-    def add_load_curve(self, load_curve_id, load_type, load_timing_args):
+
+    def add_load_curve(
+        self,
+        load_curve_id,
+        load_type,
+        load_timing_args,
+        custom_load_timing_function=None,
+    ):
         """
         Creates a *DEFINE_CURVE dyna card string to define the timing and amplitude of an applied load. Serves as a dispatcher function for multiple different load types.
 
@@ -108,15 +78,18 @@ class DynaMeshLoadsMixin:
             load_curve_id (int): Unique load curve ID associated with a load.
             load_type (str): Defines the function used to generate load curve timings.
             load_timing_args (list): List of arguments to pass to load curve timing generation function.
+            custom_load_timing_function (function handle): To pass a custom load timing function, set this argument as the function handle and set the load_type to "custom".
         """
         # Get timing array based on load curve type
+        custom_load_timing_function_str = ""
         if load_type == "arf":
             t = generate_arf_load_curve_timing(*load_timing_args)
         elif load_type == "multipush":
             t = generate_multipush_load_curve_timing(*load_timing_args)
-        elif load_type == "multipush-hydrophone":
-            t = generate_multipush_hydrophone_measured_load_curve_timing(
-                *load_timing_args
+        elif load_type == "custom" and custom_load_timing_function is not None:
+            t = custom_load_timing_function(*load_timing_args)
+            custom_load_timing_function_str = (
+                f"$ Custom load function name: {custom_load_timing_function.__name__}\n"
             )
         else:
             raise ValueError("Invalid load_type.")
@@ -132,6 +105,7 @@ class DynaMeshLoadsMixin:
         self.load_curve_card_string += (
             "*DEFINE_CURVE\n"
             "$ Load curve for load_type={load_type}\n"
+            "{custom_load_timing_function_str}"
             "$ Load timing args: {load_timing_args}\n"
             "$ lcid, sidr, sfa, sfo, offa, offo, dattyp\n"
             "{lcid},0,1.0,1.0,0.0,0.0,0\n"
@@ -139,6 +113,7 @@ class DynaMeshLoadsMixin:
             "{load_timing}"
         ).format(
             load_type=load_type,
+            custom_load_timing_function_str=custom_load_timing_function_str,
             load_timing_args=str(load_timing_args),
             lcid=load_curve_id,
             load_timing=load_timing_str,
