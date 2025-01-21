@@ -107,23 +107,70 @@ def find_complete_ultratrack_sim_folders(ultratrack_folder_list):
     return complete_ultratrack_folders
 
 
-# def find_disp_dat_folders(base_path):
-#     folders = []
-#     for dirpath, dirnames, filenames in os.walk(base_path):
-#         if "disp.dat" in filenames:
-#             folders.append(dirpath)
-#     return folders
+def get_param_str(path, partial_param_str):
+    """
+    Extracts the parameter string from the given path starting with the partial parameter string
+    and ending before the next '&' or '/' character.
+    """
+    idx_param_str_start = path.find(partial_param_str)
+    if idx_param_str_start == -1:
+        return ""
+
+    # Find indices of '&' and '/' characters in the path
+    idx_ampersand = [i for i, c in enumerate(path) if c == "&"]
+    idx_slash = [i for i, c in enumerate(path) if c == "/"]
+    idx_arr = sorted(idx_ampersand + idx_slash)
+
+    # Subtract the start index to find positions after the parameter string
+    idx_arr = [i - idx_param_str_start for i in idx_arr]
+    idx_arr = [i for i in idx_arr if i > 0]  # Remove negative values
+
+    if idx_arr:
+        idx_first_and_after_param_str_start = min(idx_arr)
+        # Adjust index to exclude the '&' or '/' character
+        idx_param_str_end = (
+            idx_param_str_start + idx_first_and_after_param_str_start - 1
+        )
+    else:
+        # If no '&' or '/' found after the parameter, take the rest of the string
+        idx_param_str_end = len(path) - 1
+
+    # Extract the parameter string
+    param_str = path[idx_param_str_start : idx_param_str_end + 1]
+    return param_str
 
 
-# def find_incomplete_ultratrack_sim_folders(base_path):
-#     folders = []
-#     for dirpath, dirnames, filenames in os.walk(base_path):
-#         if "ultratrack_params.mat" in filenames:
-#             rf_lines_files = glob.glob(dirpath + "/" + "all_rf_lines*.mat")
-#             res_tracksim_files = glob.glob(dirpath + "/" + "res_tracksim*.mat")
-#             if len(rf_lines_files) and len(res_tracksim_files):
-#                 folders.append(dirpath)
-#     return folders
+def get_param_value(path, param_name):
+    """
+    Extracts the parameter value from the path based on the parameter name.
+    For 'fd', it extracts the third value in the list. For other parameters, it extracts the number after '='.
+    """
+    param_str = get_param_str(path, param_name)
+    if not param_str:
+        return None
+
+    param_parts = param_str.split("=")
+    if len(param_parts) < 2:
+        return None
+
+    if param_name == "fd":
+        # For 'fd', extract the third value from the list
+        fd_str = param_parts[1].strip("[]")
+        fd_arr = fd_str.split(",")
+        if len(fd_arr) >= 3:
+            try:
+                param = float(fd_arr[2])
+            except ValueError:
+                param = None
+        else:
+            param = None
+    else:
+        # For other parameters, extract the value after '='
+        try:
+            param = float(param_parts[-1])
+        except ValueError:
+            param = None
+    return param
 
 
 if __name__ == "__main__":
@@ -137,15 +184,7 @@ if __name__ == "__main__":
     if option == "incomplete_dyna":
         folders = find_incomplete_dyna_sim_folders(base_path)
         filename = "incomplete_dyna_sim_folders.txt"
-    elif option == "disp_dat":
-        folders = find_disp_dat_folders(base_path)
-        filename = "disp_dat_folders.txt"
-    elif option == "incomplete_ultratrack":
-        folders = find_incomplete_ultratrack_sim_folders(base_path)
-        filename = "incomplete_ultratrack_sim_folders.txt"
     else:
-        print(
-            "Invalid option. Please choose one of: incomplete_dyna, disp_dat, incomplete_ultratrack"
-        )
+        print("Invalid option. Please choose one of: incomplete_dyna.")
 
     write_folders_to_file(folders, filename)

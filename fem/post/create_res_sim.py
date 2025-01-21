@@ -1,21 +1,40 @@
 """create_res_sim.py - extract data for display in different formats from disp.dat binary"""
 import logging
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-from typing import Union, Optional
+from typing import Optional, Union
 
 
 def main():
     """ """
     args = __read_cli()
-    run(args.dynadeck, args.disp_comp, -1e4, args.ressim, args.nodedyn, args.dispout, 
-        args.legacynodes, args.plane_pos, args.plane_orientation, args.specific_times)
+    run(
+        args.dynadeck,
+        args.disp_comp,
+        -1e4,
+        args.ressim,
+        args.nodedyn,
+        args.dispout,
+        args.legacynodes,
+        args.plane_pos,
+        args.plane_orientation,
+        args.specific_times,
+    )
 
 
-def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
-        nodedyn="nodes.dyn", dispout="disp.dat", legacynodes=False, 
-        plane_pos:float=0.0, plane_orientation:int=0,
-        specific_times:Optional[list]=None):
+def run(
+    dynadeck,
+    disp_comp=2,
+    disp_scale=-1e4,
+    ressim="res_sim.mat",
+    nodedyn="nodes.dyn",
+    dispout="disp.dat",
+    legacynodes=False,
+    plane_pos: float = 0.0,
+    plane_orientation: int = 0,
+    specific_times: Optional[list] = None,
+):
     """helper function to run high-level, 2D plane extraction
 
     look at using extract3Darfidata to get full, 3D datasets exported (e.g., to view in Paraview)
@@ -31,7 +50,7 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         plane_pos (float): position of the plane to extract (in the specified plane_orientation)
         plane_orientation (int): orientation plane to extract from (0 = elev, 1 = lateral, 2 = axial)
         specific_times (list): optional list of specific time indices to extract
-    
+
     """
     import sys
     from pathlib import Path
@@ -45,29 +64,39 @@ def run(dynadeck, disp_comp=2, disp_scale=-1e4, ressim="res_sim.mat",
         plane_pos
     except NameError:
         plane_pos = ele_pos
-        
+
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
-    
+
     image_plane = extract_image_plane(snic, axes, plane_pos, plane_orientation)
+
+    print(image_plane)
 
     header = read_header(dispout)
     if specific_times is None:
-        t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
+        t = __gen_t(extract_dt(dynadeck), header["num_timesteps"])
     else:
         t = __gen_t(extract_dt(dynadeck), specific_times)
 
-    arfidata = extract_arfi_data(dispout, header, image_plane, disp_comp,
-                                 disp_scale, legacynodes, specific_times)
+    arfidata = extract_arfi_data(
+        dispout, header, image_plane, disp_comp, disp_scale, legacynodes, specific_times
+    )
 
-    axis_scale=(-10, 10, -10)
+    axis_scale = (-10, 10, -10)
     save_res_sim(ressim, arfidata, axes, t, axis_scale, plane_pos, plane_orientation)
-    
+
     return 0
 
 
-def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
-                      disp_scale=-1e4, legacynodes=False, specific_times=None):
+def extract_arfi_data(
+    dispout,
+    header,
+    image_plane,
+    disp_comp=2,
+    disp_scale=-1e4,
+    legacynodes=False,
+    specific_times=None,
+):
     """extract ARFI data from disp.dat
 
     Args:
@@ -86,77 +115,97 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
         IndexError: unexpected arfidata dimensions
 
     """
-    import numpy as np
     import struct
+
+    import numpy as np
 
     word_size = 4
     header_bytes = 3 * word_size
-    first_timestep_words = header['num_nodes'] * header['num_dims']
-    first_timestep_bytes = header['num_nodes'] * header['num_dims'] * word_size
-    timestep_bytes = header['num_nodes'] * (header['num_dims'] - 1) * word_size
+    first_timestep_words = header["num_nodes"] * header["num_dims"]
+    first_timestep_bytes = header["num_nodes"] * header["num_dims"] * word_size
+    timestep_bytes = header["num_nodes"] * (header["num_dims"] - 1) * word_size
 
     with open_dispout(dispout) as fid:
         logger.info(f"Total Timesteps: {header['num_timesteps']}")
         if specific_times is None:
-            timesteps = [x for x in range(1, header['num_timesteps'] + 1)]
+            timesteps = [x for x in range(1, header["num_timesteps"] + 1)]
             added_one = False
         else:
             timesteps = specific_times
-            added_one = (timesteps[0] != 1)
+            added_one = timesteps[0] != 1
             if added_one:  # the first timestep must always be extracted
                 timesteps.insert(0, 1)
         arfidata = __preallocate_arfidata(image_plane, len(timesteps))
-        logger.info('Extracting timestep:')
+        logger.info("Extracting timestep:")
 
         for t_idx, t in enumerate(timesteps):
-            logger.info(f'{t}')
+            logger.info(f"{t}")
             if (t == 1) or legacynodes:
-                fmt = 'f' * int(first_timestep_words)
+                fmt = "f" * int(first_timestep_words)
                 fid.seek(header_bytes + first_timestep_bytes * (t - 1), 0)
-                disp_slice = np.asarray(struct.unpack(fmt,
-                                        fid.read(first_timestep_bytes)), int)
-                disp_slice = np.reshape(disp_slice, (header['num_nodes'],
-                                        header['num_dims']), order='F')
+                disp_slice = np.asarray(
+                    struct.unpack(fmt, fid.read(first_timestep_bytes)), int
+                )
+                disp_slice = np.reshape(
+                    disp_slice, (header["num_nodes"], header["num_dims"]), order="F"
+                )
                 # extract the nodcount()e IDs on the image plane and save
                 nodeidlist = disp_slice[:, 0].squeeze()
                 zdisp = np.zeros((nodeidlist.max() + 1, 1))
                 # disp_comp + 1 to take into account node IDs in first timestep
-                zdisp = create_zdisp(nodeidlist,
-                                     disp_slice[:, (disp_comp + 1)].squeeze(),
-                                     zdisp)
+                zdisp = create_zdisp(
+                    nodeidlist, disp_slice[:, (disp_comp + 1)].squeeze(), zdisp
+                )
 
             # node IDs not saved after the first timestep in latest disp.dat
             # files (flagged by legacynodes boolean)
             else:
-                fmt = 'f' * int(timestep_bytes / word_size)
-                fid.seek(header_bytes + first_timestep_bytes +
-                         timestep_bytes * (t - 2), 0)
+                fmt = "f" * int(timestep_bytes / word_size)
+                fid.seek(
+                    header_bytes + first_timestep_bytes + timestep_bytes * (t - 2), 0
+                )
                 disp_slice = struct.unpack(fmt, fid.read(timestep_bytes))
-                disp_slice = np.reshape(disp_slice, (header['num_nodes'],
-                                                     (header['num_dims'] - 1)),
-                                        order='F')
-                zdisp = create_zdisp(nodeidlist,
-                                     disp_slice[:, disp_comp].squeeze(),
-                                     zdisp)
+                disp_slice = np.reshape(
+                    disp_slice,
+                    (header["num_nodes"], (header["num_dims"] - 1)),
+                    order="F",
+                )
+                zdisp = create_zdisp(
+                    nodeidlist, disp_slice[:, disp_comp].squeeze(), zdisp
+                )
 
             if arfidata.ndim == 3:
                 for (i, j), nodeid in np.ndenumerate(image_plane):
                     arfidata[j, i, t_idx] = disp_scale * zdisp[nodeid]
+
+                    # try:
+                    #     arfidata[j, i, t_idx] = disp_scale * zdisp[nodeid]
+                    # except IndexError:
+                    #     print(i, j, t_idx)
+                    #     print(nodeid)
+                    #     print(zdisp.shape)
+                    #     print()
             elif arfidata.ndim == 4:
                 for (k, i, j), nodeid in np.ndenumerate(image_plane):
-                    arfidata[j, i, k, t_idx] = disp_scale * zdisp[nodeid]
+                    try:
+                        arfidata[j, i, k, t_idx] = disp_scale * zdisp[nodeid]
+                    except IndexError:
+                        print(k, i, j, t_idx)
+                        print(nodeid)
+                        print(zdisp.shape)
+                        print()
             else:
                 raise IndexError("Unexpected # of dimensions for arfidata.")
 
-        logger.info('\nDone extracting all timesteps.')
+        logger.info("\nDone extracting all timesteps.")
 
     # ndenumerate only iterates in C-ordering, so flip this over to match the
     # F-ordering of Matlab-like code
     arfidata = np.flipud(arfidata)
-    
+
     if added_one:
         arfidata = arfidata[..., 1:]
-        
+
     return arfidata
 
 
@@ -185,42 +234,55 @@ def __read_cli():
 
     import argparse as ap
 
-    par = ap.ArgumentParser(description="Generate res_sim.mat from disp.dat",
-                            formatter_class=ap.ArgumentDefaultsHelpFormatter)
-    par.add_argument("--dispout",
-                     help="name of the binary displacement output file",
-                     default="disp.dat")
-    par.add_argument("--ressim",
-                     help="name of the matlab output file",
-                     default="res_sim.mat")
-    par.add_argument("--nodedyn",
-                     help="ls-dyna node definition file",
-                     default="nodes.dyn")
-    par.add_argument("--dynadeck",
-                     help="ls-dyna input deck",
-                     default="dynadeck.dyn")
-    par.add_argument("--legacynodes",
-                     help="read in disp.dat file that has node IDs saved for"
-                          "each timestep",
-                     action="store_true")
-    par.add_argument("--plane_pos", 
-                     help="pos of plane wanted to extract",
-                     default=0.0, type=float)
-    par.add_argument("--plane_orientation",
-                     help="what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
-                     default=0, type=int)
-    par.add_argument("--disp_comp",
-                     help="what component of displacement 0 = elev, 1 = lat, 2 = ax",
-                     default=2, type=int)                     
-    par.add_argument("--specific_times", 
-                     help="what specific time points to extract",
-                     default=None, nargs='+', type=int)
+    par = ap.ArgumentParser(
+        description="Generate res_sim.mat from disp.dat",
+        formatter_class=ap.ArgumentDefaultsHelpFormatter,
+    )
+    par.add_argument(
+        "--dispout",
+        help="name of the binary displacement output file",
+        default="disp.dat",
+    )
+    par.add_argument(
+        "--ressim", help="name of the matlab output file", default="res_sim.mat"
+    )
+    par.add_argument(
+        "--nodedyn", help="ls-dyna node definition file", default="nodes.dyn"
+    )
+    par.add_argument("--dynadeck", help="ls-dyna input deck", default="dynadeck.dyn")
+    par.add_argument(
+        "--legacynodes",
+        help="read in disp.dat file that has node IDs saved for" "each timestep",
+        action="store_true",
+    )
+    par.add_argument(
+        "--plane_pos", help="pos of plane wanted to extract", default=0.0, type=float
+    )
+    par.add_argument(
+        "--plane_orientation",
+        help="what orientation plane to use 0 = elev, 1 = lat, 2 = ax",
+        default=0,
+        type=int,
+    )
+    par.add_argument(
+        "--disp_comp",
+        help="what component of displacement 0 = elev, 1 = lat, 2 = ax",
+        default=2,
+        type=int,
+    )
+    par.add_argument(
+        "--specific_times",
+        help="what specific time points to extract",
+        default=None,
+        nargs="+",
+        type=int,
+    )
     args = par.parse_args()
 
     return args
 
 
-def extract_image_plane(snic, axes, plane_pos:float=0.0, direction:int=0):
+def extract_image_plane(snic, axes, plane_pos: float = 0.0, direction: int = 0):
     """extract 2D imaging plane node IDs
 
     Extract a 2D matrix of the imaging plane node IDs based on the
@@ -243,22 +305,32 @@ def extract_image_plane(snic, axes, plane_pos:float=0.0, direction:int=0):
     import numpy as np
 
     if direction < 0 or direction > 2:
-        logging.error('Not a valid axes direction.')
-        raise ValueError('Invalid direction axis specified.')
+        logging.error("Not a valid axes direction.")
+        raise ValueError("Invalid direction axis specified.")
 
-    plane = np.min(np.where(axes[direction]>=plane_pos))
+    plane = np.min(np.where(axes[direction] >= plane_pos))
+
+    print(plane, plane_pos, direction)
 
     if direction == 0:
-        image_plane = np.squeeze(snic['id'][plane,:,:]).astype(int)
+        image_plane = np.squeeze(snic["id"][plane, :, :]).astype(int)
     elif direction == 1:
-        image_plane = np.squeeze(snic['id'][:,plane,:]).astype(int)
+        image_plane = np.squeeze(snic["id"][:, plane, :]).astype(int)
     elif direction == 2:
-        image_plane = np.squeeze(snic['id'][:,:,plane]).astype(int)
-    
+        image_plane = np.squeeze(snic["id"][:, :, plane]).astype(int)
+
     return image_plane
 
 
-def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_pos=None, plane_orientation=None):
+def save_res_sim(
+    resfile,
+    arfidata,
+    axes,
+    t,
+    axis_scale=(-10, 10, -10),
+    plane_pos=None,
+    plane_orientation=None,
+):
     """Save res_sim.[mat,h5,pvd] file with arfidata and relevant axes.
 
     Data are saved as float32 (single) to save space.
@@ -278,7 +350,9 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
 
     """
     import os
+
     import numpy as np
+
     plane_pos = np.array([plane_pos])
     # scale axes
     if arfidata.ndim == 4:
@@ -286,37 +360,35 @@ def save_res_sim(resfile, arfidata, axes, t, axis_scale=(-10, 10, -10), plane_po
     lat = axis_scale[1] * axes[1]
     axial = axis_scale[2] * axes[2]
 
-    if plane_orientation == 0: # means an elevational plane
+    if plane_orientation == 0:  # means an elevational plane
         lat = axis_scale[1] * axes[1]
         axial = axis_scale[2] * axes[2]
-        elev = axis_scale[0] * plane_pos # pass value of what it was at
+        elev = axis_scale[0] * plane_pos  # pass value of what it was at
         if axis_scale[2] < 1:
             axial = axial[::-1]
-    elif plane_orientation == 1: #means a lateral plane
+    elif plane_orientation == 1:  # means a lateral plane
         elev = axis_scale[0] * axes[0]
         lat = axis_scale[1] * plane_pos
-        axial = axis_scale[2] * axes [2]
-        if axis_scale[2]<1:
+        axial = axis_scale[2] * axes[2]
+        if axis_scale[2] < 1:
             axial = axial[::-1]
     elif plane_orientation == 2:
         elev = axis_scale[0] * axes[0]
         lat = axis_scale[1] * axes[1]
-        axial = axis_scale[2] * plane_pos 
-        
-        
-    logger.info(f'Saving data to: {resfile}')   
+        axial = axis_scale[2] * plane_pos
 
-    kwargs = {'resfile': resfile,
-              'arfidata': arfidata,
-              'axial': axial,
-              'lat': lat,
-              'elev': elev,
-              't': t}   
+    logger.info(f"Saving data to: {resfile}")
 
-    output_switch = {
-        '.h5': saveh5,
-        '.mat': savemat,
-        '.pvd': savepvd}
+    kwargs = {
+        "resfile": resfile,
+        "arfidata": arfidata,
+        "axial": axial,
+        "lat": lat,
+        "elev": elev,
+        "t": t,
+    }
+
+    output_switch = {".h5": saveh5, ".mat": savemat, ".pvd": savepvd}
 
     try:
         filetype = os.path.splitext(resfile)[-1]
@@ -341,27 +413,15 @@ def saveh5(**kwargs):
     """
     import h5py
 
-    compression = {'shuffle': True,
-                   'compression': 'gzip',
-                   'compression_opts': 4}
+    compression = {"shuffle": True, "compression": "gzip", "compression_opts": 4}
 
-    with h5py.File(kwargs['resfile'], 'w') as r:
-        r.create_dataset(data=kwargs['arfidata'],
-                         name="arfidata",
-                         **compression)
-        r.create_dataset(data=kwargs['lat'],
-                         name="lat",
-                         **compression)
-        r.create_dataset(data=kwargs['axial'],
-                         name="axial",
-                         **compression)
-        if kwargs['arfidata'].ndim == 4:
-            r.create_dataset(data=kwargs['elev'],
-                             name="elev",
-                             **compression)
-        r.create_dataset(data=kwargs['t'],
-                         name="t",
-                         **compression)
+    with h5py.File(kwargs["resfile"], "w") as r:
+        r.create_dataset(data=kwargs["arfidata"], name="arfidata", **compression)
+        r.create_dataset(data=kwargs["lat"], name="lat", **compression)
+        r.create_dataset(data=kwargs["axial"], name="axial", **compression)
+        if kwargs["arfidata"].ndim == 4:
+            r.create_dataset(data=kwargs["elev"], name="elev", **compression)
+        r.create_dataset(data=kwargs["t"], name="t", **compression)
 
 
 def savemat(**kwargs):
@@ -381,11 +441,11 @@ def savemat(**kwargs):
     """
     from scipy.io import savemat as save_mat
 
-    if kwargs['arfidata'].nbytes > 4e9:
+    if kwargs["arfidata"].nbytes > 4e9:
         raise TypeError("arfidata >4 GB, cannot be saved as MATLAB v5")
 
-    resfile = kwargs['resfile']
-    kwargs.pop('resfile')
+    resfile = kwargs["resfile"]
+    kwargs.pop("resfile")
 
     save_mat(resfile, kwargs, do_compression=True)
 
@@ -408,50 +468,57 @@ def savepvd(ts_start=0, part=0, **kwargs):
         ValueError: Not saving 3D time series data.
         FileExistsError: PVD file directory cannot be created.
     """
-    from pyevtk.hl import gridToVTK
     import os
-    import numpy as np
     from pathlib import Path
 
-    if kwargs['arfidata'].ndim != 4:
+    import numpy as np
+    from pyevtk.hl import gridToVTK
+
+    if kwargs["arfidata"].ndim != 4:
         raise ValueError("Trying to save timeseries VTR data not supported.")
 
-    resfile = Path(kwargs['resfile'])
-    resfileprefix = resfile.with_suffix('')
+    resfile = Path(kwargs["resfile"])
+    resfileprefix = resfile.with_suffix("")
 
-    with open(resfile, 'w') as pvd:
-
+    with open(resfile, "w") as pvd:
         pvd.write('<?xml version="1.0"?>\n')
-        pvd.write('<VTKFile type="Collection" version="0.1" '
-                  'byte_order="LittleEndian" '
-                  'compressor="vtkZLibDataCompressor">\n')
-        pvd.write('    <Collection>\n')
+        pvd.write(
+            '<VTKFile type="Collection" version="0.1" '
+            'byte_order="LittleEndian" '
+            'compressor="vtkZLibDataCompressor">\n'
+        )
+        pvd.write("    <Collection>\n")
 
-        veldata_calc = np.diff(np.asfortranarray(kwargs['arfidata']), axis=3, prepend=0)
+        veldata_calc = np.diff(np.asfortranarray(kwargs["arfidata"]), axis=3, prepend=0)
 
-        num_timesteps = len(kwargs['t'])-1
-        for ts, time in enumerate(kwargs['t']):
+        num_timesteps = len(kwargs["t"]) - 1
+        for ts, time in enumerate(kwargs["t"]):
+            arfidata = np.asfortranarray(
+                np.squeeze(kwargs["arfidata"][:, :, :, ts])
+            ).transpose()
 
-            arfidata = np.asfortranarray(np.squeeze(kwargs['arfidata']
-                                                    [:, :, :, ts])).transpose()
-
-            veldata = np.asfortranarray(np.squeeze(veldata_calc[:, :, :, ts])).transpose()
+            veldata = np.asfortranarray(
+                np.squeeze(veldata_calc[:, :, :, ts])
+            ).transpose()
 
             timestep = ts_start + ts
-            vtrfilename = Path(f'{resfileprefix}_T{ts:04d}.vtr')
+            vtrfilename = Path(f"{resfileprefix}_T{ts:04d}.vtr")
 
             logger.info(f"Writing {vtrfilename.name}. [{ts}/{num_timesteps}]")
 
-            pvd.write(f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{vtrfilename.name}"/>\n')
+            pvd.write(
+                f'        <DataSet timestep="{timestep}" group="" part="{part}" file="{vtrfilename.name}"/>\n'
+            )
 
-            gridToVTK(str(vtrfilename.with_suffix('')),
-                      kwargs['elev'].ravel(),
-                      kwargs['lat'].ravel(),
-                      kwargs['axial'].ravel(),
-                      pointData={'arfidata': arfidata,
-                                 'veldata': veldata})
-        pvd.write('    </Collection>\n')
-        pvd.write('</VTKFile>\n')
+            gridToVTK(
+                str(vtrfilename.with_suffix("")),
+                kwargs["elev"].ravel(),
+                kwargs["lat"].ravel(),
+                kwargs["axial"].ravel(),
+                pointData={"arfidata": arfidata, "veldata": veldata},
+            )
+        pvd.write("    </Collection>\n")
+        pvd.write("</VTKFile>\n")
 
 
 def read_header(dispout, word_size_bytes: int = 4):
@@ -468,13 +535,15 @@ def read_header(dispout, word_size_bytes: int = 4):
     import struct
 
     with open_dispout(dispout) as d:
-        num_nodes = struct.unpack('f', d.read(word_size_bytes))
-        num_dims = struct.unpack('f', d.read(word_size_bytes))
-        num_timesteps = struct.unpack('f', d.read(word_size_bytes))
+        num_nodes = struct.unpack("f", d.read(word_size_bytes))
+        num_dims = struct.unpack("f", d.read(word_size_bytes))
+        num_timesteps = struct.unpack("f", d.read(word_size_bytes))
 
-    header = {'num_nodes': int(num_nodes[0]),
-              'num_dims': int(num_dims[0]),
-              'num_timesteps': int(num_timesteps[0])}
+    header = {
+        "num_nodes": int(num_nodes[0]),
+        "num_dims": int(num_dims[0]),
+        "num_timesteps": int(num_timesteps[0]),
+    }
 
     return header
 
@@ -494,17 +563,17 @@ def extract_dt(dyn_file):
     """
     found_database = False
     try:
-        with open(dyn_file, 'r') as d:
+        with open(dyn_file, "r") as d:
             for dyn_line in d:
                 if found_database:
-                    line_items = dyn_line.split(',')
+                    line_items = dyn_line.split(",")
                     # make sure we're not dealing with a comment
-                    if '$' in line_items[0]:
+                    if "$" in line_items[0]:
                         continue
                     else:
                         dt = float(line_items[0])
                         break
-                elif '*DATABASE_NODOUT' in dyn_line:
+                elif "*DATABASE_NODOUT" in dyn_line:
                     found_database = True
     except FileNotFoundError:
         raise FileNotFoundError
@@ -529,19 +598,21 @@ def open_dispout(dispout):
     try:
         import lzma
     except ImportError:
-        raise ImportError("LZMA module not available (maybe xz-devel needs to be installed).")
+        raise ImportError(
+            "LZMA module not available (maybe xz-devel needs to be installed)."
+        )
     from pathlib import Path
 
     dispout = Path(dispout)
 
-    if dispout.name.endswith('.xz'):
+    if dispout.name.endswith(".xz"):
         try:
-            dispout = lzma.open(dispout, 'rb')
+            dispout = lzma.open(dispout, "rb")
         except FileNotFoundError:
             raise FileNotFoundError
     else:
         try:
-            dispout = open(dispout, 'rb')
+            dispout = open(dispout, "rb")
         except FileNotFoundError:
             raise FileNotFoundError
 
@@ -567,12 +638,20 @@ def __preallocate_arfidata(image_plane, num_timesteps: int):
     num_timesteps = int(num_timesteps)
 
     if image_plane.ndim == 2:
-        arfidata = np.zeros((image_plane.shape[1], image_plane.shape[0],
-                             num_timesteps), dtype=np.float32)
+        arfidata = np.zeros(
+            (image_plane.shape[1], image_plane.shape[0], num_timesteps),
+            dtype=np.float32,
+        )
     elif image_plane.ndim == 3:
-        arfidata = np.zeros((image_plane.shape[2], image_plane.shape[1],
-                             image_plane.shape[0], num_timesteps),
-                            dtype=np.float32)
+        arfidata = np.zeros(
+            (
+                image_plane.shape[2],
+                image_plane.shape[1],
+                image_plane.shape[0],
+                num_timesteps,
+            ),
+            dtype=np.float32,
+        )
     else:
         raise IndexError("Unexpected number of dimensions in sorted nodes.")
 
@@ -594,16 +673,22 @@ def __gen_t(dt: float, timesteps: Union[int, list]) -> list:
     if isinstance(timesteps, int):
         t = [float(x) * dt for x in range(0, timesteps)]
     elif isinstance(timesteps, list):
-        t = [float(x-1) * dt for x in timesteps]
+        t = [float(x - 1) * dt for x in timesteps]
     else:
         raise TypeError
 
     return t
 
 
-def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
-                      ressim="res_sim.h5", nodedyn="nodes.dyn",
-                      dispout="disp.dat", specific_times=None):
+def extract3Darfidata(
+    dynadeck="dynadeck.dyn",
+    disp_comp=2,
+    disp_scale=-1e4,
+    ressim="res_sim.h5",
+    nodedyn="nodes.dyn",
+    dispout="disp.dat",
+    specific_times=None,
+):
     """Extract 3D volume of specified displacement component.
 
     Args:
@@ -623,21 +708,27 @@ def extract3Darfidata(dynadeck="dynadeck.dyn", disp_comp=2, disp_scale=-1e4,
 
     import fem_mesh
 
-    if not ressim.endswith(('.mat', '.h5', '.pvd')):
-        raise NameError('Output res_sim filename not supported')
+    if not ressim.endswith((".mat", ".h5", ".pvd")):
+        raise NameError("Output res_sim filename not supported")
 
     node_id_coords = fem_mesh.load_nodeIDs_coords(nodedyn)
     [snic, axes] = fem_mesh.SortNodeIDs(node_id_coords)
 
     header = read_header(dispout)
     if specific_times is None:
-        t = __gen_t(extract_dt(dynadeck), header['num_timesteps'])
+        t = __gen_t(extract_dt(dynadeck), header["num_timesteps"])
     else:
         t = __gen_t(extract_dt(dynadeck), specific_times)
 
-    arfidata = extract_arfi_data(dispout, header, snic['id'],
-                                 disp_comp, disp_scale, legacynodes=False,
-                                 specific_times=specific_times)
+    arfidata = extract_arfi_data(
+        dispout,
+        header,
+        snic["id"],
+        disp_comp,
+        disp_scale,
+        legacynodes=False,
+        specific_times=specific_times,
+    )
 
     save_res_sim(ressim, arfidata, axes, t)
 
