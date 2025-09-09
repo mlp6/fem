@@ -286,7 +286,7 @@ def tukey_z_scale(z:float, center:float, length:float, alpha:float=0.25, points:
 
     """
     import numpy as np
-    from scipy.signal import tukey
+    from scipy.signal.windows import tukey
 
     z = np.abs(z)
     zmin = np.abs(center) - length / 2
