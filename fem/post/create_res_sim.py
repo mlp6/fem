@@ -119,7 +119,7 @@ def extract_arfi_data(dispout, header, image_plane, disp_comp=2,
                                         header['num_dims']), order='F')
                 # extract the nodcount()e IDs on the image plane and save
                 nodeidlist = disp_slice[:, 0].squeeze()
-                zdisp = np.zeros((nodeidlist.max() + 1, 1))
+                zdisp = np.zeros(int(nodeidlist.max()) + 1)
                 # disp_comp + 1 to take into account node IDs in first timestep
                 zdisp = create_zdisp(nodeidlist,
                                      disp_slice[:, (disp_comp + 1)].squeeze(),

@@ -58,8 +58,9 @@ def extract_top_plane_nodes(nodefile, top_face):
     [snic, axes] = fem_mesh.SortNodeIDs(nodeIDcoords)
 
     # extract spatially-sorted node IDs on a the top z plane
-    axis = int(np.floor(np.divide(top_face.nonzero(), 2)))
-    if np.mod(top_face.nonzero(), 2) == 1:
+    nonzero_idx = top_face.nonzero()[0][0]
+    axis = int(nonzero_idx // 2)
+    if nonzero_idx % 2 == 1:
         plane = (axis, axes[axis].max())
     else:
         plane = (axis, axes[axis].min())
