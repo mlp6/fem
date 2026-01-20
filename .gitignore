@@ -129,6 +129,13 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/*.html
+docs/_static/
+docs/_sources/
+docs/.doctrees/
+docs/searchindex.js
+docs/objects.inv
+docs/.buildinfo
 
 # PyBuilder
 .pybuilder/
