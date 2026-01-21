@@ -33,7 +33,9 @@ bc.apply_face_bc_only(face_constraints)
 generate_loads(loadtype='disp', direction=2, amplitude=-0.1,
                top_face=(0, 0, 0, 0, 0, 1), lcid=1)
 
-system('ls-dyna-d ncpu={} i={}'.format(NTASKS, DYNADECK))
+#system('ls-dyna-d ncpu={} i={}'.format(NTASKS, DYNADECK))
+system('singularity exec -p -B /work/krn/FEMTesting/CompressCubeScripts /opt/apps/staging/ls-dyna-singularity/ls-dyna.sif ls-dyna-d ncpu={} i={} memory = 600000000'.format(NTASKS, DYNADECK))
+
 
 create_disp_dat()
 
